@@ -1,0 +1,238 @@
+[
+  {
+    "girdi": {
+      "title": "Klinik",
+      "meta_description": "",
+      "h1": [],
+      "h2": [
+        "Hizmetlerimiz"
+      ],
+      "alt_metni_eksik_gorseller": [],
+      "metin_ozeti": "Eskişehir'de implant, diş beyazlatma, ortodonti ve çocuk diş hekimliği hizmetleri sunan Gülüş Diş Kliniği. Randevu ve iletişim bilgileri. Uzman diş hekimlerimiz muayene ve tedavi için hizmetinizde.",
+      "tespit_edilen_sorunlar": [
+        "title_kisa",
+        "meta_description_yok",
+        "h1_yok"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "title",
+          "hedef": "",
+          "yeni_deger": "Gülüş Diş Kliniği | İmplant ve Ortodonti Eskişehir",
+          "gerekce": "Marka, hizmet ve şehir içeriyor."
+        },
+        {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Eskişehir'de implant, diş beyazlatma, ortodonti ve çocuk diş hekimliği hizmetleri sunan Gülüş Diş Kliniği için randevu ve iletişim bilgileri.",
+          "gerekce": "Sayfadaki hizmetleri özetliyor."
+        },
+        {
+          "alan": "h1",
+          "hedef": "",
+          "yeni_deger": "Gülüş Diş Kliniği Eskişehir",
+          "gerekce": "Sayfanın ana konusunu belirtiyor."
+        }
+      ]
+    }
+  },
+  {
+    "girdi": {
+      "title": "Anasayfa | Demir Mobilya Mağazası Ankara Ucuz Mobilya Koltuk Yatak Odası Takımı Kampanya",
+      "meta_description": "Mobilya",
+      "h1": [
+        "Demir Mobilya"
+      ],
+      "h2": [
+        "Koltuk Takımları",
+        "Kampanyalar"
+      ],
+      "alt_metni_eksik_gorseller": [
+        {
+          "id": "g1",
+          "dosya_adi": "koltuk-takimi-bej.jpg",
+          "baglam": "baglanti metni: Koltuk Takımları"
+        },
+        {
+          "id": "g2",
+          "dosya_adi": "kampanya-banner.png",
+          "baglam": "baglanti: /kampanyalar"
+        }
+      ],
+      "metin_ozeti": "Demir Mobilya, Ankara'da koltuk takımları, yatak odası, yemek odası ve genç odası mobilyaları satar. Ürünler mağazadan teslim edilir. Kampanyalar ve katalog sayfası.",
+      "tespit_edilen_sorunlar": [
+        "title_uzun",
+        "meta_description_kisa",
+        "img_alt_eksik"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "title",
+          "hedef": "",
+          "yeni_deger": "Demir Mobilya Ankara | Koltuk ve Yatak Odası Takımları",
+          "gerekce": "Anahtar kelime yığını yerine marka, şehir ve ana ürünler."
+        },
+        {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Ankara'daki Demir Mobilya'da koltuk takımları, yatak odası, yemek odası ve genç odası mobilyalarını ve kampanyaları katalogda bulabilirsiniz.",
+          "gerekce": "Sayfadaki ürün gruplarını özetliyor."
+        },
+        {
+          "alan": "img_alt",
+          "hedef": "g1",
+          "yeni_deger": "Bej koltuk takımı",
+          "gerekce": "Dosya adından anlaşılan içerik."
+        },
+        {
+          "alan": "img_alt",
+          "hedef": "g2",
+          "yeni_deger": "Mobilya kampanyası görseli",
+          "gerekce": "Bağlantı kampanyalar sayfasına gidiyor."
+        }
+      ]
+    }
+  },
+  {
+    "girdi": {
+      "title": null,
+      "meta_description": "Moda'da taze çekirdek kahve, ev yapımı tatlı ve kahvaltı seçenekleriyle Karaca Kahve Evi'ne uğrayın, çalışma saatlerimizi ve adresimizi öğrenin.",
+      "h1": [],
+      "h2": [
+        "Menü",
+        "Adres"
+      ],
+      "alt_metni_eksik_gorseller": [],
+      "metin_ozeti": "Karaca Kahve Evi Kadıköy Moda. Taze çekirdek kahve, ev yapımı tatlılar ve kahvaltı. Menü, adres ve çalışma saatleri.",
+      "tespit_edilen_sorunlar": [
+        "title_yok",
+        "h1_yok"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "title",
+          "hedef": "",
+          "yeni_deger": "Karaca Kahve Evi | Moda Kadıköy Kahve ve Tatlı",
+          "gerekce": "Marka ve konum içeriyor."
+        },
+        {
+          "alan": "h1",
+          "hedef": "",
+          "yeni_deger": "Karaca Kahve Evi Moda",
+          "gerekce": "Açıklama doğru olduğu için değiştirilmedi, yalnızca H1 eklendi."
+        }
+      ]
+    }
+  },
+  {
+    "girdi": {
+      "title": "Örnek Belediyesi Resmi Web Sitesi | Duyurular ve Hizmetler",
+      "meta_description": "Örnek Belediyesi resmi web sitesine hoş geldiniz. Bu sitede belediyemizin tüm duyurularını, haberlerini, etkinliklerini, ihale ilanlarını, meclis kararlarını, hizmet başvurularını, vergi ödeme işlemlerini ve iletişim bilgilerini bulabilirsiniz.",
+      "h1": [
+        "Örnek Belediyesi"
+      ],
+      "h2": [
+        "Duyurular",
+        "Haberler"
+      ],
+      "alt_metni_eksik_gorseller": [
+        {
+          "id": "g1",
+          "dosya_adi": "belediye-logo.svg",
+          "baglam": "baglanti: /"
+        },
+        {
+          "id": "g2",
+          "dosya_adi": "baskan-foto.jpg",
+          "baglam": "baglanti metni: Belediye Başkanı"
+        }
+      ],
+      "metin_ozeti": "Örnek Belediyesi duyurular, haberler, etkinlikler, ihale ilanları, meclis kararları ve hizmet başvuruları. Vergi ödeme ve iletişim bilgileri.",
+      "tespit_edilen_sorunlar": [
+        "meta_description_uzun",
+        "img_alt_eksik"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Örnek Belediyesi duyuruları, haberleri, etkinlikleri, ihale ilanları, meclis kararları ve hizmet başvuruları ile iletişim bilgileri.",
+          "gerekce": "160 karakter sınırına indirildi, içerik sayfadan."
+        },
+        {
+          "alan": "img_alt",
+          "hedef": "g1",
+          "yeni_deger": "Örnek Belediyesi logosu",
+          "gerekce": "Dosya adı logo, bağlantı ana sayfaya gidiyor."
+        },
+        {
+          "alan": "img_alt",
+          "hedef": "g2",
+          "yeni_deger": "Belediye Başkanı fotoğrafı",
+          "gerekce": "Dosya adı ve bağlantı metni."
+        }
+      ]
+    }
+  },
+  {
+    "girdi": {
+      "title": "Kurs",
+      "meta_description": "Kurs",
+      "h1": [],
+      "h2": [
+        "Kurslarımız",
+        "Kayıt"
+      ],
+      "alt_metni_eksik_gorseller": [
+        {
+          "id": "g1",
+          "dosya_adi": "ingilizce-sinif.jpg",
+          "baglam": "baglanti metni: İngilizce Kursu"
+        }
+      ],
+      "metin_ozeti": "Seçkin Dil Kursu Düzce. İngilizce, Almanca ve Arapça kursları. Yetişkin ve çocuk grupları. Kayıt için iletişime geçin.",
+      "tespit_edilen_sorunlar": [
+        "title_kisa",
+        "meta_description_kisa",
+        "h1_yok",
+        "img_alt_eksik"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "title",
+          "hedef": "",
+          "yeni_deger": "Seçkin Dil Kursu Düzce | İngilizce Almanca Arapça",
+          "gerekce": "Marka, şehir ve kurs dilleri."
+        },
+        {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Düzce'deki Seçkin Dil Kursu'nda İngilizce, Almanca ve Arapça kursları yetişkin ve çocuk grupları için açılır, kayıt için iletişime geçin.",
+          "gerekce": "Sayfadaki kurs ve grup bilgisi."
+        },
+        {
+          "alan": "h1",
+          "hedef": "",
+          "yeni_deger": "Seçkin Dil Kursu Düzce",
+          "gerekce": "Ana konu."
+        },
+        {
+          "alan": "img_alt",
+          "hedef": "g1",
+          "yeni_deger": "İngilizce kursu sınıfı",
+          "gerekce": "Dosya adı ve bağlantı metni."
+        }
+      ]
+    }
+  }
+]

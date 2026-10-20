@@ -1,0 +1,102 @@
+[
+  {
+    "id": "b01",
+    "konu": "title",
+    "icerik": "Sayfa basligi (title etiketi), arama sonuclarinda tiklanabilir mavi baslik olarak gorunur ve genellikle 50-60 karakter arasinda tam gosterilir; cok uzun basliklar sonunda ... ile kesilir. Baslik sayfanin konusunu dogru yansitmali, en onemli kavram basa yakin yer almali ve marka adi genellikle sonda kisa bir ek olarak bulunmalidir."
+  },
+  {
+    "id": "b02",
+    "konu": "title",
+    "icerik": "Ayni sitedeki her sayfanin basligi, o sayfaya ozgu ve diger sayfalardan farkli olmalidir. Tum sayfalarda ayni veya neredeyse ayni baslik kullanmak, arama motorlarinin sayfalari birbirinden ayirt etmesini zorlastirir ve tiklanma oranini dusurur."
+  },
+  {
+    "id": "b03",
+    "konu": "meta_description",
+    "icerik": "Meta aciklama, arama sonucunda baslik altinda gorunen kisa ozettir; siralamayi dogrudan etkilemez ama tiklanma oranini etkiler. Sayfanin sundugu bilgiyi veya hizmeti gercekci bicimde ozetlemeli, kullanicinin aradigi cevabin o sayfada oldugunu gostermelidir."
+  },
+  {
+    "id": "b04",
+    "konu": "meta_description",
+    "icerik": "Meta aciklamada abartili reklam dili veya dogrulanamayan iddialar ('en iyi', 'lider', 'bir numarali') kullanmak yerine, sayfada somut olarak bulunan bilgi, urun veya hizmet anlatilmalidir. Aciklama kisa olsa bile ozgun ve sayfaya ozel yazilmalidir."
+  },
+  {
+    "id": "b05",
+    "konu": "h1",
+    "icerik": "H1 basligi, sayfanin ana konusunu kullanicilara ve arama motorlarina gosteren goze carpan basliktir ve bir sayfada genellikle tek bir H1 bulunmasi onerilir. H1, title ile birebir ayni olmak zorunda degildir ama ayni ana konuyu yansitmalidir."
+  },
+  {
+    "id": "b06",
+    "konu": "img_alt",
+    "icerik": "Gorsellerin alt metni, gorseli goremeyen kullanicilar (ekran okuyucu kullananlar) ve gorseli indiremeyen tarayicilar icin gorselin islevini veya icerigini aciklar; ayrica arama motorlarinin gorsel aramada sayfayi bulmasina yardimci olur. Alt metin kisa, aciklayici ve 'resim', 'gorsel' gibi gereksiz kelimeler icermeyen bir cumle olmalidir."
+  },
+  {
+    "id": "b07",
+    "konu": "img_alt",
+    "icerik": "Bir gorsel ayni zamanda bir baglantiysa (ornegin logo anasayfaya baglaniyorsa), alt metin gorselin gorundugu seyi degil, baglantinin kullaniciyi nereye gotürdugunu aciklamalidir."
+  },
+  {
+    "id": "b08",
+    "konu": "canonical",
+    "icerik": "Canonical (standart) etiketi, ayni veya cok benzer icerigin birden fazla adreste (orn. www ile www'suz, http ile https, sondaki egik cizgiyle cizgisiz) erisilebilir oldugu durumlarda, arama motoruna hangi adresin 'asil' sayfa sayilmasi gerektigini bildirir. Bu, ayni icerigin farkli adreslerde birbiriyle yarismasini (icerik yinelenmesini) onler."
+  },
+  {
+    "id": "b09",
+    "konu": "robots_sitemap",
+    "icerik": "robots.txt dosyasi, arama motoru botlarinin sitenin hangi bolumlerini tarayabilecegini belirtir; yanlis yapilandirilirsa onemli sayfalarin taranmasini engelleyebilir. Site haritasi (sitemap.xml) ise sitedeki sayfalarin listesini arama motorlarina bildirerek, ozellikle yeni veya derin baglantili sayfalarin kesfedilmesini hizlandirir."
+  },
+  {
+    "id": "b10",
+    "konu": "hiz_core_web_vitals",
+    "icerik": "Sayfa yukleme hizi ve Core Web Vitals (LCP, INP, CLS gibi olcutler) hem kullanici deneyimini hem de arama sirlamasini etkileyen teknik faktorlerdir. Buyuk, sikistirilmamis gorseller ve gereksiz betikler sayfa hizini dusuren en yaygin nedenlerdendir."
+  },
+  {
+    "id": "b11",
+    "konu": "yapilandirilmis_veri",
+    "icerik": "Yapilandirilmis veri (schema.org / JSON-LD), bir sayfadaki bilginin (ornegin bir isletmenin adresi, calisma saatleri veya bir urunun fiyati) arama motorlari tarafindan daha iyi anlasilmasini saglar ve bazen arama sonuclarinda zengin sonuc (rich result) olarak gosterilmesine yol acar."
+  },
+  {
+    "id": "b12",
+    "konu": "mobil_uyumluluk",
+    "icerik": "Arama motorlari sayfalari oncelikle mobil surumleriyle degerlendirir (mobile-first indexing). Kucuk ekranlarda okunakli yazi boyutu, dokunma hedeflerinin yeterince buyuk olmasi ve yatay kaydirma gerektirmeyen bir duzen, mobil kullanilabilirligin temel gereksinimleridir."
+  },
+  {
+    "id": "b13",
+    "konu": "icerik_kalitesi_eeat",
+    "icerik": "Icerik kalitesini degerlendirirken deneyim, uzmanlik, yetki ve guvenilirlik (E-E-A-T) kavrami kullanilir: iceriğin kim tarafindan, ne deneyime dayanarak yazildiginin belli olmasi, kaynaklarin guvenilir olmasi ve iceriğin kullanicinin sorununu gercekten cozmesi onemlidir."
+  },
+  {
+    "id": "b14",
+    "konu": "ic_baglanti",
+    "icerik": "Ic baglantilar (bir sitedeki sayfalarin birbirine verdigi baglantilar), hem kullanicilarin ilgili icerige kolay ulasmasini saglar hem de arama motorlarinin site icindeki sayfalar arasindaki iliskiyi ve onem sirasini anlamasina yardimci olur. Baglanti metninin (anchor text) hedef sayfayi aciklayici olmasi onerilir."
+  },
+  {
+    "id": "b15",
+    "konu": "url_yapisi",
+    "icerik": "Kisa, okunakli ve sayfanin icerigini yansitan URL'ler, hem kullanicilar hem arama motorlari icin tercih edilir. Anlamsiz sayi/kod dizileri yerine sayfanin konusunu yansitan kelimeler icermesi, URL'nin anlasilirligini artirir."
+  },
+  {
+    "id": "b16",
+    "konu": "yinelenen_icerik",
+    "icerik": "Ayni veya cok benzer icerigin birden fazla URL'de yayinlanmasi (yinelenen icerik), arama motorunun hangi sayfayi one cikaracagina karar vermesini zorlastirabilir. Bu durum genellikle filtreleme parametreleri, yazdirma sayfalari veya hem www hem www'suz adreslerin ayni anda acik olmasindan kaynaklanir."
+  },
+  {
+    "id": "b17",
+    "konu": "yerel_seo",
+    "icerik": "Yerel isletmeler icin Google Isletme Profili'nin eksiksiz doldurulmasi, adres ve calisma saatlerinin sitedeki bilgilerle tutarli olmasi ve musteri yorumlarinin yonetilmesi, yerel aramalarda (orn. 'sehir adi + hizmet') gorunurlugu belirleyen onemli faktorlerdir."
+  },
+  {
+    "id": "b18",
+    "konu": "yapay_zeka_icerik_riski",
+    "icerik": "Yapay zeka ile uretilen icerik tek basina arama motorlari tarafindan cezalandirilmaz, ancak dusuk kaliteli, otomatik uretilmis ve kullaniciya gercek deger katmayan kitlesel icerik uretimi siralamayi olumsuz etkileyebilir. Uretilen icerigin dogrulugunun kontrol edilmesi ve insan tarafindan gozden gecirilmesi onerilir."
+  },
+  {
+    "id": "b19",
+    "konu": "anahtar_kelime_yigma",
+    "icerik": "Baslik veya aciklama icine dogal akisi bozacak sekilde cok sayida anahtar kelime sikistirmak (anahtar kelime yigma), hem okunabilirligi dusurur hem de arama motorlari tarafindan dusuk kaliteli bir sinyal olarak degerlendirilebilir. Tek, dogal cumleler tercih edilmelidir."
+  },
+  {
+    "id": "b20",
+    "konu": "https_guvenlik",
+    "icerik": "Sitenin HTTPS uzerinden sunulmasi hem kullanici guvenligi hem de arama motorlari tarafindan dikkate alinan bir faktordur; HTTP uzerinden sunulan veya karisik icerik (http ve https kaynaklarinin bir arada oldugu) sayfalar tarayicilarda guvensiz uyarisi gosterebilir."
+  }
+]

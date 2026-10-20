@@ -1,0 +1,58 @@
+[
+  {
+    "alan": "genel",
+    "kural": "Yalnızca sayfa verisinde geçen bilgileri kullan; sayfada olmayan nitelemeler, rakamlar ve iddialar ekleme."
+  },
+  {
+    "alan": "genel",
+    "kural": "Sorunu olmayan bir alanı değiştirme."
+  },
+  {
+    "alan": "genel",
+    "kural": "Metinleri doğal ve akıcı Türkçe yaz, anahtar kelimeleri yığma."
+  },
+  {
+    "alan": "title",
+    "kural": "Başlık sayfanın ana konusunu ve (varsa) marka adını içermeli; 30-60 karakter arasında olmalı."
+  },
+  {
+    "alan": "title",
+    "kural": "En önemli ifadeyi başlığın başına yakın yaz, sonuna marka/şehir ekleyebilirsin."
+  },
+  {
+    "alan": "title",
+    "kural": "Düz metin yaz; HTML etiketi veya tırnak kullanma."
+  },
+  {
+    "alan": "meta_description",
+    "kural": "Açıklama sayfanın içeriğini kısaca özetlemeli; 70-160 karakter arasında olmalı."
+  },
+  {
+    "alan": "meta_description",
+    "kural": "Başlığı tekrar etme; sayfada sunulan hizmet, ürün veya bilgiyi anlat."
+  },
+  {
+    "alan": "meta_description",
+    "kural": "Her sayfanın açıklaması benzersiz olmalı; genel ve reklam dili kullanma."
+  },
+  {
+    "alan": "h1",
+    "kural": "Sayfada tek bir H1 olmalı ve sayfanın ana konusunu anlatmalı."
+  },
+  {
+    "alan": "h1",
+    "kural": "H1 kısa (5-70 karakter) ve düz metin olmalı; title ile aynı olması gerekmez ama aynı konuyu anlatmalı."
+  },
+  {
+    "alan": "img_alt",
+    "kural": "Alt metin görselin içeriğini veya işlevini kısaca anlatmalı (en fazla yaklaşık 125 karakter)."
+  },
+  {
+    "alan": "img_alt",
+    "kural": "'Görsel', 'resim' gibi sözcüklerle başlama; dosya adı ve bağlam yetersizse genel ve doğru bir ifade kullan."
+  },
+  {
+    "alan": "img_alt",
+    "kural": "Görev bağlantı olan görselde alt metin bağlantının gittiği yeri anlatmalı."
+  }
+]

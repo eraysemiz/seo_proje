@@ -1,0 +1,71 @@
+"""HTML'den SEO denetimi icin gerekli verilerin cikarilmasi."""
+import os, re
+from urllib.parse import unquote
+from bs4 import BeautifulSoup
+
+ALT_LIMIT = 12          # bir sayfada modelden en fazla kac gorsel icin alt metin istenir
+
+
+def tr_lower(x):
+    return x.replace("İ", "i").replace("I", "ı").lower()
+
+
+def kokler(metin):
+    """Metindeki 5+ harfli kelimelerin ilk 5 harfi (Turkce ek farklarini yumusatir)."""
+    return {w[:5] for w in re.findall(r"[a-zçğıöşü0-9]+", tr_lower(metin)) if len(w) >= 5}
+
+
+# her sayfada bulunabilecek genel SEO/kurum sozcukleri (sadakat denetiminde sayilmaz)
+GENEL_KOKLER = {"resmi", "sites", "anasa", "sayfa", "hizme", "bilgi", "haber", "duyur", "kurum", "hakkı"}
+
+
+def sayfa_url_bul(html):
+    """Chrome 'farkli kaydet' dosyalarinin basindaki  saved from url=(NNNN)https://...  yorumundan adresi okur."""
+    m = re.search(r"saved from url=\(\d+\)\s*(\S+)", html[:2000])
+    return m.group(1).split("#")[0] if m else None
+
+
+def _baglam(img):
+    """Gorselin etrafindaki metinsel ipuclari (model gorseli goremez)."""
+    parca = []
+    for k in ("title", "aria-label"):
+        if img.get(k): parca.append(f"{k}: {img[k][:60]}")
+    a = img.find_parent("a")
+    if a:
+        t = a.get_text(" ", strip=True)
+        if t: parca.append("baglanti metni: " + t[:60])
+        if a.get("href"): parca.append("baglanti: " + a["href"][:80])
+    fig = img.find_parent("figure")
+    if fig and fig.find("figcaption"):
+        parca.append("aciklama: " + fig.find("figcaption").get_text(" ", strip=True)[:80])
+    return "; ".join(parca)[:220]
+
+
+def dosya_adi(src):
+    return os.path.basename(unquote(src.split("?")[0]))[:60]
+
+
+def extract(html: str) -> dict:
+    soup = BeautifulSoup(html, "lxml")
+    meta = soup.find("meta", attrs={"name": "description"})
+    body = soup.body or soup
+    for t in body(["script", "style", "noscript"]):
+        t.decompose()
+    text = re.sub(r"\s+", " ", body.get_text(" ", strip=True))
+    imgs = soup.find_all("img")
+    return {
+        "lang": (soup.html.get("lang") if soup.html else None),
+        "title": soup.title.get_text(strip=True) if soup.title else None,
+        "meta_description": meta.get("content", "").strip() if meta else None,
+        "canonical": bool(soup.find("link", rel="canonical")),
+        "h1": [h.get_text(strip=True) for h in soup.find_all("h1")],
+        "h2": [h.get_text(strip=True) for h in soup.find_all("h2")][:5],
+        "img_total": len(imgs),
+        "img_no_alt": [i.get("src", "") for i in imgs if not (i.get("alt") or "").strip()],
+        "img_baglam": {i.get("src", ""): _baglam(i) for i in imgs if not (i.get("alt") or "").strip()},
+        "word_count": len(text.split()),
+        "text_sample": text[:800],
+        "kelime_kokleri": kokler(" ".join([
+            text, soup.title.get_text(" ") if soup.title else "",
+            meta.get("content", "") if meta else ""])),
+    }
