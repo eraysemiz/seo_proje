@@ -1,6 +1,9 @@
 """HTML'den SEO denetimi icin gerekli verilerin cikarilmasi."""
-import os, re
+import json
+import os
+import re
 from urllib.parse import unquote
+
 from bs4 import BeautifulSoup
 
 ALT_LIMIT = 12          # bir sayfada modelden en fazla kac gorsel icin alt metin istenir
@@ -68,4 +71,42 @@ def extract(html: str) -> dict:
         "kelime_kokleri": kokler(" ".join([
             text, soup.title.get_text(" ") if soup.title else "",
             meta.get("content", "") if meta else ""])),
+    }
+
+
+def yapisal_veri(html):
+    """Yapisal veri, mobil uyum ve paylasim etiketleri. Bunlarin tamami HTML'den
+    gorulebildigi icin cevrimdisi (kaydedilmis sayfa) modunda da olculebilir."""
+    soup = BeautifulSoup(html, "lxml")
+    jsonld, jsonld_hata, turler = 0, 0, []
+    for s in soup.find_all("script", attrs={"type": re.compile(r"application/ld\+json", re.I)}):
+        jsonld += 1
+        try:
+            veri = json.loads(s.string or s.get_text() or "")
+        except (json.JSONDecodeError, TypeError):
+            jsonld_hata += 1
+            continue
+        for nesne in (veri if isinstance(veri, list) else [veri]):
+            if isinstance(nesne, dict) and nesne.get("@type"):
+                t = nesne["@type"]
+                turler += t if isinstance(t, list) else [t]
+    vp = soup.find("meta", attrs={"name": re.compile(r"^viewport$", re.I)})
+    og = [m.get("property") for m in soup.find_all("meta", attrs={"property": re.compile(r"^og:", re.I)})]
+    tw = [m.get("name") for m in soup.find_all("meta", attrs={"name": re.compile(r"^twitter:", re.I)})]
+    robots_meta = soup.find("meta", attrs={"name": re.compile(r"^robots$", re.I)})
+    return {
+        "jsonld_sayisi": jsonld,
+        "jsonld_hatali": jsonld_hata,
+        "schema_turleri": sorted(set(str(t) for t in turler))[:10],
+        "mikroveri": bool(soup.find(attrs={"itemscope": True})),
+        "viewport": vp.get("content") if vp else None,
+        "og_etiketleri": sorted(set(x for x in og if x)),
+        "twitter_etiketleri": sorted(set(x for x in tw if x)),
+        "hreflang": [l.get("hreflang") for l in soup.find_all("link", attrs={"hreflang": True})][:10],
+        "favicon": bool(soup.find("link", attrs={"rel": re.compile(r"icon", re.I)})),
+        "robots_meta": robots_meta.get("content") if robots_meta else None,
+        "dis_kaynak_sayisi": (len(soup.find_all("img")) +
+                              len(soup.find_all("script", src=True)) +
+                              len(soup.find_all("link", rel=lambda v: v and "stylesheet" in v)) +
+                              len(soup.find_all("iframe"))),
     }

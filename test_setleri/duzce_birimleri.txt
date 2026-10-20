@@ -1,0 +1,62 @@
+# Duzce Universitesi birim siteleri - test seti
+# Kaynak: https://www.duzce.edu.tr anasayfasindaki baglantilardan otomatik kesfedildi
+# Kesif tarihi: 2026-10-20
+
+http://diploma.ogrenciisleri.duzce.edu.tr   # Diploma Takip
+http://radyoduet.duzce.edu.tr   # RADYODÜET
+http://sosyalsorumluluk.duzce.edu.tr   # Öğrenci Toplulukları
+https://aadek.duzce.edu.tr   # Politikalarımız
+https://adayogrenci.duzce.edu.tr   # Aday Öğrenci
+https://akademik.duzce.edu.tr   # Akademik Personel Bilgi Bankası
+https://ardek.duzce.edu.tr   # Başarı Sıralamaları
+https://bap.duzce.edu.tr   # BAP-Bilimsel Araştırma Projeleri Koordinatörlüğü
+https://bidek.duzce.edu.tr   # Bilimsel Dergiler
+https://bilgiislem.duzce.edu.tr   # Bilgi İşlem D.B.
+https://bilgiizleme.duzce.edu.tr   # Bilgi İzleme ve Raporlama Koordinatörlüğü
+https://biltek.duzce.edu.tr   # Bilim ve Teknoloji Yarışmaları Koordinatörlüğü
+https://botanikbahce.duzce.edu.tr   # Süs ve Tıbbi Bitkiler Botanik Bahçesi
+https://cdn.duzce.edu.tr   # Üniversitemiz Değişim Yönetim Modeli
+https://cevresaglik.duzce.edu.tr   # Çevre ve Sağlık Teknolojilerinde İhtisaslaşma Koordinatörlüğü
+https://donersermaye.duzce.edu.tr   # Döner Sermaye İşletme Müdürlüğü
+https://dubam.duzce.edu.tr   # DÜBAM
+https://dugetam.duzce.edu.tr   # GETAT-Geleneksel Tamamlayıcı Tıp Merkezi
+https://dukart.duzce.edu.tr   # DÜKart Para Yükleme
+https://dumeyok.duzce.edu.tr   # Meslek Yüksekokulları Koordinatörlüğü
+https://dusem.duzce.edu.tr   # DUSEM
+https://dutok.duzce.edu.tr   # Toplumsal Katkı Koordinatörlüğü
+https://duzce.edu.tr
+https://ebs.duzce.edu.tr   # Eğitim Bilgi Sistemi
+https://ebys.duzce.edu.tr   # EBYS
+https://egitimkoordinatorlugu.duzce.edu.tr   # Eğitim Koordinatörlüğü
+https://engelsiz.duzce.edu.tr   # Engelsiz Üniversite Koordinatörlüğü
+https://gensek.duzce.edu.tr   # Genel Sekreterlik
+https://haber.duzce.edu.tr
+https://hastane.duzce.edu.tr   # Hastane
+https://hukuk.duzce.edu.tr   # Hukuk Müşavirliği
+https://icdenetim.duzce.edu.tr   # İç Denetim Birimi
+https://idarimali.duzce.edu.tr   # İdari ve Mali İşler D.B.
+https://isg.duzce.edu.tr   # İş Sağlığı ve İş Güvenliği Koordinatörlüğü
+https://itk.duzce.edu.tr   # Kurumsal İletişim Koordinatörlüğü
+https://kaliteyonetim.duzce.edu.tr   # KURUMSAL VERİ YÖNETİMİ
+https://kariyer.duzce.edu.tr   # Kariyer Geliştirme ve Mezun İzleme Uyg. Arş. Merk.
+https://kurulkararlari.duzce.edu.tr   # Senato ve Kurul Kararları
+https://kutuphane.duzce.edu.tr   # Kütüphane ve Dok. D.B.
+https://mbs.duzce.edu.tr   # MEZUN BİLGİ SİSTEMİ
+https://obs.duzce.edu.tr   # ÖBS-Öğrenci Bilgi Sistemi
+https://ogrencidekanligi.duzce.edu.tr   # Öğrenci Dekanlığı
+https://ogrenciisleri.duzce.edu.tr   # Öğrenci İşleri D.B.
+https://personel.duzce.edu.tr   # Personel D.B.
+https://rehber.duzce.edu.tr   # REHBER
+https://rimer.duzce.edu.tr   # RİMER
+https://sanalsergi.duzce.edu.tr   # Sanat Galerileri
+https://sks.duzce.edu.tr   # Sağlık Kültür ve Spor D.B.
+https://strateji.duzce.edu.tr   # Strateji Geliştirme D.B.
+https://surdurulebilirlik.duzce.edu.tr   # Sürdürülebilirlik Ofisi Koordinatörlüğü
+https://uabs.duzce.edu.tr   # UZMANLIK ALAN BİLGİ BANKASI
+https://uluslararasiofis.duzce.edu.tr   # Uluslararası Ofis
+https://uluslararasiogrenci.duzce.edu.tr   # Uluslararası Öğrenci Birimi
+https://uzem.duzce.edu.tr   # UZEM-Uzaktan Eğitim Sistemi
+https://w3.api.duzce.edu.tr   # E-Bülten
+https://www.duzce.edu.tr   # TR
+https://yapiisleri.duzce.edu.tr   # Yapı İşleri ve Tek. D.B.
+https://yzdd.duzce.edu.tr   # Yapay Zekâ ve Dijital Dönüşüm Koordinatörlüğü

@@ -1,0 +1,12 @@
+# Python derleme ciktilari (her calistirmada yeniden olusur)
+__pycache__/
+*.py[cod]
+
+# Sanal ortamlar
+.venv/
+venv/
+
+# Isletim sistemi / editor dosyalari
+Thumbs.db
+desktop.ini
+.DS_Store

@@ -12,7 +12,7 @@ Ornek:
 
 Gereksinim: pip install requests beautifulsoup4 lxml
 """
-import argparse, hashlib, json, math, os, re, sys, time
+import argparse, json, os, re, sys, time
 from pathlib import Path
 from urllib.parse import unquote
 import requests
@@ -140,90 +140,6 @@ SYSTEM = (
     '{"fixes":[{"alan":"title|meta_description|h1|img_alt","hedef":"","yeni_deger":"...","gerekce":"..."}]}'
 )
 
-def _embed(url, model, metinler, timeout=60):
-    """LM Studio /v1/embeddings ucundan vektorleri alir. Birden fazla metni tek istekte gonderir."""
-    r = requests.post(f"{url}/embeddings", json={"model": model, "input": metinler}, timeout=timeout)
-    r.raise_for_status()
-    veri = sorted(r.json()["data"], key=lambda x: x["index"])
-    return [x["embedding"] for x in veri]
-
-def _kosinus(a, b):
-    pay = sum(x * y for x, y in zip(a, b))
-    pa = math.sqrt(sum(x * x for x in a)); pb = math.sqrt(sum(y * y for y in b))
-    return pay / (pa * pb) if pa and pb else 0.0
-
-def _embed_cache_yukle(yol):
-    return json.loads(yol.read_text(encoding="utf-8")) if yol.exists() else {}
-
-def _hash(model, metin):
-    return hashlib.sha256(f"{model}||{metin}".encode()).hexdigest()[:16]
-
-def bilgi_tabani_gomme(klasor, embed_url, embed_model):
-    """Bilgi tabanindaki her parcanin vektorunu getirir; cache'de yoksa hesaplayip kaydeder."""
-    klasor = Path(klasor)
-    parcalar = json.loads((klasor / "bilgi_tabani.json").read_text(encoding="utf-8"))
-    cache_yolu = klasor / "bilgi_tabani_gomme_cache.json"
-    cache = _embed_cache_yukle(cache_yolu)
-    eksik = [p for p in parcalar if _hash(embed_model, p["icerik"]) not in cache]
-    if eksik:
-        vektorler = _embed(embed_url, embed_model, [p["icerik"] for p in eksik])
-        for p, v in zip(eksik, vektorler):
-            cache[_hash(embed_model, p["icerik"])] = v
-        cache_yolu.write_text(json.dumps(cache), encoding="utf-8")
-    for p in parcalar:
-        p["_vektor"] = cache[_hash(embed_model, p["icerik"])]
-    return parcalar
-
-def anlamsal_getir(d, issues, klasor, embed_url, embed_model, k=4, esik=0.2):
-    """Sayfanin sorunlarina ve icerigine en alakali k bilgi parcasini anlamsal benzerlikle secer."""
-    kodlar = [i["sorun"] for i in issues]
-    sorgu = ("Sayfa basligi: " + (d["title"] or "yok") + ". Tespit edilen SEO sorunlari: " +
-             ", ".join(kodlar) + ". Sayfa konusu: " + d["text_sample"][:300])
-    parcalar = bilgi_tabani_gomme(klasor, embed_url, embed_model)
-    sorgu_v = _embed(embed_url, embed_model, [sorgu])[0]
-    puanli = sorted(parcalar, key=lambda p: -_kosinus(sorgu_v, p["_vektor"]))
-    secili = [p for p in puanli if _kosinus(sorgu_v, p["_vektor"]) >= esik][:k]
-    return secili or puanli[:1]   # hicbiri esigi gecmezse en yakin olani yine de ver
-
-KOSULLAR = ("sifir", "ornek", "bilgi", "ornek+bilgi")
-
-def ogretme_metni(kosul, d, issues, klasor, k, embed_url, embed_model):
-    """Deney kosuluna gore sistem istemine eklenecek 'ogretme' metnini uretir.
-    sifir: ek bilgi yok | ornek: few-shot | bilgi: anlamsal RAG (embedding; basarisizsa anahtar kelime) | ornek+bilgi: ikisi."""
-    kodlar = [i["sorun"] for i in issues]
-    bilgi = {"ornek": 0, "kural": 0, "yontem": None}
-    if kosul == "sifir":
-        return "", bilgi
-    klasor = Path(klasor)
-    alanlar = [a for a in IZINLI_ALANLAR if any(x in kodlar for x in ALAN_SORUN[a])]
-    parcalar = []
-    if "bilgi" in kosul:
-        if embed_model:
-            try:
-                secili = anlamsal_getir(d, issues, klasor, embed_url, embed_model, k)
-                bilgi["yontem"] = "anlamsal"
-            except Exception as e:
-                print(f"\n   UYARI: gomme modeline ulasilamadi ({e}); anahtar kelime eslestirmesine dusuluyor.")
-                secili = None
-        else:
-            secili = None
-        if secili is None:
-            kurallar = json.loads((klasor / "seo_kurallari.json").read_text(encoding="utf-8"))
-            secili = [{"icerik": f"[{r['alan']}] {r['kural']}"} for r in kurallar if r["alan"] in alanlar or r["alan"] == "genel"]
-            bilgi["yontem"] = "anahtar_kelime"
-        parcalar.append("\n\nSEO BILGI TABANI (bu bilgilere dayanarak oneri uret):\n" +
-                        "\n".join(f"- {p['icerik']}" for p in secili))
-        bilgi["kural"] = len(secili)
-    if "ornek" in kosul:
-        ornekler = json.loads((klasor / "ornekler.json").read_text(encoding="utf-8"))
-        puan = lambda o: sum(1 for f in o["cikti"]["fixes"] if f["alan"] in alanlar)
-        secili_o = sorted(ornekler, key=lambda o: -puan(o))[:k]
-        parcalar.append("\n\nORNEKLER (yalnizca bicim ve ton icin; icerigini KOPYALAMA, kendi sayfanin verisini kullan):\n" +
-                        "\n\n".join(f"Ornek {i+1}\nGirdi: {json.dumps(o['girdi'], ensure_ascii=False)}\nCikti: {json.dumps(o['cikti'], ensure_ascii=False)}"
-                                    for i, o in enumerate(secili_o)))
-        bilgi["ornek"] = len(secili_o)
-    return "".join(parcalar), bilgi
-
 def get_model(url):
     r = requests.get(f"{url}/models", timeout=10)
     r.raise_for_status()
@@ -281,7 +197,6 @@ def _cagri(url, payload, timeout):
     """Akisli (stream) istek: uzun uretimde zaman asimi olmaz."""
     t0 = time.time()
     icerik, dusunme, bitis, n = [], [], None, 0
-    ilk, son_t, parca = None, None, 0        # ilk token zamani, son token zamani, token parcasi sayisi
     with requests.post(f"{url}/chat/completions", json=payload, stream=True, timeout=(10, timeout)) as r:
         r.raise_for_status()
         r.encoding = "utf-8"
@@ -298,19 +213,13 @@ def _cagri(url, payload, timeout):
             delta = ch.get("delta") or {}
             if delta.get("content"): icerik.append(delta["content"])
             if delta.get("reasoning_content"): dusunme.append(delta["reasoning_content"])
-            if delta.get("content") or delta.get("reasoning_content"):
-                son_t = time.time(); parca += 1
-                if ilk is None: ilk = son_t
             if ch.get("finish_reason"): bitis = ch["finish_reason"]
             n += 1
             if n % 40 == 0:
                 print(f"\r   ... {time.time()-t0:.0f} sn | dusunme {sum(map(len, dusunme))} kr | cevap {sum(map(len, icerik))} kr",
                       end="", flush=True)
     print("\r" + " " * 70 + "\r", end="")
-    hiz = round((parca - 1) / (son_t - ilk), 1) if ilk and son_t and parca > 2 and son_t > ilk else None
-    return {"icerik": "".join(icerik), "dusunme": "".join(dusunme), "bitis": bitis, "sure": time.time() - t0,
-            "ilk_token_sn": round(ilk - t0, 2) if ilk else None,   # istemin islenme suresi (prompt processing)
-            "parca": parca, "uretim_hizi": hiz}                      # yaklasik token/sn (1 parca ~ 1 token)
+    return {"icerik": "".join(icerik), "dusunme": "".join(dusunme), "bitis": bitis, "sure": time.time() - t0}
 
 def _eksik_alanlar(kodlar, gecerli):
     return [a for a in IZINLI_ALANLAR
@@ -360,10 +269,7 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema, 
         reddedilen += yeni_red
         denemeler.append({"deneme": deneme + 1, "sure_sn": round(son["sure"], 2), "bitis_nedeni": son["bitis"],
                           "kabul": kabul_say, "reddedilen": len(yeni_red),
-                          "dusunme_karakter": len(son["dusunme"]), "cevap_karakter": len(son["icerik"]),
-                          "istem_karakter": sum(len(m["content"]) for m in mesajlar),
-                          "ilk_token_sn": son["ilk_token_sn"], "uretilen_parca": son["parca"],
-                          "uretim_hizi_tps": son["uretim_hizi"]})
+                          "dusunme_karakter": len(son["dusunme"]), "cevap_karakter": len(son["icerik"])})
         eksik = _eksik_alanlar(kodlar, gecerli)
         if not eksik or deneme == retry:
             break
@@ -438,13 +344,6 @@ def main():
     ap.add_argument("--retry", type=int, default=1, help="Eksik/gecersiz oneri icin en fazla kac kez yeniden sorulsun (0=kapali)")
     ap.add_argument("--site-url", default=None, help="canonical icin sayfa adresi (yoksa kayitli dosyadaki 'saved from url' yorumu kullanilir)")
     ap.add_argument("--dil", default="tr", help="html lang degeri eksikse eklenecek dil kodu")
-    ap.add_argument("--kosul", choices=KOSULLAR, default="sifir",
-                    help="ogretme kosulu: sifir | ornek (few-shot) | bilgi (kural tabani/RAG) | ornek+bilgi")
-    ap.add_argument("--ogretme-klasoru", default=str(Path(__file__).resolve().parent / "ogretme"),
-                    help="ornekler.json ve seo_kurallari.json klasoru")
-    ap.add_argument("--ornek-sayisi", type=int, default=3, help="istemde kac ornek/bilgi parcasi gosterilsin")
-    ap.add_argument("--embed-model", default=None, help="gomme (embedding) modeli kimligi; verilmezse 'bilgi' kosulu anahtar kelime eslestirmesine duser")
-    ap.add_argument("--embed-url", default=None, help="gomme modeli sunucu adresi (varsayilan: --url ile ayni)")
     ap.add_argument("--json-schema", action="store_true", help="LM Studio yapilandirilmis cikti (bazi modellerde bos cevap verebilir)")
     args = ap.parse_args()
 
@@ -456,7 +355,7 @@ def main():
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     model = None if args.no_llm else (args.model or get_model(args.url))
     if model:
-        print("Model:", model, "| max_tokens:", args.max_tokens, "| kosul:", args.kosul)
+        print("Model:", model, "| max_tokens:", args.max_tokens)
 
     rapor = []
     for fp in files:
@@ -466,15 +365,8 @@ def main():
         kayit = {"dosya": fp.name, "model": model, "once_sorun_sayisi": len(issues), "sorunlar": issues}
         if model and issues:
             once = [i["sorun"] for i in issues]
-            ogr, ogr_bilgi = ogretme_metni(args.kosul, d, issues, args.ogretme_klasoru, args.ornek_sayisi,
-                                           args.embed_url or args.url, args.embed_model)
-            res = llm_fixes(d, issues, model, fp.name, args.url, args.max_tokens, args.timeout, args.json_schema,
-                            args.retry, few_shot=ogr)
+            res = llm_fixes(d, issues, model, fp.name, args.url, args.max_tokens, args.timeout, args.json_schema, args.retry)
             kayit.update(res)
-            kayit["kosul"] = args.kosul
-            kayit["ogretme_ornek_sayisi"] = ogr_bilgi["ornek"]
-            kayit["ogretme_kural_sayisi"] = ogr_bilgi["kural"]
-            kayit["ogretme_yontemi"] = ogr_bilgi["yontem"]
             yeni = apply_fixes(html, res["fixes"])
             site_url = args.site_url or sayfa_url_bul(html)
             yeni, kural = kural_duzelt(yeni, once, site_url, args.dil)
@@ -500,9 +392,7 @@ def main():
         son = f" -> {kayit['sonra_sorun_sayisi']} sorun" if "sonra_sorun_sayisi" in kayit else ""
         sure = (f" ({kayit['sure_sn']} sn, {len(kayit['fixes'])} kabul, {len(kayit['reddedilen'])} reddedilen, {len(kayit['denemeler'])} deneme, model cozum orani {kayit['cozum_orani']}, toplam {kayit['toplam_cozum_orani']})"
                 if "fixes" in kayit else "")
-        hizlar = [x["uretim_hizi_tps"] for x in kayit.get("denemeler", []) if x.get("uretim_hizi_tps")]
-        hiz = f" | uretim ~{round(sum(hizlar)/len(hizlar), 1)} t/s, ilk token {kayit['denemeler'][0]['ilk_token_sn']} sn" if hizlar else ""
-        print(f"{fp.name}: {len(issues)} sorun{son}{sure}{hiz}")
+        print(f"{fp.name}: {len(issues)} sorun{son}{sure}")
         (out / "rapor.json").write_text(json.dumps(rapor, ensure_ascii=False, indent=2), encoding="utf-8")
     print("Rapor:", out / "rapor.json")
 

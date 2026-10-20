@@ -1,143 +1,119 @@
 # Handover: Yerel YZ ile SEO Analizi Ödevi
 
-Bu dosya, Claude ile Claude.ai'de yürütülen bir sohbetin devamı olarak Claude Code'a aktarılmak üzere hazırlandı. Amaç: yeni oturumun sıfırdan bağlam kurmasına gerek kalmadan kaldığı yerden devam edebilmesi.
+Bu dosya, oturumlar arasında bağlamın kaybolmaması için tutulur. Son güncelleme: **20 Ekim 2026**.
 
 ## 1. Proje / ödev bağlamı
 
 - **Ders:** YBS317 SEO I (Düzce Üniversitesi, YBS Bölümü, Doç. Dr. Remzi Başar)
 - **Ödev türü:** Vize yerine geçen "Bilimsel Araştırma Ödevi", not ağırlığı %40
 - **Ekip:** 3 kişilik
-- **Konu başlığı:** *"Yerel Büyük Dil Modeli ile Web Sitelerinin Otomatik SEO Denetimi ve İyileştirilmesi"* (kesin değil, örnek adres eklenerek spesifikleştirilebilir, örn. "...: Düzce Üniversitesi Birim Siteleri Örneği")
-- **Teslim:** 11. ders haftası, KLASÖR halinde, MS Word formatında (PDF kabul edilmiyor). Ara sınav haftasında (7. hafta) ödevin yarı bitmiş hâli sunulacak.
-- **Kritik kurallar (ödev hazırlama kılavuzundan):**
-  - Anket kullanımı **yasak**.
+- **Konu başlığı:** *"Yerel Büyük Dil Modeli ile Web Sitelerinin Otomatik SEO Denetimi ve İyileştirilmesi: Düzce Üniversitesi Birim Siteleri Örneği"*
+- **Teslim:** 11. ders haftası, KLASÖR halinde, MS Word formatında (PDF kabul edilmiyor). 7. haftada yarı bitmiş hâli sunulacak.
+- **Kritik kurallar:**
+  - Anket kullanımı **yasak** (uzman mülakatı serbest).
   - Kişi başı en az 5 sayfa (kapak/özet/kaynakça hariç), kişi başı 10-12 kaynak, en az %50'si yabancı.
   - Turnitin benzerlik oranı %25'i geçerse ödev geçersiz.
-  - Metni öğrenciler kendisi yazmalı; ağırlıklı YZ ile yazdırılmış metin geçersiz sayılır (kod/araç geliştirmede YZ kullanımı ayrı, metni YZ'ye yazdırmak ayrı — bu ayrım hocaya açıkça belirtilmeli).
-  - Konu onayı 2. hafta sonuna kadar alınmalı; bir sayfalık özetle (konu, yöntem, veri seti, beklenen sonuç) haftalık görüşme saatine (Salı 14:10-16:10) gidilmesi öneriliyor.
-  - **Hoca henüz bu spesifik kapsamı (yerel LLM pipeline + RAG + few-shot deneyleri) onaylamadı.** Bir sonraki adım bu olmalı.
+  - Metni öğrenciler kendisi yazmalı. **Kod/araç geliştirmede YZ kullanımı ayrı, metni YZ'ye yazdırmak ayrı** — bu ayrım hocaya açıkça belirtilmeli.
+  - Konu onayı 2. hafta sonuna kadar; haftalık görüşme Salı 14:10-16:10.
+  - **Hoca bu spesifik kapsamı henüz onaylamadı.** Hâlâ bir sonraki kritik adım.
 
-## 2. Teknik yapı: ne inşa edildi
+## 2. Teknik durum: artık bir web uygulaması
 
-Bir Python betiği (`seo_pipeline.py`), yerel bir LLM'i (LM Studio üzerinden) kullanarak web sayfalarının SEO sorunlarını tespit edip (kural tabanlı) düzeltme önerisi üretiyor (LLM tabanlı), önerileri doğrulayıp uyguluyor ve ayrıntılı bir rapor çıkarıyor.
+**Önceki durum:** tek dosyalık komut satırı betiği (`seo_pipeline_ogretmeli2.py`), yalnızca kaydedilmiş HTML dosyalarını tarıyordu.
 
-### Dosya dizini (kullanıcının bilgisayarında)
+**Şimdiki durum:** `seo_app/` paketi + yerel web arayüzü. Çalıştırma:
 
 ```
-Desktop/Düzce Üniversitesi/seo_proje/      ← klasör adı zaman içinde değişti, şu an bu
-  seo_pipeline.py
-  ogretme/
-    ornekler.json                  ← few-shot örnekleri (5 adet, sahte/örnek sitelerden)
-    seo_kurallari.json             ← anahtar-kelime eşleştirmeli RAG'ın kullandığı 14 kısa kural
-    bilgi_tabani.json              ← anlamsal (embedding) RAG'ın kullandığı 20 parçalık geniş bilgi tabanı
-    bilgi_tabani_gomme_cache.json  ← betik otomatik oluşturur, parça vektörlerini önbellekler
-  snapshots/                       ← kullanıcının Chrome'dan "Web Sayfası, Yalnızca HTML" olarak kaydettiği sayfalar
-  sonuc_*/                         ← her --out ile farklı bir çıktı klasörü
-    fixed_<dosya>.html
-    rapor.json
+pip install -r requirements.txt
+py calistir.py          # http://127.0.0.1:5000 açılır
 ```
 
-Bu projenin tüm dosyaları şu an Claude.ai tarafının `/mnt/user-data/outputs/` klasöründe duruyor (bu oturumda erişilebilir, kullanıcının bilgisayarında değil):
-- `/mnt/user-data/outputs/seo_pipeline.py`
-- `/mnt/user-data/outputs/ogretme/ornekler.json`
-- `/mnt/user-data/outputs/ogretme/seo_kurallari.json`
-- `/mnt/user-data/outputs/ogretme/bilgi_tabani.json`
-- `/mnt/user-data/outputs/ogretme/bilgi_tabani_gomme_cache.json`
+Ayrıntılı kullanım, denetim listesi ve mimari için **`README.md`** dosyasına bakın.
 
-### Ortam (kullanıcının bilgisayarı)
+### Eklenen yetenekler
 
-- **İşletim sistemi:** Windows, PowerShell kullanıyor
-- **Python:** `py` komutuyla çalıştırılıyor (PATH sorunu `python` komutunda vardı, `py` çalışıyor)
-- **LLM sunucusu:** LM Studio, sürüm 1.1.8, OpenAI uyumlu API (`http://localhost:1234/v1` veya `1235`, port oturumdan oturuma değişti — **kesin port kullanıcıdan teyit edilmeli**)
-- **GPU sorunu çözüldü:** Başta CPU kullanıyordu (~6-7 token/sn), GPU offload düzeltildi, şu an ~30 token/sn.
-- **Kullanılan modeller:**
-  - Sohbet modeli: `qwen/qwen3.5-9b` (ve denemelerde `qwen3.8-4b-distill`)
-  - Gömme (embedding) modeli: Qwen3-Embedding-0.6B (kullanıcı yeni yükledi, test edilmedi)
+1. **Canlı erişim modu** — artık siteleri Chrome'dan tek tek kaydetmeye gerek yok, adres listesi yeterli.
+2. **Site katmanı denetimleri** (yalnızca canlı modda): robots.txt, sitemap.xml, HTTPS/sertifika/HSTS, http→https yönlendirmesi, durum kodu, yönlendirme zinciri, TTFB, indirme süresi, HTML boyutu, sıkıştırma.
+3. **Sayfa katmanına eklenenler** (çevrimdışı modda da çalışır): viewport (mobil uyum), JSON-LD/mikroveri, Open Graph, Twitter Card, favicon, meta robots/noindex, dış kaynak sayısı.
+4. **Çözüm yolu sınıflandırması** — her sorun `model` / `kural` / `elle` olarak etiketlenir. Bu, "modelin başarısı" ile "aracın toplam başarısı" ölçümlerini ayırır (hocanın sorabileceği bir soruyu baştan kapatır).
+5. **Alt site keşfi** — bir adresteki bağlantılardan kurumun alt sitelerini otomatik çıkarır; test seti bununla oluşturuldu.
+6. **Kural tabanlı düzeltmelere eklenenler:** viewport meta etiketi, Open Graph etiketleri (mevcut title/meta'dan türetilir, yeni bilgi uydurulmaz).
+7. **robots.txt'ye uyum** — araç varsayılan olarak izin verilmeyen adresi taramaz, istekler arasında bekler, kendini tanıtan User-Agent kullanır. Yöntem bölümünde etik gerekçe olarak yazılabilir.
 
-### Betiğin akışı (özet)
+### Önemli tasarım kararı (yöntem bölümünde açıklanmalı)
 
-1. `extract()` — HTML'den title, meta açıklama, H1, görseller, metin örneği, kelime kökleri çıkarır.
-2. `rule_checks()` — kod tabanlı, modelsiz SEO denetimi (title/meta uzunluğu, H1 var mı, canonical, lang, alt metin, içerik uzunluğu).
-3. Sorun yoksa dur.
-4. `ogretme_metni()` — **`--kosul` deney koşuluna göre** modele ek bağlam hazırlar (bkz. aşağıdaki RAG/öğretme bölümü).
-5. `llm_fixes()` — LM Studio'ya akışlı (streaming) istek gönderir, JSON öneri alır, think-block temizler.
-6. `dogrula()` — her öneriyi kontrol eder: izinli alan mı, HTML sızıntısı var mı, uzunluk kuralına uyuyor mu, **sayfada olmayan kelime var mı (sadakat/uydurma kontrolü)**, görsel hedefi gerçek mi.
-7. Eksik alan kaldıysa `--retry` ile bir kez daha (yalnızca eksik alanlar + ret nedenleriyle) sorulur.
-8. `apply_fixes()` — kabul edilen öneriler HTML'e yazılır.
-9. `kural_duzelt()` — modelsiz, kod tabanlı düzeltmeler: canonical (sayfanın "saved from url" yorumundan), eksik `lang`, fazla H1→H2.
-10. Yeniden denetim, `rapor.json`'a yaz: çözülen/kalan/yeni çıkan sorunlar, çözüm oranları, reddedilenler, süre/hız metrikleri.
+Dil modeline **yalnızca** temel sayfa denetiminin (`rule_checks`) çıktısı gönderilir — yani title, meta description, H1, alt metni. Yeni eklenen yapısal veri / site katmanı sorunları modele hiç gitmez. Böylece canlı mod eklenmeden önce yapılan deney koşullarıyla karşılaştırılabilirlik korunur ve modelden çözemeyeceği şeyler istenmez.
 
-### Deney koşulları (`--kosul`)
+### Dosya karmaşası uyarısı
 
-| Koşul | Ne yapar |
+Kök dizindeki `seo_pipeline.py`, `seo_pipelineg.py`, `seo_pipeline_ogretmeli.py`, `seo_pipeline_ogretmeli2.py` dosyaları **eski sürümlerdir**. Güncel motor `seo_app/` paketidir. Bunları bir `eski/` klasörüne taşımak karışıklığı önler (yapılmadı, kullanıcının kararı).
+
+## 3. Ortam
+
+- Windows, PowerShell. Python `py` komutuyla çalışıyor (Python 3.15).
+- Kurulu paketler: flask, requests, beautifulsoup4, lxml.
+- **LM Studio şu an kapalı.** Port oturumdan oturuma değişti (1234/1235) — arayüzdeki "Modelleri getir" düğmesi bağlantıyı sınar.
+- Modeller: sohbet `qwen/qwen3.5-9b`, gömme `qwen3-embedding-0.6b`. GPU offload düzeltildi, ~30 token/sn.
+
+## 4. ÇÖZÜLDÜ: RAG/embedding doğrulandı
+
+Önceki handover'ın "doğrulanması gerekiyor" maddesi kapandı. `sonuclar/sonuc_rag/rapor.json` içinde her iki sayfada da `ogretme_yontemi: "anlamsal"` — yani gömme modeline gerçekten ulaşılmış, anahtar kelime yöntemine düşülmemiş. Anlamsal RAG çalışıyor.
+
+## 5. Test seti ve ilk gerçek sonuçlar
+
+**Test seti:** `test_setleri/duzce_birimleri.txt` — 58 Düzce Üniversitesi birim sitesi, aracın keşif özelliğiyle anasayfadan otomatik çıkarıldı.
+
+**Temel (baseline) tarama:** `sonuclar/sonuc_taban_canli/` (`rapor.json` + `ozet.csv`), 20 Ekim 2026, LLM kullanılmadan, yalnızca kural + canlı denetim.
+
+- 58/58 site başarıyla tarandı, hata yok, robots nedeniyle atlanan yok
+- Ortalama 13,5 sorun/site; ortalama puan 10,6/100 (yalnızca kural düzeltmeleriyle 16,9'a çıkıyor)
+
+**Kurumsal düzeyde bulgular (ödevin en güçlü verisi):**
+
+| Bulgu | Kaç sitede |
 |---|---|
-| `sifir` | Ek bağlam yok |
-| `ornek` | İsteme 3 few-shot örneği eklenir (`ornekler.json`'dan, sorunlarla en çok örtüşenler seçilir) |
-| `bilgi` | SEO bilgi tabanından ilgili parçalar eklenir (RAG) |
-| `ornek+bilgi` | İkisi birden |
+| Canonical etiketi yok | 58/58 |
+| Yapısal veri (schema.org) yok | 58/58 |
+| Open Graph etiketleri yok | 58/58 |
+| sitemap.xml yok | 56/58 (yalnızca kaliteyonetim ve rimer'de var) |
+| robots.txt yok | 55/58 (yalnızca hastane'de var) |
+| Sertifika 30 günden az kaldı | 54/58 |
+| H1 başlığı yok | 51/58 |
+| Görsellerde alt metni eksik | 49/58 |
+| **Sunucu eksik/yanlış ara sertifika gönderiyor** | 41/58 |
 
-`bilgi` koşulunun iki alt yöntemi var:
-- `--embed-model` **verilmezse** → anahtar kelime eşleştirmesi (`seo_kurallari.json`, sorun kodu → alan etiketi eşleşmesi)
-- `--embed-model` **verilirse** → gerçek anlamsal RAG: sorgu + 20 parça embedding'e çevrilir, kosinüs benzerliğiyle en alakalı 4 parça seçilir (eşik 0.2). Gömme modeline ulaşılamazsa otomatik anahtar kelime yöntemine döner, uyarı basar.
+**Tek kök neden tespitleri** (yazımda bunları ayrı ayrı 54 sorun gibi saymayın):
 
-### Komut örneği (son doğru format)
+- 54 site aynı `*.duzce.edu.tr` joker sertifikasını kullanıyor, **18 Kasım 2026**'da doluyor.
+- Sertifika zinciri hatası: sunucular yaprak sertifikanın vereni olan *"Sectigo Public Server Authentication CA DV R36"* ara sertifikasını göndermiyor, onun yerine farklı bir ara sertifika (*"Sectigo RSA Domain Validation Secure Server CA"*) gönderiyor. Tarayıcılar eksik halkayı kendileri tamamladığı için kullanıcılar fark etmiyor; **katı doğrulama yapan istemciler (Python `requests`/certifi, bazı tarayıcı botları) bağlanamıyor.** Bu, SEO açısından gerçek bir risk ve ödevin özgün bulgusu olabilir.
+- En yavaş siteler: hukuk (2132 ms TTFB), uabs (2051 ms), kurulkararlari (2045 ms).
 
-```
-py seo_pipeline.py snapshots --out sonuc_rag --url http://localhost:1234/v1 --kosul bilgi --embed-model qwen3-embedding-0.6b
-```
-
-Diğer faydalı parametreler: `--model`, `--retry` (varsayılan 1), `--max-tokens` (varsayılan 3000), `--site-url`, `--dil`, `--ornek-sayisi`, `--no-llm` (yalnızca baseline/kural denetimi).
-
-## 3. Bu oturumda çözülen hatalar (kronolojik, tekrar düşmemek için)
-
-1. Python PATH sorunu → `py` komutuyla çözüldü.
-2. LM Studio sunucusu kapalıydı → Developer sekmesinde Running yapıldı.
-3. `.htm` uzantılı dosyalar `.html` aranan betik tarafından bulunamıyordu → betik hem `.htm` hem `.html` okuyacak şekilde düzeltildi.
-4. İlk denemelerde düşünme (thinking) modu kapanmadığı için `max_tokens` düşünmeye harcanıp cevap boş kalıyordu (`bitis_nedeni: length`, `ham: ""`) → betik akışlı (streaming) hale getirildi, zaman aşımı sorunu ortadan kalktı; düşünme metni ayrı sayılıp cevaptan ayıklanıyor.
-5. Model önerileri yanlış alanlara yazılıyordu (örn. H1 önerisi title alanına, canonical linki meta açıklamasına) → her öneri `dogrula()` ile kontrol edilip reddediliyor, H1 için ayrı alan eklendi, canonical modelden tamamen çıkarılıp koda (`kural_duzelt`) verildi.
-6. Görsel `src` yolları uzun/Türkçe karakterli olduğu için model birebir yazamıyor, eşleşme başarısız oluyordu → kısa kimlikler (`g1`, `g2`...) + görsel bağlamı (dosya adı, bağlantı metni, title/aria-label) eklendi.
-7. Model sayfada olmayan bilgi uyduruyordu (örn. "çevre ve sağlık alanında ihtisaslaşmış") → kelime kökü tabanlı sadakat kontrolü eklendi, sayfada geçmeyen ≥2 içerik kelimesi varsa öneri reddediliyor.
-8. GPU kullanılmıyordu (CPU'da ~6-7 token/sn) → kullanıcı GPU offload ayarlarını düzeltti, şu an ~30 token/sn.
-9. Eski dosya sürümleri kullanılarak yeni parametrelerin (`--kosul`, `--embed-model`) tanınmadığı hatalar alındı → **kullanıcıya her güncellemede dosyanın üzerine yazması hatırlatılmalı**, `py seo_pipeline.py --help` ile sürüm kontrolü öneriliyor.
-
-## 4. RAG/embedding kısmı — şu an test edilmedi, DOĞRULANMASI GEREKİYOR
-
-Kullanıcı Qwen3-Embedding-0.6B'yi LM Studio'ya yeni yükledi ama:
-- İki modelin (sohbet + gömme) aynı anda `http://localhost:1234/v1/models` (veya 1235) listesinde göründüğü **henüz teyit edilmedi**.
-- `--kosul bilgi --embed-model qwen3-embedding-0.6b` ile gerçek bir çalıştırma **henüz yapılmadı/rapor paylaşılmadı**.
-- Beklenen doğru çalışma işareti: konsolda uyarı olmaması + `rapor.json` içinde `"ogretme_yontemi": "anlamsal"` (eğer `"anahtar_kelime"` çıkarsa embedding modeline ulaşılamamış demektir).
-
-**Bir sonraki oturumun ilk işi:** kullanıcıdan `/v1/models` çıktısını ve ilk `--kosul bilgi --embed-model ...` çalıştırmasının `rapor.json` çıktısını almak, `ogretme_yontemi` alanını kontrol etmek.
-
-## 5. Ödevde hâlâ eksik olanlar (hocaya "zor" dedirten kısımlar)
+## 6. Hâlâ eksik olanlar
 
 | Eksik | Durum | Öncelik |
 |---|---|---|
-| Test seti | Şu an yalnızca 1 site (Düzce Üniversitesi anasayfası) | Yüksek — 20-30 siteye çıkarılmalı |
-| Bağımsız ölçüm | Yok — başarı şu an betiğin kendi kurallarıyla ölçülüyor (döngüsel) | Yüksek — Lighthouse SEO skoru önce/sonra eklenmeli |
-| Model karşılaştırması | Kısmen var (9B vs 4B denendi) ama sistematik değil | Orta |
-| Deney matrisi | `--kosul` × model × `--retry` kombinasyonları henüz toplu çalıştırılmadı | Orta |
-| Elle değerlendirme | Yapılmadı — sadakat/Türkçe kalitesi için en az 2 kişilik kör puanlama tablosu gerekiyor | Yüksek |
-| Literatür | Henüz başlanmadı — kişi başı 10-12 kaynak, %50 yabancı | Yüksek, zaman alıcı |
-| Metin yazımı | Henüz başlanmadı | Yüksek |
-| Konu onayı | **Alınmadı** | Kritik — her şeyden önce yapılmalı |
-| SEO kapsamı sınırlı | robots.txt, sitemap, sayfa hızı, URL yapısı, schema, mobil uyum, HTTPS gibi kontroller YOK (yalnızca title/meta/H1/alt/canonical/lang/içerik uzunluğu var) | Yöntem bölümünde açıkça "kapsam dışı" olarak yazılmalı; istenirse viewport/HTTPS/schema kontrolleri kolayca eklenebilir |
+| Konu onayı | **Alınmadı** | Kritik |
+| Deney matrisi | `--kosul` × model × retry kombinasyonları toplu çalıştırılmadı. Arayüz tek koşul çalıştırıyor; toplu deney için bir betik gerekir | Yüksek |
+| LLM'li tam tarama | 58 sitede henüz model çalıştırılmadı (LM Studio kapalıydı) | Yüksek |
+| Bağımsız ölçüm | Lighthouse önce/sonra ölçümü yok. Aracın kendi puanı döngüsel | Yüksek |
+| Elle değerlendirme | Sadakat/Türkçe kalitesi için en az 2 kişilik kör puanlama tablosu | Yüksek |
+| Literatür | Başlanmadı; kişi başı 10-12 kaynak, %50 yabancı | Yüksek, zaman alıcı |
+| Metin yazımı | Başlanmadı | Yüksek |
+| Bilgi tabanı kaynakları | `bilgi_tabani.json` ve `seo_kurallari.json` YZ tarafından yazılmış, atıfsız taslaklar. Gerçek kaynaklarla (Google SEO Başlangıç Kılavuzu vb.) karşılaştırılıp öğrenciler tarafından yeniden yazılmalı | Yüksek (Turnitin + akademik dürüstlük) |
 
-## 6. Önerilen sıradaki adımlar
+## 7. Önerilen sıradaki adımlar
 
-1. Embedding/RAG çalıştırmasını doğrula (bkz. madde 4).
-2. Hocadan konu ve kapsam onayı al (tek sayfalık özetle, Salı 14:10-16:10).
-3. Test setini 20-30 siteye çıkar (Chrome'dan "Web Sayfası, Yalnızca HTML" ile kaydet).
-4. Baseline çalıştır: `py seo_pipeline.py snapshots --out sonuc_baseline --no-llm`
-5. Deney matrisini çalıştır: en az 2 model × `sifir/ornek/bilgi/ornek+bilgi` × `--retry 0/1`
-6. Lighthouse ile önce/sonra SEO skorlarını ölç (ayrı, betikten bağımsız bir doğrulama).
-7. Elle değerlendirme tablosu: site/alan/öneri/sadakat(E-H)/Türkçe kalitesi(1-5), en az 2 kişi, model adı gizli.
-8. Literatür taraması + yazım, paralel yürüt.
-9. `ogretme/bilgi_tabani.json` ve `seo_kurallari.json` içeriğini kullanıcı kendi cümleleriyle yeniden yazıp kaynak göstermeli (şu an Claude'un yazdığı özgün ama atıfsız bir taslak, Turnitin ve akademik dürüstlük için düzeltilmeli).
+1. Hocadan konu ve kapsam onayı al (tek sayfalık özet: konu, yöntem, veri seti, beklenen sonuç).
+2. LM Studio'yu aç, arayüzden küçük bir alt küme (5-10 site) üzerinde LLM'li tarama yap, çıktıyı gözle doğrula.
+3. Deney matrisini çalıştır: en az 2 model × `sifir`/`ornek`/`bilgi`/`ornek+bilgi` × `retry 0/1`. Bunun için `seo_app` motorunu döngüye sokan küçük bir betik yazılmalı.
+4. Lighthouse ile bağımsız önce/sonra SEO skoru ölç.
+5. Elle değerlendirme tablosu: site / alan / öneri / sadakat (E-H) / Türkçe kalitesi (1-5), en az 2 kişi, model adı gizli.
+6. Literatür taraması + yazım, paralel yürüt.
+7. Bilgi tabanı metinlerini kaynak göstererek yeniden yaz.
 
-## 7. Önemli uyarılar / hatırlatmalar
+## 8. Önemli uyarılar
 
-- Betik kodunu yazan/geliştiren Claude oldu — bu, **Yöntem bölümünde açıkça belirtilmeli** ("kodun geliştirilmesinde YZ yardımı alınmıştır"), ama ödev metninin kendisi öğrenciler tarafından yazılmalı.
-- `seo_kurallari.json` ve `bilgi_tabani.json` içerikleri Claude tarafından yazılmış özgün ama kaynaksız taslaklardır — ödeve konmadan önce gerçek kaynaklarla (Google SEO başlangıç kılavuzu vb.) karşılaştırılıp öğrenciler tarafından yeniden yazılmalı.
-- Anket kullanımı yasak — SEO uzmanlarıyla kısa mülakat kılavuzda izin veriliyor, anket değil.
+- Kodun geliştirilmesinde YZ yardımı alındı — **Yöntem bölümünde açıkça belirtilmeli**. Ödev metninin kendisi öğrenciler tarafından yazılmalı.
+- Arayüzdeki 0-100 puan aracın kendi ölçeğidir (yüksek 15 / orta 8 / düşük 3 ceza puanı). Bağımsız bir ölçüm değildir; ödevde bu sınır açıkça yazılmalı.
+- Kapsam dışı kalan SEO konuları yöntem bölümünde belirtilmeli: içerik kalitesi/anahtar kelime stratejisi, backlink profili, Core Web Vitals (gerçek tarayıcı ölçümü), JavaScript ile oluşturulan içerik (araç yalnızca sunucudan gelen HTML'i görür), çok dilli yapı.
 - Kaynakça klasörüne kullanılan makale/web sayfalarının PDF'leri konulmalı.

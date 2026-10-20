@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns="http://www.w3.org/1999/xhtml">
+<head><link crossorigin="anonymous" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" rel="stylesheet"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<!-- Required meta tags -->
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
+<!-- Bootstrap CSS -->
+<link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" rel="stylesheet"/><title>
+	Diploma Takip Sistemi
+</title><link href="http://diploma.ogrenciisleri.duzce.edu.tr/" rel="canonical"/><meta content="Diploma Takip Sistemi" property="og:title"/><meta content="http://diploma.ogrenciisleri.duzce.edu.tr/" property="og:url"/><meta content="website" property="og:type"/></head>
+<meta content="#563d7c" name="theme-color"/>
+<link crossorigin="anonymous" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/sweetalert2/1.2.2/sweetalert2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/sweetalert2/1.2.2/sweetalert2.css" rel="stylesheet" type="text/css"/>
+<style>
+	@import url('https://fonts.googleapis.com/css?family=Lato:400,700');
+
+
+html {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  margin: 0;
+  background: url('img/body-bg.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  color: #000;
+  overflow: hidden;
+ 
+}
+
+	
+	
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+	  
+	  .logo-content {
+    border-radius: 100%;
+    width: 150px;
+    height: 120px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 0px;
+    opacity: .8;
+    display: inline-block;
+	}
+
+    </style>
+<!-- Custom styles for this template -->
+<link href="https://getbootstrap.com/docs/4.4/examples/floating-labels/floating-labels.css" rel="stylesheet"/>
+<body>
+<script>	{
+                swal({
+                    title: 'UYARI / WARNİNG', html: '2020 yılı ve öncesi mezunlarının diplomaları hazırdır, <br>2020 yılı ve öncesi Mezun öğrencilerimizin sorgulama yapmasına gerek yoktur.<br><b>Diploma almaya gelirken birim öğrenci işlerinden alınan İlişik Kesme Belgesi ya da Geçici Mezuniyet Belgesi ile geliniz.</b><br> Diplomanızı noterden verdiğiniz vekalet ile başka birine aldırabilirsiniz.', confirmButtonText: "Diploma Sorgula",type: 'warning', allowOutsideClick: false, timer: 20000,
+                });
+            }	</script>
+<div id="pnl1" style="margin:auto;">
+<form action="./" class="form-signin" id="form" method="post" style="height: 80% !important;background-color: rgba(0, 0, 0, 0.5);border-radius: 10px;margin-bottom: 10px;">
+<div class="aspNetHidden">
+<input id="__VIEWSTATE" name="__VIEWSTATE" type="hidden" value="w0IvDhV3PWycsw1EnZ1YFuOH8kI7lKX1ssvkGAt+dILDd81Lsr46rndy38wLAFfJ2/Bj6mxpPuMXQAGcmko8txEg84KPHAaqJdOFa4+UWqagVfDOiyh7mPDDV2SmW7snCLdANjBsnQke7jEyYuJM6Q=="/>
+</div>
+<div class="aspNetHidden">
+<input id="__VIEWSTATEGENERATOR" name="__VIEWSTATEGENERATOR" type="hidden" value="CA0B0334"/>
+<input id="__EVENTVALIDATION" name="__EVENTVALIDATION" type="hidden" value="9BNm7wX5OLD4E6hnM9kbStkKtrHVZ8QkawHxXMI27SsjgRSdDd+BJWyB6S8WB8aL7B8LMSAKSay/7i99ne2o/KDVE7PZ6mwEJgKR6Vi5F5sQJ72RZzmFapO0oXcEhUt/HIUzhtP21l3ZyqUFLO9Y+A=="/>
+</div>
+<div class="text-center mb-4">
+<div class="logo-content">
+<div style="margin-top:35px;"><img height="40px" src="https://cdn.duzce.edu.tr/File/GetFile/e0b8b1ea-3d77-4237-aa56-d1aabe5e6fbc"/></div>
+</div>
+<h1 class="h3 mb-3 font-weight-normal text-light">DİPLOMA TAKİP SİSTEMİ</h1>
+</div>
+<div class="form-label-group">
+<input autofocus="" class="form-control" id="inputtc" maxlength="11" minlength="11" name="inputtc" placeholder="TC KİMLİK NUMARANIZ ?" required="" type="number"/>
+<label for="inputtc">TC Kimlik Numaranız</label>
+<input class="btn btn-lg btn-danger btn-block" id="btn1" name="btn1" type="submit" value="SORGULA"/>
+</div>
+<p class="mt-5 mb-3 text-center text-light">© 2021 Öğrenci İşleri Daire Başkanlığı</p>
+</form>
+</div>
+</body>
+<script crossorigin="anonymous" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</html>
