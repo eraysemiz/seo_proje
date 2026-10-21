@@ -42,7 +42,7 @@ Ayrıntılı kullanım, denetim listesi ve mimari için **`README.md`** dosyası
 
 ### Önemli tasarım kararı (yöntem bölümünde açıklanmalı)
 
-Dil modeline **yalnızca** temel sayfa denetiminin (`rule_checks`) çıktısı gönderilir — yani title, meta description, H1, alt metni. Yeni eklenen yapısal veri / site katmanı sorunları modele hiç gitmez. Böylece canlı mod eklenmeden önce yapılan deney koşullarıyla karşılaştırılabilirlik korunur ve modelden çözemeyeceği şeyler istenmez.
+Dil modeline **yalnızca** çözüm yolu `model` olan sorunlar gönderilir: title, meta description, H1, alt metni. Canonical, lang, içerik azlığı, yapısal veri ve site katmanı sorunları modele hiç gitmez (21 Ekim 2026 kararı, "temiz ayrım"). Bu yüzden bu tarihten önceki LLM'li sonuçlar (`sonuclar/sonuc_rag`) yeni çalıştırmalarla doğrudan karşılaştırılamaz; deneyler yeniden çalıştırılmalı. Yeniden denemede modelin zaten kabul edilmiş alanları tekrar göndermesi ret sayılmaz, raporda `yok_sayilan` listesine yazılır.
 
 ### Dosya karmaşası uyarısı
 

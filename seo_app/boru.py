@@ -9,9 +9,9 @@ Akis:
     -> kural tabanli duzeltmeler (canonical, lang, fazla h1, viewport, og)
     -> yeniden denetim ve karsilastirma
 
-Modele gonderilen sorun listesi bilerek yalnizca temel sayfa denetiminin (rule_checks)
-ciktisidir; boylece canli mod eklenmeden once yapilan deney kosullari ile karsilastirilabilir
-kalir. Yapisal veri / mobil uyum sorunlari modele degil, kural katmanina gider.
+Modele yalnizca cozum yolu 'model' olan sorunlar (title, meta_description, h1, img_alt)
+gonderilir. Kural ve elle sinifindaki sorunlar (canonical, lang, icerik_az, site katmani...)
+modelden istenmez; boylece model cozemeyecegi sorunlar icin gereksiz oneri uretip reddedilmez.
 """
 import json
 import re
@@ -95,8 +95,9 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
 
     # ------------------------------------------------ 2. Denetim
     d = extract(html)
-    temel = rule_checks(d)                      # modele gidecek olan liste
+    temel = rule_checks(d)
     ek = ek_html_denetimi(yapisal_veri(html))   # modele gitmeyen HTML denetimleri
+    model_sorunlari = [i for i in temel if i["cozum_yolu"] == "model"]   # modele giden liste
     sayfa_sorunlari = temel + ek
     once_tum = sayfa_sorunlari + site_sorunlari
     kayit.update({
@@ -110,12 +111,12 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
 
     # ------------------------------------------------ 3. Dil modeli onerileri
     yeni_html = html
-    if a["llm_kullan"] and a["model"] and temel:
-        ogr, ogr_bilgi = ogretme_metni(a["kosul"], d, temel, ogretme_klasoru, a["ornek_sayisi"],
+    if a["llm_kullan"] and a["model"] and model_sorunlari:
+        ogr, ogr_bilgi = ogretme_metni(a["kosul"], d, model_sorunlari, ogretme_klasoru, a["ornek_sayisi"],
                                        a["embed_url"] or a["url"], a["embed_model"], gunluk=yaz)
         ilerleme = lambda sn, dus, cev: yaz("   model calisiyor: " + str(sn) + " sn, " +
                                             str(cev) + " karakter cevap")
-        res = llm_fixes(d, temel, a["model"], kayit["ad"], a["url"], a["max_tokens"],
+        res = llm_fixes(d, model_sorunlari, a["model"], kayit["ad"], a["url"], a["max_tokens"],
                         a["timeout"], a["json_schema"], a["retry"], few_shot=ogr, ilerleme=ilerleme)
         kayit.update(res)
         kayit["model"] = a["model"]

@@ -217,10 +217,11 @@ def _csv_uret(sonuclar):
                 "sure_sn", "sure_toplam_sn", "hata"]
     tampon = io.StringIO()
     yazici = csv.writer(tampon, delimiter=";")
-    yazici.writerow(sutunlar + ["kabul_edilen_oneri", "reddedilen_oneri", "cozulen", "kalan"])
+    yazici.writerow(sutunlar + ["kabul_edilen_oneri", "reddedilen_oneri", "yok_sayilan_oneri",
+                                "cozulen", "kalan"])
     for k in sonuclar:
         yazici.writerow([k.get(s, "") for s in sutunlar] + [
-            len(k.get("fixes", [])), len(k.get("reddedilen", [])),
+            len(k.get("fixes", [])), len(k.get("reddedilen", [])), len(k.get("yok_sayilan", [])),
             ", ".join(k.get("cozulen_sorunlar", [])), ", ".join(k.get("kalan_sorunlar", []))])
     return tampon.getvalue()
 

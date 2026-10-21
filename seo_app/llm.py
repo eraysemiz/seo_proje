@@ -35,8 +35,8 @@ SYSTEM = (
     "- img_alt: 'hedef' alanina alt_metni_eksik_gorseller listesindeki 'id' degerini (ornek g1) AYNEN yaz. "
     "yeni_deger o gorsel icin kisa duz metin olsun; yalnizca dosya_adi ve baglam bilgisinden anlasilanlari yaz, "
     "bilgi yoksa genel ve dogru bir ifade kullan (ornek: 'Duyuru gorseli'). Her gorsel icin ayri oneri ver.\n"
-    "tespit_edilen_sorunlar listesindeki canonical disindaki HER sorun icin, sinirda olsa bile "
-    "(ornegin 29 karakterlik title), bir oneri uret. Canonical, robots ve diger sorunlar icin oneri URETME. "
+    "tespit_edilen_sorunlar listesindeki HER sorun icin, sinirda olsa bile "
+    "(ornegin 29 karakterlik title), bir oneri uret. Listede olmayan sorunlar icin oneri URETME. "
     "Ayni alan icin birden fazla oneri verme (img_alt haric). Sayfa verisinde gecmeyen hicbir bilgi veya "
     "iddia ekleme: title, meta_description ve h1 icinde yalnizca sayfa verisinde (title, meta, h1, h2, metin_ozeti) "
     "gecen kavramlari kullan; 'uzmanlasmis', 'basarili', 'lider' gibi dogrulanamayan nitelemeler yazma, "
@@ -181,7 +181,9 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
     sistem = {"role": "system", "content": SYSTEM + few_shot}
     mesajlar = [sistem, {"role": "user", "content": json.dumps(veri, ensure_ascii=False)}]
 
-    gecerli, reddedilen, kabul = [], [], set()
+    # yok_sayilan: yeniden denemede modelin zaten kabul edilmis alanlari tekrar gondermesi.
+    # Bunlar kalite reddi degildir; ret sayisini sisirmemeleri icin ayri tutulur.
+    gecerli, reddedilen, yok_sayilan, kabul = [], [], [], set()
     denemeler, toplam_sure, ilk_json, son = [], 0.0, None, None
     for deneme in range(retry + 1):
         payload = {"model": model, "temperature": 0, "max_tokens": max_tokens,
@@ -196,11 +198,13 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
         liste_var = isinstance(obj, dict) and isinstance(obj.get("fixes"), list)
         if ilk_json is None:
             ilk_json = liste_var
-        yeni_red, kabul_say = [], 0
+        yeni_red, yeni_yok, kabul_say = [], [], 0
         if liste_var:
             for f in obj["fixes"]:
                 ok_f, neden = dogrula(f, d, kodlar, kabul, gorsel_id)
-                if ok_f:
+                if not ok_f and neden == "ayni_alan_tekrar" and deneme > 0:
+                    yeni_yok.append({"deneme": deneme + 1, "oneri": f})
+                elif ok_f:
                     f["yeni_deger"] = f["yeni_deger"].strip()
                     f.setdefault("gerekce", "")
                     h = (f.get("hedef") or "").strip()
@@ -213,8 +217,9 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
                 else:
                     yeni_red.append({"deneme": deneme + 1, "neden": neden, "oneri": f})
         reddedilen += yeni_red
+        yok_sayilan += yeni_yok
         denemeler.append({"deneme": deneme + 1, "sure_sn": round(son["sure"], 2), "bitis_nedeni": son["bitis"],
-                          "kabul": kabul_say, "reddedilen": len(yeni_red),
+                          "kabul": kabul_say, "reddedilen": len(yeni_red), "yok_sayilan": len(yeni_yok),
                           "dusunme_karakter": len(son["dusunme"]), "cevap_karakter": len(son["icerik"]),
                           "istem_karakter": sum(len(m["content"]) for m in mesajlar),
                           "ilk_token_sn": son["ilk_token_sn"], "uretilen_parca": son["parca"],
@@ -230,7 +235,7 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
         mesajlar = [sistem, {"role": "user", "content": json.dumps(geri, ensure_ascii=False)}]
 
     return {
-        "fixes": gecerli, "reddedilen": reddedilen, "json_gecerli": bool(ilk_json),
+        "fixes": gecerli, "reddedilen": reddedilen, "yok_sayilan": yok_sayilan, "json_gecerli": bool(ilk_json),
         "sure_sn": round(toplam_sure, 2), "bitis_nedeni": son["bitis"],
         "dusunme_karakter": sum(x["dusunme_karakter"] for x in denemeler),
         "cevap_karakter": sum(x["cevap_karakter"] for x in denemeler),
