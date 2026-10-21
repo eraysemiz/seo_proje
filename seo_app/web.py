@@ -4,7 +4,6 @@ Tarama arka planda bir is parcaciginda calisir; arayuz ilerlemeyi duzenli aralik
 sorarak gunlugu ve sonuc tablosunu gunceller. Sunucu yalnizca bu bilgisayardan
 erisilebilir sekilde baslatilir.
 """
-import csv
 import io
 import json
 import threading
@@ -15,7 +14,8 @@ import requests
 from flask import Flask, abort, jsonify, render_template, request, send_file
 
 from . import canli
-from .boru import VARSAYILAN_AYARLAR, alt_siteleri_kesfet, analiz_et, hedefleri_hazirla
+from .boru import (VARSAYILAN_AYARLAR, alt_siteleri_kesfet, hedefleri_hazirla, topluca_analiz,
+                   csv_uret as _csv_uret)
 from .kurallar import ACIKLAMA
 from .llm import model_durumlari
 from .ogretme import KOSULLAR
@@ -81,30 +81,15 @@ def _tarama_isi(hedefler, ayarlar, ogretme_klasoru, cikti):
     def iptal():
         return DURUM["iptal"]
 
+    def her_kayitta(sira, kayit, rapor):
+        # her sayfa bittiginde arayuzun gorebilmesi icin durum adim adim guncellenir
+        with _kilit:
+            DURUM["biten"] = sira
+            DURUM["sonuclar"] = list(rapor)
+
     try:
-        # her sayfa bittiginde arayuzun gorebilmesi icin sonuclari adim adim isliyoruz
-        sonuclar = []
-        for i, hedef in enumerate(hedefler, 1):
-            if iptal():
-                gunluk("Tarama durduruldu.")
-                break
-            ad = hedef.get("url") or Path(hedef.get("yol", "")).name
-            gunluk("[" + str(i) + "/" + str(len(hedefler)) + "] " + ad)
-            try:
-                kayit = analiz_et(hedef, ayarlar, ogretme_klasoru, cikti, gunluk=gunluk)
-            except Exception as e:          # tek sayfanin hatasi tum taramayi durdurmasin
-                kayit = {"ad": ad, "kaynak_turu": hedef["tur"],
-                         "hata": type(e).__name__ + ": " + str(e)}
-                gunluk("HATA: " + kayit["hata"])
-            sonuclar.append(kayit)
-            with _kilit:
-                DURUM["biten"] = i
-                DURUM["sonuclar"] = sonuclar
-            (Path(cikti) / "rapor.json").write_text(
-                json.dumps(sonuclar, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
-            if hedef["tur"] == "canli" and i < len(hedefler) and ayarlar.get("bekleme_sn"):
-                time.sleep(ayarlar["bekleme_sn"])    # sunucuyu yormamak icin nazik bekleme
-        (Path(cikti) / "ozet.csv").write_text(_csv_uret(sonuclar), encoding="utf-8-sig")
+        topluca_analiz(hedefler, ayarlar, ogretme_klasoru, cikti, gunluk=gunluk, iptal=iptal,
+                       her_kayitta=her_kayitta)
         gunluk("Tarama tamamlandi. Cikti klasoru: " + str(cikti))
     except Exception as e:
         with _kilit:
@@ -234,22 +219,6 @@ def api_durdur():
 @uygulama.route("/api/aciklamalar")
 def api_aciklamalar():
     return jsonify(ACIKLAMA)
-
-
-def _csv_uret(sonuclar):
-    sutunlar = ["ad", "kaynak_turu", "durum_kodu", "model", "kosul", "ogretme_yontemi",
-                "once_sorun_sayisi", "sonra_sorun_sayisi", "once_puan", "sonra_puan",
-                "sayfa_sorun_sayisi", "site_sorun_sayisi", "cozum_orani", "toplam_cozum_orani",
-                "sure_sn", "sure_toplam_sn", "hata"]
-    tampon = io.StringIO()
-    yazici = csv.writer(tampon, delimiter=";")
-    yazici.writerow(sutunlar + ["kabul_edilen_oneri", "reddedilen_oneri", "yok_sayilan_oneri",
-                                "cozulen", "kalan"])
-    for k in sonuclar:
-        yazici.writerow([k.get(s, "") for s in sutunlar] + [
-            len(k.get("fixes", [])), len(k.get("reddedilen", [])), len(k.get("yok_sayilan", [])),
-            ", ".join(k.get("cozulen_sorunlar", [])), ", ".join(k.get("kalan_sorunlar", []))])
-    return tampon.getvalue()
 
 
 @uygulama.route("/api/csv")

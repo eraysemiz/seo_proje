@@ -13,6 +13,8 @@ Modele yalnizca cozum yolu 'model' olan sorunlar (title, meta_description, h1, i
 gonderilir. Kural ve elle sinifindaki sorunlar (canonical, lang, icerik_az, site katmani...)
 modelden istenmez; boylece model cozemeyecegi sorunlar icin gereksiz oneri uretip reddedilmez.
 """
+import csv
+import io
 import json
 import re
 import time
@@ -186,8 +188,28 @@ def hedefleri_hazirla(mod, adresler_metni, klasor_yolu):
     return hedefler
 
 
-def topluca_analiz(hedefler, ayarlar, ogretme_klasoru, cikti_klasoru, gunluk=None, iptal=None):
-    """Hedefleri sirayla analiz eder, her adimda rapor.json dosyasini gunceller."""
+def csv_uret(sonuclar):
+    """Sayfa basina bir satirlik ozet tablo (noktali virgul ayracli, Excel ile acilir)."""
+    sutunlar = ["ad", "kaynak_turu", "durum_kodu", "model", "kosul", "ogretme_yontemi",
+                "once_sorun_sayisi", "sonra_sorun_sayisi", "once_puan", "sonra_puan",
+                "sayfa_sorun_sayisi", "site_sorun_sayisi", "cozum_orani", "toplam_cozum_orani",
+                "sure_sn", "sure_toplam_sn", "hata"]
+    tampon = io.StringIO()
+    yazici = csv.writer(tampon, delimiter=";")
+    yazici.writerow(sutunlar + ["kabul_edilen_oneri", "reddedilen_oneri", "yok_sayilan_oneri",
+                                "cozulen", "kalan"])
+    for k in sonuclar:
+        yazici.writerow([k.get(s, "") for s in sutunlar] + [
+            len(k.get("fixes", [])), len(k.get("reddedilen", [])), len(k.get("yok_sayilan", [])),
+            ", ".join(k.get("cozulen_sorunlar", [])), ", ".join(k.get("kalan_sorunlar", []))])
+    return tampon.getvalue()
+
+
+def topluca_analiz(hedefler, ayarlar, ogretme_klasoru, cikti_klasoru, gunluk=None, iptal=None,
+                   her_kayitta=None):
+    """Hedefleri sirayla analiz eder, her adimda rapor.json dosyasini gunceller ve
+    sonunda ozet.csv yazar. Web arayuzu ve deney kosucusu ayni dongu uzerinden calisir.
+    her_kayitta(sira, kayit, rapor): her sayfa bittiginde cagrilir (arayuzun ilerleme durumu icin)."""
     a = {**VARSAYILAN_AYARLAR, **(ayarlar or {})}
     yaz = gunluk or (lambda m: None)
     cikti = Path(cikti_klasoru)
@@ -195,7 +217,7 @@ def topluca_analiz(hedefler, ayarlar, ogretme_klasoru, cikti_klasoru, gunluk=Non
     rapor = []
     for i, hedef in enumerate(hedefler, 1):
         if iptal and iptal():
-            yaz("Tarama kullanici tarafindan durduruldu.")
+            yaz("Tarama durduruldu.")
             break
         ad = hedef.get("url") or Path(hedef.get("yol", "")).name
         yaz("[" + str(i) + "/" + str(len(hedefler)) + "] " + ad)
@@ -205,10 +227,13 @@ def topluca_analiz(hedefler, ayarlar, ogretme_klasoru, cikti_klasoru, gunluk=Non
             kayit = {"ad": ad, "kaynak_turu": hedef["tur"], "hata": type(e).__name__ + ": " + str(e)}
             yaz("HATA: " + kayit["hata"])
         rapor.append(kayit)
+        if her_kayitta:
+            her_kayitta(i, kayit, rapor)
         (cikti / "rapor.json").write_text(json.dumps(rapor, ensure_ascii=False, indent=2,
                                                      default=str), encoding="utf-8")
         if hedef["tur"] == "canli" and i < len(hedefler) and a["bekleme_sn"]:
             time.sleep(a["bekleme_sn"])             # sunucuyu yormamak icin nazik bekleme
+    (cikti / "ozet.csv").write_text(csv_uret(rapor), encoding="utf-8-sig")
     return rapor
 
 
