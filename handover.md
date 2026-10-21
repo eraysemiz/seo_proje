@@ -88,14 +88,24 @@ Kök dizindeki `seo_pipeline.py`, `seo_pipelineg.py`, `seo_pipeline_ogretmeli.py
 - Sertifika zinciri hatası: sunucular yaprak sertifikanın vereni olan *"Sectigo Public Server Authentication CA DV R36"* ara sertifikasını göndermiyor, onun yerine farklı bir ara sertifika (*"Sectigo RSA Domain Validation Secure Server CA"*) gönderiyor. Tarayıcılar eksik halkayı kendileri tamamladığı için kullanıcılar fark etmiyor; **katı doğrulama yapan istemciler (Python `requests`/certifi, bazı tarayıcı botları) bağlanamıyor.** Bu, SEO açısından gerçek bir risk ve ödevin özgün bulgusu olabilir.
 - En yavaş siteler: hukuk (2132 ms TTFB), uabs (2051 ms), kurulkararlari (2045 ms).
 
+### Güncel temel tarama (21 Ekim 2026, Aşama 1-2 sonrası)
+
+**Bundan sonra başvurulacak temel tarama:** `sonuclar/sonuc_taban_canli_v2/`. Yukarıdaki ilk tarama (`sonuc_taban_canli`) tarihsel kayıt olarak duruyor. v2 güncel kurallarla alındı; farklar açıklanabilir:
+- `cdn.duzce.edu.tr` 404 dönüyor; hata sayfasının HTML'i artık denetlenmiyor (16 → 7 bulgu).
+- `hastane` sitesinin "15/15 alt metni eksik" bulgusu yanlış pozitifmiş (görsellerin hepsi dekoratif, `alt=""`); kalktı.
+- Yeni puan ölçeği (sayfa/site ayrı, 0-100 normalleştirilmiş): sayfa medyan 60, site medyan 67. Eski tek puanın medyanı 7 idi ve siteleri ayırt edemiyordu.
+- **Yeni bulgu:** 58 sitenin **38'inde meta açıklama birebir aynı** ("Düzce Üniversitesi"), `site_geneli.json`.
+
+**Bağımsız ölçüm (Lighthouse, PageSpeed Insights):** `sonuclar/adim9_lighthouse/`, 10 site. 8 site 75, `adayogrenci` 91, `hastane` 92. Aracın bulgularıyla karşılaştırma: alt metni 10/10 uyumlu (hastane'de Lighthouse da sorun görmüyor; dekoratif görsel düzeltmesinin bağımsız teyidi), robots.txt 9/10 uyumlu (`adayogrenci`'de ayrışma, nedeni belirsiz). Lighthouse puanı kaba bir ölçek (10 sitenin 8'i aynı puan); aracın sayfa/site puanları siteleri daha ince ayırıyor. Düzeltilmiş sayfa yerel olduğu için "sonra" puanı bu yöntemle ölçülemiyor. API anahtarı `PSI_API_ANAHTARI` ortam değişkeninden okunur, depoya yazılmaz.
+
 ## 6. Hâlâ eksik olanlar
 
 | Eksik | Durum | Öncelik |
 |---|---|---|
 | Konu onayı | **Alınmadı** | Kritik |
-| Deney matrisi | `--kosul` × model × retry kombinasyonları toplu çalıştırılmadı. Arayüz tek koşul çalıştırıyor; toplu deney için bir betik gerekir | Yüksek |
-| LLM'li tam tarama | 58 sitede henüz model çalıştırılmadı (LM Studio kapalıydı) | Yüksek |
-| Bağımsız ölçüm | Lighthouse önce/sonra ölçümü yok. Aracın kendi puanı döngüsel | Yüksek |
+| Deney matrisi | Koşucu hazır (`deney.py`), henüz tam çalıştırılmadı. İkinci sohbet modeli (4B) yalnızca model karşılaştırması yapılacaksa gerekir | Yüksek |
+| LLM'li tam tarama | 58 sitede henüz model çalıştırılmadı | Yüksek |
+| Bağımsız ölçüm | "Önce" Lighthouse puanı 10 sitede alındı; "sonra" puanı yerel dosya için ölçülemiyor | Orta |
 | Elle değerlendirme | Sadakat/Türkçe kalitesi için en az 2 kişilik kör puanlama tablosu | Yüksek |
 | Literatür | Başlanmadı; kişi başı 10-12 kaynak, %50 yabancı | Yüksek, zaman alıcı |
 | Metin yazımı | Başlanmadı | Yüksek |

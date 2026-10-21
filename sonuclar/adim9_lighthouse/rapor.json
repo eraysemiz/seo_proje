@@ -1,0 +1,2493 @@
+[
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://www.duzce.edu.tr",
+    "url": "https://www.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://www.duzce.edu.tr",
+      "son_url": "https://www.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 566,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 573,
+      "boyut_kb": 41,
+      "sikistirma": "gzip",
+      "hsts": false,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 28,
+        "veren": "Sectigo Public Server Authentication CA DV R36",
+        "bitis": "2026-11-18",
+        "zincir_eksik": true,
+        "zincir": [
+          "*.duzce.edu.tr",
+          "Sectigo RSA Domain Validation Secure Server CA"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": true,
+        "hedef": "https://www.duzce.edu.tr:443/",
+        "durum_kodu": 301,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://www.duzce.edu.tr/robots.txt",
+        "var": false,
+        "durum_kodu": 404,
+        "satir_sayisi": 0,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://www.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://www.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi | Anasayfa",
+    "meta_description": "Düzce Üniversitesi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "title_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "29 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "18 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "9/25 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_yakinda_bitiyor",
+        "ciddiyet": "orta",
+        "ayrinti": "28 gun, bitis 2026-11-18",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_zinciri_eksik",
+        "ciddiyet": "yuksek",
+        "ayrinti": "sunucu, yaprak sertifikanin vereni olan 'Sectigo Public Server Authentication CA DV R36' ara sertifikasini gondermiyor",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "hsts_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://www.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 13,
+    "once_puan": 7,
+    "once_puanlar": {
+      "sayfa": 60,
+      "site": 67,
+      "icerik": 43,
+      "teknik": 70,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "img_bos_alt": 0,
+    "sayfa_sorun_sayisi": 8,
+    "site_sorun_sayisi": 5,
+    "model": null,
+    "site_url": "https://www.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "canonical_eklendi: https://www.duzce.edu.tr/",
+      "og_etiketleri_eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 11,
+    "sonra_puan": 13,
+    "sonra_puanlar": {
+      "sayfa": 65,
+      "site": 67,
+      "icerik": 43,
+      "teknik": 77,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "title_kisa",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "title_kisa",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.0,
+    "toplam_cozum_orani": 0.33,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 75,
+        "basarisiz_denetimler": [
+          "crawlable-anchors",
+          "image-alt",
+          "robots-txt"
+        ],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_www.duzce.edu.tr.html",
+    "sure_toplam_sn": 2.35,
+    "tekrar_bulgulari": [
+      "meta_tekrar"
+    ]
+  },
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://adayogrenci.duzce.edu.tr",
+    "url": "https://adayogrenci.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://adayogrenci.duzce.edu.tr",
+      "son_url": "https://adayogrenci.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 147,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 177,
+      "boyut_kb": 89,
+      "sikistirma": "gzip",
+      "hsts": false,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 28,
+        "veren": "Sectigo Public Server Authentication CA DV R36",
+        "bitis": "2026-11-18",
+        "zincir_eksik": true,
+        "zincir": [
+          "*.duzce.edu.tr",
+          "Sectigo RSA Domain Validation Secure Server CA"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": true,
+        "hedef": "https://adayogrenci.duzce.edu.tr:443/",
+        "durum_kodu": 301,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://adayogrenci.duzce.edu.tr/robots.txt",
+        "var": false,
+        "durum_kodu": 404,
+        "satir_sayisi": 0,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://adayogrenci.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://adayogrenci.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi Aday Öğrenci Bilgi Sistemi",
+    "meta_description": "Düzce Üniversitesi Aday Öğrenci Bilgi Sistemi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "45 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "2/2 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "favicon_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_yakinda_bitiyor",
+        "ciddiyet": "orta",
+        "ayrinti": "28 gun, bitis 2026-11-18",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_zinciri_eksik",
+        "ciddiyet": "yuksek",
+        "ayrinti": "sunucu, yaprak sertifikanin vereni olan 'Sectigo Public Server Authentication CA DV R36' ara sertifikasini gondermiyor",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "hsts_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://adayogrenci.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 13,
+    "once_puan": 12,
+    "once_puanlar": {
+      "sayfa": 64,
+      "site": 67,
+      "icerik": 54,
+      "teknik": 67,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "img_bos_alt": 0,
+    "sayfa_sorun_sayisi": 8,
+    "site_sorun_sayisi": 5,
+    "model": null,
+    "site_url": "https://adayogrenci.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "canonical_eklendi: https://adayogrenci.duzce.edu.tr/",
+      "og_etiketleri_eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 11,
+    "sonra_puan": 18,
+    "sonra_puanlar": {
+      "sayfa": 69,
+      "site": 67,
+      "icerik": 54,
+      "teknik": 73,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "favicon_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "favicon_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.0,
+    "toplam_cozum_orani": 0.4,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 91,
+        "basarisiz_denetimler": [
+          "image-alt"
+        ],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_adayogrenci.duzce.edu.tr.html",
+    "sure_toplam_sn": 11.2,
+    "tekrar_bulgulari": []
+  },
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://bap.duzce.edu.tr",
+    "url": "https://bap.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://bap.duzce.edu.tr",
+      "son_url": "https://bap.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 149,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 190,
+      "boyut_kb": 177,
+      "sikistirma": "gzip",
+      "hsts": false,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 28,
+        "veren": "Sectigo Public Server Authentication CA DV R36",
+        "bitis": "2026-11-18",
+        "zincir_eksik": false,
+        "zincir": [
+          "*.duzce.edu.tr",
+          "Sectigo Public Server Authentication CA DV R36"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": false,
+        "hedef": null,
+        "durum_kodu": 200,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://bap.duzce.edu.tr/robots.txt",
+        "var": false,
+        "durum_kodu": 404,
+        "satir_sayisi": 0,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://bap.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://bap.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi | Bilimsel Araştırma Projeleri Koordinatörlüğü | Anasayfa",
+    "meta_description": "Düzce Üniversitesi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "title_uzun",
+        "ciddiyet": "orta",
+        "ayrinti": "76 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "18 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "1/7 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "icerik_az",
+        "ciddiyet": "dusuk",
+        "ayrinti": "238 kelime",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_yakinda_bitiyor",
+        "ciddiyet": "orta",
+        "ayrinti": "28 gun, bitis 2026-11-18",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "hsts_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "https_yonlendirme_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 200",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://bap.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 14,
+    "once_puan": 11,
+    "once_puanlar": {
+      "sayfa": 58,
+      "site": 73,
+      "icerik": 38,
+      "teknik": 70,
+      "guvenlik": 70,
+      "performans": 100
+    },
+    "img_bos_alt": 0,
+    "sayfa_sorun_sayisi": 9,
+    "site_sorun_sayisi": 5,
+    "model": null,
+    "site_url": "https://bap.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "canonical_eklendi: https://bap.duzce.edu.tr/",
+      "og_etiketleri_eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 12,
+    "sonra_puan": 17,
+    "sonra_puanlar": {
+      "sayfa": 63,
+      "site": 73,
+      "icerik": 38,
+      "teknik": 77,
+      "guvenlik": 70,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "title_uzun",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik",
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "hsts_yok",
+      "https_yonlendirme_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "title_uzun",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "hsts_yok",
+      "https_yonlendirme_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.0,
+    "toplam_cozum_orani": 0.33,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 75,
+        "basarisiz_denetimler": [
+          "crawlable-anchors",
+          "image-alt",
+          "robots-txt"
+        ],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_bap.duzce.edu.tr.html",
+    "sure_toplam_sn": 12.56,
+    "tekrar_bulgulari": [
+      "meta_tekrar"
+    ]
+  },
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://bilgiislem.duzce.edu.tr",
+    "url": "https://bilgiislem.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://bilgiislem.duzce.edu.tr",
+      "son_url": "https://bilgiislem.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 170,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 279,
+      "boyut_kb": 142,
+      "sikistirma": "gzip",
+      "hsts": false,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 28,
+        "veren": "Sectigo Public Server Authentication CA DV R36",
+        "bitis": "2026-11-18",
+        "zincir_eksik": true,
+        "zincir": [
+          "*.duzce.edu.tr",
+          "Sectigo RSA Domain Validation Secure Server CA"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": true,
+        "hedef": "https://bilgiislem.duzce.edu.tr:443/",
+        "durum_kodu": 301,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://bilgiislem.duzce.edu.tr/robots.txt",
+        "var": false,
+        "durum_kodu": 404,
+        "satir_sayisi": 0,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://bilgiislem.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://bilgiislem.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi | Bilgi İşlem Daire Başkanlığı | Anasayfa",
+    "meta_description": "Düzce Üniversitesi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "18 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "1/2 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "icerik_az",
+        "ciddiyet": "dusuk",
+        "ayrinti": "92 kelime",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_yakinda_bitiyor",
+        "ciddiyet": "orta",
+        "ayrinti": "28 gun, bitis 2026-11-18",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_zinciri_eksik",
+        "ciddiyet": "yuksek",
+        "ayrinti": "sunucu, yaprak sertifikanin vereni olan 'Sectigo Public Server Authentication CA DV R36' ara sertifikasini gondermiyor",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "hsts_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://bilgiislem.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 13,
+    "once_puan": 12,
+    "once_puanlar": {
+      "sayfa": 64,
+      "site": 67,
+      "icerik": 50,
+      "teknik": 70,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "img_bos_alt": 0,
+    "sayfa_sorun_sayisi": 8,
+    "site_sorun_sayisi": 5,
+    "model": null,
+    "site_url": "https://bilgiislem.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "canonical_eklendi: https://bilgiislem.duzce.edu.tr/",
+      "og_etiketleri_eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 11,
+    "sonra_puan": 18,
+    "sonra_puanlar": {
+      "sayfa": 69,
+      "site": 67,
+      "icerik": 50,
+      "teknik": 77,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik",
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.0,
+    "toplam_cozum_orani": 0.4,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 75,
+        "basarisiz_denetimler": [
+          "crawlable-anchors",
+          "image-alt",
+          "robots-txt"
+        ],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_bilgiislem.duzce.edu.tr.html",
+    "sure_toplam_sn": 12.7,
+    "tekrar_bulgulari": [
+      "meta_tekrar"
+    ]
+  },
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://hastane.duzce.edu.tr",
+    "url": "https://hastane.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://hastane.duzce.edu.tr",
+      "son_url": "https://hastane.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 38,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 39,
+      "boyut_kb": 16,
+      "sikistirma": "gzip",
+      "hsts": true,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 35,
+        "veren": "YR2",
+        "bitis": "2026-11-26",
+        "zincir_eksik": false,
+        "zincir": [
+          "hastane.duzce.edu.tr",
+          "YR2",
+          "Root YR"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": true,
+        "hedef": "https://hastane.duzce.edu.tr/",
+        "durum_kodu": 301,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://hastane.duzce.edu.tr/robots.txt",
+        "var": true,
+        "durum_kodu": 200,
+        "satir_sayisi": 2,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "User-agent: *\nDisallow:",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://hastane.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://hastane.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi Hastanesi",
+    "meta_description": "Düzce Üniversitesi Sağlık Uygulama ve Araştırma Merkezi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "title_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "28 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "55 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "icerik_az",
+        "ciddiyet": "dusuk",
+        "ayrinti": "39 kelime",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_sitemap_bildirilmemis",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://hastane.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 10,
+    "once_puan": 43,
+    "once_puanlar": {
+      "sayfa": 64,
+      "site": 91,
+      "icerik": 50,
+      "teknik": 76,
+      "guvenlik": 100,
+      "performans": 100
+    },
+    "img_bos_alt": 15,
+    "sayfa_sorun_sayisi": 8,
+    "site_sorun_sayisi": 2,
+    "model": null,
+    "site_url": "https://hastane.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "canonical_eklendi: https://hastane.duzce.edu.tr/",
+      "og_etiketleri_eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 8,
+    "sonra_puan": 49,
+    "sonra_puanlar": {
+      "sayfa": 69,
+      "site": 91,
+      "icerik": 50,
+      "teknik": 82,
+      "guvenlik": 100,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "title_kisa",
+      "meta_description_kisa",
+      "h1_yok",
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "robots_sitemap_bildirilmemis",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "title_kisa",
+      "meta_description_kisa",
+      "h1_yok"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "robots_sitemap_bildirilmemis",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.0,
+    "toplam_cozum_orani": 0.4,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 92,
+        "basarisiz_denetimler": [
+          "crawlable-anchors"
+        ],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_hastane.duzce.edu.tr.html",
+    "sure_toplam_sn": 20.05,
+    "tekrar_bulgulari": []
+  },
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://kutuphane.duzce.edu.tr",
+    "url": "https://kutuphane.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://kutuphane.duzce.edu.tr",
+      "son_url": "https://kutuphane.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 163,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 228,
+      "boyut_kb": 158,
+      "sikistirma": "gzip",
+      "hsts": false,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 28,
+        "veren": "Sectigo Public Server Authentication CA DV R36",
+        "bitis": "2026-11-18",
+        "zincir_eksik": true,
+        "zincir": [
+          "*.duzce.edu.tr",
+          "Sectigo RSA Domain Validation Secure Server CA"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": true,
+        "hedef": "https://kutuphane.duzce.edu.tr:443/",
+        "durum_kodu": 301,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://kutuphane.duzce.edu.tr/robots.txt",
+        "var": false,
+        "durum_kodu": 404,
+        "satir_sayisi": 0,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://kutuphane.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://kutuphane.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi | Kütüphane ve Dokümantasyon Daire Başkanlığı | Anasayfa",
+    "meta_description": "Düzce Üniversitesi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "title_uzun",
+        "ciddiyet": "orta",
+        "ayrinti": "75 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "18 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "1/2 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "icerik_az",
+        "ciddiyet": "dusuk",
+        "ayrinti": "286 kelime",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_yakinda_bitiyor",
+        "ciddiyet": "orta",
+        "ayrinti": "28 gun, bitis 2026-11-18",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_zinciri_eksik",
+        "ciddiyet": "yuksek",
+        "ayrinti": "sunucu, yaprak sertifikanin vereni olan 'Sectigo Public Server Authentication CA DV R36' ara sertifikasini gondermiyor",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "hsts_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://kutuphane.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 14,
+    "once_puan": 4,
+    "once_puanlar": {
+      "sayfa": 58,
+      "site": 67,
+      "icerik": 38,
+      "teknik": 70,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "img_bos_alt": 0,
+    "sayfa_sorun_sayisi": 9,
+    "site_sorun_sayisi": 5,
+    "model": null,
+    "site_url": "https://kutuphane.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "canonical_eklendi: https://kutuphane.duzce.edu.tr/",
+      "og_etiketleri_eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 12,
+    "sonra_puan": 10,
+    "sonra_puanlar": {
+      "sayfa": 63,
+      "site": 67,
+      "icerik": 38,
+      "teknik": 77,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "title_uzun",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik",
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "title_uzun",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.0,
+    "toplam_cozum_orani": 0.33,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 75,
+        "basarisiz_denetimler": [
+          "crawlable-anchors",
+          "image-alt",
+          "robots-txt"
+        ],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_kutuphane.duzce.edu.tr.html",
+    "sure_toplam_sn": 14.91,
+    "tekrar_bulgulari": [
+      "meta_tekrar"
+    ]
+  },
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://ogrenciisleri.duzce.edu.tr",
+    "url": "https://ogrenciisleri.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://ogrenciisleri.duzce.edu.tr",
+      "son_url": "https://ogrenciisleri.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 212,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 359,
+      "boyut_kb": 151,
+      "sikistirma": "gzip",
+      "hsts": false,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 28,
+        "veren": "Sectigo Public Server Authentication CA DV R36",
+        "bitis": "2026-11-18",
+        "zincir_eksik": true,
+        "zincir": [
+          "*.duzce.edu.tr",
+          "Sectigo RSA Domain Validation Secure Server CA"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": true,
+        "hedef": "https://ogrenciisleri.duzce.edu.tr:443/",
+        "durum_kodu": 301,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://ogrenciisleri.duzce.edu.tr/robots.txt",
+        "var": false,
+        "durum_kodu": 404,
+        "satir_sayisi": 0,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://ogrenciisleri.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://ogrenciisleri.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi | Öğrenci İşleri Daire Başkanlığı | Anasayfa",
+    "meta_description": "Düzce Üniversitesi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "title_uzun",
+        "ciddiyet": "orta",
+        "ayrinti": "63 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "18 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "1/2 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "icerik_az",
+        "ciddiyet": "dusuk",
+        "ayrinti": "204 kelime",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_yakinda_bitiyor",
+        "ciddiyet": "orta",
+        "ayrinti": "28 gun, bitis 2026-11-18",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_zinciri_eksik",
+        "ciddiyet": "yuksek",
+        "ayrinti": "sunucu, yaprak sertifikanin vereni olan 'Sectigo Public Server Authentication CA DV R36' ara sertifikasini gondermiyor",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "hsts_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://ogrenciisleri.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 14,
+    "once_puan": 4,
+    "once_puanlar": {
+      "sayfa": 58,
+      "site": 67,
+      "icerik": 38,
+      "teknik": 70,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "img_bos_alt": 0,
+    "sayfa_sorun_sayisi": 9,
+    "site_sorun_sayisi": 5,
+    "model": null,
+    "site_url": "https://ogrenciisleri.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "canonical_eklendi: https://ogrenciisleri.duzce.edu.tr/",
+      "og_etiketleri_eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 12,
+    "sonra_puan": 10,
+    "sonra_puanlar": {
+      "sayfa": 63,
+      "site": 67,
+      "icerik": 38,
+      "teknik": 77,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "title_uzun",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik",
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "title_uzun",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.0,
+    "toplam_cozum_orani": 0.33,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 75,
+        "basarisiz_denetimler": [
+          "crawlable-anchors",
+          "image-alt",
+          "robots-txt"
+        ],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_ogrenciisleri.duzce.edu.tr.html",
+    "sure_toplam_sn": 12.24,
+    "tekrar_bulgulari": [
+      "meta_tekrar"
+    ]
+  },
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://kariyer.duzce.edu.tr",
+    "url": "https://kariyer.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://kariyer.duzce.edu.tr",
+      "son_url": "https://kariyer.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 257,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 391,
+      "boyut_kb": 156,
+      "sikistirma": "gzip",
+      "hsts": false,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 28,
+        "veren": "Sectigo Public Server Authentication CA DV R36",
+        "bitis": "2026-11-18",
+        "zincir_eksik": true,
+        "zincir": [
+          "*.duzce.edu.tr",
+          "Sectigo RSA Domain Validation Secure Server CA"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": true,
+        "hedef": "https://kariyer.duzce.edu.tr:443/",
+        "durum_kodu": 301,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://kariyer.duzce.edu.tr/robots.txt",
+        "var": false,
+        "durum_kodu": 404,
+        "satir_sayisi": 0,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://kariyer.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://kariyer.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi | Kariyer Geliştirme ve Mezun İzleme Uygulama Araştırma Merkezi | Anasayfa",
+    "meta_description": "Düzce Üniversitesi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "title_uzun",
+        "ciddiyet": "orta",
+        "ayrinti": "93 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "18 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "4/8 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "icerik_az",
+        "ciddiyet": "dusuk",
+        "ayrinti": "189 kelime",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_yakinda_bitiyor",
+        "ciddiyet": "orta",
+        "ayrinti": "28 gun, bitis 2026-11-18",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_zinciri_eksik",
+        "ciddiyet": "yuksek",
+        "ayrinti": "sunucu, yaprak sertifikanin vereni olan 'Sectigo Public Server Authentication CA DV R36' ara sertifikasini gondermiyor",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "hsts_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://kariyer.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 14,
+    "once_puan": 4,
+    "once_puanlar": {
+      "sayfa": 58,
+      "site": 67,
+      "icerik": 38,
+      "teknik": 70,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "img_bos_alt": 0,
+    "sayfa_sorun_sayisi": 9,
+    "site_sorun_sayisi": 5,
+    "model": null,
+    "site_url": "https://kariyer.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "canonical_eklendi: https://kariyer.duzce.edu.tr/",
+      "og_etiketleri_eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 12,
+    "sonra_puan": 10,
+    "sonra_puanlar": {
+      "sayfa": 63,
+      "site": 67,
+      "icerik": 38,
+      "teknik": 77,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "title_uzun",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik",
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "title_uzun",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.0,
+    "toplam_cozum_orani": 0.33,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 75,
+        "basarisiz_denetimler": [
+          "crawlable-anchors",
+          "image-alt",
+          "robots-txt"
+        ],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_kariyer.duzce.edu.tr.html",
+    "sure_toplam_sn": 13.21,
+    "tekrar_bulgulari": [
+      "meta_tekrar"
+    ]
+  },
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://uzem.duzce.edu.tr",
+    "url": "https://uzem.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://uzem.duzce.edu.tr",
+      "son_url": "https://uzem.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 153,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 188,
+      "boyut_kb": 140,
+      "sikistirma": "gzip",
+      "hsts": false,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 28,
+        "veren": "Sectigo Public Server Authentication CA DV R36",
+        "bitis": "2026-11-18",
+        "zincir_eksik": true,
+        "zincir": [
+          "*.duzce.edu.tr",
+          "Sectigo RSA Domain Validation Secure Server CA"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": true,
+        "hedef": "https://uzem.duzce.edu.tr:443/",
+        "durum_kodu": 301,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://uzem.duzce.edu.tr/robots.txt",
+        "var": false,
+        "durum_kodu": 404,
+        "satir_sayisi": 0,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://uzem.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://uzem.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi | Uzaktan Eğitim Merkezi | Anasayfa",
+    "meta_description": "Düzce Üniversitesi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "18 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "1/2 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "icerik_az",
+        "ciddiyet": "dusuk",
+        "ayrinti": "90 kelime",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_yakinda_bitiyor",
+        "ciddiyet": "orta",
+        "ayrinti": "28 gun, bitis 2026-11-18",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_zinciri_eksik",
+        "ciddiyet": "yuksek",
+        "ayrinti": "sunucu, yaprak sertifikanin vereni olan 'Sectigo Public Server Authentication CA DV R36' ara sertifikasini gondermiyor",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "hsts_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://uzem.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 13,
+    "once_puan": 12,
+    "once_puanlar": {
+      "sayfa": 64,
+      "site": 67,
+      "icerik": 50,
+      "teknik": 70,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "img_bos_alt": 0,
+    "sayfa_sorun_sayisi": 8,
+    "site_sorun_sayisi": 5,
+    "model": null,
+    "site_url": "https://uzem.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "canonical_eklendi: https://uzem.duzce.edu.tr/",
+      "og_etiketleri_eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 11,
+    "sonra_puan": 18,
+    "sonra_puanlar": {
+      "sayfa": 69,
+      "site": 67,
+      "icerik": 50,
+      "teknik": 77,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik",
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.0,
+    "toplam_cozum_orani": 0.4,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 75,
+        "basarisiz_denetimler": [
+          "crawlable-anchors",
+          "image-alt",
+          "robots-txt"
+        ],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_uzem.duzce.edu.tr.html",
+    "sure_toplam_sn": 10.44,
+    "tekrar_bulgulari": [
+      "meta_tekrar"
+    ]
+  },
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://yzdd.duzce.edu.tr",
+    "url": "https://yzdd.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://yzdd.duzce.edu.tr",
+      "son_url": "https://yzdd.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 166,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 202,
+      "boyut_kb": 167,
+      "sikistirma": "gzip",
+      "hsts": false,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 28,
+        "veren": "Sectigo Public Server Authentication CA DV R36",
+        "bitis": "2026-11-18",
+        "zincir_eksik": false,
+        "zincir": [
+          "*.duzce.edu.tr",
+          "Sectigo Public Server Authentication CA DV R36"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": false,
+        "hedef": null,
+        "durum_kodu": 200,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://yzdd.duzce.edu.tr/robots.txt",
+        "var": false,
+        "durum_kodu": 404,
+        "satir_sayisi": 0,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://yzdd.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://yzdd.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi | Yapay Zeka ve Dijital Dönüşüm Koordinatörlüğü | Anasayfa",
+    "meta_description": "Düzce Üniversitesi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "title_uzun",
+        "ciddiyet": "orta",
+        "ayrinti": "77 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "18 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "1/2 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "icerik_az",
+        "ciddiyet": "dusuk",
+        "ayrinti": "196 kelime",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_yakinda_bitiyor",
+        "ciddiyet": "orta",
+        "ayrinti": "28 gun, bitis 2026-11-18",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "hsts_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "https_yonlendirme_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 200",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://yzdd.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 14,
+    "once_puan": 11,
+    "once_puanlar": {
+      "sayfa": 58,
+      "site": 73,
+      "icerik": 38,
+      "teknik": 70,
+      "guvenlik": 70,
+      "performans": 100
+    },
+    "img_bos_alt": 0,
+    "sayfa_sorun_sayisi": 9,
+    "site_sorun_sayisi": 5,
+    "model": null,
+    "site_url": "https://yzdd.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "canonical_eklendi: https://yzdd.duzce.edu.tr/",
+      "og_etiketleri_eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 12,
+    "sonra_puan": 17,
+    "sonra_puanlar": {
+      "sayfa": 63,
+      "site": 73,
+      "icerik": 38,
+      "teknik": 77,
+      "guvenlik": 70,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "title_uzun",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik",
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "hsts_yok",
+      "https_yonlendirme_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "title_uzun",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "icerik_az",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "hsts_yok",
+      "https_yonlendirme_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.0,
+    "toplam_cozum_orani": 0.33,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 75,
+        "basarisiz_denetimler": [
+          "crawlable-anchors",
+          "image-alt",
+          "robots-txt"
+        ],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_yzdd.duzce.edu.tr.html",
+    "sure_toplam_sn": 11.95,
+    "tekrar_bulgulari": [
+      "meta_tekrar"
+    ]
+  }
+]
