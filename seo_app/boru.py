@@ -22,6 +22,7 @@ from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 from . import canli
+from .bagimsiz import pagespeed_seo
 from .cikarma import extract, sayfa_url_bul, yapisal_veri
 from .kurallar import ek_html_denetimi, odak_terim_denetimi, puan, rule_checks, site_geneli
 from .llm import llm_fixes
@@ -45,6 +46,7 @@ VARSAYILAN_AYARLAR = {
     "uy_robots": True,
     "bekleme_sn": 1.0,
     "zaman_asimi": canli.VARSAYILAN_ZAMAN_ASIMI,
+    "bagimsiz_olcum": False,      # canli modda PageSpeed (Lighthouse) SEO puani da alinsin mi
 }
 
 
@@ -178,7 +180,17 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
     kayit["cozum_orani"] = oran(modelle)                 # yalnizca modelin isi
     kayit["toplam_cozum_orani"] = oran(modelle + kuralla)
 
-    # ------------------------------------------------ 6. Ciktiyi kaydet
+    # ------------------------------------------------ 6. Bagimsiz olcum (istege bagli)
+    if a["bagimsiz_olcum"] and kaynak["tur"] == "canli" and not hata_sayfasi:
+        yaz("PageSpeed (Lighthouse) SEO puani aliniyor: " + kayit["url"])
+        olcum = pagespeed_seo(getirme.get("son_url") or kayit["url"])
+        kayit["lighthouse"] = {"once": olcum,
+                               "sonra": None,   # duzeltilmis HTML yerel dosya; API canli adres ister
+                               "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"}
+        if olcum["hata"]:
+            yaz("UYARI: PageSpeed olcumu alinamadi: " + olcum["hata"])
+
+    # ------------------------------------------------ 7. Ciktiyi kaydet
     if cikti_klasoru:
         Path(cikti_klasoru).mkdir(parents=True, exist_ok=True)
         hedef = Path(cikti_klasoru) / ("duzeltilmis_" + _guvenli_ad(kayit["ad"]) + ".html")
@@ -216,11 +228,17 @@ def csv_uret(sonuclar):
     tampon = io.StringIO()
     yazici = csv.writer(tampon, delimiter=";")
     yazici.writerow(sutunlar + ["kabul_edilen_oneri", "reddedilen_oneri", "yok_sayilan_oneri",
-                                "cozulen", "kalan"])
+                                "cozulen", "kalan", "lighthouse_seo_once", "lighthouse_seo_sonra"])
+
+    def lh_puan(k, an):
+        p = ((k.get("lighthouse") or {}).get(an) or {}).get("seo_puani")
+        return "" if p is None else p                     # 0 gecerli bir puandir, bos yazilmaz
+
     for k in sonuclar:
         yazici.writerow([k.get(s, "") for s in sutunlar] + [
             len(k.get("fixes", [])), len(k.get("reddedilen", [])), len(k.get("yok_sayilan", [])),
-            ", ".join(k.get("cozulen_sorunlar", [])), ", ".join(k.get("kalan_sorunlar", []))])
+            ", ".join(k.get("cozulen_sorunlar", [])), ", ".join(k.get("kalan_sorunlar", [])),
+            lh_puan(k, "once"), lh_puan(k, "sonra")])
     return tampon.getvalue()
 
 

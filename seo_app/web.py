@@ -111,7 +111,7 @@ def ayarlari_dogrula(veri):
     ayarlar = {**VARSAYILAN_AYARLAR}
     for k in ("llm_kullan", "url", "model", "kosul", "embed_model", "embed_url", "retry",
               "max_tokens", "timeout", "ornek_sayisi", "json_schema", "dil", "uy_robots",
-              "bekleme_sn", "zaman_asimi"):
+              "bekleme_sn", "zaman_asimi", "bagimsiz_olcum"):
         if k in veri and veri[k] not in ("", None):
             ayarlar[k] = veri[k]
     if ayarlar["kosul"] not in KOSULLAR:
@@ -130,6 +130,7 @@ def ayarlari_dogrula(veri):
     if ayarlar["bekleme_sn"] < 0:
         return None, "bekleme_sn negatif olamaz."
     ayarlar["llm_kullan"] = bool(ayarlar["llm_kullan"])
+    ayarlar["bagimsiz_olcum"] = bool(ayarlar["bagimsiz_olcum"])
     return ayarlar, None
 
 

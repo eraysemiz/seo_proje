@@ -137,6 +137,7 @@ function taramayiBaslat() {
     retry: $("#retry").value,
     max_tokens: $("#max-tokens").value,
     uy_robots: $("#uy-robots").checked,
+    bagimsiz_olcum: $("#bagimsiz-olcum").checked,
     bekleme_sn: $("#bekleme").value,
     zaman_asimi: $("#zaman-asimi").value
   };
