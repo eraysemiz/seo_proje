@@ -103,6 +103,7 @@ def extract(html: str) -> dict:
             t.decompose()
         icerik = body
     icerik_metni = icerik.get_text(" ", strip=True)
+    sonuc["icerik_kokleri"] = kokler(icerik_metni)          # odak terim denetimi icin (title haric)
     sonuc["kelime_kokleri"] = kokler(" ".join([
         icerik_metni, sonuc["title"] or "", sonuc["meta_description"] or "", " ".join(sonuc["h1"])]))
     sonuc["sayfa_kelimeleri"] = set(kelimeler(" ".join([
@@ -130,7 +131,12 @@ def yapisal_veri(html):
     og = [m.get("property") for m in soup.find_all("meta", attrs={"property": re.compile(r"^og:", re.I)})]
     tw = [m.get("name") for m in soup.find_all("meta", attrs={"name": re.compile(r"^twitter:", re.I)})]
     robots_meta = soup.find("meta", attrs={"name": re.compile(r"^robots$", re.I)})
+    # karisik icerik: sayfanin yukledigi kaynaklardan http:// ile gelenler (baglantilar sayilmaz)
+    kaynak_adresleri = ([t.get("src") for t in soup.find_all(["img", "script", "iframe", "source", "video", "audio"])] +
+                        [l.get("href") for l in soup.find_all("link", rel=lambda v: v and "stylesheet" in v)])
     return {
+        "baslik_seviyeleri": [int(h.name[1]) for h in soup.find_all(re.compile(r"^h[1-6]$"))],
+        "http_kaynak_sayisi": sum(1 for a in kaynak_adresleri if a and a.strip().lower().startswith("http://")),
         "jsonld_sayisi": jsonld,
         "jsonld_hatali": jsonld_hata,
         "schema_turleri": sorted(set(str(t) for t in turler))[:10],

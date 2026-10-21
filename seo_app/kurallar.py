@@ -6,6 +6,10 @@ Sorunlar iki katmanda toplanir:
 Model yalnizca sayfa katmanindaki belirli alanlar icin oneri uretir; site katmani
 kural tabanli duzeltme veya elle mudahale gerektirir.
 """
+import re
+from collections import defaultdict
+
+from .cikarma import GENEL_KOKLER, kokler
 
 # modelin degistirmesine izin verilen alanlar
 IZINLI_ALANLAR = ("title", "meta_description", "h1", "img_alt")
@@ -66,7 +70,24 @@ ACIKLAMA = {
     "twitter_card_yok": "Twitter Card etiketi yok",
     "favicon_yok": "Favicon (site simgesi) tanimlanmamis",
     "noindex": "Sayfa noindex ile aramaya kapatilmis",
+    # --- baslik yapisi, uluslararasilastirma, yapisal veri turu, guvenlik ---
+    "baslik_atlamasi": "Baslik hiyerarsisinde seviye atlaniyor (ornegin H1'den H3'e)",
+    "hreflang_gecersiz": "hreflang degeri gecerli bir dil/bolge kodu degil",
+    "hreflang_x_default_yok": "hreflang kullaniliyor ama x-default tanimli degil",
+    "schema_kurum_turu_yok": "Yapisal veri var ama kurum turu (Organization/CollegeOrUniversity) yok",
+    "karisik_icerik": "HTTPS sayfa http:// uzerinden kaynak yukluyor (karisik icerik)",
+    # --- odak terim tutarliligi ---
+    "title_h1_uyumsuz": "Sayfa basligi (title) ile H1 ortak hicbir anahtar terim icermiyor",
+    "title_icerikle_uyumsuz": "Sayfa basligindaki terimler sayfa iceriginde gecmiyor",
+    # --- sayfalar arasi (tarama geneli) ---
+    "title_tekrar": "Ayni sayfa basligi (title) baska sayfalarda da kullaniliyor",
+    "meta_tekrar": "Ayni meta aciklama baska sayfalarda da kullaniliyor",
+    "h1_tekrar": "Ayni H1 basligi baska sayfalarda da kullaniliyor",
 }
+
+KURUM_SCHEMA_TURLERI = {"Organization", "EducationalOrganization", "CollegeOrUniversity",
+                        "GovernmentOrganization", "School", "Hospital", "MedicalOrganization"}
+HREFLANG_DESENI = re.compile(r"^(x-default|[a-z]{2,3}(-[a-z]{4})?(-([a-z]{2}|\d{3}))?)$", re.I)
 
 
 def cozum_yolu(kod: str) -> str:
@@ -103,9 +124,10 @@ def rule_checks(d: dict) -> list:
     return issues
 
 
-def ek_html_denetimi(yv: dict) -> list:
-    """Yapisal veri, mobil uyum ve paylasim etiketleri denetimi.
-    Tamami HTML'den gorulebildigi icin cevrimdisi modda da calisir; modele gonderilmez."""
+def ek_html_denetimi(yv: dict, sayfa_url=None) -> list:
+    """Yapisal veri, mobil uyum, paylasim etiketleri, baslik yapisi ve karisik icerik denetimi.
+    Tamami HTML'den gorulebildigi icin cevrimdisi modda da calisir; modele gonderilmez.
+    sayfa_url verilirse ve https ise karisik icerik denetimi de yapilir."""
     issues = []
     def add(kod, ciddiyet, ayrinti=""):
         issues.append({"sorun": kod, "ciddiyet": ciddiyet, "ayrinti": ayrinti,
@@ -126,7 +148,61 @@ def ek_html_denetimi(yv: dict) -> list:
         add("cok_fazla_kaynak", "dusuk", str(yv["dis_kaynak_sayisi"]) + " kaynak")
     if "noindex" in (yv["robots_meta"] or "").lower():
         add("noindex", "yuksek", "meta robots: " + str(yv["robots_meta"]))
+    seviyeler = yv.get("baslik_seviyeleri") or []
+    atlamalar = [f"H{a}->H{b}" for a, b in zip(seviyeler, seviyeler[1:]) if b > a + 1]
+    if atlamalar:
+        add("baslik_atlamasi", "dusuk", ", ".join(sorted(set(atlamalar))[:3]))
+    hreflang = [h for h in (yv.get("hreflang") or []) if h is not None]
+    if hreflang:
+        gecersiz = [h for h in hreflang if not HREFLANG_DESENI.match(h.strip())]
+        if gecersiz:
+            add("hreflang_gecersiz", "dusuk", ", ".join(gecersiz[:3]))
+        if not any(h.strip().lower() == "x-default" for h in hreflang):
+            add("hreflang_x_default_yok", "dusuk")
+    if yv["jsonld_sayisi"] and not (set(yv.get("schema_turleri") or []) & KURUM_SCHEMA_TURLERI):
+        add("schema_kurum_turu_yok", "dusuk", ", ".join(yv.get("schema_turleri") or []) or "tur yok")
+    if sayfa_url and sayfa_url.lower().startswith("https://") and yv.get("http_kaynak_sayisi"):
+        add("karisik_icerik", "orta", str(yv["http_kaynak_sayisi"]) + " kaynak")
     return issues
+
+
+def odak_terim_denetimi(d: dict) -> list:
+    """Title, H1 ve icerik arasinda ortak anahtar terim olup olmadigini denetler.
+    Kokler 5 harfe kisaltildigi icin Turkce ek farklari tolere edilir; kurumlarin her sayfada
+    gecen genel sozcukleri (GENEL_KOKLER) sayilmaz."""
+    issues = []
+    def add(kod, ayrinti=""):
+        issues.append({"sorun": kod, "ciddiyet": "dusuk", "ayrinti": ayrinti,
+                       "katman": "sayfa", "cozum_yolu": cozum_yolu(kod)})
+    title_k = kokler(d.get("title") or "") - GENEL_KOKLER
+    h1_k = kokler(" ".join(d.get("h1") or [])) - GENEL_KOKLER
+    if title_k and h1_k and not (title_k & h1_k):
+        add("title_h1_uyumsuz", "title: " + (d.get("title") or "")[:40] + " | h1: " + " / ".join(d["h1"])[:40])
+    if title_k and d.get("icerik_kokleri") and not (title_k & d["icerik_kokleri"]):
+        add("title_icerikle_uyumsuz", (d.get("title") or "")[:60])
+    return issues
+
+
+def _normal(metin):
+    return " ".join((metin or "").lower().split())
+
+
+def site_geneli(rapor: list) -> list:
+    """Taramadaki sayfalar arasinda tekrar eden title / meta / H1 degerlerini bulur.
+    Her kayit icin tek tek bakilarak gorulemeyen, tarama geneline ait bir denetimdir.
+    Grup listesi dondurur: [{"sorun", "deger", "sayfalar"}]."""
+    gruplar = {"title_tekrar": defaultdict(list), "meta_tekrar": defaultdict(list), "h1_tekrar": defaultdict(list)}
+    for k in rapor:
+        if k.get("hata") or k.get("atlandi") or k.get("hata_sayfasi"):
+            continue
+        if _normal(k.get("title")):
+            gruplar["title_tekrar"][_normal(k["title"])].append(k["ad"])
+        if _normal(k.get("meta_description")):
+            gruplar["meta_tekrar"][_normal(k["meta_description"])].append(k["ad"])
+        for h in set(_normal(h) for h in (k.get("h1") or []) if _normal(h)):
+            gruplar["h1_tekrar"][h].append(k["ad"])
+    return [{"sorun": kod, "cozum_yolu": cozum_yolu(kod), "deger": deger, "sayfalar": sayfalar}
+            for kod, g in gruplar.items() for deger, sayfalar in g.items() if len(sayfalar) > 1]
 
 
 def puan(issues) -> int:

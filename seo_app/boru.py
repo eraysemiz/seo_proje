@@ -23,7 +23,7 @@ from urllib.parse import urljoin, urlparse
 
 from . import canli
 from .cikarma import extract, sayfa_url_bul, yapisal_veri
-from .kurallar import puan, rule_checks, ek_html_denetimi
+from .kurallar import ek_html_denetimi, odak_terim_denetimi, puan, rule_checks, site_geneli
 from .llm import llm_fixes
 from .ogretme import ogretme_metni
 from .uygula import apply_fixes, kural_duzelt
@@ -110,8 +110,12 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
     hata_sayfasi = bool(getirme and (getirme.get("durum_kodu") or 0) >= 400)
     kayit["hata_sayfasi"] = hata_sayfasi
     d = extract(html)
+    sayfa_url = a["site_url"] or varsayilan_site_url     # karisik icerik denetimi icin sema
     temel = [] if hata_sayfasi else rule_checks(d)
-    ek = [] if hata_sayfasi else ek_html_denetimi(yapisal_veri(html))   # modele gitmeyen HTML denetimleri
+    # modele gitmeyen HTML denetimleri
+    ek = [] if hata_sayfasi else ek_html_denetimi(yapisal_veri(html), sayfa_url) + odak_terim_denetimi(d)
+    # sayfalar arasi tekrar denetimi (site_geneli) icin ozgun degerler
+    kayit.update({"title": d["title"], "meta_description": d["meta_description"], "h1": d["h1"]})
     model_sorunlari = [i for i in temel if i["cozum_yolu"] == "model"]   # modele giden liste
     sayfa_sorunlari = temel + ek
     once_tum = sayfa_sorunlari + site_sorunlari
@@ -153,7 +157,8 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
 
     # ------------------------------------------------ 5. Yeniden denetim
     d2 = extract(yeni_html)
-    sonra_sayfa = [] if hata_sayfasi else rule_checks(d2) + ek_html_denetimi(yapisal_veri(yeni_html))
+    sonra_sayfa = [] if hata_sayfasi else (rule_checks(d2) + ek_html_denetimi(yapisal_veri(yeni_html), sayfa_url) +
+                                           odak_terim_denetimi(d2))
     sonra_tum = sonra_sayfa + site_sorunlari     # site katmani HTML duzenlemesiyle degismez
     sonra_kodlar = [i["sorun"] for i in sonra_tum]
     kayit.update({
@@ -247,6 +252,15 @@ def topluca_analiz(hedefler, ayarlar, ogretme_klasoru, cikti_klasoru, gunluk=Non
                                                      default=str), encoding="utf-8")
         if hedef["tur"] == "canli" and i < len(hedefler) and a["bekleme_sn"]:
             time.sleep(a["bekleme_sn"])             # sunucuyu yormamak icin nazik bekleme
+    # sayfalar arasi tekrarlar ancak tum sayfalar bitince gorulebilir; puana katilmaz,
+    # ayri dosyaya ve ilgili kayitlara bilgi olarak yazilir
+    tekrarlar = site_geneli(rapor)
+    for k in rapor:
+        k["tekrar_bulgulari"] = sorted({g["sorun"] for g in tekrarlar if k.get("ad") in g["sayfalar"]})
+    if tekrarlar:
+        yaz(str(len(tekrarlar)) + " tekrar eden title/meta/H1 grubu bulundu (site_geneli.json).")
+    (cikti / "site_geneli.json").write_text(json.dumps(tekrarlar, ensure_ascii=False, indent=2), encoding="utf-8")
+    (cikti / "rapor.json").write_text(json.dumps(rapor, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     (cikti / "ozet.csv").write_text(csv_uret(rapor), encoding="utf-8-sig")
     return rapor
 
