@@ -1,6 +1,8 @@
 """Onerilerin HTML'e islenmesi ve model gerektirmeyen (deterministik) duzeltmeler."""
 from bs4 import BeautifulSoup
 
+from .cikarma import gorseller
+
 
 def apply_fixes(html, fixes):
     """Modelden gelen ve dogrulamadan gecen onerileri HTML'e yazar."""
@@ -23,14 +25,20 @@ def apply_fixes(html, fixes):
             elif soup.head:
                 soup.head.append(soup.new_tag("meta", attrs={"name": "description", "content": v}))
         elif f["alan"] == "h1":
-            if not soup.find("h1") and soup.body:
+            # yalnizca metni olan H1 yoksa eklenir (bos ya da yalnizca logo iceren H1 sayilmaz)
+            if not any(h.get_text(strip=True) for h in soup.find_all("h1")) and soup.body:
                 tag = soup.new_tag("h1")
                 tag.string = v
                 soup.body.insert(0, tag)
         elif f["alan"] == "img_alt":
-            for img in soup.find_all("img"):
-                if img.get("src") == f.get("hedef_src", f.get("hedef")) and not (img.get("alt") or "").strip():
-                    img["alt"] = v
+            if "hedef_sira" in f:
+                imgs = gorseller(soup)
+                if f["hedef_sira"] < len(imgs) and imgs[f["hedef_sira"]].get("alt") is None:
+                    imgs[f["hedef_sira"]]["alt"] = v
+            else:   # sira bilgisi olmayan eski kayitlar icin src eslesmesi
+                for img in soup.find_all("img"):
+                    if img.get("src") == f.get("hedef_src", f.get("hedef")) and not (img.get("alt") or "").strip():
+                        img["alt"] = v
     return str(soup)
 
 
@@ -46,7 +54,8 @@ def kural_duzelt(html, kodlar, site_url, dil):
         soup.html["lang"] = dil
         uygulanan.append("html_lang_eklendi: " + dil)
     if "h1_birden_fazla" in kodlar:
-        h1ler = soup.find_all("h1")
+        # ilk metinli H1 kalir; bos H1'lere dokunulmaz (sayimda zaten yer almazlar)
+        h1ler = [h for h in soup.find_all("h1") if h.get_text(strip=True)]
         for h in h1ler[1:]:
             h.name = "h2"
         uygulanan.append("h1_fazlalari_h2_yapildi: " + str(max(len(h1ler) - 1, 0)))

@@ -27,6 +27,7 @@ ACIKLAMA = {
     "meta_description_uzun": "Meta aciklama cok uzun (160 karakterden fazla)",
     "h1_yok": "Sayfada H1 basligi yok",
     "h1_birden_fazla": "Sayfada birden fazla H1 var",
+    "h1_bos": "Metni olmayan H1 var (bos ya da yalnizca gorsel iceriyor)",
     "img_alt_eksik": "Bazi gorsellerde alt metni yok",
     "canonical_yok": "Canonical (asil adres) etiketi yok",
     "html_lang_yok": "html etiketinde dil (lang) bilgisi yok",
@@ -94,6 +95,7 @@ def rule_checks(d: dict) -> list:
     elif len(m) > 160: add("meta_description_uzun", "orta", f"{len(m)} karakter")
     if len(d["h1"]) == 0: add("h1_yok", "yuksek")
     elif len(d["h1"]) > 1: add("h1_birden_fazla", "orta", f"{len(d['h1'])} adet")
+    if d.get("h1_bos_sayisi"): add("h1_bos", "dusuk", f"{d['h1_bos_sayisi']} adet metinsiz H1")
     if d["img_no_alt"]: add("img_alt_eksik", "orta", f"{len(d['img_no_alt'])}/{d['img_total']} gorsel")
     if not d["canonical"]: add("canonical_yok", "dusuk")
     if not d["lang"]: add("html_lang_yok", "dusuk")

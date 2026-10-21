@@ -25,7 +25,8 @@ import requests
 
 from .kurallar import cozum_yolu
 
-KULLANICI_AJANI = ("Mozilla/5.0 (compatible; DU-SEO-Denetim/1.0; akademik arastirma; "
+AJAN_BELIRTECI = "DU-SEO-Denetim"     # robots.txt'de bu araca ozel kural yazilabilir
+KULLANICI_AJANI = ("Mozilla/5.0 (compatible; " + AJAN_BELIRTECI + "/1.0; akademik arastirma; "
                    "+https://www.duzce.edu.tr/)")
 VARSAYILAN_ZAMAN_ASIMI = 15
 EN_FAZLA_SITEMAP = 3           # sitemap dizininde en fazla kac alt dosya acilsin
@@ -167,9 +168,19 @@ def robots_bilgisi(site_koku, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
     return bilgi
 
 
-def sayfa_engelli_mi(robots, url):
+def sayfa_engelli_mi(robots, url, ajan="*"):
+    """ajan='*' arama motorlari icin genel durumu (SEO bulgusu), ajan=AJAN_BELIRTECI ise
+    bu aracin kendisinin taramaya izinli olup olmadigini (etik uyum) sorar."""
     p = robots.get("_parser")
-    return bool(p) and not p.can_fetch("*", url)
+    return bool(p) and not p.can_fetch(ajan, url)
+
+
+def url_anahtari(u):
+    """Karsilastirma icin adres: sema, 'www.' oneki ve sondaki '/' farklari yok sayilir."""
+    p = urlparse(urldefrag(u)[0])
+    host = (p.hostname or "").lower()
+    host = host[4:] if host.startswith("www.") else host
+    return host + (p.path.rstrip("/") or "") + ("?" + p.query if p.query else "")
 
 
 # ------------------------------------------------------------------ sitemap
@@ -217,7 +228,7 @@ def sitemap_bilgisi(site_koku, robots, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
                     acilacak.append(adres_c)
                 else:
                     if len(bilgi["adresler"]) < EN_FAZLA_SITEMAP_URL:
-                        bilgi["adresler"].add(urldefrag(adres_c)[0].rstrip("/"))
+                        bilgi["adresler"].add(url_anahtari(adres_c))
                     bilgi["url_sayisi"] += 1
                     if cocuk.find("{*}lastmod") is not None:
                         bilgi["lastmod_var"] = True
@@ -225,6 +236,9 @@ def sitemap_bilgisi(site_koku, robots, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
             bilgi["hata"] = "XML cozulemedi: " + str(e)
         except (requests.RequestException, OSError, gzip.BadGzipFile) as e:
             bilgi["hata"] = type(e).__name__ + ": " + str(e)
+    # acilma sinirina takilan alt sitemap kaldiysa adres listesi eksiktir; "sayfa listede yok"
+    # sonucu bu durumda guvenilir degildir
+    bilgi["tam_okundu"] = not acilacak and bilgi["url_sayisi"] <= EN_FAZLA_SITEMAP_URL
     _onbellek[anahtar] = bilgi
     return bilgi
 
@@ -393,8 +407,8 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
         add("sitemap_gecersiz", "orta", sitemap.get("hata") or "")
     elif sitemap["url_sayisi"] == 0 and sitemap["alt_sitemap_sayisi"] == 0:
         add("sitemap_bos", "orta")
-    elif sitemap["adresler"] and sitemap["tur"] == "urlset":
-        if urldefrag(son_url)[0].rstrip("/") not in sitemap["adresler"]:
+    elif sitemap["adresler"] and sitemap["tam_okundu"]:
+        if url_anahtari(son_url) not in sitemap["adresler"]:
             add("sayfa_sitemapte_yok", "dusuk")
 
     # --- hiz ve boyut

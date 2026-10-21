@@ -33,9 +33,22 @@ def sayfa_url_bul(html):
     return m.group(1).split("#")[0] if m else None
 
 
+def gorseller(soup):
+    """Sayfadaki gorseller, belge sirasiyla (noscript/script icindeki yedekler haric).
+    Cikarma ve uygulama ayni listeyi kullanir; boylece gorsel sira numaralari eslesir."""
+    return [i for i in soup.find_all("img") if i.find_parent(["noscript", "script"]) is None]
+
+
+def gercek_src(img):
+    """Tembel yuklemede (lazy-load) src yer tutucudur; asil adres data-src'dedir."""
+    return img.get("data-src") or img.get("data-lazy-src") or img.get("src", "")
+
+
 def _baglam(img):
     """Gorselin etrafindaki metinsel ipuclari (model gorseli goremez)."""
     parca = []
+    if img.get("srcset") and not img.get("data-src"):
+        parca.append("srcset: " + dosya_adi(img["srcset"].split(",")[0].split()[0]))
     for k in ("title", "aria-label"):
         if img.get(k): parca.append(f"{k}: {img[k][:60]}")
     a = img.find_parent("a")
@@ -57,20 +70,26 @@ def extract(html: str) -> dict:
     soup = BeautifulSoup(html, "lxml")
     meta = soup.find("meta", attrs={"name": "description"})
     body = soup.body or soup
+    imgs = gorseller(soup)                 # noscript silinmeden once, apply_fixes ile ayni sira
     for t in body(["script", "style", "noscript"]):
         t.decompose()
     text = re.sub(r"\s+", " ", body.get_text(" ", strip=True))
-    imgs = soup.find_all("img")
+    h1_metinleri = [h.get_text(strip=True) for h in soup.find_all("h1")]
+    # alt niteligi hic olmayan gorsel eksiktir; alt="" ise dekoratif gorsel icin bilincli
+    # ve gecerli bir tercihtir (WCAG), eksik sayilmaz
+    eksik = [(n, i) for n, i in enumerate(imgs) if i.get("alt") is None]
     sonuc = {
         "lang": (soup.html.get("lang") if soup.html else None),
         "title": soup.title.get_text(strip=True) if soup.title else None,
         "meta_description": meta.get("content", "").strip() if meta else None,
         "canonical": bool(soup.find("link", rel="canonical")),
-        "h1": [h.get_text(strip=True) for h in soup.find_all("h1")],
+        "h1": [t for t in h1_metinleri if t],          # yalnizca metni olan H1'ler sayilir
+        "h1_bos_sayisi": sum(1 for t in h1_metinleri if not t),
         "h2": [h.get_text(strip=True) for h in soup.find_all("h2")][:5],
         "img_total": len(imgs),
-        "img_no_alt": [i.get("src", "") for i in imgs if not (i.get("alt") or "").strip()],
-        "img_baglam": {i.get("src", ""): _baglam(i) for i in imgs if not (i.get("alt") or "").strip()},
+        "img_no_alt": [{"sira": n, "src": gercek_src(i)} for n, i in eksik],
+        "img_bos_alt": sum(1 for i in imgs if i.get("alt") is not None and not i["alt"].strip()),
+        "img_baglam": {n: _baglam(i) for n, i in eksik},
         "word_count": len(text.split()),
         "text_sample": text[:800],
     }

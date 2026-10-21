@@ -71,18 +71,28 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
         url = canli.normalize(kaynak["url"])
         kayit["ad"] = url
         kayit["url"] = url
-        robots = canli.robots_bilgisi(canli.kok(url), a["zaman_asimi"])
-        if a["uy_robots"] and canli.sayfa_engelli_mi(robots, url):
-            kayit.update({"atlandi": "robots.txt bu adresin taranmasina izin vermiyor",
+        def _robots_engelli(adres):
+            r = canli.robots_bilgisi(canli.kok(adres), a["zaman_asimi"])
+            return a["uy_robots"] and canli.sayfa_engelli_mi(r, adres, canli.AJAN_BELIRTECI)
+
+        def _atla(adres):
+            kayit.update({"atlandi": "robots.txt bu adresin taranmasina izin vermiyor: " + adres,
                           "hata": None, "sure_toplam_sn": round(time.time() - t_basla, 2)})
-            yaz("ATLANDI (robots.txt): " + url)
+            yaz("ATLANDI (robots.txt): " + adres)
             return kayit
+
+        if _robots_engelli(url):
+            return _atla(url)
         yaz("Indiriliyor: " + url)
         getirme = canli.sayfa_getir(url, a["zaman_asimi"])
         if not getirme.get("basarili"):
             kayit.update({"hata": getirme.get("hata"), "sure_toplam_sn": round(time.time() - t_basla, 2)})
             yaz("HATA: " + str(getirme.get("hata")))
             return kayit
+        # yonlendirme baska bir host'a goturduyse o host'un robots kurallari da gecerlidir
+        son = getirme.get("son_url") or url
+        if canli.kok(son) != canli.kok(url) and _robots_engelli(son):
+            return _atla(son)
         html = getirme["html"]
         site_sorunlari, site_bilgi = canli.canli_denetim(getirme, a["zaman_asimi"])
         kayit["site_bilgi"] = site_bilgi
@@ -96,9 +106,12 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
         varsayilan_site_url = sayfa_url_bul(html)   # Chrome'un kaydettigi orijinal adres
 
     # ------------------------------------------------ 2. Denetim
+    # 4xx/5xx donen bir sayfanin HTML'i sunucunun hata sayfasidir; sayfa katmani denetlenmez
+    hata_sayfasi = bool(getirme and (getirme.get("durum_kodu") or 0) >= 400)
+    kayit["hata_sayfasi"] = hata_sayfasi
     d = extract(html)
-    temel = rule_checks(d)
-    ek = ek_html_denetimi(yapisal_veri(html))   # modele gitmeyen HTML denetimleri
+    temel = [] if hata_sayfasi else rule_checks(d)
+    ek = [] if hata_sayfasi else ek_html_denetimi(yapisal_veri(html))   # modele gitmeyen HTML denetimleri
     model_sorunlari = [i for i in temel if i["cozum_yolu"] == "model"]   # modele giden liste
     sayfa_sorunlari = temel + ek
     once_tum = sayfa_sorunlari + site_sorunlari
@@ -106,6 +119,7 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
         "sorunlar": once_tum,
         "once_sorun_sayisi": len(once_tum),
         "once_puan": puan(once_tum),
+        "img_bos_alt": d["img_bos_alt"],              # bilgi notu: dekoratif gorsel, sorun sayilmaz
         "sayfa_sorun_sayisi": len(sayfa_sorunlari),
         "site_sorun_sayisi": len(site_sorunlari),
         "model": None,
@@ -139,7 +153,7 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
 
     # ------------------------------------------------ 5. Yeniden denetim
     d2 = extract(yeni_html)
-    sonra_sayfa = rule_checks(d2) + ek_html_denetimi(yapisal_veri(yeni_html))
+    sonra_sayfa = [] if hata_sayfasi else rule_checks(d2) + ek_html_denetimi(yapisal_veri(yeni_html))
     sonra_tum = sonra_sayfa + site_sorunlari     # site katmani HTML duzenlemesiyle degismez
     sonra_kodlar = [i["sorun"] for i in sonra_tum]
     kayit.update({

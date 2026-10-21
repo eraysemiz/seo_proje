@@ -187,9 +187,11 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
     """Modelden oneri ister, dogrular ve eksik kalan alanlar icin bir kez daha sorar."""
     kodlar = [i["sorun"] for i in issues]
     # model uzun src yollarini bozabildigi icin gorselleri kisa kimliklerle (g1, g2...) adlandiriyoruz
-    gorsel_id = {"g" + str(i + 1): src for i, src in enumerate(d["img_no_alt"][:ALT_LIMIT])}
-    gorseller = [{"id": k, "dosya_adi": dosya_adi(src), "baglam": d["img_baglam"].get(src, "")}
-                 for k, src in gorsel_id.items()]
+    # gorsel kimligi belge icindeki sira numarasina baglidir; ayni src'yi paylasan
+    # (ornegin tembel yukleme yer tutucusu) gorsellere tek oneri topluca yazilmaz
+    gorsel_id = {"g" + str(i + 1): g for i, g in enumerate(d["img_no_alt"][:ALT_LIMIT])}
+    gorseller = [{"id": k, "dosya_adi": dosya_adi(g["src"]), "baglam": d["img_baglam"].get(g["sira"], "")}
+                 for k, g in gorsel_id.items()]
     veri = {"dosya": filename, "title": d["title"], "meta_description": d["meta_description"],
             "h1": d["h1"], "h2": d["h2"], "alt_metni_eksik_gorseller": gorseller,
             "metin_ozeti": d["text_sample"], "tespit_edilen_sorunlar": issues}
@@ -225,7 +227,8 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
                     h = (f.get("hedef") or "").strip()
                     f["hedef"] = h
                     if f["alan"] == "img_alt":
-                        f["hedef_src"] = gorsel_id[h]
+                        f["hedef_src"] = gorsel_id[h]["src"]
+                        f["hedef_sira"] = gorsel_id[h]["sira"]
                     kabul.add((f["alan"], h if f["alan"] == "img_alt" else ""))
                     gecerli.append(f)
                     kabul_say += 1
