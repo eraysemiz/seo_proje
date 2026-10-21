@@ -34,6 +34,15 @@ def test_puan_ve_basarisiz_denetimler_okunur(monkeypatch):
     assert "gizli-anahtar" not in str(s)                             # anahtar sonuca/rapora sizmaz
 
 
+def test_baglanti_hatasi_mesajinda_anahtar_gizlenir(monkeypatch):
+    def hatali_get(adres, params=None, timeout=None):
+        raise bagimsiz.requests.ConnectionError(f"{adres}?url=x&key={params['key']} adresine baglanilamadi")
+
+    monkeypatch.setattr(bagimsiz.requests, "get", hatali_get)
+    s = bagimsiz.pagespeed_seo("https://ornek.edu.tr/", anahtar="GIZLI-ANAHTAR-123")
+    assert "GIZLI-ANAHTAR-123" not in s["hata"] and "***" in s["hata"]
+
+
 def test_kota_hatasi_istisnasiz_raporlanir(monkeypatch):
     monkeypatch.setattr(bagimsiz.requests, "get",
                         lambda *a, **k: _Yanit({"error": {"code": 429, "message": "Quota exceeded"}}, 429))

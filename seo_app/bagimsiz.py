@@ -16,6 +16,11 @@ import requests
 PSI_ADRESI = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
 
 
+def _gizle(metin, anahtar):
+    """Hata mesajlari istek adresini (key=... dahil) icerebilir; anahtar rapora sizmasin."""
+    return metin.replace(anahtar, "***") if anahtar else metin
+
+
 def pagespeed_seo(url, anahtar=None, strateji="mobile", zaman_asimi=120):
     """Bir adresin Lighthouse SEO puanini (0-100) ve basarisiz SEO denetimlerini dondurur.
     Hata durumunda istisna firlatmaz; 'hata' alani doldurulur."""
@@ -29,11 +34,11 @@ def pagespeed_seo(url, anahtar=None, strateji="mobile", zaman_asimi=120):
         r = requests.get(PSI_ADRESI, params=parametreler, timeout=zaman_asimi)
         veri = r.json()
     except (requests.RequestException, ValueError) as e:
-        sonuc["hata"] = type(e).__name__ + ": " + str(e)[:200]
+        sonuc["hata"] = type(e).__name__ + ": " + _gizle(str(e), anahtar)[:200]
         return sonuc
     if r.status_code != 200 or "error" in veri:
         hata = veri.get("error", {}) if isinstance(veri, dict) else {}
-        sonuc["hata"] = "HTTP " + str(r.status_code) + ": " + str(hata.get("message", ""))[:200]
+        sonuc["hata"] = "HTTP " + str(r.status_code) + ": " + _gizle(str(hata.get("message", "")), anahtar)[:200]
         return sonuc
     try:
         lr = veri["lighthouseResult"]
