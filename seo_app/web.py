@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 import requests
-from flask import Flask, jsonify, render_template, request, send_file
+from flask import Flask, abort, jsonify, render_template, request, send_file
 
 from . import canli
 from .boru import VARSAYILAN_AYARLAR, alt_siteleri_kesfet, analiz_et, hedefleri_hazirla
@@ -38,6 +38,26 @@ DURUM = {
     "bitis": None,
     "hata": None,
 }
+
+
+def _istek_dogrula():
+    """Durum degistiren isteklerin yalnizca bu arayuzden gelmesini saglar.
+    Baska bir sitenin, kullanici sayfayi acikken yerel sunucuya istek gondermesini
+    (siteler arasi istek sahteciligi) engeller; JSON olmayan govdeyi reddeder."""
+    kaynak = request.headers.get("Origin")
+    if kaynak and kaynak != request.host_url.rstrip("/"):
+        abort(403)
+    veri = request.get_json(silent=True)
+    if not isinstance(veri, dict):
+        abort(400)
+    return veri
+
+
+def _proje_ici(yol, taban):
+    """Verilen yolu taban klasore gore cozer; taban disina cikiyorsa None dondurur."""
+    taban = Path(taban).resolve()
+    hedef = (taban / str(yol)).resolve()
+    return hedef if hedef == taban or hedef.is_relative_to(taban) else None
 
 
 def _gunluk_yaz(mesaj):
@@ -113,18 +133,23 @@ def api_modeller():
 
 @uygulama.route("/api/kesif", methods=["POST"])
 def api_kesif():
-    veri = request.get_json(force=True)
+    veri = _istek_dogrula()
     sonuc = alt_siteleri_kesfet(veri.get("adres", ""))
     return jsonify(sonuc)
 
 
 @uygulama.route("/api/tara", methods=["POST"])
 def api_tara():
+    veri = _istek_dogrula()
     if DURUM["calisiyor"]:
         return jsonify({"hata": "Zaten calisan bir tarama var."}), 409
-    veri = request.get_json(force=True)
     mod = veri.get("mod", "canli")
-    hedefler = hedefleri_hazirla(mod, veri.get("adresler"), veri.get("klasor"))
+    klasor = None
+    if mod != "canli":
+        klasor = _proje_ici(veri.get("klasor") or "", KOK)
+        if klasor is None:
+            return jsonify({"hata": "Klasor proje klasorunun icinde olmali."}), 400
+    hedefler = hedefleri_hazirla(mod, veri.get("adresler"), klasor)
     if not hedefler:
         return jsonify({"hata": "Analiz edilecek adres veya dosya bulunamadi."}), 400
 
@@ -142,12 +167,15 @@ def api_tara():
         return jsonify({"hata": "Dil modeli secilmedi. Model listesini yenileyin "
                                 "veya 'Yalnizca kural denetimi' secenegini isaretleyin."}), 400
 
-    # ad verilmezse tarihli bir klasor; goreli ad verilirse yine sonuclar/ altina yazilir
-    cikti = Path(veri.get("cikti") or ("sonuc_" + time.strftime("%Y%m%d_%H%M%S")))
-    if not cikti.is_absolute():
-        cikti = SONUC_KOK / cikti
+    # ad verilmezse tarihli bir klasor; ciktilar yalnizca sonuclar/ altina yazilabilir
+    ad = veri.get("cikti") or ("sonuc_" + time.strftime("%Y%m%d_%H%M%S"))
+    cikti = None if Path(ad).is_absolute() else _proje_ici(ad, SONUC_KOK)
+    if cikti is None or cikti == SONUC_KOK.resolve():
+        return jsonify({"hata": "Cikti klasoru sonuclar/ altinda bir ad olmali (mutlak yol kabul edilmez)."}), 400
+    ogretme_klasoru = _proje_ici(veri.get("ogretme_klasoru") or "ogretme", KOK)
+    if ogretme_klasoru is None:
+        return jsonify({"hata": "Ogretme klasoru proje klasorunun icinde olmali."}), 400
     cikti.mkdir(parents=True, exist_ok=True)
-    ogretme_klasoru = veri.get("ogretme_klasoru") or str(KOK / "ogretme")
 
     canli.onbellek_temizle()
     _sifirla(len(hedefler), cikti)
@@ -170,6 +198,8 @@ def api_durum():
 
 @uygulama.route("/api/durdur", methods=["POST"])
 def api_durdur():
+    if request.headers.get("Origin") not in (None, request.host_url.rstrip("/")):
+        abort(403)
     with _kilit:
         DURUM["iptal"] = True
     return jsonify({"tamam": True})
