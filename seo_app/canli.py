@@ -32,9 +32,21 @@ VARSAYILAN_ZAMAN_ASIMI = 15
 EN_FAZLA_SITEMAP = 3           # sitemap dizininde en fazla kac alt dosya acilsin
 EN_FAZLA_SITEMAP_URL = 50000   # sayim siniri
 
+def _kodlamalar():
+    """Sunucudan yalnizca cozebilecegimiz sikistirma bicimlerini iste. br (brotli),
+    urllib3 bir brotli paketi (brotli/brotlicffi) bulabildiginde desteklenir; paket yoksa
+    istenmez, aksi halde sunucu br gonderir ve HTML bozuk okunurdu."""
+    try:
+        from urllib3.util.request import ACCEPT_ENCODING
+        destek = {k.strip() for k in ACCEPT_ENCODING.split(",")}
+    except ImportError:
+        destek = {"gzip", "deflate"}
+    return ", ".join(k for k in ("gzip", "deflate", "br") if k in destek)
+
+
 _oturum = requests.Session()
 _oturum.headers.update({"User-Agent": KULLANICI_AJANI,
-                        "Accept-Encoding": "gzip, deflate",
+                        "Accept-Encoding": _kodlamalar(),
                         "Accept-Language": "tr,en;q=0.8"})
 
 # dogrulamasiz yeniden deneme yapildiginda urllib3'un her istekte uyari basmasini engeller

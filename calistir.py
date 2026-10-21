@@ -6,7 +6,7 @@ Kullanim:
     py calistir.py --port 5050     # baska bir kapi numarasi
     py calistir.py --acma          # tarayiciyi kendiliginden acma
 
-Gereksinim: pip install flask requests beautifulsoup4 lxml
+Gereksinim: pip install -r requirements.txt
 """
 import argparse
 import sys

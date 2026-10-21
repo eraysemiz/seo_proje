@@ -8,7 +8,7 @@ ve öncesi/sonrası karşılaştırmalı bir rapor üretir.
 ## Kurulum
 
 ```
-pip install flask requests beautifulsoup4 lxml
+pip install -r requirements.txt
 ```
 
 ## Çalıştırma

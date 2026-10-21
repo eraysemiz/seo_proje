@@ -58,9 +58,8 @@ ACIKLAMA = {
     "hsts_yok": "HSTS (Strict-Transport-Security) basligi yok",
     "yavas_yanit": "Sunucu yanit suresi yuksek (TTFB 1 saniyeden fazla)",
     "cok_yavas_yanit": "Sunucu yanit suresi cok yuksek (TTFB 2.5 saniyeden fazla)",
-    # arac yalnizca gzip/deflate ister (brotli icin ek paket gerekir); yalnizca br sunan
-    # bir sunucu da bu bulguyu alir
-    "sikistirma_yok": "Yanit sikistirilmamis (gzip/deflate ile istendi, sikistirilmadi)",
+    # brotli paketi kuruluysa gzip/deflate/br, degilse gzip/deflate istenir (canli._kodlamalar)
+    "sikistirma_yok": "Yanit sikistirilmamis (gzip/deflate/br ile istendi, sikistirilmadi)",
     "html_cok_buyuk": "HTML belgesi cok buyuk (500 KB ustu)",
     "cok_fazla_kaynak": "Sayfa cok sayida dis kaynak yukluyor (100 ustu)",
     "viewport_yok": "Mobil uyum icin viewport meta etiketi yok",
