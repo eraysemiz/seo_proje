@@ -24,7 +24,7 @@ from urllib.parse import urljoin, urlparse
 from . import canli
 from .bagimsiz import pagespeed_seo
 from .cikarma import extract, sayfa_url_bul, yapisal_veri
-from .kurallar import ek_html_denetimi, odak_terim_denetimi, puan, rule_checks, site_geneli
+from .kurallar import ek_html_denetimi, odak_terim_denetimi, puan, puanlar, rule_checks, site_geneli
 from .llm import llm_fixes
 from .ogretme import ogretme_metni
 from .uygula import apply_fixes, kural_duzelt
@@ -124,7 +124,8 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
     kayit.update({
         "sorunlar": once_tum,
         "once_sorun_sayisi": len(once_tum),
-        "once_puan": puan(once_tum),
+        "once_puan": puan(once_tum),                 # eski olcek, deney karsilastirmasi icin korunur
+        "once_puanlar": puanlar(once_tum, site_olculdu=getirme is not None, sayfa_olculdu=not hata_sayfasi),
         "img_bos_alt": d["img_bos_alt"],              # bilgi notu: dekoratif gorsel, sorun sayilmaz
         "sayfa_sorun_sayisi": len(sayfa_sorunlari),
         "site_sorun_sayisi": len(site_sorunlari),
@@ -166,6 +167,7 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
     kayit.update({
         "sonra_sorun_sayisi": len(sonra_tum),
         "sonra_puan": puan(sonra_tum),
+        "sonra_puanlar": puanlar(sonra_tum, site_olculdu=getirme is not None, sayfa_olculdu=not hata_sayfasi),
         "cozulen_sorunlar": [x for x in once_kodlar if x not in sonra_kodlar],
         "kalan_sorunlar": [x for x in once_kodlar if x in sonra_kodlar],
         "yeni_cikan_sorunlar": [x for x in sonra_kodlar if x not in once_kodlar],
@@ -225,10 +227,13 @@ def csv_uret(sonuclar):
                 "once_sorun_sayisi", "sonra_sorun_sayisi", "once_puan", "sonra_puan",
                 "sayfa_sorun_sayisi", "site_sorun_sayisi", "cozum_orani", "toplam_cozum_orani",
                 "sure_sn", "sure_toplam_sn", "hata"]
+    puan_alanlari = [(an, kap) for an in ("once", "sonra")
+                     for kap in ("sayfa", "site", "icerik", "teknik", "guvenlik", "performans")]
     tampon = io.StringIO()
     yazici = csv.writer(tampon, delimiter=";")
     yazici.writerow(sutunlar + ["kabul_edilen_oneri", "reddedilen_oneri", "yok_sayilan_oneri",
-                                "cozulen", "kalan", "lighthouse_seo_once", "lighthouse_seo_sonra"])
+                                "cozulen", "kalan", "lighthouse_seo_once", "lighthouse_seo_sonra"] +
+                    [f"{an}_{kap}_puani" for an, kap in puan_alanlari])
 
     def lh_puan(k, an):
         p = ((k.get("lighthouse") or {}).get(an) or {}).get("seo_puani")
@@ -238,7 +243,9 @@ def csv_uret(sonuclar):
         yazici.writerow([k.get(s, "") for s in sutunlar] + [
             len(k.get("fixes", [])), len(k.get("reddedilen", [])), len(k.get("yok_sayilan", [])),
             ", ".join(k.get("cozulen_sorunlar", [])), ", ".join(k.get("kalan_sorunlar", [])),
-            lh_puan(k, "once"), lh_puan(k, "sonra")])
+            lh_puan(k, "once"), lh_puan(k, "sonra")] +
+            ["" if (k.get(an + "_puanlar") or {}).get(kap) is None else k[an + "_puanlar"][kap]
+             for an, kap in puan_alanlari])
     return tampon.getvalue()
 
 

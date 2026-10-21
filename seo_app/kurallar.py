@@ -212,5 +212,96 @@ def puan(issues) -> int:
     return max(0, 100 - ceza)
 
 
+# ------------------------------------------------------------ kategori bazli puan
+# kod: (kategori, grup, en yuksek ciddiyet, gorulebildigi katmanlar)
+# Ayni gruptaki kodlar birbirini dislar (ornegin title_yok / title_kisa / title_uzun);
+# bir grubun en fazla cezasi o gruptaki en yuksek ciddiyetin agirligidir.
+SORUN_TANIMI = {
+    "title_yok": ("icerik", "title", "yuksek", "sayfa"), "title_kisa": ("icerik", "title", "orta", "sayfa"),
+    "title_uzun": ("icerik", "title", "orta", "sayfa"),
+    "meta_description_yok": ("icerik", "meta", "yuksek", "sayfa"),
+    "meta_description_kisa": ("icerik", "meta", "orta", "sayfa"),
+    "meta_description_uzun": ("icerik", "meta", "orta", "sayfa"),
+    "h1_yok": ("icerik", "h1", "yuksek", "sayfa"), "h1_birden_fazla": ("icerik", "h1", "orta", "sayfa"),
+    "h1_bos": ("icerik", "h1_bos", "dusuk", "sayfa"),
+    "img_alt_eksik": ("icerik", "img_alt", "orta", "sayfa"),
+    "icerik_az": ("icerik", "icerik_az", "dusuk", "sayfa"),
+    "title_h1_uyumsuz": ("icerik", "title_h1", "dusuk", "sayfa"),
+    "title_icerikle_uyumsuz": ("icerik", "title_icerik", "dusuk", "sayfa"),
+    "baslik_atlamasi": ("icerik", "baslik", "dusuk", "sayfa"),
+    "canonical_yok": ("teknik", "canonical", "dusuk", "sayfa"),
+    "html_lang_yok": ("teknik", "lang", "dusuk", "sayfa"),
+    "viewport_yok": ("teknik", "viewport", "orta", "sayfa"),
+    "yapisal_veri_yok": ("teknik", "yapisal", "dusuk", "sayfa"),
+    "yapisal_veri_gecersiz": ("teknik", "yapisal", "dusuk", "sayfa"),
+    "schema_kurum_turu_yok": ("teknik", "schema_tur", "dusuk", "sayfa"),
+    "og_etiketleri_yok": ("teknik", "og", "dusuk", "sayfa"),
+    "twitter_card_yok": ("teknik", "twitter", "dusuk", "sayfa"),
+    "favicon_yok": ("teknik", "favicon", "dusuk", "sayfa"),
+    "hreflang_gecersiz": ("teknik", "hreflang_gecersiz", "dusuk", "sayfa"),
+    "hreflang_x_default_yok": ("teknik", "hreflang_x", "dusuk", "sayfa"),
+    "noindex": ("teknik", "noindex", "yuksek", "sayfa site"),
+    "cok_fazla_kaynak": ("performans", "kaynak", "dusuk", "sayfa"),
+    "karisik_icerik": ("guvenlik", "karisik", "orta", "sayfa"),
+    "erisilemedi": ("teknik", "erisim", "yuksek", "site"),
+    "hata_durum_kodu": ("teknik", "erisim", "yuksek", "site"),
+    "uzun_yonlendirme_zinciri": ("teknik", "yonlendirme", "dusuk", "site"),
+    "robots_yok": ("teknik", "robots", "orta", "site"), "robots_okunamadi": ("teknik", "robots", "orta", "site"),
+    "robots_tum_siteyi_engelliyor": ("teknik", "robots", "yuksek", "site"),
+    "robots_sayfayi_engelliyor": ("teknik", "robots", "yuksek", "site"),
+    "robots_sitemap_bildirilmemis": ("teknik", "robots_sitemap", "dusuk", "site"),
+    "sitemap_yok": ("teknik", "sitemap", "orta", "site"), "sitemap_gecersiz": ("teknik", "sitemap", "orta", "site"),
+    "sitemap_bos": ("teknik", "sitemap", "orta", "site"),
+    "sayfa_sitemapte_yok": ("teknik", "sitemap", "dusuk", "site"),
+    "https_yok": ("guvenlik", "https", "yuksek", "site"),
+    "https_yonlendirme_yok": ("guvenlik", "https_yon", "orta", "site"),
+    "sertifika_suresi_dolmus": ("guvenlik", "sertifika_sure", "yuksek", "site"),
+    "sertifika_yakinda_bitiyor": ("guvenlik", "sertifika_sure", "orta", "site"),
+    "sertifika_zinciri_eksik": ("guvenlik", "sertifika_zincir", "yuksek", "site"),
+    "sertifika_dogrulanamadi": ("guvenlik", "sertifika_zincir", "yuksek", "site"),
+    "hsts_yok": ("guvenlik", "hsts", "dusuk", "site"),
+    "yavas_yanit": ("performans", "hiz", "dusuk", "site"), "cok_yavas_yanit": ("performans", "hiz", "orta", "site"),
+    "sikistirma_yok": ("performans", "sikistirma", "dusuk", "site"),
+    "html_cok_buyuk": ("performans", "boyut", "dusuk", "site"),
+}
+KATEGORILER = ("icerik", "teknik", "guvenlik", "performans")
+# tarama geneline ait bulgular (site_geneli); sayfa kaydinin sorunlarina girmez, puanlanmaz
+TARAMA_GENELI_KODLARI = ("title_tekrar", "meta_tekrar", "h1_tekrar")
+
+
+def _azami_ceza(katmanlar, kategori=None):
+    """Verilen katmanlarda gorulebilen tum gruplarin en yuksek cezalarinin toplami."""
+    gruplar = {}
+    for kat, grup, ciddiyet, kod_katmanlari in SORUN_TANIMI.values():
+        if (kategori is None or kat == kategori) and set(kod_katmanlari.split()) & set(katmanlar):
+            gruplar[grup] = max(gruplar.get(grup, 0), CIDDIYET_AGIRLIK[ciddiyet])
+    return sum(gruplar.values())
+
+
+def _normal_puan(issues, katmanlar, kategori=None):
+    secili = [i for i in issues if i.get("katman") in katmanlar and
+              (kategori is None or SORUN_TANIMI.get(i["sorun"], ("",))[0] == kategori)]
+    azami = _azami_ceza(katmanlar, kategori)
+    if not azami:
+        return None
+    ceza = sum(CIDDIYET_AGIRLIK.get(i.get("ciddiyet"), 5) for i in secili)
+    return max(0, round(100 * (1 - ceza / azami)))
+
+
+def puanlar(issues, site_olculdu=True, sayfa_olculdu=True) -> dict:
+    """Katman ve kategori bazli, 0-100 arasina normallestirilmis puanlar.
+    Her puan, o kapsamda gorulebilecek en kotu durumun cezasina bolunur; boylece birkac
+    sorun olcegi 0'a indirmez ve siteler birbirinden ayirt edilebilir. Site katmani
+    olculmediyse (cevrimdisi mod) site puani None olur, kategoriler yalnizca sayfa
+    katmanindan hesaplanir."""
+    # hata sayfasinda (4xx/5xx) sayfa katmani denetlenmez; bulgu olmamasi "kusursuz" demek degildir
+    katmanlar = tuple(k for k, olculdu in (("sayfa", sayfa_olculdu), ("site", site_olculdu)) if olculdu)
+    sonuc = {"sayfa": _normal_puan(issues, ("sayfa",)) if sayfa_olculdu else None,
+             "site": _normal_puan(issues, ("site",)) if site_olculdu else None}
+    for kat in KATEGORILER:
+        sonuc[kat] = _normal_puan(issues, katmanlar, kat) if katmanlar else None
+    return sonuc
+
+
 def acikla(kod: str) -> str:
     return ACIKLAMA.get(kod, kod)

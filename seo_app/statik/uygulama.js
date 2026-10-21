@@ -202,10 +202,16 @@ function ozetiCiz(sonuclar) {
 
   const kutucuk = (deger, etiket) => '<div class="kutucuk"><div class="deger">' + deger +
     '</div><div class="etiket">' + etiket + "</div></div>";
+  // site puani yalnizca canli modda olculur; olculmeyen kayitlar ortalamaya katilmaz
+  const ortPuan = (an, kap) => {
+    const p = gecerli.map((k) => (k[an + "_puanlar"] || {})[kap]).filter((x) => x !== null && x !== undefined);
+    return p.length ? Math.round(p.reduce((a, b) => a + b, 0) / p.length) : "—";
+  };
   kutu.innerHTML =
     kutucuk(gecerli.length, "analiz edilen sayfa") +
     kutucuk(toplamOnce + " &rarr; " + toplamSonra, "toplam sorun") +
-    kutucuk(ort((k) => k.once_puan) + " &rarr; " + ort((k) => k.sonra_puan), "ortalama puan") +
+    kutucuk(ortPuan("once", "sayfa") + " &rarr; " + ortPuan("sonra", "sayfa"), "ortalama sayfa puani") +
+    kutucuk(ortPuan("once", "site"), "ortalama site puani") +
     kutucuk(ortOran === null ? "—" : "%" + ortOran, "ortalama cozum orani") +
     (hatali ? kutucuk(hatali, "hatali / atlanan") : "");
 }
@@ -221,18 +227,20 @@ function tabloyuCiz(sonuclar) {
     if (k.hata || k.atlandi) {
       satir.innerHTML =
         '<td class="sayfa-adi">' + kacis(k.ad) + "</td>" +
-        '<td colspan="5" class="azalis">' + kacis(k.atlandi ? "Atlandi: " + k.atlandi : "Hata: " + k.hata) + "</td><td></td>";
+        '<td colspan="6" class="azalis">' + kacis(k.atlandi ? "Atlandi: " + k.atlandi : "Hata: " + k.hata) + "</td><td></td>";
       govde.appendChild(satir);
       return;
     }
-    const fark = (k.sonra_puan || 0) - (k.once_puan || 0);
+    const po = k.once_puanlar || {}, ps = k.sonra_puanlar || {};
+    const fark = (ps.sayfa ?? 0) - (po.sayfa ?? 0);
     const oran = k.cozum_orani === null || k.cozum_orani === undefined ? "—" : "%" + Math.round(k.cozum_orani * 100);
     satir.innerHTML =
       '<td class="sayfa-adi">' + kacis(k.ad) + "</td>" +
       '<td class="sayi">' + (k.once_sorun_sayisi ?? "—") + "</td>" +
       '<td class="sayi">' + (k.sonra_sorun_sayisi ?? "—") + "</td>" +
-      '<td class="sayi">' + (k.once_puan ?? "—") + " &rarr; " + (k.sonra_puan ?? "—") +
+      '<td class="sayi">' + (po.sayfa ?? "—") + " &rarr; " + (ps.sayfa ?? "—") +
       (fark ? ' <span class="' + (fark > 0 ? "artis" : "azalis") + '">' + (fark > 0 ? "+" : "") + fark + "</span>" : "") + "</td>" +
+      '<td class="sayi">' + (po.site ?? "—") + "</td>" +
       '<td class="sayi">' + oran + "</td>" +
       '<td class="sayi">' + (k.sure_toplam_sn ?? "—") + " sn</td>" +
       '<td><button class="ikincil" data-i="' + i + '">Ayrinti</button></td>';
@@ -240,7 +248,7 @@ function tabloyuCiz(sonuclar) {
 
     const ayrintiSatiri = yarat("tr", "ayrinti-satiri");
     const hucre = yarat("td");
-    hucre.colSpan = 7;
+    hucre.colSpan = 8;
     hucre.innerHTML = ayrintiHtml(k);
     ayrintiSatiri.appendChild(hucre);
     ayrintiSatiri.style.display = acikSatirlar.has(i) ? "" : "none";
@@ -270,6 +278,16 @@ function sorunListesi(sorunlar) {
 function ayrintiHtml(k) {
   let h = '<div class="ayrinti">';
 
+  if (k.once_puanlar) {
+    const etiketler = { sayfa: "Sayfa", site: "Site", icerik: "Icerik", teknik: "Teknik",
+                        guvenlik: "Guvenlik", performans: "Performans" };
+    h += "<h4>Puanlar (once &rarr; sonra)</h4><div class='bilgi-izgara'>" +
+      Object.keys(etiketler).map((kap) => {
+        const o = k.once_puanlar[kap], s = (k.sonra_puanlar || {})[kap];
+        const deger = o === null || o === undefined ? "olculmedi" : o + " → " + (s ?? "—");
+        return '<div><span class="etiket">' + etiketler[kap] + "</span>" + kacis(deger) + "</div>";
+      }).join("") + "</div>";
+  }
   h += "<h4>Tespit edilen sorunlar (" + (k.once_sorun_sayisi || 0) + ")</h4>" + sorunListesi(k.sorunlar);
 
   if (k.fixes && k.fixes.length) {
