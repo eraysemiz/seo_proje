@@ -15,7 +15,12 @@ def tr_lower(x):
 
 def kokler(metin):
     """Metindeki 5+ harfli kelimelerin ilk 5 harfi (Turkce ek farklarini yumusatir)."""
-    return {w[:5] for w in re.findall(r"[a-zçğıöşü0-9]+", tr_lower(metin)) if len(w) >= 5}
+    return {w[:5] for w in re.findall(r"[a-zçğıöşüâîû0-9]+", tr_lower(metin)) if len(w) >= 5}
+
+
+def kelimeler(metin):
+    """Metni Turkce kucuk harfe cevirip kelimelere ayirir."""
+    return re.findall(r"[a-zçğıöşüâîû0-9]+", tr_lower(metin))
 
 
 # her sayfada bulunabilecek genel SEO/kurum sozcukleri (sadakat denetiminde sayilmaz)
@@ -56,7 +61,7 @@ def extract(html: str) -> dict:
         t.decompose()
     text = re.sub(r"\s+", " ", body.get_text(" ", strip=True))
     imgs = soup.find_all("img")
-    return {
+    sonuc = {
         "lang": (soup.html.get("lang") if soup.html else None),
         "title": soup.title.get_text(strip=True) if soup.title else None,
         "meta_description": meta.get("content", "").strip() if meta else None,
@@ -68,10 +73,22 @@ def extract(html: str) -> dict:
         "img_baglam": {i.get("src", ""): _baglam(i) for i in imgs if not (i.get("alt") or "").strip()},
         "word_count": len(text.split()),
         "text_sample": text[:800],
-        "kelime_kokleri": kokler(" ".join([
-            text, soup.title.get_text(" ") if soup.title else "",
-            meta.get("content", "") if meta else ""])),
     }
+    # Sadakat denetiminin dayandigi kelime kokleri yalnizca icerik bolgesinden alinir:
+    # menu ve alt bilgi baglantilari ("Basari Siralamalari" gibi) modelin uydurdugu bir
+    # iddiayi "sayfada geciyor" gibi gostermesin. Yukaridaki alanlar hesaplandiktan sonra
+    # gezinme bolumleri cikarilir.
+    icerik = body.find("main") or body.find("article")
+    if icerik is None:
+        for t in body.find_all(["nav", "header", "footer", "aside"]):
+            t.decompose()
+        icerik = body
+    icerik_metni = icerik.get_text(" ", strip=True)
+    sonuc["kelime_kokleri"] = kokler(" ".join([
+        icerik_metni, sonuc["title"] or "", sonuc["meta_description"] or "", " ".join(sonuc["h1"])]))
+    sonuc["sayfa_kelimeleri"] = set(kelimeler(" ".join([
+        sonuc["title"] or "", sonuc["meta_description"] or "", " ".join(sonuc["h1"])])))
+    return sonuc
 
 
 def yapisal_veri(html):

@@ -10,7 +10,7 @@ import time
 
 import requests
 
-from .cikarma import ALT_LIMIT, GENEL_KOKLER, dosya_adi, kokler
+from .cikarma import ALT_LIMIT, GENEL_KOKLER, dosya_adi, kelimeler, kokler
 from .kurallar import ALAN_SORUN, IZINLI_ALANLAR
 
 SCHEMA = {
@@ -44,6 +44,25 @@ SYSTEM = (
     "Cevabin SADECE su bicimde tek bir JSON nesnesi olsun, baska hicbir sey yazma: "
     '{"fixes":[{"alan":"title|meta_description|h1|img_alt","hedef":"","yeni_deger":"...","gerekce":"..."}]}'
 )
+
+
+# Sistem isteminde yasaklanan, dogrulanamayan ovgu/nitelemelerin kelime basi bicimleri.
+# Kelime kokunun sayfada bir yerde gecmesi iddianin dogru oldugunu gostermez; bu yuzden
+# bunlar, sayfanin kendi title/meta/h1 metninde aynen gecmedikce reddedilir.
+YASAKLI_ONEKLER = ("uzmanlaş", "uzmanlas", "başarıl", "basaril", "lider", "öncü", "oncu",
+                   "mükemmel", "mukemmel", "seçkin", "seckin", "prestij", "saygın", "saygin",
+                   "köklü", "koklu")
+YASAKLI_IFADELER = ("dünya çapında", "dunya capinda", "en iyi")
+
+
+def _yasakli_ifadeler(v, d):
+    """Onerideki dogrulanamayan nitelemeleri dondurur (sayfanin kendi metninde gecenler haric)."""
+    izinli = d.get("sayfa_kelimeleri", set())
+    kel = kelimeler(v)
+    bulunan = {k for k in kel if k.startswith(YASAKLI_ONEKLER) and k not in izinli}
+    duz = " " + " ".join(kel) + " "
+    bulunan |= {i for i in YASAKLI_IFADELER if " " + i + " " in duz}
+    return sorted(bulunan)
 
 
 def modelleri_listele(url, timeout=10):
@@ -109,6 +128,9 @@ def dogrula(f, d, sorun_kodlari, kabul_edilen, gorsel_id):
     if alan == "h1" and not 5 <= len(v) <= 70:
         return False, "h1_uzunluk_" + str(len(v))
     if alan in ("title", "meta_description", "h1"):
+        yasakli = _yasakli_ifadeler(v, d)
+        if yasakli:
+            return False, "dogrulanamayan_niteleme: " + ", ".join(yasakli)
         bilinmeyen = sorted(k for k in kokler(v) if k not in d["kelime_kokleri"] and k not in GENEL_KOKLER)
         if len(bilinmeyen) >= 2:                      # sayfada gecmeyen en az 2 icerik kelimesi
             return False, "sayfada_olmayan_ifade: " + ", ".join(bilinmeyen)
