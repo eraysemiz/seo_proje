@@ -81,8 +81,12 @@ gerekçesiyle rapora yazılır:
 
 - izin verilen alanlardan biri mi, boş mu, HTML etiketi içeriyor mu
 - alanın uzunluk kuralına uyuyor mu (title 30-60, meta 70-160, H1 5-70 karakter)
-- **sadakat denetimi:** sayfada geçmeyen en az iki içerik kelimesi varsa reddedilir
-  (modelin bilgi uydurmasına karşı)
+- **sadakat denetimi:** sayfanın içerik bölgesinde (menü, üst ve alt bilgi hariç) geçmeyen en az
+  iki içerik kelimesi varsa reddedilir (modelin bilgi uydurmasına karşı)
+- **doğrulanamayan nitelemeler:** "uzmanlaşmış", "başarılı", "lider", "öncü" gibi ifadeler, sayfanın
+  kendi title/meta/H1 metninde geçmiyorsa reddedilir
+- yeniden denemede modelin zaten kabul edilmiş alanları tekrar göndermesi ret sayılmaz;
+  raporda ayrı bir `yok_sayilan` listesine yazılır
 - görsel hedefi gerçekten listede var mı, aynı alan için tekrar öneri verilmiş mi
 
 ## Çıktılar
@@ -90,8 +94,34 @@ gerekçesiyle rapora yazılır:
 Her tarama `sonuclar/` altında kendi klasörüne yazar (ad verilmezse `sonuc_<tarih>`):
 
 - `rapor.json` — sayfa başına tüm bulgular, öneriler, reddedilenler, ölçümler
-- `ozet.csv` — karşılaştırma tablosu (arayüzden indirilir)
+- `ozet.csv` — karşılaştırma tablosu (tarama bitince kendiliğinden yazılır)
+- `site_geneli.json` — sayfalar arasında tekrar eden title / meta açıklama / H1 grupları
 - `duzeltilmis_*.html` — düzeltmelerin uygulandığı sayfalar
+
+## Deney matrisi
+
+Model × koşul × retry kombinasyonlarını tek komutla çalıştırır; her kombinasyon ayrı klasöre,
+karşılaştırması `sonuclar/<ad>/karsilastirma.csv` dosyasına yazılır:
+
+```
+py deney.py --klasor snapshots --modeller qwen/qwen3.5-9b,qwen3.8-4b-distill --ad deney1
+py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-9b ^
+            --kosullar sifir,bilgi --retry 0,1 --embed-model text-embedding-qwen3-embedding-0.6b
+```
+
+## Bağımsız ölçüm (isteğe bağlı)
+
+Arayüzdeki "Lighthouse SEO puanını da al" seçeneği, canlı modda Google PageSpeed Insights
+üzerinden Lighthouse SEO puanını rapora ve CSV'ye ekler. Anahtarsız kullanımın günlük kotası
+çabuk dolar; ücretsiz bir API anahtarı `PSI_API_ANAHTARI` ortam değişkenine yazılabilir.
+Düzeltilmiş sayfa yerel bir dosya olduğu için "sonra" puanı bu yöntemle ölçülemez.
+
+## Testler
+
+```
+pip install -r requirements-dev.txt
+py -m pytest tests
+```
 
 ## Test seti
 
@@ -100,9 +130,16 @@ Her tarama `sonuclar/` altında kendi klasörüne yazar (ad verilmezse `sonuc_<t
 
 ## Puanlama hakkında uyarı
 
-Arayüzdeki 0-100 puan, bu aracın kendi ağırlıklandırmasıdır (yüksek 15, orta 8, düşük 3 ceza
-puanı). Lighthouse gibi **bağımsız bir ölçüm değildir**; aracın kendi kurallarıyla kendi
-başarısını ölçmek döngüsel olacağından, ödevde bağımsız bir doğrulama ayrıca yapılmalıdır.
+Arayüz **sayfa** ve **site** puanlarını ayrı gösterir; ayrıntı panelinde ayrıca içerik, teknik,
+güvenlik ve performans kategori puanları vardır. Her puan 0-100 arasıdır ve o kapsamda görülebilecek
+en kötü durumun cezasına bölünerek hesaplanır (ceza ağırlıkları: yüksek 15, orta 8, düşük 3).
+Böylece birkaç sorun ölçeği 0'a indirmez. Ölçülemeyen kapsam (çevrimdışı modda site katmanı,
+hata sayfasında sayfa katmanı) "ölçülmedi" olarak gösterilir. Eski tek puan (`once_puan` /
+`sonra_puan`) deney karşılaştırılabilirliği için raporda korunur.
+
+Bu puanlar aracın kendi ölçeğidir, Lighthouse gibi **bağımsız bir ölçüm değildir**. Aracın kendi
+kurallarıyla kendi başarısını ölçmek döngüsel olacağından, ödevde bağımsız bir doğrulama ayrıca
+yapılmalıdır.
 
 ## Etik ve sınırlar
 
@@ -115,7 +152,10 @@ başarısını ölçmek döngüsel olacağından, ödevde bağımsız bir doğru
 
 ```
 calistir.py              uygulamayı başlatır
+deney.py                 deney matrisi koşucusu (komut satırı)
+tests/                   pytest testleri
 seo_app/
+  bagimsiz.py            PageSpeed (Lighthouse) SEO puanı
   cikarma.py             HTML'den veri çıkarma
   kurallar.py            kural denetimi, çözüm yolu sınıflandırması, puanlama
   canli.py               canlı erişim denetimleri (robots, sitemap, HTTPS, hız)
