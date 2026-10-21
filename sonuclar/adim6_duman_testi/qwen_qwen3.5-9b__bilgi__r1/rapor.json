@@ -1,0 +1,539 @@
+[
+  {
+    "kaynak_turu": "dosya",
+    "ad": "Düzce Üniversitesi _ Anasayfa.htm",
+    "dosya": "C:\\Users\\Eray\\Desktop\\Düzce Üniversitesi\\seo_proje\\snapshots\\Düzce Üniversitesi _ Anasayfa.htm",
+    "sorunlar": [
+      {
+        "sorun": "title_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "29 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "18 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "9/27 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 8,
+    "once_puan": 49,
+    "sayfa_sorun_sayisi": 8,
+    "site_sorun_sayisi": 0,
+    "model": "qwen/qwen3.5-9b",
+    "fixes": [
+      {
+        "alan": "h1",
+        "hedef": "",
+        "yeni_deger": "Düzce Üniversitesi Anasayfa",
+        "gerekce": "Sayfada H1 etiketi bulunmamaktadır. Sayfanın ana konusunu ve markasını yansıtan, kullanıcıyı karşılayan kısa bir başlık eklenmesi gerekmektedir."
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g1",
+        "yeni_deger": "Düzce Üniversitesi resmi logosu",
+        "gerekce": "Logo görselinin alt metni eksiktir. Görselin bağlamı (üniversite logosu) dikkate alınarak tanımlayıcı bir alt metin oluşturulmuştur.",
+        "hedef_src": "D%C3%BCzce%20%C3%9Cniversitesi%20_%20Anasayfa_files/logo_qnJI.png"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g2",
+        "yeni_deger": "Düzce Üniversitesi mask görseli",
+        "gerekce": "Mask_group dosya adına sahip görselin alt metni eksiktir. Görselin bağlamı belirsiz olduğu için genel bir ifade kullanılmıştır.",
+        "hedef_src": "D%C3%BCzce%20%C3%9Cniversitesi%20_%20Anasayfa_files/mask_group_6_qnJI.png"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g3",
+        "yeni_deger": "Düzce Üniversitesi mask görseli",
+        "gerekce": "Mask_group dosya adına sahip görselin alt metni eksiktir. Görselin bağlamı belirsiz olduğu için genel bir ifade kullanılmıştır.",
+        "hedef_src": "D%C3%BCzce%20%C3%9Cniversitesi%20_%20Anasayfa_files/mask_group_7_qnJI.png"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g4",
+        "yeni_deger": "Düzce Üniversitesi mask görseli",
+        "gerekce": "Mask_group dosya adına sahip görselin alt metni eksiktir. Görselin bağlamı belirsiz olduğu için genel bir ifade kullanılmıştır.",
+        "hedef_src": "D%C3%BCzce%20%C3%9Cniversitesi%20_%20Anasayfa_files/mask_group_84_qnJI.png"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g5",
+        "yeni_deger": "Düzce Üniversitesi mask görseli",
+        "gerekce": "Mask_group dosya adına sahip görselin alt metni eksiktir. Görselin bağlamı belirsiz olduğu için genel bir ifade kullanılmıştır.",
+        "hedef_src": "D%C3%BCzce%20%C3%9Cniversitesi%20_%20Anasayfa_files/mask_group_85_qnJI.jpg"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g6",
+        "yeni_deger": "Düzce Üniversitesi logo varyasyonu",
+        "gerekce": "Logo_tr_ort dosya adına sahip görselin alt metni eksiktir. Görselin bir logo olduğunu ve farklı bir versiyon (orta) olduğu bağlamından yola çıkarak tanımlanmıştır.",
+        "hedef_src": "D%C3%BCzce%20%C3%9Cniversitesi%20_%20Anasayfa_files/logo_tr_ort_qnJI.png"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g7",
+        "yeni_deger": "Düzce Üniversitesi Instagram logosu",
+        "gerekce": "Instagram logosunun alt metni eksiktir. Bağlantı adresi üzerinden görselin sosyal medya hesabını temsil ettiği anlaşılmış ve buna uygun bir alt metin oluşturulmuştur.",
+        "hedef_src": "D%C3%BCzce%20%C3%9Cniversitesi%20_%20Anasayfa_files/logo_instagram_qnJI.png"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g8",
+        "yeni_deger": "Düzce Üniversitesi Twitter logosu",
+        "gerekce": "Twitter logosunun alt metni eksiktir. Bağlantı adresi üzerinden görselin sosyal medya hesabını temsil ettiği anlaşılmış ve buna uygun bir alt metin oluşturulmuştur.",
+        "hedef_src": "D%C3%BCzce%20%C3%9Cniversitesi%20_%20Anasayfa_files/LOGO_twitter_qnJI.png"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g9",
+        "yeni_deger": "Düzce Üniversitesi YouTube logosu",
+        "gerekce": "YouTube logosunun alt metni eksiktir. Bağlantı adresi üzerinden görselin sosyal medya hesabını temsil ettiği anlaşılmış ve buna uygun bir alt metin oluşturulmuştur.",
+        "hedef_src": "D%C3%BCzce%20%C3%9Cniversitesi%20_%20Anasayfa_files/LOGO_YouTube_qnJI.png"
+      },
+      {
+        "alan": "title",
+        "hedef": "",
+        "yeni_deger": "Düzce Üniversitesi | Çevre ve Sağlık Alanında İhtisas",
+        "gerekce": "Title uzunluğu 29 karakterden 30-60 aralığına çıkarıldı. Sayfa verisindeki 'Çevre ve Sağlık' vurgusu başlığa alındı, marka adı sona eklendi."
+      }
+    ],
+    "reddedilen": [
+      {
+        "deneme": 1,
+        "neden": "title_uzunluk_66",
+        "oneri": {
+          "alan": "title",
+          "hedef": "",
+          "yeni_deger": "Düzce Üniversitesi | Çevre ve Sağlık Alanında İhtisas Üniversitesi",
+          "gerekce": "Title uzunluğu 29 karakter olup minimum 30 karakter sınırını aşmamaktadır. Sayfa içeriğindeki 'Çevre ve Sağlık' vurgusu başlığa eklenerek hem uzunluk kuralı sağlanarak hem de sayfanın ana konusu arama sonuçlarında daha net ifade edilmiştir."
+        }
+      },
+      {
+        "deneme": 1,
+        "neden": "meta_uzunluk_170",
+        "oneri": {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Düzce Üniversitesi, Çevre ve Sağlık alanında uzmanlaşmış bir üniversitedir. Kuruluşu, başarıları, akademik birimleri, yönetim kadrosu ve iletişim bilgileri için tıklayın.",
+          "gerekce": "Meta açıklama uzunluğu 18 karakter olup minimum 70 karakter sınırını aşmamaktadır. Sayfanın sunduğu temel bilgiler (kuruluş, başarılar, birimler) özetlenerek kullanıcıya sayfanın içeriği hakkında kapsamlı bir fikir verilmiş ve uzunluk kuralı sağlanmıştır."
+        }
+      },
+      {
+        "deneme": 2,
+        "neden": "dogrulanamayan_niteleme: başarıları, uzmanlaşmış",
+        "oneri": {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Düzce Üniversitesi; Çevre ve Sağlık alanında uzmanlaşmış bir eğitim kurumudur. Kuruluşu, başarıları, akademik birimler ve iletişim bilgileri.",
+          "gerekce": "Meta açıklama uzunluğu 18 karakterden 70-160 aralığına çıkarıldı. Sayfa özetindeki anahtar kavramlar (kuruluş, başarı, akademik birimler) kullanılarak içeriğe uygun bir tanıtım metni oluşturuldu."
+        }
+      }
+    ],
+    "yok_sayilan": [
+      {
+        "deneme": 2,
+        "oneri": {
+          "alan": "h1",
+          "hedef": "",
+          "yeni_deger": "Düzce Üniversitesi Anasayfa",
+          "gerekce": "Sayfada H1 etiketi bulunmaması tespit edildi. Sayfanın anasayfa olduğunu ve Düzce Üniversitesi markasını yansıtan kısa bir başlık eklendi."
+        }
+      },
+      {
+        "deneme": 2,
+        "oneri": {
+          "alan": "img_alt",
+          "hedef": "g1",
+          "yeni_deger": "Düzce Üniversitesi resmi logosu",
+          "gerekce": "Logo görseli için bağlam bilgisine uygun, markayı tanımlayan kısa bir alt metin oluşturuldu."
+        }
+      },
+      {
+        "deneme": 2,
+        "oneri": {
+          "alan": "img_alt",
+          "hedef": "g2",
+          "yeni_deger": "Düzce Üniversitesi maskesi",
+          "gerekce": "Bağlam bilgisi olmayan görsel için dosya adından türetilen genel ve doğru bir ifade kullanıldı."
+        }
+      },
+      {
+        "deneme": 2,
+        "oneri": {
+          "alan": "img_alt",
+          "hedef": "g3",
+          "yeni_deger": "Düzce Üniversitesi maskesi",
+          "gerekce": "Bağlam bilgisi olmayan görsel için dosya adından türetilen genel ve doğru bir ifade kullanıldı."
+        }
+      },
+      {
+        "deneme": 2,
+        "oneri": {
+          "alan": "img_alt",
+          "hedef": "g4",
+          "yeni_deger": "Düzce Üniversitesi maskesi",
+          "gerekce": "Bağlam bilgisi olmayan görsel için dosya adından türetilen genel ve doğru bir ifade kullanıldı."
+        }
+      },
+      {
+        "deneme": 2,
+        "oneri": {
+          "alan": "img_alt",
+          "hedef": "g5",
+          "yeni_deger": "Düzce Üniversitesi maskesi",
+          "gerekce": "Bağlam bilgisi olmayan görsel için dosya adından türetilen genel ve doğru bir ifade kullanıldı."
+        }
+      },
+      {
+        "deneme": 2,
+        "oneri": {
+          "alan": "img_alt",
+          "hedef": "g6",
+          "yeni_deger": "Düzce Üniversitesi Türkçe logo",
+          "gerekce": "Dosya adındaki 'tr' kısaltması dikkate alınarak Türkçe logo olduğu belirtilen genel bir ifade kullanıldı."
+        }
+      },
+      {
+        "deneme": 2,
+        "oneri": {
+          "alan": "img_alt",
+          "hedef": "g7",
+          "yeni_deger": "Düzce Üniversitesi Instagram logosu",
+          "gerekce": "Instagram bağlantısı bağlamına uygun, platformu belirten kısa bir alt metin oluşturuldu."
+        }
+      },
+      {
+        "deneme": 2,
+        "oneri": {
+          "alan": "img_alt",
+          "hedef": "g8",
+          "yeni_deger": "Düzce Üniversitesi Twitter logosu",
+          "gerekce": "Twitter bağlantısı bağlamına uygun, platformu belirten kısa bir alt metin oluşturuldu."
+        }
+      },
+      {
+        "deneme": 2,
+        "oneri": {
+          "alan": "img_alt",
+          "hedef": "g9",
+          "yeni_deger": "Düzce Üniversitesi YouTube logosu",
+          "gerekce": "YouTube bağlantısı bağlamına uygun, platformu belirten kısa bir alt metin oluşturuldu."
+        }
+      }
+    ],
+    "json_gecerli": true,
+    "sure_sn": 127.7,
+    "bitis_nedeni": "stop",
+    "dusunme_karakter": 0,
+    "cevap_karakter": 6012,
+    "denemeler": [
+      {
+        "deneme": 1,
+        "sure_sn": 70.65,
+        "bitis_nedeni": "stop",
+        "kabul": 10,
+        "reddedilen": 2,
+        "yok_sayilan": 0,
+        "dusunme_karakter": 0,
+        "cevap_karakter": 3352,
+        "istem_karakter": 4683,
+        "ilk_token_sn": 5.22,
+        "uretilen_parca": 1078,
+        "uretim_hizi_tps": 16.5
+      },
+      {
+        "deneme": 2,
+        "sure_sn": 57.06,
+        "bitis_nedeni": "stop",
+        "kabul": 1,
+        "reddedilen": 1,
+        "yok_sayilan": 10,
+        "dusunme_karakter": 0,
+        "cevap_karakter": 2660,
+        "istem_karakter": 4964,
+        "ilk_token_sn": 4.13,
+        "uretilen_parca": 899,
+        "uretim_hizi_tps": 17.0
+      }
+    ],
+    "ham": "{\n\"fixes\": [\n{\n\"alan\": \"title\",\n\"hedef\": \"\",\n\"yeni_deger\": \"Düzce Üniversitesi | Çevre ve Sağlık Alanında İhtisas\",\n\"gerekce\": \"Title uzunluğu 29 karakterden 30-60 aralığına çıkarıldı. Sayfa verisindeki 'Çevre ve Sağlık' vurgusu başlığa alındı, marka adı sona eklendi.\"\n},\n{\n\"alan\": \"meta_description\",\n\"hedef\": \"\",\n\"yeni_deger\": \"Düzce Üniversitesi; Çevre ve Sağlık alanında uzmanlaşmış bir eğitim kurumudur. Kuruluşu, başarıları, akademik birimler ve iletişim bilgileri.\",\n\"gerekce\": \"Meta açıklama uzunluğu 18 karakterden 70-160 aralığına çıkarıldı. Sayfa özetindeki anahtar kavramlar (kuruluş, başarı, akademik birimler) kullanılarak içeriğe uygun bir tanıtım metni oluşturuldu.\"\n},\n{\n\"alan\": \"h1\",\n\"hedef\": \"\",\n\"yeni_deger\": \"Düzce Üniversitesi Anasayfa\",\n\"gerekce\": \"Sayfada H1 etiketi bulunmaması tespit edildi. Sayfanın anasayfa olduğunu ve Düzce Üniversitesi markasını yansıtan kısa bir başlık eklendi.\"\n},\n{\n\"alan\": \"img_alt\",\n\"hedef\": \"g1\",\n\"yeni_deger\": \"Düzce Üniversitesi resmi logosu\",\n\"gerekce\": \"Logo görseli için bağlam bilgisine uygun, markayı tanımlayan kısa bir alt metin oluşturuldu.\"\n},\n{\n\"alan\": \"img_alt\",\n\"hedef\": \"g2\",\n\"yeni_deger\": \"Düzce Üniversitesi maskesi\",\n\"gerekce\": \"Bağlam bilgisi olmayan görsel için dosya adından türetilen genel ve doğru bir ifade kullanıldı.\"\n},\n{\n\"alan\": \"img_alt\",\n\"hedef\": \"g3\",\n\"yeni_deger\": \"Düzce Üniversitesi maskesi\",\n\"gerekce\": \"Bağlam bilgisi olmayan görsel için dosya adından türetilen genel ve doğru bir ifade kullanıldı.\"\n},\n{\n\"ala",
+    "dusunme_basi": "",
+    "kosul": "bilgi",
+    "ogretme_ornek_sayisi": 0,
+    "ogretme_kural_sayisi": 3,
+    "ogretme_yontemi": "anlamsal",
+    "site_url": null,
+    "kural_duzeltmeleri": [
+      "og_etiketleri_eklendi: og:title, og:description, og:type"
+    ],
+    "sonra_sorun_sayisi": 4,
+    "sonra_puan": 83,
+    "cozulen_sorunlar": [
+      "title_kisa",
+      "h1_yok",
+      "img_alt_eksik",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "meta_description_kisa",
+      "canonical_yok",
+      "yapisal_veri_yok",
+      "twitter_card_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "title_kisa",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "yapisal_veri_yok",
+      "twitter_card_yok"
+    ],
+    "cozum_orani": 0.75,
+    "toplam_cozum_orani": 0.67,
+    "duzeltilmis_dosya": "duzeltilmis_Düzce_Üniversitesi___Anasayfa.html",
+    "sure_toplam_sn": 134.08
+  },
+  {
+    "kaynak_turu": "dosya",
+    "ad": "Marmara Üniversitesi _ Resmi Web Sitesi.htm",
+    "dosya": "C:\\Users\\Eray\\Desktop\\Düzce Üniversitesi\\seo_proje\\snapshots\\Marmara Üniversitesi _ Resmi Web Sitesi.htm",
+    "sorunlar": [
+      {
+        "sorun": "meta_description_uzun",
+        "ciddiyet": "orta",
+        "ayrinti": "165 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_birden_fazla",
+        "ciddiyet": "orta",
+        "ayrinti": "31 adet",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "16/70 gorsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 4,
+    "once_puan": 73,
+    "sayfa_sorun_sayisi": 4,
+    "site_sorun_sayisi": 0,
+    "model": "qwen/qwen3.5-9b",
+    "fixes": [
+      {
+        "alan": "meta_description",
+        "hedef": "",
+        "yeni_deger": "Marmara Üniversitesi resmi web sitesi. Fakülteler, enstitüler, duyurular, akademik takvim ve öğrenci hizmetleri hakkında bilgi alın.",
+        "gerekce": "Meta açıklama uzunluğu 165 karakter olup 160 karakter sınırını aşmaktadır. Metin sonundaki 'Köklü geçmiş, güçlü gelecek...' kısmı kesilerek sadece sayfanın içeriğini özetleyen anahtar kelimeler korunarak kısaltıldı."
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g1",
+        "yeni_deger": "Marmara Üniversitesi EUSA Combat Sports 2026 etkinliği",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki etkinlik adı kullanılarak kısa ve açıklayıcı bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/whatsapp-image-2026-09-14-at-111431-12_1789389269_1h6j.jpeg"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g2",
+        "yeni_deger": "Şerif Muhiddin Targan eserlerinin sergiye taşınması",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki sergi konusunu yansıtan kısa bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/dsc02784_1787561244_1h6j.JPG"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g3",
+        "yeni_deger": "Milli Teknoloji Hamlesi kapsamında mühendislik etkinliği",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki teknoloji ve mühendislik vurgusunu içeren kısa bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/7be9de51-fb28-444c-9161-ff7ede45fb4e_1785926247_1h6j.jpg"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g4",
+        "yeni_deger": "5. Uluslararası Futbol ve Bilim Kongresi açılış töreni",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki kongre adı ve durumu yansıtan kısa bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/fotooo_1791897085_1h6j.jpg"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g5",
+        "yeni_deger": "2026-2027 akademik yılı açılış töreni",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki akademik yıl ve etkinlik türünü içeren kısa bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/dsc04450_1791812314_1h6j.jpg"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g6",
+        "yeni_deger": "Siyasal Bilgiler Fakültesi 2026-2027 akademik yılı açılışı",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki fakülte ve akademik yıl bilgilerini içeren kısa bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/dsc03774_1790852553_1h6j.JPG"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g7",
+        "yeni_deger": "TÜSEM Konseyi sonbahar toplantısı",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki kurul adı ve toplantı zamanını yansıtan kısa bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/dsc03481_1790329053_1h6j.JPG"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g8",
+        "yeni_deger": "Akademisyenlerin ulusal projeleri",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki proje türünü ve hedef kitlesini içeren kısa bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/whatsapp-image-2026-09-22-at-133700-2_1790078261_1h6j.jpeg"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g9",
+        "yeni_deger": "Afet Danışma Kurulu ilk toplantısı",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki kurul adı ve toplantı sırasını yansıtan kısa bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/dsc02968_1789631985_1h6j.JPG"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g10",
+        "yeni_deger": "Recep Tayyip Erdoğan Külliyesi'nde hizmete açılan ilk market",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki mekan ve olayı içeren kısa bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/dsc02873_1789470598_1h6j.JPG"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g11",
+        "yeni_deger": "Marmara Üniversitesi EUSA Combat Sports 2026 etkinliği",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki etkinlik adı kullanılarak kısa ve açıklayıcı bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/whatsapp-image-2026-09-14-at-111431-12_1789389269_1h6j.jpeg"
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g12",
+        "yeni_deger": "Şerif Muhiddin Targan eserlerinin sergiye taşınması",
+        "gerekce": "Eksik alt metne sahip görsel için bağlantı metnindeki sergi konusunu yansıtan kısa bir ifade oluşturuldu.",
+        "hedef_src": "Marmara%20%C3%9Cniversitesi%20_%20Resmi%20Web%20Sitesi_files/dsc02784_1787561244_1h6j.JPG"
+      }
+    ],
+    "reddedilen": [],
+    "yok_sayilan": [],
+    "json_gecerli": true,
+    "sure_sn": 92.93,
+    "bitis_nedeni": "stop",
+    "dusunme_karakter": 0,
+    "cevap_karakter": 3131,
+    "denemeler": [
+      {
+        "deneme": 1,
+        "sure_sn": 92.93,
+        "bitis_nedeni": "stop",
+        "kabul": 13,
+        "reddedilen": 0,
+        "yok_sayilan": 0,
+        "dusunme_karakter": 0,
+        "cevap_karakter": 3131,
+        "istem_karakter": 7568,
+        "ilk_token_sn": 35.26,
+        "uretilen_parca": 944,
+        "uretim_hizi_tps": 16.4
+      }
+    ],
+    "ham": "{\"fixes\":[{\"alan\":\"meta_description\",\"hedef\":\"\",\"yeni_deger\":\"Marmara Üniversitesi resmi web sitesi. Fakülteler, enstitüler, duyurular, akademik takvim ve öğrenci hizmetleri hakkında bilgi alın.\",\"gerekce\":\"Meta açıklama uzunluğu 165 karakter olup 160 karakter sınırını aşmaktadır. Metin sonundaki 'Köklü geçmiş, güçlü gelecek...' kısmı kesilerek sadece sayfanın içeriğini özetleyen anahtar kelimeler korunarak kısaltıldı.\"},{\"alan\":\"img_alt\",\"hedef\":\"g1\",\"yeni_deger\":\"Marmara Üniversitesi EUSA Combat Sports 2026 etkinliği\",\"gerekce\":\"Eksik alt metne sahip görsel için bağlantı metnindeki etkinlik adı kullanılarak kısa ve açıklayıcı bir ifade oluşturuldu.\"},{\"alan\":\"img_alt\",\"hedef\":\"g2\",\"yeni_deger\":\"Şerif Muhiddin Targan eserlerinin sergiye taşınması\",\"gerekce\":\"Eksik alt metne sahip görsel için bağlantı metnindeki sergi konusunu yansıtan kısa bir ifade oluşturuldu.\"},{\"alan\":\"img_alt\",\"hedef\":\"g3\",\"yeni_deger\":\"Milli Teknoloji Hamlesi kapsamında mühendislik etkinliği\",\"gerekce\":\"Eksik alt metne sahip görsel için bağlantı metnindeki teknoloji ve mühendislik vurgusunu içeren kısa bir ifade oluşturuldu.\"},{\"alan\":\"img_alt\",\"hedef\":\"g4\",\"yeni_deger\":\"5. Uluslararası Futbol ve Bilim Kongresi açılış töreni\",\"gerekce\":\"Eksik alt metne sahip görsel için bağlantı metnindeki kongre adı ve durumu yansıtan kısa bir ifade oluşturuldu.\"},{\"alan\":\"img_alt\",\"hedef\":\"g5\",\"yeni_deger\":\"2026-2027 akademik yılı açılış töreni\",\"gerekce\":\"Eksik alt metne sahip görsel için bağlantı metnindeki akademi",
+    "dusunme_basi": "",
+    "kosul": "bilgi",
+    "ogretme_ornek_sayisi": 0,
+    "ogretme_kural_sayisi": 3,
+    "ogretme_yontemi": "anlamsal",
+    "site_url": null,
+    "kural_duzeltmeleri": [
+      "h1_fazlalari_h2_yapildi: 30"
+    ],
+    "sonra_sorun_sayisi": 1,
+    "sonra_puan": 97,
+    "cozulen_sorunlar": [
+      "meta_description_uzun",
+      "h1_birden_fazla",
+      "img_alt_eksik"
+    ],
+    "kalan_sorunlar": [
+      "yapisal_veri_yok"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "meta_description_uzun",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "h1_birden_fazla"
+    ],
+    "elle_gereken": [
+      "yapisal_veri_yok"
+    ],
+    "cozum_orani": 1.0,
+    "toplam_cozum_orani": 1.0,
+    "duzeltilmis_dosya": "duzeltilmis_Marmara_Üniversitesi___Resmi_Web_Sitesi.html",
+    "sure_toplam_sn": 97.87
+  }
+]

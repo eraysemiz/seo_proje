@@ -1,0 +1,3 @@
+﻿model;kosul;retry;sayfa;hatali_sayfa;json_gecerli_orani;ort_once_sorun;ort_sonra_sorun;ort_once_puan;ort_sonra_puan;ort_model_cozum_orani;ort_toplam_cozum_orani;toplam_kabul;toplam_reddedilen;toplam_yok_sayilan;ort_model_suresi_sn;klasor
+qwen/qwen3.5-9b;sifir;1;2;0;0.5;6.0;3.0;61.0;86.0;0.75;0.75;23;4;10;140.67;C:\Users\Eray\Desktop\Düzce Üniversitesi\seo_proje\sonuclar\adim6_duman_testi\qwen_qwen3.5-9b__sifir__r1
+qwen/qwen3.5-9b;bilgi;1;2;0;1.0;6.0;2.5;61.0;90.0;0.875;0.835;24;3;10;110.315;C:\Users\Eray\Desktop\Düzce Üniversitesi\seo_proje\sonuclar\adim6_duman_testi\qwen_qwen3.5-9b__bilgi__r1

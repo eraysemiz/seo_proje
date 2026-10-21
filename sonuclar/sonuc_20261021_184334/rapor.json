@@ -1,0 +1,259 @@
+[
+  {
+    "kaynak_turu": "canli",
+    "ad": "https://semenderleather.com",
+    "url": "https://semenderleather.com",
+    "site_bilgi": {
+      "site_koku": "https://semenderleather.com",
+      "son_url": "https://semenderleather.com/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 186,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 454,
+      "boyut_kb": 869,
+      "sikistirma": "br",
+      "hsts": true,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 88,
+        "veren": "YE2",
+        "bitis": "2027-01-18",
+        "zincir_eksik": false,
+        "zincir": [
+          "semenderleather.com",
+          "YE2",
+          "Root YE",
+          "ISRG Root X2"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": true,
+        "hedef": "https://semenderleather.com/",
+        "durum_kodu": 301,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://semenderleather.com/robots.txt",
+        "var": true,
+        "durum_kodu": 200,
+        "satir_sayisi": 173,
+        "sitemapler": [
+          "https://semenderleather.com/sitemap.xml",
+          "https://semenderleather.com/sitemap.xml",
+          "https://semenderleather.com/sitemap.xml"
+        ],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "# we use Shopify as our ecommerce platform\nUser-agent: *\nDisallow: /blocked\nDisallow: /*-olcu\nDisallow: /hangi-kemer-bedeni-bana-gore\nDisallow: /ev-giyim-aksesuar\nDisallow: /a/page/top-reviews\nDisallow: /ciftlik-tasarimli-mum-ozellikleri\nDisallow: /yuva-tasarimli-mum-ozellikleri\nDisallow: /fitil-tasarimli-mum-ozellikleri\nDisallow: /yamac-tasarimli-mum-ozellikleri\nDisallow: /kiyi-tasarimli-mum-ozellikleri\nDisallow: /mum-ozellikleri\nDisallow: /apple-mac-laptop-seti-icerigi\nDisallow: /apple-seti-icerigi\n\n\nUser-agent: *\nDisallow: /a/downloads/-/*\nDisallow: /admin\nDisallow: /cart\nDisallow: /orders\nDisallow: /checkouts/\nDisallow: /checkout\nDisallow: /73116942615/checkouts",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://semenderleather.com/sitemap.xml",
+          "https://semenderleather.com/sitemap.xml",
+          "https://semenderleather.com/sitemap.xml"
+        ],
+        "var": true,
+        "gecerli": true,
+        "tur": "dizin",
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 18,
+        "lastmod_var": false,
+        "acilan": [
+          "https://semenderleather.com/sitemap.xml",
+          "https://semenderleather.com/sitemap.xml",
+          "https://semenderleather.com/sitemap.xml"
+        ],
+        "hata": null,
+        "tam_okundu": false,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Semender Leather & Co | Heritage Ruhlu Hakiki Deri, Giyim & Hediye",
+    "meta_description": "El emeğiyle üretilen hakiki deri ürünler, giyim ve aksesuarlar; zamana direnen, eskidikçe güzelleşen parçalar. Kendin ve sevdiklerin için anlamlı & kişiye özel hediyeler Semender Leather & Co.'da. \"Wear the craft, feel the legacy\" Sade, şık, benzersiz.",
+    "h1": [
+      "Wear the craft,feel the legacy"
+    ],
+    "sorunlar": [
+      {
+        "sorun": "title_uzun",
+        "ciddiyet": "orta",
+        "ayrinti": "66 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "meta_description_uzun",
+        "ciddiyet": "orta",
+        "ayrinti": "252 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "cok_fazla_kaynak",
+        "ciddiyet": "dusuk",
+        "ayrinti": "192 kaynak",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "baslik_atlamasi",
+        "ciddiyet": "dusuk",
+        "ayrinti": "H2->H4",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "title_h1_uyumsuz",
+        "ciddiyet": "dusuk",
+        "ayrinti": "title: Semender Leather & Co | Heritage Ruhlu H | h1: Wear the craft,feel the legacy",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "html_cok_buyuk",
+        "ciddiyet": "dusuk",
+        "ayrinti": "869 KB",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 6,
+    "once_puan": 72,
+    "once_puanlar": {
+      "sayfa": 81,
+      "site": 98,
+      "icerik": 68,
+      "teknik": 100,
+      "guvenlik": 100,
+      "performans": 65
+    },
+    "img_bos_alt": 38,
+    "sayfa_sorun_sayisi": 5,
+    "site_sorun_sayisi": 1,
+    "model": "qwen/qwen3.5-9b",
+    "fixes": [
+      {
+        "alan": "title",
+        "hedef": "",
+        "yeni_deger": "Semender Leather & Co | Hakiki Deri Giyim ve Aksesuarlar",
+        "gerekce": "66 karakterlik uzunluk kesiliyor, marka, ürün grubu (hakiki deri giyim) ve şehir/lokasyon bilgisi yok. Marka ve temel hizmet odaklı kısa bir başlık oluşturulmalı."
+      },
+      {
+        "alan": "meta_description",
+        "hedef": "",
+        "yeni_deger": "El emeğiyle üretilen hakiki deri giyim, aksesuarlar ve kişisel hediyeler. Zamana direnen parçalar ve özel siparişler için Semender Leather & Co.",
+        "gerekce": "252 karakterlik uzunluk kesiliyor. 'Wear the craft' sloganı yerine somut ürün bilgisi (hakiki deri giyim, aksesuar) öne çıkarılmalı. Abartılı indirim iddiaları veya geçersiz kelimeler ('kampa', 'varan') kaldırılmalı."
+      }
+    ],
+    "reddedilen": [
+      {
+        "deneme": 1,
+        "neden": "sayfada_olmayan_ifade: kampa, varan, wınte",
+        "oneri": {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "El emeği hakiki deri giyim, aksesuar ve hediyeler. WINTER '26 kampanyasıyla %50'ye varan indirim ve kişiye özel üretim seçenekleri.",
+          "gerekce": "252 karakterlik uzunluk kesiliyor, abartılı sloganlar çıkarılarak somut ürünler ve kampanya detayı özetlendi."
+        }
+      }
+    ],
+    "yok_sayilan": [],
+    "json_gecerli": true,
+    "sure_sn": 57.95,
+    "bitis_nedeni": "stop",
+    "dusunme_karakter": 0,
+    "cevap_karakter": 1241,
+    "denemeler": [
+      {
+        "deneme": 1,
+        "sure_sn": 37.58,
+        "bitis_nedeni": "stop",
+        "kabul": 0,
+        "reddedilen": 1,
+        "yok_sayilan": 0,
+        "dusunme_karakter": 0,
+        "cevap_karakter": 527,
+        "istem_karakter": 7591,
+        "ilk_token_sn": 29.25,
+        "uretilen_parca": 155,
+        "uretim_hizi_tps": 18.7
+      },
+      {
+        "deneme": 2,
+        "sure_sn": 20.36,
+        "bitis_nedeni": "stop",
+        "kabul": 2,
+        "reddedilen": 0,
+        "yok_sayilan": 0,
+        "dusunme_karakter": 0,
+        "cevap_karakter": 714,
+        "istem_karakter": 7878,
+        "ilk_token_sn": 8.82,
+        "uretilen_parca": 216,
+        "uretim_hizi_tps": 18.7
+      }
+    ],
+    "ham": "{\"fixes\":[{\"alan\":\"title\",\"hedef\":\"\",\"yeni_deger\":\"Semender Leather & Co | Hakiki Deri Giyim ve Aksesuarlar\",\"gerekce\":\"66 karakterlik uzunluk kesiliyor, marka, ürün grubu (hakiki deri giyim) ve şehir/lokasyon bilgisi yok. Marka ve temel hizmet odaklı kısa bir başlık oluşturulmalı.\"},{\"alan\":\"meta_description\",\"hedef\":\"\",\"yeni_deger\":\"El emeğiyle üretilen hakiki deri giyim, aksesuarlar ve kişisel hediyeler. Zamana direnen parçalar ve özel siparişler için Semender Leather & Co.\",\"gerekce\":\"252 karakterlik uzunluk kesiliyor. 'Wear the craft' sloganı yerine somut ürün bilgisi (hakiki deri giyim, aksesuar) öne çıkarılmalı. Abartılı indirim iddiaları veya geçersiz kelimeler ('kampa', 'varan') kaldırılmalı.\"}]}",
+    "dusunme_basi": "",
+    "kosul": "ornek+bilgi",
+    "ogretme_ornek_sayisi": 3,
+    "ogretme_kural_sayisi": 3,
+    "ogretme_yontemi": "anlamsal",
+    "site_url": "https://semenderleather.com/",
+    "kural_duzeltmeleri": [],
+    "sonra_sorun_sayisi": 4,
+    "sonra_puan": 88,
+    "sonra_puanlar": {
+      "sayfa": 93,
+      "site": 98,
+      "icerik": 91,
+      "teknik": 100,
+      "guvenlik": 100,
+      "performans": 65
+    },
+    "cozulen_sorunlar": [
+      "title_uzun",
+      "meta_description_uzun"
+    ],
+    "kalan_sorunlar": [
+      "cok_fazla_kaynak",
+      "baslik_atlamasi",
+      "title_h1_uyumsuz",
+      "html_cok_buyuk"
+    ],
+    "yeni_cikan_sorunlar": [],
+    "modelle_cozulebilir": [
+      "title_uzun",
+      "meta_description_uzun"
+    ],
+    "kuralla_cozulebilir": [],
+    "elle_gereken": [
+      "cok_fazla_kaynak",
+      "baslik_atlamasi",
+      "title_h1_uyumsuz",
+      "html_cok_buyuk"
+    ],
+    "cozum_orani": 1.0,
+    "toplam_cozum_orani": 1.0,
+    "lighthouse": {
+      "once": {
+        "kaynak": "pagespeed_insights",
+        "strateji": "mobile",
+        "seo_puani": 100,
+        "basarisiz_denetimler": [],
+        "lighthouse_surumu": "13.5.0",
+        "hata": null
+      },
+      "sonra": null,
+      "sonra_aciklama": "duzeltilmis sayfa yerel oldugu icin olculemez"
+    },
+    "duzeltilmis_dosya": "duzeltilmis_https_semenderleather.com.html",
+    "sure_toplam_sn": 91.25,
+    "tekrar_bulgulari": []
+  }
+]
