@@ -16,7 +16,7 @@ from flask import Flask, abort, jsonify, render_template, request, send_file
 
 from . import canli
 from .boru import VARSAYILAN_AYARLAR, alt_siteleri_kesfet, analiz_et, hedefleri_hazirla
-from .kurallar import ACIKLAMA, acikla
+from .kurallar import ACIKLAMA
 from .llm import model_durumlari
 from .ogretme import KOSULLAR
 
@@ -104,6 +104,7 @@ def _tarama_isi(hedefler, ayarlar, ogretme_klasoru, cikti):
                 json.dumps(sonuclar, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
             if hedef["tur"] == "canli" and i < len(hedefler) and ayarlar.get("bekleme_sn"):
                 time.sleep(ayarlar["bekleme_sn"])    # sunucuyu yormamak icin nazik bekleme
+        (Path(cikti) / "ozet.csv").write_text(_csv_uret(sonuclar), encoding="utf-8-sig")
         gunluk("Tarama tamamlandi. Cikti klasoru: " + str(cikti))
     except Exception as e:
         with _kilit:
@@ -113,6 +114,38 @@ def _tarama_isi(hedefler, ayarlar, ogretme_klasoru, cikti):
         with _kilit:
             DURUM["calisiyor"] = False
             DURUM["bitis"] = time.time()
+
+
+SAYI_ALANLARI = {"retry": (0, 5), "max_tokens": (100, 64000), "timeout": (10, 3600),
+                 "ornek_sayisi": (0, 10), "zaman_asimi": (1, 120)}
+
+
+def ayarlari_dogrula(veri):
+    """Arayuzden gelen ayarlari tur ve aralik bakimindan denetler. (ayarlar, hata) dondurur.
+    Bilinmeyen bir deney kosulu sessizce 'sifir' gibi calisip raporu yaniltmasin diye reddedilir."""
+    ayarlar = {**VARSAYILAN_AYARLAR}
+    for k in ("llm_kullan", "url", "model", "kosul", "embed_model", "embed_url", "retry",
+              "max_tokens", "timeout", "ornek_sayisi", "json_schema", "dil", "uy_robots",
+              "bekleme_sn", "zaman_asimi"):
+        if k in veri and veri[k] not in ("", None):
+            ayarlar[k] = veri[k]
+    if ayarlar["kosul"] not in KOSULLAR:
+        return None, "Bilinmeyen deney kosulu: " + str(ayarlar["kosul"]) + " (gecerli: " + ", ".join(KOSULLAR) + ")"
+    for alan, (en_az, en_cok) in SAYI_ALANLARI.items():
+        try:
+            ayarlar[alan] = int(ayarlar[alan])
+        except (TypeError, ValueError):
+            return None, alan + " bir tam sayi olmali."
+        if not en_az <= ayarlar[alan] <= en_cok:
+            return None, alan + " " + str(en_az) + "-" + str(en_cok) + " araliginda olmali."
+    try:
+        ayarlar["bekleme_sn"] = float(ayarlar["bekleme_sn"])
+    except (TypeError, ValueError):
+        return None, "bekleme_sn bir sayi olmali."
+    if ayarlar["bekleme_sn"] < 0:
+        return None, "bekleme_sn negatif olamaz."
+    ayarlar["llm_kullan"] = bool(ayarlar["llm_kullan"])
+    return ayarlar, None
 
 
 # ------------------------------------------------------------------- sayfalar
@@ -153,16 +186,9 @@ def api_tara():
     if not hedefler:
         return jsonify({"hata": "Analiz edilecek adres veya dosya bulunamadi."}), 400
 
-    ayarlar = {**VARSAYILAN_AYARLAR}
-    for k in ("llm_kullan", "url", "model", "kosul", "embed_model", "embed_url", "retry",
-              "max_tokens", "timeout", "ornek_sayisi", "json_schema", "dil", "uy_robots",
-              "bekleme_sn", "zaman_asimi"):
-        if k in veri and veri[k] not in ("", None):
-            ayarlar[k] = veri[k]
-    for sayi in ("retry", "max_tokens", "timeout", "ornek_sayisi", "zaman_asimi"):
-        ayarlar[sayi] = int(ayarlar[sayi])
-    ayarlar["bekleme_sn"] = float(ayarlar["bekleme_sn"])
-    ayarlar["llm_kullan"] = bool(ayarlar["llm_kullan"])
+    ayarlar, hata = ayarlari_dogrula(veri)
+    if hata:
+        return jsonify({"hata": hata}), 400
     if ayarlar["llm_kullan"] and not ayarlar.get("model"):
         return jsonify({"hata": "Dil modeli secilmedi. Model listesini yenileyin "
                                 "veya 'Yalnizca kural denetimi' secenegini isaretleyin."}), 400

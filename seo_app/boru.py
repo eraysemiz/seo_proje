@@ -21,7 +21,7 @@ from urllib.parse import urljoin, urlparse
 
 from . import canli
 from .cikarma import extract, sayfa_url_bul, yapisal_veri
-from .kurallar import IZINLI_ALANLAR, puan, rule_checks, ek_html_denetimi
+from .kurallar import puan, rule_checks, ek_html_denetimi
 from .llm import llm_fixes
 from .ogretme import ogretme_metni
 from .uygula import apply_fixes, kural_duzelt

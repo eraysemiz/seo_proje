@@ -12,7 +12,6 @@ Etik not: arac varsayilan olarak robots.txt kurallarina uyar ve istekler arasind
 bekleme uygular; akademik bir denetim araci olarak kendini tanitir.
 """
 import gzip
-import json
 import re
 import socket
 import ssl
@@ -48,14 +47,20 @@ except (ImportError, AttributeError):
 _onbellek = {}
 
 
-def _al(adres, zaman_asimi, stream=False, yonlendir=True):
+def _al(adres, zaman_asimi, stream=False, yonlendir=True, olcum=None):
     """Tek bir GET istegi. Sertifika dogrulamasi basarisiz olursa denetimin tamamen
     durmamasi icin dogrulamasiz yeniden dener; (yanit, ssl_hatasi) dondurur.
-    ssl_hatasi dolu donerse sayfa indirilmistir ama sertifika zinciri guvenilmezdir."""
+    ssl_hatasi dolu donerse sayfa indirilmistir ama sertifika zinciri guvenilmezdir.
+    olcum sozlugu verilirse basarili denemenin baslangic zamani 'basla' anahtarina yazilir;
+    boylece basarisiz ilk denemenin suresi hiz olcumune karismaz."""
     try:
+        if olcum is not None:
+            olcum["basla"] = time.time()
         return _oturum.get(adres, timeout=zaman_asimi, stream=stream,
                            allow_redirects=yonlendir, verify=True), None
     except requests.exceptions.SSLError as e:
+        if olcum is not None:
+            olcum["basla"] = time.time()
         yanit = _oturum.get(adres, timeout=zaman_asimi, stream=stream,
                             allow_redirects=yonlendir, verify=False)
         return yanit, str(e)[:300]
@@ -95,15 +100,18 @@ def _metne_cevir(yanit):
 
 
 def sayfa_getir(url, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
-    """Sayfayi indirir ve hiz/boyut olcumlerini toplar."""
-    t0 = time.time()
+    """Sayfayi indirir ve hiz/boyut olcumlerini toplar.
+    ttfb_ms yalnizca son (yonlendirme sonrasi) yanitin istek gonderiminden basliklarin
+    gelisine kadar gecen suredir; yonlendirmeler yonlendirme_ms olarak ayri raporlanir."""
+    olcum = {}
     try:
-        yanit, ssl_hatasi = _al(url, zaman_asimi, stream=True)
-        ttfb = time.time() - t0            # basliklarin dondugu an (yaklasik TTFB)
+        yanit, ssl_hatasi = _al(url, zaman_asimi, stream=True, olcum=olcum)
         govde = yanit.content              # tam indirme
-        toplam = time.time() - t0
+        toplam = time.time() - olcum["basla"]
     except requests.RequestException as e:
         return {"basarili": False, "hata": type(e).__name__ + ": " + str(e), "url": url}
+    ttfb = yanit.elapsed.total_seconds()
+    yonlendirme = sum(h.elapsed.total_seconds() for h in yanit.history)
     html = _metne_cevir(yanit)
     return {
         "basarili": True,
@@ -114,6 +122,7 @@ def sayfa_getir(url, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
         "yonlendirme_sayisi": len(yanit.history),
         "yonlendirme_zinciri": [str(h.status_code) + " " + h.url for h in yanit.history],
         "ttfb_ms": round(ttfb * 1000),
+        "yonlendirme_ms": round(yonlendirme * 1000),
         "toplam_ms": round(toplam * 1000),
         "boyut_bayt": len(govde),
         "icerik_kodlama": yanit.headers.get("Content-Encoding"),
@@ -408,7 +417,8 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
 
     bilgi = {"site_koku": site_koku, "son_url": son_url,
              "durum_kodu": durum, "yonlendirme_zinciri": getirme.get("yonlendirme_zinciri"),
-             "ttfb_ms": getirme.get("ttfb_ms"), "toplam_ms": getirme.get("toplam_ms"),
+             "ttfb_ms": getirme.get("ttfb_ms"), "yonlendirme_ms": getirme.get("yonlendirme_ms"),
+             "toplam_ms": getirme.get("toplam_ms"),
              "boyut_kb": boyut_kb, "sikistirma": getirme.get("icerik_kodlama"),
              "hsts": bool(getirme.get("hsts")),
              "sertifika": sertifika,

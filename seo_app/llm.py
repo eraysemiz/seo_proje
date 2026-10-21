@@ -88,13 +88,6 @@ def model_durumlari(url, timeout=10):
                 for m in modelleri_listele(url, timeout)]
 
 
-def get_model(url):
-    modeller = modelleri_listele(url)
-    if not modeller:
-        raise RuntimeError("LM Studio'da yuklu model yok.")
-    return modeller[0]
-
-
 def json_ayikla(metin):
     """<think> bloklarini temizler, metindeki ilk JSON nesnesini okur."""
     metin = re.sub(r"<think>.*?</think>", "", metin, flags=re.S)
