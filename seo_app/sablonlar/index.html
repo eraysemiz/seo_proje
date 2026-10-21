@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SEO Denetim Araci</title>
+<title>SEO Denetim Aracı</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>&#128269;</text></svg>">
 <link rel="stylesheet" href="{{ url_for('static', filename='stil.css') }}">
 </head>
@@ -12,7 +12,7 @@
 <header class="ust">
   <div>
     <h1>Yerel Dil Modeli ile SEO Denetimi</h1>
-    <p class="alt-baslik">Kural tabanli denetim + yerel buyuk dil modeli ile iyilestirme onerisi</p>
+    <p class="alt-baslik">Kural tabanlı denetim + yerel büyük dil modeli ile iyileştirme önerisi</p>
   </div>
   <div class="rozet" id="baglanti-rozeti">LM Studio: bilinmiyor</div>
 </header>
@@ -20,34 +20,23 @@
 <main>
   <!-- ----------------------------------------------------------- AYARLAR -->
   <section class="panel" id="ayar-paneli">
-    <h2>1. Kaynak</h2>
-    <div class="sekmeler">
-      <button class="sekme etkin" data-mod="canli">Canli adresler</button>
-      <button class="sekme" data-mod="dosya">Kaydedilmis HTML</button>
-    </div>
-
+    <h2>1. Adresler</h2>
     <div id="alan-canli">
-      <label for="adresler">Adresler <span class="ipucu">her satira bir adres</span></label>
+      <label for="adresler">Taranacak adresler <span class="ipucu">her satıra bir adres</span></label>
       <textarea id="adresler" rows="7" spellcheck="false"
                 placeholder="duzce.edu.tr&#10;https://www.duzce.edu.tr/birimler"></textarea>
       <div class="kesif-satiri">
-        <input type="text" id="kesif-adresi" placeholder="Alt siteleri kesfedilecek adres" value="https://www.duzce.edu.tr">
-        <button class="ikincil" id="kesif-dugmesi">Alt siteleri kesfet</button>
+        <input type="text" id="kesif-adresi" placeholder="Alt siteleri keşfedilecek adres" value="https://www.duzce.edu.tr">
+        <button class="ikincil" id="kesif-dugmesi">Alt siteleri keşfet</button>
       </div>
       <div id="kesif-sonucu" class="kesif-sonucu gizli"></div>
-      <p class="not">Canli modda robots.txt, sitemap.xml, HTTPS/sertifika, yanit suresi ve
-         yapisal veri denetimleri de calisir.</p>
-    </div>
-
-    <div id="alan-dosya" class="gizli">
-      <label for="klasor">Klasor veya dosya yolu</label>
-      <input type="text" id="klasor" value="snapshots">
-      <p class="not">Taraycidan "Web Sayfasi, Yalnizca HTML" olarak kaydedilmis .htm/.html
-         dosyalari. Bu modda yalnizca sayfa ici denetimler yapilabilir.</p>
+      <p class="not">Sayfa içi denetimlere ek olarak robots.txt, sitemap.xml, HTTPS/sertifika,
+         yanıt süresi ve yapısal veri denetimleri de çalışır.</p>
     </div>
 
     <h2>2. Dil modeli</h2>
-    <label class="kutu"><input type="checkbox" id="llm-kullan" checked> Dil modeli ile oneri uret</label>
+    <p class="not">Her taramada öneriler LM Studio'daki dil modeliyle üretilir. LM Studio kapalıysa veya
+       seçilen model yüklü değilse tarama başlamaz.</p>
     <div id="llm-ayarlari">
       <label for="llm-url">LM Studio adresi</label>
       <div class="kesif-satiri">
@@ -55,16 +44,13 @@
         <button class="ikincil" id="model-yenile">Modelleri getir</button>
       </div>
       <label for="model">Sohbet modeli</label>
-      <select id="model"><option value="">— once modelleri getirin —</option></select>
+      <select id="model"><option value="">— önce modelleri getirin —</option></select>
 
-      <label for="kosul">Deney kosulu</label>
-      <select id="kosul">
-        {% for k in kosullar %}<option value="{{ k }}">{{ k }}</option>{% endfor %}
-      </select>
-      <p class="not" id="kosul-aciklamasi"></p>
+      <p class="not">Modele her taramada birkaç örnek çözüm (few-shot) ve SEO bilgi tabanından ilgili
+         parçalar verilir (koşul: örnek + bilgi).</p>
 
-      <label for="embed-model">Gomme (embedding) modeli <span class="ipucu">bilgi kosulu icin</span></label>
-      <select id="embed-model"><option value="">— yok (anahtar kelime eslestirmesi) —</option></select>
+      <label for="embed-model">Gömme (embedding) modeli <span class="ipucu">bilgi tabanından anlamsal seçim için</span></label>
+      <select id="embed-model"><option value="">— yok (anahtar kelime eşleştirmesi) —</option></select>
 
       <div class="ikili">
         <div><label for="retry">Yeniden sorma</label><input type="number" id="retry" value="{{ varsayilan.retry }}" min="0" max="3"></div>
@@ -72,18 +58,18 @@
       </div>
     </div>
 
-    <h2>3. Secenekler</h2>
-    <label class="kutu"><input type="checkbox" id="uy-robots" checked> robots.txt kurallarina uy</label>
-    <label class="kutu"><input type="checkbox" id="bagimsiz-olcum"> Lighthouse SEO puanini da al <span class="ipucu">(canli mod, internet ve PageSpeed kotasi gerekir)</span></label>
+    <h2>3. Seçenekler</h2>
+    <label class="kutu"><input type="checkbox" id="uy-robots" checked> robots.txt kurallarına uy</label>
+    <label class="kutu"><input type="checkbox" id="bagimsiz-olcum"> Lighthouse SEO puanını da al <span class="ipucu">(internet ve PageSpeed kotası gerekir)</span></label>
     <div class="ikili">
-      <div><label for="bekleme">Istekler arasi bekleme (sn)</label><input type="number" id="bekleme" value="1" step="0.5" min="0"></div>
-      <div><label for="zaman-asimi">Zaman asimi (sn)</label><input type="number" id="zaman-asimi" value="15" min="5"></div>
+      <div><label for="bekleme">İstekler arası bekleme (sn)</label><input type="number" id="bekleme" value="1" step="0.5" min="0"></div>
+      <div><label for="zaman-asimi">Zaman aşımı (sn)</label><input type="number" id="zaman-asimi" value="15" min="5"></div>
     </div>
-    <label for="cikti">Cikti klasoru <span class="ipucu">sonuclar/ altinda; bos birakilirsa tarihli ad verilir</span></label>
-    <input type="text" id="cikti" placeholder="ornek: deney_sifir_9b">
+    <p class="not">Çıktılar her site için <code>sonuclar/&lt;site adı&gt;/sonuc_&lt;tarih_saat&gt;/</code>
+       klasörüne kaydedilir.</p>
 
     <div class="dugmeler">
-      <button class="birincil" id="basla">Taramayi baslat</button>
+      <button class="birincil" id="basla">Taramayı başlat</button>
       <button class="ikincil gizli" id="durdur">Durdur</button>
     </div>
     <p class="hata gizli" id="form-hatasi"></p>
@@ -92,7 +78,7 @@
   <!-- ----------------------------------------------------------- SONUCLAR -->
   <section class="panel genis">
     <div class="sonuc-ust">
-      <h2>Sonuclar</h2>
+      <h2>Sonuçlar</h2>
       <div class="indirmeler gizli" id="indirmeler">
         <a class="ikincil" href="/api/rapor">rapor.json</a>
         <a class="ikincil" href="/api/csv">ozet.csv</a>
@@ -107,30 +93,30 @@
     <div id="ozet" class="ozet gizli"></div>
 
     <div id="bos-durum" class="bos-durum">
-      <p>Henuz tarama yapilmadi.</p>
-      <p class="not">Soldaki panelden bir kaynak secip taramayi baslatin.</p>
+      <p>Henüz tarama yapılmadı.</p>
+      <p class="not">Soldaki panele adresleri yazıp taramayı başlatın.</p>
     </div>
 
     <table id="sonuc-tablosu" class="gizli">
       <thead>
         <tr>
-          <th>Sayfa</th><th class="sayi">Once</th><th class="sayi">Sonra</th>
-          <th class="sayi">Sayfa puani</th><th class="sayi">Site puani</th><th class="sayi">Model cozum</th><th class="sayi">Sure</th><th></th>
+          <th>Sayfa</th><th class="sayi">Önce</th><th class="sayi">Sonra</th>
+          <th class="sayi">Sayfa puanı</th><th class="sayi">Site puanı</th><th class="sayi">Model çözüm</th><th class="sayi">Süre</th><th></th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
 
     <details class="gunluk-kutusu" id="gunluk-kutusu">
-      <summary>Islem gunlugu</summary>
+      <summary>İşlem günlüğü</summary>
       <pre id="gunluk"></pre>
     </details>
   </section>
 </main>
 
 <footer>
-  <span>YBS317 SEO I &mdash; Bilimsel Arastirma Odevi</span>
-  <span class="not">Puan bu aracin kendi olcegidir; Lighthouse gibi bagimsiz bir olcum degildir.</span>
+  <span>YBS317 SEO I &mdash; Bilimsel Araştırma Ödevi</span>
+  <span class="not">Puan bu aracın kendi ölçeğidir; Lighthouse gibi bağımsız bir ölçüm değildir.</span>
 </footer>
 
 <script src="{{ url_for('static', filename='uygulama.js') }}"></script>

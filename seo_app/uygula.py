@@ -49,20 +49,20 @@ def kural_duzelt(html, kodlar, site_url, dil):
     uygulanan = []
     if "canonical_yok" in kodlar and site_url and soup.head:
         soup.head.append(soup.new_tag("link", rel="canonical", href=site_url))
-        uygulanan.append("canonical_eklendi: " + site_url)
+        uygulanan.append("Canonical etiketi eklendi: " + site_url)
     if "html_lang_yok" in kodlar and soup.html:
         soup.html["lang"] = dil
-        uygulanan.append("html_lang_eklendi: " + dil)
+        uygulanan.append("html lang bilgisi eklendi: " + dil)
     if "h1_birden_fazla" in kodlar:
         # ilk metinli H1 kalir; bos H1'lere dokunulmaz (sayimda zaten yer almazlar)
         h1ler = [h for h in soup.find_all("h1") if h.get_text(strip=True)]
         for h in h1ler[1:]:
             h.name = "h2"
-        uygulanan.append("h1_fazlalari_h2_yapildi: " + str(max(len(h1ler) - 1, 0)))
+        uygulanan.append("Fazla H1'ler H2 yapıldı: " + str(max(len(h1ler) - 1, 0)))
     if "viewport_yok" in kodlar and soup.head:
         soup.head.insert(0, soup.new_tag("meta", attrs={
             "name": "viewport", "content": "width=device-width, initial-scale=1"}))
-        uygulanan.append("viewport_eklendi")
+        uygulanan.append("Viewport meta etiketi eklendi")
     if "og_etiketleri_yok" in kodlar and soup.head:
         # Open Graph etiketleri duzeltilmis title/meta degerlerinden turetilir; yeni bilgi uretilmez
         baslik = soup.title.get_text(strip=True) if soup.title else None
@@ -80,5 +80,5 @@ def kural_duzelt(html, kodlar, site_url, dil):
             eklenen.append("og:url")
         if eklenen:
             soup.head.append(soup.new_tag("meta", attrs={"property": "og:type", "content": "website"}))
-            uygulanan.append("og_etiketleri_eklendi: " + ", ".join(eklenen + ["og:type"]))
+            uygulanan.append("Open Graph etiketleri eklendi: " + ", ".join(eklenen + ["og:type"]))
     return str(soup), uygulanan

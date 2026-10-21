@@ -2,7 +2,7 @@
 import json
 
 import pytest
-from conftest import html_yap
+from conftest import html_yap, sahte_canli, sahte_model
 
 from seo_app import boru
 from seo_app.cikarma import extract, yapisal_veri
@@ -72,13 +72,14 @@ def test_site_geneli_tekrarlari_bulur():
     assert all("d" not in s for _, s in g)            # hatali sayfa gruba katilmaz
 
 
-def test_topluca_analiz_site_geneli_dosyasi_ve_kayit_notlari(tmp_path):
-    for ad in ("a", "b"):
-        (tmp_path / f"{ad}.html").write_text(html_yap(title="Ortak Baslik Metni Burada Yer Aliyor Sayfa"),
-                                             encoding="utf-8")
-    hedefler = boru.hedefleri_hazirla("dosya", None, tmp_path)
-    rapor = boru.topluca_analiz(hedefler, {"llm_kullan": False}, str(tmp_path), tmp_path / "cikti")
-    gruplar = json.loads((tmp_path / "cikti" / "site_geneli.json").read_text(encoding="utf-8"))
+def test_topluca_analiz_site_geneli_dosyasi_ve_kayit_notlari(monkeypatch, tmp_path):
+    ortak = html_yap(title="Ortak Baslik Metni Burada Yer Aliyor Sayfa")
+    sahte_canli(monkeypatch, {"https://a.edu.tr": ortak, "https://b.edu.tr": ortak})
+    sahte_model(monkeypatch)
+    hedefler = boru.hedefleri_hazirla("a.edu.tr\nb.edu.tr")
+    rapor = boru.topluca_analiz(hedefler, {"model": "sahte", "bekleme_sn": 0}, str(tmp_path), tmp_path / "cikti")
+    from pathlib import Path
+    gruplar = json.loads((Path(rapor[0]["cikti_klasoru"]) / "site_geneli.json").read_text(encoding="utf-8"))
     assert any(g["sorun"] == "title_tekrar" for g in gruplar)
     assert all("title_tekrar" in k["tekrar_bulgulari"] for k in rapor)
     assert all(k["once_puan"] == rapor[0]["once_puan"] for k in rapor)   # puana katilmaz

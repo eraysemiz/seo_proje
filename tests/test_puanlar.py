@@ -2,7 +2,7 @@
 import json
 
 import pytest
-from conftest import KOK, html_yap
+from conftest import KOK, html_yap, sahte_canli, sahte_model
 
 from seo_app import boru
 from seo_app.kurallar import (ACIKLAMA, CIDDIYET_AGIRLIK, KATEGORILER, SORUN_TANIMI, TARAMA_GENELI_KODLARI,
@@ -48,11 +48,6 @@ def test_eski_olcegi_sifirlayan_sorunlar_yeni_olcekte_ayirt_edilir():
     assert 0 < p["sayfa"] < 100 and 0 < p["site"] < 100
 
 
-def test_cevrimdisi_modda_site_puani_olculmedi():
-    p = puanlar([sorun("title_kisa", "orta", "sayfa")], site_olculdu=False)
-    assert p["site"] is None and p["sayfa"] < 100 and p["guvenlik"] == 100
-
-
 def test_hata_sayfasinin_sayfa_puani_olculmedi_sayilir():
     p = puanlar([sorun("hata_durum_kodu", "yuksek", "site")], sayfa_olculdu=False)
     assert p["sayfa"] is None and p["site"] < 100
@@ -60,12 +55,12 @@ def test_hata_sayfasinin_sayfa_puani_olculmedi_sayilir():
     assert p["guvenlik"] is not None      # guvenlik kodlari site katmaninda da var
 
 
-def test_analiz_kaydinda_once_sonra_puanlari(tmp_path):
-    yol = tmp_path / "s.html"
-    yol.write_text(html_yap(lang=""), encoding="utf-8")
-    k = boru.analiz_et({"tur": "dosya", "yol": str(yol)}, {"llm_kullan": False, "site_url": "https://x.edu.tr/"},
-                       str(tmp_path))
-    assert k["once_puanlar"]["site"] is None
+def test_analiz_kaydinda_once_sonra_puanlari(monkeypatch, tmp_path):
+    sahte_canli(monkeypatch, {"https://x.edu.tr": html_yap(lang="")},
+                site_sorunlari=[{**sorun("robots_yok", "orta", "site"), "cozum_yolu": "elle", "ayrinti": ""}])
+    sahte_model(monkeypatch)
+    k = boru.analiz_et({"url": "x.edu.tr"}, {"model": "sahte"}, str(tmp_path))
+    assert k["once_puanlar"]["site"] == k["sonra_puanlar"]["site"] < 100   # site katmani HTML'le degismez
     assert k["sonra_puanlar"]["sayfa"] > k["once_puanlar"]["sayfa"]      # kural duzeltmeleri puani artirir
 
 

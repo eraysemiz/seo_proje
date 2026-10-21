@@ -22,13 +22,13 @@ from seo_app.web import uygulama
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=5000)
-    ap.add_argument("--host", default="127.0.0.1", help="varsayilan olarak yalnizca bu bilgisayardan erisilir")
-    ap.add_argument("--acma", action="store_true", help="tarayiciyi kendiliginden acma")
+    ap.add_argument("--host", default="127.0.0.1", help="varsayılan olarak yalnızca bu bilgisayardan erişilir")
+    ap.add_argument("--acma", action="store_true", help="tarayıcıyı kendiliğinden açma")
     args = ap.parse_args()
 
     adres = "http://" + ("127.0.0.1" if args.host in ("0.0.0.0", "::") else args.host) + ":" + str(args.port)
-    print("SEO Denetim Araci calisiyor:", adres)
-    print("Durdurmak icin Ctrl+C")
+    print("SEO Denetim Aracı çalışıyor:", adres)
+    print("Durdurmak için Ctrl+C")
     if not args.acma:
         threading.Timer(1.0, lambda: webbrowser.open(adres)).start()
     uygulama.run(host=args.host, port=args.port, debug=False, threaded=True)

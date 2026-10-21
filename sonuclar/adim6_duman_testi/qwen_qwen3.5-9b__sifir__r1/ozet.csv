@@ -1,3 +1,0 @@
-﻿ad;kaynak_turu;durum_kodu;model;kosul;ogretme_yontemi;once_sorun_sayisi;sonra_sorun_sayisi;once_puan;sonra_puan;sayfa_sorun_sayisi;site_sorun_sayisi;cozum_orani;toplam_cozum_orani;sure_sn;sure_toplam_sn;hata;kabul_edilen_oneri;reddedilen_oneri;yok_sayilan_oneri;cozulen;kalan
-Düzce Üniversitesi _ Anasayfa.htm;dosya;;qwen/qwen3.5-9b;sifir;;8;5;49;75;8;0;0.5;0.5;151.24;151.31;;10;4;10;h1_yok, img_alt_eksik, og_etiketleri_yok;title_kisa, meta_description_kisa, canonical_yok, yapisal_veri_yok, twitter_card_yok
-Marmara Üniversitesi _ Resmi Web Sitesi.htm;dosya;;qwen/qwen3.5-9b;sifir;;4;1;73;97;4;0;1.0;1.0;130.1;130.43;;13;0;0;meta_description_uzun, h1_birden_fazla, img_alt_eksik;yapisal_veri_yok

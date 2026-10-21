@@ -1,0 +1,398 @@
+[
+  {
+    "ad": "https://www.duzce.edu.tr",
+    "url": "https://www.duzce.edu.tr",
+    "site_bilgi": {
+      "site_koku": "https://www.duzce.edu.tr",
+      "son_url": "https://www.duzce.edu.tr/",
+      "durum_kodu": 200,
+      "yonlendirme_zinciri": [],
+      "ttfb_ms": 581,
+      "yonlendirme_ms": 0,
+      "toplam_ms": 587,
+      "boyut_kb": 41,
+      "sikistirma": "gzip",
+      "hsts": false,
+      "sertifika": {
+        "dogrulandi": true,
+        "gecerli": true,
+        "kalan_gun": 28,
+        "veren": "Sectigo Public Server Authentication CA DV R36",
+        "bitis": "2026-11-18",
+        "zincir_eksik": true,
+        "zincir": [
+          "*.duzce.edu.tr",
+          "Sectigo RSA Domain Validation Secure Server CA"
+        ],
+        "hata": null
+      },
+      "http_yonlendirme": {
+        "yonlendiriyor": true,
+        "hedef": "https://www.duzce.edu.tr:443/",
+        "durum_kodu": 301,
+        "hata": null
+      },
+      "robots": {
+        "adres": "https://www.duzce.edu.tr/robots.txt",
+        "var": false,
+        "durum_kodu": 404,
+        "satir_sayisi": 0,
+        "sitemapler": [],
+        "tum_siteyi_engelliyor": false,
+        "ilk_satirlar": "",
+        "hata": null
+      },
+      "sitemap": {
+        "adaylar": [
+          "https://www.duzce.edu.tr/sitemap.xml"
+        ],
+        "var": false,
+        "gecerli": false,
+        "tur": null,
+        "url_sayisi": 0,
+        "alt_sitemap_sayisi": 0,
+        "lastmod_var": false,
+        "acilan": [],
+        "hata": "https://www.duzce.edu.tr/sitemap.xml -> 404",
+        "tam_okundu": true,
+        "adres_ornegi": []
+      }
+    },
+    "durum_kodu": 200,
+    "hata_sayfasi": false,
+    "title": "Düzce Üniversitesi | Anasayfa",
+    "meta_description": "Düzce Üniversitesi",
+    "h1": [],
+    "sorunlar": [
+      {
+        "sorun": "title_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "29 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "meta_description_kisa",
+        "ciddiyet": "orta",
+        "ayrinti": "18 karakter",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "h1_yok",
+        "ciddiyet": "yuksek",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "img_alt_eksik",
+        "ciddiyet": "orta",
+        "ayrinti": "9/25 görsel",
+        "katman": "sayfa",
+        "cozum_yolu": "model"
+      },
+      {
+        "sorun": "canonical_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "yapisal_veri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "og_etiketleri_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "kural"
+      },
+      {
+        "sorun": "twitter_card_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "sayfa",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_yakinda_bitiyor",
+        "ciddiyet": "orta",
+        "ayrinti": "28 gün, bitiş 2026-11-18",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sertifika_zinciri_eksik",
+        "ciddiyet": "yuksek",
+        "ayrinti": "sunucu, yaprak sertifikanın vereni olan 'Sectigo Public Server Authentication CA DV R36' ara sertifikasını göndermiyor",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "hsts_yok",
+        "ciddiyet": "dusuk",
+        "ayrinti": "",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "robots_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "durum 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      },
+      {
+        "sorun": "sitemap_yok",
+        "ciddiyet": "orta",
+        "ayrinti": "https://www.duzce.edu.tr/sitemap.xml -> 404",
+        "katman": "site",
+        "cozum_yolu": "elle"
+      }
+    ],
+    "once_sorun_sayisi": 13,
+    "once_puan": 7,
+    "once_puanlar": {
+      "sayfa": 60,
+      "site": 67,
+      "icerik": 43,
+      "teknik": 70,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "img_bos_alt": 0,
+    "sayfa_sorun_sayisi": 8,
+    "site_sorun_sayisi": 5,
+    "model": "qwen/qwen3.5-9b",
+    "fixes": [
+      {
+        "alan": "h1",
+        "hedef": "",
+        "yeni_deger": "Düzce Üniversitesi",
+        "gerekce": "Sayfanın en önemli başlığı olarak marka adı yer alıyor."
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g1",
+        "yeni_deger": "Düzce Üniversitesi logosu",
+        "gerekce": "Dosya adı ve bağlam metni (üniversite) doğrultusunda.",
+        "hedef_src": "/assets/theme/images/logo.png",
+        "hedef_sira": 0
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g2",
+        "yeni_deger": "Üniversite görseli",
+        "gerekce": "Bağlam bilgisi yok, genel ifade kullanıldı.",
+        "hedef_src": "/assets/theme/images/mask_group_6.png",
+        "hedef_sira": 17
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g3",
+        "yeni_deger": "Üniversite görseli",
+        "gerekce": "Bağlam bilgisi yok, genel ifade kullanıldı.",
+        "hedef_src": "/assets/theme/images/mask_group_7.png",
+        "hedef_sira": 18
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g4",
+        "yeni_deger": "Üniversite görseli",
+        "gerekce": "Bağlam bilgisi yok, genel ifade kullanıldı.",
+        "hedef_src": "/assets/theme/images/mask_group_84.png",
+        "hedef_sira": 19
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g5",
+        "yeni_deger": "Üniversite görseli",
+        "gerekce": "Bağlam bilgisi yok, genel ifade kullanıldı.",
+        "hedef_src": "/assets/theme/images/mask_group_85.jpg",
+        "hedef_sira": 20
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g6",
+        "yeni_deger": "Türkçe logo",
+        "gerekce": "Dosya adı (logo_tr_ort) ve bağlam (üniversite) doğrultusunda.",
+        "hedef_src": "/assets/theme/images/logo_tr_ort.png",
+        "hedef_sira": 21
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g7",
+        "yeni_deger": "Instagram logosu",
+        "gerekce": "Dosya adı ve Instagram bağlantısı bilgisi doğrultusunda.",
+        "hedef_src": "/assets/theme/images/logo_instagram.png",
+        "hedef_sira": 22
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g8",
+        "yeni_deger": "Twitter logosu",
+        "gerekce": "Dosya adı ve Twitter bağlantısı bilgisi doğrultusunda.",
+        "hedef_src": "/assets/theme/images/LOGO_twitter.png",
+        "hedef_sira": 23
+      },
+      {
+        "alan": "img_alt",
+        "hedef": "g9",
+        "yeni_deger": "YouTube logosu",
+        "gerekce": "Dosya adı ve YouTube bağlantısı bilgisi doğrultusunda.",
+        "hedef_src": "/assets/theme/images/LOGO_YouTube.png",
+        "hedef_sira": 24
+      }
+    ],
+    "reddedilen": [
+      {
+        "deneme": 1,
+        "neden": "title_uzunluk_66",
+        "oneri": {
+          "alan": "title",
+          "hedef": "",
+          "yeni_deger": "Düzce Üniversitesi | Çevre ve Sağlık Alanında İhtisas Üniversitesi",
+          "gerekce": "Marka, şehir ve ana uzmanlık alanı (Çevre ve Sağlık) başta yer alıyor."
+        }
+      },
+      {
+        "deneme": 1,
+        "neden": "meta_uzunluk_162",
+        "oneri": {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Düzce Üniversitesi, Çevre ve Sağlık alanında ihtisas üniversitesi olarak eğitim, araştırma ve toplumsal gelişime katkı sağlar. İletişim ve detaylar için tıklayın.",
+          "gerekce": "Sayfanın ana konusunu (üniversite türü) ve içeriği özetliyor."
+        }
+      },
+      {
+        "deneme": 2,
+        "neden": "title_uzunluk_66",
+        "oneri": {
+          "alan": "title",
+          "hedef": "",
+          "yeni_deger": "Düzce Üniversitesi | Çevre ve Sağlık Alanında İhtisas Üniversitesi",
+          "gerekce": "Marka, şehir ve ana uzmanlık alanı (Çevre ve Sağlık) başta yer alıyor. 66 karakterlik uzunluk sorunu çözüldü."
+        }
+      },
+      {
+        "deneme": 2,
+        "neden": "sayfada_olmayan_ifade: olara, sağla",
+        "oneri": {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Düzce Üniversitesi, Çevre ve Sağlık alanında ihtisas üniversitesi olarak eğitim, araştırma ve toplumsal gelişime katkı sağlar.",
+          "gerekce": "Sayfanın ana konusunu (Çevre ve Sağlık) ve misyonunu özetliyor. 162 karakterlik uzunluk sorunu çözüldü."
+        }
+      }
+    ],
+    "yok_sayilan": [],
+    "json_gecerli": true,
+    "sure_sn": 78.02,
+    "bitis_nedeni": "stop",
+    "dusunme_karakter": 0,
+    "cevap_karakter": 2313,
+    "denemeler": [
+      {
+        "deneme": 1,
+        "sure_sn": 58.22,
+        "bitis_nedeni": "stop",
+        "kabul": 10,
+        "reddedilen": 2,
+        "yok_sayilan": 0,
+        "dusunme_karakter": 0,
+        "cevap_karakter": 1773,
+        "istem_karakter": 8131,
+        "ilk_token_sn": 27.89,
+        "uretilen_parca": 544,
+        "uretim_hizi_tps": 17.9
+      },
+      {
+        "deneme": 2,
+        "sure_sn": 19.8,
+        "bitis_nedeni": "stop",
+        "kabul": 0,
+        "reddedilen": 2,
+        "yok_sayilan": 0,
+        "dusunme_karakter": 0,
+        "cevap_karakter": 540,
+        "istem_karakter": 8412,
+        "ilk_token_sn": 11.39,
+        "uretilen_parca": 158,
+        "uretim_hizi_tps": 18.8
+      }
+    ],
+    "ham": "{\"fixes\":[{\"alan\":\"title\",\"hedef\":\"\",\"yeni_deger\":\"Düzce Üniversitesi | Çevre ve Sağlık Alanında İhtisas Üniversitesi\",\"gerekce\":\"Marka, şehir ve ana uzmanlık alanı (Çevre ve Sağlık) başta yer alıyor. 66 karakterlik uzunluk sorunu çözüldü.\"},{\"alan\":\"meta_description\",\"hedef\":\"\",\"yeni_deger\":\"Düzce Üniversitesi, Çevre ve Sağlık alanında ihtisas üniversitesi olarak eğitim, araştırma ve toplumsal gelişime katkı sağlar.\",\"gerekce\":\"Sayfanın ana konusunu (Çevre ve Sağlık) ve misyonunu özetliyor. 162 karakterlik uzunluk sorunu çözüldü.\"}]}",
+    "dusunme_basi": "",
+    "kosul": "ornek+bilgi",
+    "ogretme_ornek_sayisi": 3,
+    "ogretme_kural_sayisi": 3,
+    "ogretme_yontemi": "anlamsal",
+    "site_url": "https://www.duzce.edu.tr/",
+    "kural_duzeltmeleri": [
+      "Canonical etiketi eklendi: https://www.duzce.edu.tr/",
+      "Open Graph etiketleri eklendi: og:title, og:description, og:url, og:type"
+    ],
+    "sonra_sorun_sayisi": 10,
+    "sonra_puan": 33,
+    "sonra_puanlar": {
+      "sayfa": 81,
+      "site": 67,
+      "icerik": 72,
+      "teknik": 77,
+      "guvenlik": 59,
+      "performans": 100
+    },
+    "cozulen_sorunlar": [
+      "h1_yok",
+      "img_alt_eksik",
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "kalan_sorunlar": [
+      "title_kisa",
+      "meta_description_kisa",
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "yeni_cikan_sorunlar": [
+      "baslik_atlamasi"
+    ],
+    "modelle_cozulebilir": [
+      "title_kisa",
+      "meta_description_kisa",
+      "h1_yok",
+      "img_alt_eksik"
+    ],
+    "kuralla_cozulebilir": [
+      "canonical_yok",
+      "og_etiketleri_yok"
+    ],
+    "elle_gereken": [
+      "yapisal_veri_yok",
+      "twitter_card_yok",
+      "sertifika_yakinda_bitiyor",
+      "sertifika_zinciri_eksik",
+      "hsts_yok",
+      "robots_yok",
+      "sitemap_yok"
+    ],
+    "cozum_orani": 0.5,
+    "toplam_cozum_orani": 0.67,
+    "duzeltilmis_dosya": "duzeltilmis_https_www.duzce.edu.tr.html",
+    "sure_toplam_sn": 85.67,
+    "cikti_klasoru": "C:\\Users\\Eray\\Desktop\\Düzce Üniversitesi\\seo_proje\\sonuclar\\duzce.edu.tr\\sonuc_2026-10-21_20-41-28",
+    "tekrar_bulgulari": []
+  }
+]

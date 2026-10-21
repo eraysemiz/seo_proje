@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Deney matrisi kosucusu: model x kosul x retry kombinasyonlarini tek komutla calistirir.
+"""Deney matrisi kosucusu: model x retry kombinasyonlarini tek komutla calistirir.
+Deney kosulu sabittir (ornek+bilgi, seo_app.boru.VARSAYILAN_AYARLAR).
 
-Her kombinasyon sonuclar/<deney_adi>/<model>__<kosul>__r<retry>/ klasorune yazilir
-(rapor.json, ozet.csv, duzeltilmis sayfalar). Tum kombinasyonlarin karsilastirmasi
-sonuclar/<deney_adi>/karsilastirma.csv dosyasinda toplanir.
+Her kombinasyon sonuclar/<site>/sonuc_<tarih_saat>/<model>__<kosul>__r<retry>/ klasorune
+yazilir (rapor.json, ozet.csv, duzeltilmis sayfalar). Her sitenin kombinasyon karsilastirmasi
+sonuclar/<site>/sonuc_<tarih_saat>/karsilastirma.csv dosyasinda toplanir.
 
 Ornekler:
-    py deney.py --klasor snapshots --modeller qwen/qwen3.5-9b,qwen3.8-4b-distill
+    py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-9b,qwen3.8-4b-distill
     py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-9b ^
-                --kosullar sifir,bilgi --retry 0,1 --embed-model text-embedding-qwen3-embedding-0.6b
+                --retry 0,1 --embed-model text-embedding-qwen3-embedding-0.6b
 
 Not: LM Studio farkli bir modeli ilk istekte bellege yukler. Model karsilastirmasinda
 hiz olcumlerinin adil olmasi icin modelleri tek tek yuklu tutmak onerilir.
@@ -18,14 +19,14 @@ import csv
 import io
 import itertools
 import sys
-import time
 from pathlib import Path
 
 KOK = Path(__file__).resolve().parent
 sys.path.insert(0, str(KOK))
 
-from seo_app.boru import VARSAYILAN_AYARLAR, _guvenli_ad, hedefleri_hazirla, topluca_analiz  # noqa: E402
-from seo_app.ogretme import KOSULLAR  # noqa: E402
+from seo_app.boru import (VARSAYILAN_AYARLAR, _guvenli_ad, hedefleri_hazirla, site_adi,  # noqa: E402
+                          topluca_analiz, zaman_damgasi)
+from seo_app.llm import ModelHatasi, modelleri_dogrula  # noqa: E402
 
 KARSILASTIRMA_SUTUNLARI = [
     "model", "kosul", "retry", "sayfa", "hatali_sayfa", "json_gecerli_orani",
@@ -69,23 +70,29 @@ def karsilastirma_csv(satirlar):
     return tampon.getvalue()
 
 
-def deney_calistir(hedefler, modeller, kosullar, retryler, temel_ayarlar, deney_klasoru,
+def deney_calistir(hedefler, modeller, kosullar, retryler, temel_ayarlar, sonuc_koku, zaman,
                    ogretme_klasoru, gunluk=print):
-    """Tum kombinasyonlari sirayla calistirir; karsilastirma satirlarini dondurur."""
-    deney_klasoru = Path(deney_klasoru)
-    deney_klasoru.mkdir(parents=True, exist_ok=True)
-    satirlar = []
+    """Tum kombinasyonlari sirayla calistirir. Her kombinasyon
+    <sonuc_koku>/<site>/<zaman>/<kombinasyon>/ altina, her sitenin karsilastirmasi
+    <sonuc_koku>/<site>/<zaman>/karsilastirma.csv dosyasina yazilir.
+    {site deney klasoru: karsilastirma satirlari} dondurur."""
+    satirlar = {}
     kombinasyonlar = list(itertools.product(modeller, kosullar, retryler))
     for n, (model, kosul, retry) in enumerate(kombinasyonlar, 1):
         ad = _guvenli_ad(model) + "__" + _guvenli_ad(kosul) + "__r" + str(retry)
-        klasor = deney_klasoru / ad
         gunluk("=== [" + str(n) + "/" + str(len(kombinasyonlar)) + "] " + ad)
-        ayarlar = {**temel_ayarlar, "llm_kullan": True, "model": model, "kosul": kosul, "retry": retry}
-        rapor = topluca_analiz(hedefler, ayarlar, ogretme_klasoru, klasor,
+        ayarlar = {**temel_ayarlar, "model": model, "kosul": kosul, "retry": retry}
+        rapor = topluca_analiz(hedefler, ayarlar, ogretme_klasoru, sonuc_koku, str(Path(zaman) / ad),
                                gunluk=lambda m: gunluk("   " + m))
-        satirlar.append(kombinasyon_ozeti(model, kosul, retry, rapor, klasor))
-        # her kombinasyondan sonra yazilir; deney yarida kesilse bile o ana kadarki sonuclar kalir
-        (deney_klasoru / "karsilastirma.csv").write_text(karsilastirma_csv(satirlar), encoding="utf-8-sig")
+        site_kayitlari = {}
+        for k in rapor:
+            site_kayitlari.setdefault(Path(sonuc_koku) / site_adi(k["ad"]) / zaman, []).append(k)
+        for deney_klasoru, kayitlar in site_kayitlari.items():
+            satirlar.setdefault(deney_klasoru, []).append(
+                kombinasyon_ozeti(model, kosul, retry, kayitlar, deney_klasoru / ad))
+            # her kombinasyondan sonra yazilir; deney yarida kesilse bile o ana kadarki sonuclar kalir
+            (deney_klasoru / "karsilastirma.csv").write_text(karsilastirma_csv(satirlar[deney_klasoru]),
+                                                             encoding="utf-8-sig")
     return satirlar
 
 
@@ -94,45 +101,42 @@ def _liste(metin):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Deney matrisi: model x kosul x retry")
-    kaynak = ap.add_mutually_exclusive_group(required=True)
-    kaynak.add_argument("--klasor", help="kaydedilmis HTML klasoru (proje kokune gore)")
-    kaynak.add_argument("--adresler", help="her satirda bir adres bulunan metin dosyasi")
-    ap.add_argument("--modeller", required=True, help="virgulle ayrilmis sohbet modeli kimlikleri")
-    ap.add_argument("--kosullar", default=",".join(KOSULLAR), help="varsayilan: dort kosulun tamami")
-    ap.add_argument("--retry", default="0,1", help="virgulle ayrilmis retry degerleri")
-    ap.add_argument("--ad", default=None, help="deney klasorunun adi (varsayilan: deney_<tarih>)")
+    ap = argparse.ArgumentParser(description="Deney matrisi: model x retry (koşul sabit: örnek+bilgi)")
+    ap.add_argument("--adresler", required=True, help="her satırında bir adres bulunan metin dosyası")
+    ap.add_argument("--modeller", required=True, help="virgülle ayrılmış sohbet modeli kimlikleri")
+    ap.add_argument("--retry", default="0,1", help="virgülle ayrılmış yeniden deneme (retry) değerleri")
     ap.add_argument("--url", default=VARSAYILAN_AYARLAR["url"], help="LM Studio adresi")
-    ap.add_argument("--embed-model", default=None, help="bilgi kosulu icin gomme modeli")
+    ap.add_argument("--embed-model", default=None, help="bilgi tabanından anlamsal seçim için gömme modeli")
     ap.add_argument("--max-tokens", type=int, default=VARSAYILAN_AYARLAR["max_tokens"])
     ap.add_argument("--bekleme", type=float, default=VARSAYILAN_AYARLAR["bekleme_sn"],
-                    help="canli modda istekler arasi bekleme (sn)")
+                    help="istekler arası bekleme (sn)")
     args = ap.parse_args(argv)
 
-    kosullar = _liste(args.kosullar)
-    bilinmeyen = [k for k in kosullar if k not in KOSULLAR]
-    if bilinmeyen:
-        ap.error("bilinmeyen kosul: " + ", ".join(bilinmeyen) + " (gecerli: " + ", ".join(KOSULLAR) + ")")
+    kosullar = [VARSAYILAN_AYARLAR["kosul"]]
     try:
         retryler = [int(x) for x in _liste(args.retry)]
     except ValueError:
-        ap.error("--retry virgulle ayrilmis tam sayilar olmali")
+        ap.error("--retry virgülle ayrılmış tam sayılar olmalı")
 
-    if args.klasor:
-        hedefler = hedefleri_hazirla("dosya", None, KOK / args.klasor)
-    else:
-        hedefler = hedefleri_hazirla("canli", (KOK / args.adresler).read_text(encoding="utf-8"), None)
+    hedefler = hedefleri_hazirla((KOK / args.adresler).read_text(encoding="utf-8"))
     if not hedefler:
-        ap.error("analiz edilecek sayfa bulunamadi")
+        ap.error("analiz edilecek sayfa bulunamadı")
 
-    deney_klasoru = KOK / "sonuclar" / (args.ad or ("deney_" + time.strftime("%Y%m%d_%H%M%S")))
+    # deney baslamadan once LM Studio ve tum secilen modeller denetlenir; sorun varsa hic baslamaz
+    try:
+        modelleri_dogrula(args.url, _liste(args.modeller) + [args.embed_model])
+    except ModelHatasi as e:
+        raise SystemExit("HATA: " + str(e))
+
+    zaman = zaman_damgasi()
     temel = {"url": args.url, "embed_model": args.embed_model, "max_tokens": args.max_tokens,
              "bekleme_sn": args.bekleme}
     toplam = len(_liste(args.modeller)) * len(kosullar) * len(retryler)
-    print(str(len(hedefler)) + " sayfa x " + str(toplam) + " kombinasyon -> " + str(deney_klasoru))
-    deney_calistir(hedefler, _liste(args.modeller), kosullar, retryler, temel, deney_klasoru,
-                   KOK / "ogretme")
-    print("Karsilastirma:", deney_klasoru / "karsilastirma.csv")
+    print(str(len(hedefler)) + " sayfa x " + str(toplam) + " kombinasyon -> sonuclar/<site>/" + zaman)
+    satirlar = deney_calistir(hedefler, _liste(args.modeller), kosullar, retryler, temel, KOK / "sonuclar",
+                              zaman, KOK / "ogretme")
+    for deney_klasoru in satirlar:
+        print("Karşılaştırma:", deney_klasoru / "karsilastirma.csv")
 
 
 if __name__ == "__main__":

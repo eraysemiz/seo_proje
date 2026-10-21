@@ -30,11 +30,24 @@ py calistir.py          # http://127.0.0.1:5000 açılır
 
 Ayrıntılı kullanım, denetim listesi ve mimari için **`README.md`** dosyasına bakın.
 
+### 21 Ekim 2026 sadeleştirmesi (kullanıcı kararı)
+
+- **Kaydedilmiş HTML analizi kaldırıldı;** araç yalnızca canlı adres tarıyor. `snapshots/` klasörü
+  yalnızca testlerde örnek sayfa olarak duruyor.
+- **Her tarama dil modeliyle yapılıyor;** "yalnızca kural denetimi" seçeneği yok. Tarama başlamadan
+  önce LM Studio'ya ulaşılabildiği ve seçilen sohbet/gömme modellerinin yüklü olduğu denetleniyor;
+  değilse tarama başlamıyor. Gömme modeli seçilip ulaşılamazsa anahtar kelimeye sessizce geçilmiyor.
+- **Deney koşulu sabit: `ornek+bilgi`.** Arayüzde ve `deney.py`'de koşul seçeneği yok; `deney.py`
+  artık model × retry matrisini çalıştırıyor. Koşul karşılaştırması (sıfır/örnek/bilgi) yapılacaksa
+  bu kararın geri alınması gerekir.
+- **Sonuç klasörü:** `sonuclar/<site adı>/sonuc_<YYYY-MM-DD_HH-MM-SS>/`.
+- **Arayüz ve mesaj metinleri** Türkçe karakterlerle yazıldı (önceden kaynakta ASCII'ydi).
+
 ### Eklenen yetenekler
 
-1. **Canlı erişim modu** — artık siteleri Chrome'dan tek tek kaydetmeye gerek yok, adres listesi yeterli.
-2. **Site katmanı denetimleri** (yalnızca canlı modda): robots.txt, sitemap.xml, HTTPS/sertifika/HSTS, http→https yönlendirmesi, durum kodu, yönlendirme zinciri, TTFB, indirme süresi, HTML boyutu, sıkıştırma.
-3. **Sayfa katmanına eklenenler** (çevrimdışı modda da çalışır): viewport (mobil uyum), JSON-LD/mikroveri, Open Graph, Twitter Card, favicon, meta robots/noindex, dış kaynak sayısı.
+1. **Canlı erişim** — siteleri Chrome'dan tek tek kaydetmeye gerek yok, adres listesi yeterli.
+2. **Site katmanı denetimleri:** robots.txt, sitemap.xml, HTTPS/sertifika/HSTS, http→https yönlendirmesi, durum kodu, yönlendirme zinciri, TTFB, indirme süresi, HTML boyutu, sıkıştırma.
+3. **Sayfa katmanına eklenenler:** viewport (mobil uyum), JSON-LD/mikroveri, Open Graph, Twitter Card, favicon, meta robots/noindex, dış kaynak sayısı.
 4. **Çözüm yolu sınıflandırması** — her sorun `model` / `kural` / `elle` olarak etiketlenir. Bu, "modelin başarısı" ile "aracın toplam başarısı" ölçümlerini ayırır (hocanın sorabileceği bir soruyu baştan kapatır).
 5. **Alt site keşfi** — bir adresteki bağlantılardan kurumun alt sitelerini otomatik çıkarır; test seti bununla oluşturuldu.
 6. **Kural tabanlı düzeltmelere eklenenler:** viewport meta etiketi, Open Graph etiketleri (mevcut title/meta'dan türetilir, yeni bilgi uydurulmaz).
@@ -42,7 +55,7 @@ Ayrıntılı kullanım, denetim listesi ve mimari için **`README.md`** dosyası
 
 ### Önemli tasarım kararı (yöntem bölümünde açıklanmalı)
 
-Dil modeline **yalnızca** çözüm yolu `model` olan sorunlar gönderilir: title, meta description, H1, alt metni. Canonical, lang, içerik azlığı, yapısal veri ve site katmanı sorunları modele hiç gitmez (21 Ekim 2026 kararı, "temiz ayrım"). Bu yüzden bu tarihten önceki LLM'li sonuçlar (`sonuclar/sonuc_rag`) yeni çalıştırmalarla doğrudan karşılaştırılamaz; deneyler yeniden çalıştırılmalı. Yeniden denemede modelin zaten kabul edilmiş alanları tekrar göndermesi ret sayılmaz, raporda `yok_sayilan` listesine yazılır.
+Dil modeline **yalnızca** çözüm yolu `model` olan sorunlar gönderilir: title, meta description, H1, alt metni. Canonical, lang, içerik azlığı, yapısal veri ve site katmanı sorunları modele hiç gitmez (21 Ekim 2026 kararı, "temiz ayrım"). Bu yüzden bu tarihten önceki LLM'li sonuçlar yeni çalıştırmalarla doğrudan karşılaştırılamaz; deneyler yeniden çalıştırılmalı. Yeniden denemede modelin zaten kabul edilmiş alanları tekrar göndermesi ret sayılmaz, raporda `yok_sayilan` listesine yazılır.
 
 ### Dosya karmaşası uyarısı
 
@@ -57,13 +70,13 @@ Kök dizindeki `seo_pipeline.py`, `seo_pipelineg.py`, `seo_pipeline_ogretmeli.py
 
 ## 4. ÇÖZÜLDÜ: RAG/embedding doğrulandı
 
-Önceki handover'ın "doğrulanması gerekiyor" maddesi kapandı. `sonuclar/sonuc_rag/rapor.json` içinde her iki sayfada da `ogretme_yontemi: "anlamsal"` — yani gömme modeline gerçekten ulaşılmış, anahtar kelime yöntemine düşülmemiş. Anlamsal RAG çalışıyor.
+Önceki handover'ın "doğrulanması gerekiyor" maddesi kapandı. `sonuclar/sonuc_rag/rapor.json` içinde (21 Ekim'de silindi; `git checkout 7b527d1 -- sonuclar/sonuc_rag` ile geri getirilebilir) her iki sayfada da `ogretme_yontemi: "anlamsal"` — yani gömme modeline gerçekten ulaşılmış, anahtar kelime yöntemine düşülmemiş. Anlamsal RAG çalışıyor.
 
 ## 5. Test seti ve ilk gerçek sonuçlar
 
 **Test seti:** `test_setleri/duzce_birimleri.txt` — 58 Düzce Üniversitesi birim sitesi, aracın keşif özelliğiyle anasayfadan otomatik çıkarıldı.
 
-**Temel (baseline) tarama:** `sonuclar/sonuc_taban_canli/` (`rapor.json` + `ozet.csv`), 20 Ekim 2026, LLM kullanılmadan, yalnızca kural + canlı denetim.
+**Temel (baseline) tarama:** `sonuclar/sonuc_taban_canli/` (`rapor.json` + `ozet.csv`), 20 Ekim 2026, LLM kullanılmadan, yalnızca kural + canlı denetim. Bu klasör 21 Ekim'de silindi (yerine v2 geldi); `git checkout 7b527d1 -- sonuclar/sonuc_taban_canli` ile geri getirilebilir.
 
 - 58/58 site başarıyla tarandı, hata yok, robots nedeniyle atlanan yok
 - Ortalama 13,5 sorun/site; ortalama puan 10,6/100 (yalnızca kural düzeltmeleriyle 16,9'a çıkıyor)

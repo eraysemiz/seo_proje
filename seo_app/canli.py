@@ -1,7 +1,7 @@
 """Canli erisim denetimleri.
 
-Cevrimdisi (kaydedilmis HTML) modunda yalnizca sayfa katmani denetlenebilir.
-Site canli olarak erisilebildiginde burada tanimli ek denetimler calisir:
+Sayfanin HTML'inden gorulebilen denetimlere ek olarak, site canli erisildiginde
+burada tanimli site katmani denetimleri calisir:
   - robots.txt      : var mi, gecerli mi, sitemap bildiriyor mu, sayfayi engelliyor mu
   - sitemap.xml     : erisilebilir mi, gecerli XML mi, kac adres iceriyor, sayfa listede mi
   - HTTPS           : sema, http->https yonlendirmesi, sertifika suresi, HSTS, durum kodu
@@ -173,7 +173,7 @@ def robots_bilgisi(site_koku, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
             bilgi["tum_siteyi_engelliyor"] = not p.can_fetch("*", site_koku + "/")
             bilgi["ilk_satirlar"] = "\n".join(metin.splitlines()[:25])
         elif y.status_code == 200 and html_mi:
-            bilgi["hata"] = "robots.txt yerine HTML sayfa donuyor"
+            bilgi["hata"] = "robots.txt yerine HTML sayfa dönüyor"
     except requests.RequestException as e:
         bilgi["hata"] = type(e).__name__ + ": " + str(e)
     _onbellek[anahtar] = bilgi
@@ -245,7 +245,7 @@ def sitemap_bilgisi(site_koku, robots, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
                     if cocuk.find("{*}lastmod") is not None:
                         bilgi["lastmod_var"] = True
         except ElementTree.ParseError as e:
-            bilgi["hata"] = "XML cozulemedi: " + str(e)
+            bilgi["hata"] = "XML çözülemedi: " + str(e)
         except (requests.RequestException, OSError, gzip.BadGzipFile) as e:
             bilgi["hata"] = type(e).__name__ + ": " + str(e)
     # acilma sinirina takilan alt sitemap kaldiysa adres listesi eksiktir; "sayfa listede yok"
@@ -368,7 +368,7 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
     if durum and durum >= 400:
         add("hata_durum_kodu", "yuksek", str(durum))
     if getirme.get("yonlendirme_sayisi", 0) > 1:
-        add("uzun_yonlendirme_zinciri", "dusuk", str(getirme["yonlendirme_sayisi"]) + " yonlendirme")
+        add("uzun_yonlendirme_zinciri", "dusuk", str(getirme["yonlendirme_sayisi"]) + " yönlendirme")
 
     # --- HTTPS ve sertifika
     sertifika = None
@@ -379,16 +379,16 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
         kalan = sertifika.get("kalan_gun")
         # gecerlilik suresi ve zincir butunlugu birbirinden bagimsiz iki sorundur
         if kalan is not None and kalan <= 0:
-            add("sertifika_suresi_dolmus", "yuksek", "bitis " + str(sertifika.get("bitis")))
+            add("sertifika_suresi_dolmus", "yuksek", "bitiş " + str(sertifika.get("bitis")))
         elif kalan is not None and kalan < 30:
-            add("sertifika_yakinda_bitiyor", "orta", str(kalan) + " gun, bitis " + str(sertifika.get("bitis")))
+            add("sertifika_yakinda_bitiyor", "orta", str(kalan) + " gün, bitiş " + str(sertifika.get("bitis")))
         # Isletim sisteminin sertifika deposu eksik ara sertifikayi onbellekten tamamlayabilir;
         # bu yuzden olcut, yaygin bir istemcinin (requests + certifi kok deposu) dogrulayip
         # dogrulayamadigidir. Tarayicilar sorunu gizler, kati istemciler ve bazi botlar baglanamaz.
         if sertifika.get("zincir_eksik") or getirme.get("ssl_hatasi"):
-            ayrinti = ("sunucu, yaprak sertifikanin vereni olan '" + str(sertifika.get("veren")) +
-                       "' ara sertifikasini gondermiyor") if sertifika.get("zincir_eksik") else \
-                      "standart kok sertifika deposuyla dogrulanamadi"
+            ayrinti = ("sunucu, yaprak sertifikanın vereni olan '" + str(sertifika.get("veren")) +
+                       "' ara sertifikasını göndermiyor") if sertifika.get("zincir_eksik") else \
+                      "standart kök sertifika deposuyla doğrulanamadı"
             add("sertifika_zinciri_eksik", "yuksek", ayrinti)
         elif sertifika.get("dogrulandi") is False:
             add("sertifika_dogrulanamadi", "yuksek", (sertifika.get("hata") or "")[:160])

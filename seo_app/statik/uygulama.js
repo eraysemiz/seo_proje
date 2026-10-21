@@ -9,60 +9,41 @@ const yarat = (etiket, sinif) => { const e = document.createElement(etiket); if 
 const kacis = (m) => String(m === null || m === undefined ? "" : m)
   .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-let mod = "canli";
 let sorguZamanlayici = null;
 let aciklamalar = {};
 let acikSatirlar = new Set();
 
-const KOSUL_ACIKLAMA = {
-  "sifir": "Modele ek bilgi verilmez. Karsilastirma icin temel kosul.",
-  "ornek": "Isteme birkac ornek cozum (few-shot) eklenir.",
-  "bilgi": "SEO bilgi tabanindan ilgili parcalar eklenir. Gomme modeli secilirse anlamsal getirme (RAG), secilmezse anahtar kelime eslestirmesi kullanilir.",
-  "ornek+bilgi": "Hem ornekler hem bilgi tabani parcalari eklenir."
-};
+// ciddiyet anahtarlari CSS sinifi ve siralama icin ASCII kalir; ekranda Turkce adi gosterilir
+const CIDDIYET_ADI = { yuksek: "yüksek", orta: "orta", dusuk: "düşük" };
+
 
 /* ------------------------------------------------------------------ baslangic */
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".sekme").forEach((d) => d.addEventListener("click", () => modDegistir(d.dataset.mod)));
-  $("#llm-kullan").addEventListener("change", (e) => $("#llm-ayarlari").classList.toggle("gizli", !e.target.checked));
-  $("#kosul").addEventListener("change", kosulAciklamasiGuncelle);
   $("#model-yenile").addEventListener("click", modelleriGetir);
   $("#kesif-dugmesi").addEventListener("click", kesfet);
   $("#basla").addEventListener("click", taramayiBaslat);
   $("#durdur").addEventListener("click", () => fetch("/api/durdur", { method: "POST" }));
 
-  kosulAciklamasiGuncelle();
   fetch("/api/aciklamalar").then((r) => r.json()).then((d) => { aciklamalar = d; });
   modelleriGetir();
   durumuSor();           // sayfa yenilense bile suren tarama varsa yakala
 });
 
-function modDegistir(yeni) {
-  mod = yeni;
-  document.querySelectorAll(".sekme").forEach((d) => d.classList.toggle("etkin", d.dataset.mod === yeni));
-  $("#alan-canli").classList.toggle("gizli", yeni !== "canli");
-  $("#alan-dosya").classList.toggle("gizli", yeni !== "dosya");
-}
-
-function kosulAciklamasiGuncelle() {
-  $("#kosul-aciklamasi").textContent = KOSUL_ACIKLAMA[$("#kosul").value] || "";
-}
-
 /* --------------------------------------------------------------------- model */
 function modelleriGetir() {
   const rozet = $("#baglanti-rozeti");
-  rozet.textContent = "LM Studio: sorgulaniyor...";
+  rozet.textContent = "LM Studio: sorgulanıyor...";
   rozet.className = "rozet";
   fetch("/api/modeller?url=" + encodeURIComponent($("#llm-url").value))
     .then((r) => r.json())
     .then((d) => {
       const sohbet = $("#model"), gomme = $("#embed-model");
       sohbet.innerHTML = "";
-      gomme.innerHTML = '<option value="">— yok (anahtar kelime eslestirmesi) —</option>';
+      gomme.innerHTML = '<option value="">— yok (anahtar kelime eşleştirmesi) —</option>';
       if (d.hata || !d.modeller.length) {
-        rozet.textContent = "LM Studio: baglanti yok";
+        rozet.textContent = "LM Studio: bağlantı yok";
         rozet.className = "rozet kopuk";
-        sohbet.innerHTML = '<option value="">— model bulunamadi —</option>';
+        sohbet.innerHTML = '<option value="">— model bulunamadı —</option>';
         return;
       }
       // yuklu modeller once gelsin; yuklu olmayani secmek LM Studio'da onu da bellege yukler
@@ -71,7 +52,7 @@ function modelleriGetir() {
         const gommeMu = m.tur === "embeddings" || /embed/i.test(m.id);
         const se = yarat("option");
         se.value = m.id;
-        se.textContent = m.id + (m.yuklu === false ? "  (yuklu degil — secilirse yuklenir)" : "");
+        se.textContent = m.id + (m.yuklu === false ? "  (yüklü değil — seçilirse yüklenir)" : "");
         (gommeMu ? gomme : sohbet).appendChild(se);
       });
       if (!sohbet.options.length) sohbet.innerHTML = '<option value="">— sohbet modeli yok —</option>';
@@ -79,17 +60,17 @@ function modelleriGetir() {
       const bilinmiyor = d.modeller.every((m) => m.yuklu === null);
       rozet.textContent = "LM Studio: " + (bilinmiyor
         ? d.modeller.length + " model"
-        : yuklu + " yuklu / " + d.modeller.length + " mevcut");
+        : yuklu + " yüklü / " + d.modeller.length + " mevcut");
       rozet.className = "rozet bagli";
     })
-    .catch(() => { rozet.textContent = "LM Studio: baglanti yok"; rozet.className = "rozet kopuk"; });
+    .catch(() => { rozet.textContent = "LM Studio: bağlantı yok"; rozet.className = "rozet kopuk"; });
 }
 
 /* --------------------------------------------------------------------- kesif */
 function kesfet() {
   const kutu = $("#kesif-sonucu");
   kutu.classList.remove("gizli");
-  kutu.textContent = "Araniyor...";
+  kutu.textContent = "Aranıyor...";
   fetch("/api/kesif", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ adres: $("#kesif-adresi").value })
@@ -98,10 +79,10 @@ function kesfet() {
     .then((d) => {
       kutu.innerHTML = "";
       if (d.hata) { kutu.textContent = "Hata: " + d.hata; return; }
-      if (!d.adresler.length) { kutu.textContent = "Alt site bulunamadi."; return; }
+      if (!d.adresler.length) { kutu.textContent = "Alt site bulunamadı."; return; }
       const ust = yarat("div");
       ust.innerHTML = '<strong>' + d.adresler.length + ' adres bulundu.</strong> ' +
-        '<button class="ikincil" id="kesif-ekle">Secilenleri listeye ekle</button>';
+        '<button class="ikincil" id="kesif-ekle">Seçilenleri listeye ekle</button>';
       kutu.appendChild(ust);
       d.adresler.forEach((a) => {
         const l = yarat("label");
@@ -125,14 +106,9 @@ function taramayiBaslat() {
   const hata = $("#form-hatasi");
   hata.classList.add("gizli");
   const govde = {
-    mod: mod,
     adresler: $("#adresler").value,
-    klasor: $("#klasor").value,
-    cikti: $("#cikti").value,
-    llm_kullan: $("#llm-kullan").checked,
     url: $("#llm-url").value,
     model: $("#model").value,
-    kosul: $("#kosul").value,
     embed_model: $("#embed-model").value,
     retry: $("#retry").value,
     max_tokens: $("#max-tokens").value,
@@ -147,12 +123,12 @@ function taramayiBaslat() {
   })
     .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
     .then(({ ok, d }) => {
-      if (!ok) { hata.textContent = d.hata || "Tarama baslatilamadi."; hata.classList.remove("gizli"); return; }
+      if (!ok) { hata.textContent = d.hata || "Tarama başlatılamadı."; hata.classList.remove("gizli"); return; }
       acikSatirlar = new Set();
       $("#bos-durum").classList.add("gizli");
       durumuSor();
     })
-    .catch((e) => { hata.textContent = "Sunucuya ulasilamadi: " + e; hata.classList.remove("gizli"); });
+    .catch((e) => { hata.textContent = "Sunucuya ulaşılamadı: " + e; hata.classList.remove("gizli"); });
 }
 
 function durumuSor() {
@@ -176,7 +152,7 @@ function ekraniCiz(d) {
     $("#ilerleme-dolgu").style.width = yuzde + "%";
     const sure = d.baslangic ? Math.round(((d.bitis || Date.now() / 1000) - d.baslangic)) : 0;
     $("#ilerleme-metni").textContent =
-      d.biten + " / " + d.toplam + " sayfa" + (d.calisiyor ? " taraniyor" : " tamamlandi") +
+      d.biten + " / " + d.toplam + " sayfa" + (d.calisiyor ? " taranıyor" : " tamamlandı") +
       " — " + sure + " sn" + (d.cikti_klasoru ? " — " + d.cikti_klasoru : "");
   }
 
@@ -210,10 +186,10 @@ function ozetiCiz(sonuclar) {
   kutu.innerHTML =
     kutucuk(gecerli.length, "analiz edilen sayfa") +
     kutucuk(toplamOnce + " &rarr; " + toplamSonra, "toplam sorun") +
-    kutucuk(ortPuan("once", "sayfa") + " &rarr; " + ortPuan("sonra", "sayfa"), "ortalama sayfa puani") +
-    kutucuk(ortPuan("once", "site"), "ortalama site puani") +
-    kutucuk(ortOran === null ? "—" : "%" + ortOran, "ortalama cozum orani") +
-    (hatali ? kutucuk(hatali, "hatali / atlanan") : "");
+    kutucuk(ortPuan("once", "sayfa") + " &rarr; " + ortPuan("sonra", "sayfa"), "ortalama sayfa puanı") +
+    kutucuk(ortPuan("once", "site"), "ortalama site puanı") +
+    kutucuk(ortOran === null ? "—" : "%" + ortOran, "ortalama çözüm oranı") +
+    (hatali ? kutucuk(hatali, "hatalı / atlanan") : "");
 }
 
 function tabloyuCiz(sonuclar) {
@@ -227,7 +203,7 @@ function tabloyuCiz(sonuclar) {
     if (k.hata || k.atlandi) {
       satir.innerHTML =
         '<td class="sayfa-adi">' + kacis(k.ad) + "</td>" +
-        '<td colspan="6" class="azalis">' + kacis(k.atlandi ? "Atlandi: " + k.atlandi : "Hata: " + k.hata) + "</td><td></td>";
+        '<td colspan="6" class="azalis">' + kacis(k.atlandi ? "Atlandı: " + k.atlandi : "Hata: " + k.hata) + "</td><td></td>";
       govde.appendChild(satir);
       return;
     }
@@ -243,7 +219,7 @@ function tabloyuCiz(sonuclar) {
       '<td class="sayi">' + (po.site ?? "—") + "</td>" +
       '<td class="sayi">' + oran + "</td>" +
       '<td class="sayi">' + (k.sure_toplam_sn ?? "—") + " sn</td>" +
-      '<td><button class="ikincil" data-i="' + i + '">Ayrinti</button></td>';
+      '<td><button class="ikincil" data-i="' + i + '">Ayrıntı</button></td>';
     govde.appendChild(satir);
 
     const ayrintiSatiri = yarat("tr", "ayrinti-satiri");
@@ -263,11 +239,11 @@ function tabloyuCiz(sonuclar) {
 }
 
 function sorunListesi(sorunlar) {
-  if (!sorunlar || !sorunlar.length) return "<p class='not'>Sorun bulunamadi.</p>";
+  if (!sorunlar || !sorunlar.length) return "<p class='not'>Sorun bulunamadı.</p>";
   const sira = { yuksek: 0, orta: 1, dusuk: 2 };
   return "<ul>" + [...sorunlar].sort((a, b) => sira[a.ciddiyet] - sira[b.ciddiyet]).map((s) =>
     "<li>" +
-    '<span class="etiket-rozet c-' + s.ciddiyet + '">' + s.ciddiyet + "</span>" +
+    '<span class="etiket-rozet c-' + s.ciddiyet + '">' + (CIDDIYET_ADI[s.ciddiyet] || s.ciddiyet) + "</span>" +
     '<span class="etiket-rozet k-' + s.katman + '">' + s.katman + "</span>" +
     kacis(aciklamalar[s.sorun] || s.sorun) +
     (s.ayrinti ? ' <span class="not">(' + kacis(s.ayrinti) + ")</span>" : "") +
@@ -279,19 +255,19 @@ function ayrintiHtml(k) {
   let h = '<div class="ayrinti">';
 
   if (k.once_puanlar) {
-    const etiketler = { sayfa: "Sayfa", site: "Site", icerik: "Icerik", teknik: "Teknik",
-                        guvenlik: "Guvenlik", performans: "Performans" };
-    h += "<h4>Puanlar (once &rarr; sonra)</h4><div class='bilgi-izgara'>" +
+    const etiketler = { sayfa: "Sayfa", site: "Site", icerik: "İçerik", teknik: "Teknik",
+                        guvenlik: "Güvenlik", performans: "Performans" };
+    h += "<h4>Puanlar (önce &rarr; sonra)</h4><div class='bilgi-izgara'>" +
       Object.keys(etiketler).map((kap) => {
         const o = k.once_puanlar[kap], s = (k.sonra_puanlar || {})[kap];
-        const deger = o === null || o === undefined ? "olculmedi" : o + " → " + (s ?? "—");
+        const deger = o === null || o === undefined ? "ölçülmedi" : o + " → " + (s ?? "—");
         return '<div><span class="etiket">' + etiketler[kap] + "</span>" + kacis(deger) + "</div>";
       }).join("") + "</div>";
   }
   h += "<h4>Tespit edilen sorunlar (" + (k.once_sorun_sayisi || 0) + ")</h4>" + sorunListesi(k.sorunlar);
 
   if (k.fixes && k.fixes.length) {
-    h += "<h4>Modelin kabul edilen onerileri (" + k.fixes.length + ")</h4><table><tbody>";
+    h += "<h4>Modelin kabul edilen önerileri (" + k.fixes.length + ")</h4><table><tbody>";
     k.fixes.forEach((f) => {
       h += "<tr><td><strong>" + kacis(f.alan) + (f.hedef ? " / " + kacis(f.hedef) : "") + "</strong></td>" +
         "<td>" + kacis(f.yeni_deger) + '<br><span class="not">' + kacis(f.gerekce || "") + "</span></td></tr>";
@@ -299,7 +275,7 @@ function ayrintiHtml(k) {
     h += "</tbody></table>";
   }
   if (k.reddedilen && k.reddedilen.length) {
-    h += "<h4>Reddedilen oneriler (" + k.reddedilen.length + ")</h4><ul>";
+    h += "<h4>Reddedilen öneriler (" + k.reddedilen.length + ")</h4><ul>";
     k.reddedilen.forEach((r) => {
       h += "<li><strong>" + kacis(r.neden) + "</strong> &mdash; " +
         kacis((r.oneri && (r.oneri.alan + ": " + r.oneri.yeni_deger)) || "").slice(0, 160) + "</li>";
@@ -307,7 +283,7 @@ function ayrintiHtml(k) {
     h += "</ul>";
   }
   if (k.kural_duzeltmeleri && k.kural_duzeltmeleri.length) {
-    h += "<h4>Kural tabanli duzeltmeler</h4><ul>" +
+    h += "<h4>Kural tabanlı düzeltmeler</h4><ul>" +
       k.kural_duzeltmeleri.map((x) => "<li>" + kacis(x) + "</li>").join("") + "</ul>";
   }
 
@@ -317,28 +293,28 @@ function ayrintiHtml(k) {
     const r = sb.robots || {};
     const sm = sb.sitemap || {};
     const alan = (etiket, deger) => '<div><span class="etiket">' + etiket + "</span>" + kacis(deger) + "</div>";
-    h += "<h4>Canli erisim olcumleri</h4><div class='bilgi-izgara'>" +
+    h += "<h4>Canlı erişim ölçümleri</h4><div class='bilgi-izgara'>" +
       alan("Durum kodu", sb.durum_kodu) +
-      alan("Yanit suresi (TTFB)", (sb.ttfb_ms ?? "—") + " ms") +
-      alan("Indirme", (sb.toplam_ms ?? "—") + " ms / " + (sb.boyut_kb ?? "—") + " KB") +
-      alan("Sikistirma", sb.sikistirma || "yok") +
+      alan("Yanıt süresi (TTFB)", (sb.ttfb_ms ?? "—") + " ms") +
+      alan("İndirme", (sb.toplam_ms ?? "—") + " ms / " + (sb.boyut_kb ?? "—") + " KB") +
+      alan("Sıkıştırma", sb.sikistirma || "yok") +
       alan("HSTS", sb.hsts ? "var" : "yok") +
-      alan("Sertifika", s.veren ? (s.kalan_gun + " gun kaldi" + (s.zincir_eksik ? " — zincir eksik" : "")) : "—") +
-      alan("robots.txt", r.var ? (r.satir_sayisi + " satir, " + (r.sitemapler || []).length + " sitemap") : "yok") +
+      alan("Sertifika", s.veren ? (s.kalan_gun + " gün kaldı" + (s.zincir_eksik ? " — zincir eksik" : "")) : "—") +
+      alan("robots.txt", r.var ? (r.satir_sayisi + " satır, " + (r.sitemapler || []).length + " sitemap") : "yok") +
       alan("sitemap", sm.var ? (sm.tur + ", " + sm.url_sayisi + " adres") : "yok") +
       "</div>";
   }
 
   if (k.model) {
-    h += "<h4>Model calismasi</h4><div class='bilgi-izgara'>" +
+    h += "<h4>Model çalışması</h4><div class='bilgi-izgara'>" +
       '<div><span class="etiket">Model</span>' + kacis(k.model) + "</div>" +
-      '<div><span class="etiket">Kosul</span>' + kacis(k.kosul) + " / " + kacis(k.ogretme_yontemi || "—") + "</div>" +
-      '<div><span class="etiket">Sure</span>' + kacis(k.sure_sn) + " sn</div>" +
+      '<div><span class="etiket">Koşul</span>' + kacis(k.kosul) + " / " + kacis(k.ogretme_yontemi || "—") + "</div>" +
+      '<div><span class="etiket">Süre</span>' + kacis(k.sure_sn) + " sn</div>" +
       '<div><span class="etiket">Deneme</span>' + ((k.denemeler || []).length) + "</div>" +
       "</div>";
   }
   if (k.duzeltilmis_dosya) {
-    h += '<p class="not">Duzeltilmis sayfa: ' + kacis(k.duzeltilmis_dosya) + "</p>";
+    h += '<p class="not">Düzeltilmiş sayfa: ' + kacis(k.duzeltilmis_dosya) + "</p>";
   }
   return h + "</div>";
 }

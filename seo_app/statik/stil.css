@@ -101,9 +101,6 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .dugmeler { display: flex; gap: 8px; margin-top: 18px; }
 .dugmeler .birincil { flex: 1; }
 
-.sekmeler { display: flex; gap: 4px; margin-bottom: 12px; }
-.sekme { flex: 1; text-align: center; }
-.sekme.etkin { background: var(--vurgu-zemin); border-color: var(--vurgu); color: var(--vurgu); font-weight: 600; }
 
 .not { font-size: 12px; color: var(--soluk); margin: 8px 0 0; }
 .hata { color: var(--yuksek); font-size: 13px; margin-top: 10px; }

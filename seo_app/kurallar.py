@@ -1,7 +1,7 @@
 """Kural tabanli (modelsiz) SEO denetimi ve puanlama.
 
 Sorunlar iki katmanda toplanir:
-  katman="sayfa" -> yalnizca HTML'den gorulebilir, cevrimdisi anlik goruntulerde de calisir
+  katman="sayfa" -> sayfanin HTML'inden gorulebilir
   katman="site"  -> yalnizca canli erisimde olculebilir (robots.txt, sitemap, HTTPS, hiz...)
 Model yalnizca sayfa katmanindaki belirli alanlar icin oneri uretir; site katmani
 kural tabanli duzeltme veya elle mudahale gerektirir.
@@ -23,65 +23,65 @@ ALAN_SORUN = {"title": ("title_yok", "title_kisa", "title_uzun"),
 CIDDIYET_AGIRLIK = {"yuksek": 15, "orta": 8, "dusuk": 3}
 
 ACIKLAMA = {
-    "title_yok": "Sayfa basligi (title) yok",
-    "title_kisa": "Sayfa basligi cok kisa (30 karakterden az)",
-    "title_uzun": "Sayfa basligi cok uzun (60 karakterden fazla)",
-    "meta_description_yok": "Meta aciklama yok",
-    "meta_description_kisa": "Meta aciklama cok kisa (70 karakterden az)",
-    "meta_description_uzun": "Meta aciklama cok uzun (160 karakterden fazla)",
-    "h1_yok": "Sayfada H1 basligi yok",
+    "title_yok": "Sayfa başlığı (title) yok",
+    "title_kisa": "Sayfa başlığı çok kısa (30 karakterden az)",
+    "title_uzun": "Sayfa başlığı çok uzun (60 karakterden fazla)",
+    "meta_description_yok": "Meta açıklama yok",
+    "meta_description_kisa": "Meta açıklama çok kısa (70 karakterden az)",
+    "meta_description_uzun": "Meta açıklama çok uzun (160 karakterden fazla)",
+    "h1_yok": "Sayfada H1 başlığı yok",
     "h1_birden_fazla": "Sayfada birden fazla H1 var",
-    "h1_bos": "Metni olmayan H1 var (bos ya da yalnizca gorsel iceriyor)",
-    "img_alt_eksik": "Bazi gorsellerde alt metni yok",
-    "canonical_yok": "Canonical (asil adres) etiketi yok",
+    "h1_bos": "Metni olmayan H1 var (boş ya da yalnızca görsel içeriyor)",
+    "img_alt_eksik": "Bazı görsellerde alt metni yok",
+    "canonical_yok": "Canonical (asıl adres) etiketi yok",
     "html_lang_yok": "html etiketinde dil (lang) bilgisi yok",
-    "icerik_az": "Metin icerigi az (300 kelimeden az)",
+    "icerik_az": "Metin içeriği az (300 kelimeden az)",
     # --- site katmani ---
-    "robots_yok": "robots.txt dosyasi bulunamadi",
-    "robots_okunamadi": "robots.txt okunamadi veya hatali",
-    "robots_tum_siteyi_engelliyor": "robots.txt tum siteyi aramaya kapatiyor",
-    "robots_sayfayi_engelliyor": "robots.txt bu sayfanin taranmasini engelliyor",
-    "robots_sitemap_bildirilmemis": "robots.txt icinde Sitemap satiri yok",
-    "sitemap_yok": "sitemap.xml bulunamadi",
-    "sitemap_gecersiz": "sitemap.xml okunamiyor veya gecerli XML degil",
-    "sitemap_bos": "sitemap.xml icinde adres yok",
-    "sayfa_sitemapte_yok": "Bu sayfa sitemap icinde listelenmemis",
-    "https_yok": "Site HTTPS kullanmiyor",
-    "https_yonlendirme_yok": "http adresi https adresine yonlendirilmiyor",
-    "sertifika_suresi_dolmus": "SSL sertifikasinin suresi dolmus",
-    "sertifika_zinciri_eksik": "Sunucu eksik/yanlis ara sertifika gonderiyor (kati istemciler baglanamaz)",
-    "sertifika_dogrulanamadi": "SSL sertifikasi dogrulanamadi",
-    "erisilemedi": "Sayfaya canli olarak erisilemedi",
-    "sertifika_yakinda_bitiyor": "SSL sertifikasinin suresi 30 gunden az kaldi",
-    "uzun_yonlendirme_zinciri": "Adres birden fazla yonlendirmeden geciyor",
-    "hata_durum_kodu": "Sunucu basarili olmayan bir durum kodu dondurdu",
-    "hsts_yok": "HSTS (Strict-Transport-Security) basligi yok",
-    "yavas_yanit": "Sunucu yanit suresi yuksek (TTFB 1 saniyeden fazla)",
-    "cok_yavas_yanit": "Sunucu yanit suresi cok yuksek (TTFB 2.5 saniyeden fazla)",
+    "robots_yok": "robots.txt dosyası bulunamadı",
+    "robots_okunamadi": "robots.txt okunamadı veya hatalı",
+    "robots_tum_siteyi_engelliyor": "robots.txt tüm siteyi aramaya kapatıyor",
+    "robots_sayfayi_engelliyor": "robots.txt bu sayfanın taranmasını engelliyor",
+    "robots_sitemap_bildirilmemis": "robots.txt içinde Sitemap satırı yok",
+    "sitemap_yok": "sitemap.xml bulunamadı",
+    "sitemap_gecersiz": "sitemap.xml okunamıyor veya geçerli XML değil",
+    "sitemap_bos": "sitemap.xml içinde adres yok",
+    "sayfa_sitemapte_yok": "Bu sayfa sitemap içinde listelenmemiş",
+    "https_yok": "Site HTTPS kullanmıyor",
+    "https_yonlendirme_yok": "http adresi https adresine yönlendirilmiyor",
+    "sertifika_suresi_dolmus": "SSL sertifikasının süresi dolmuş",
+    "sertifika_zinciri_eksik": "Sunucu eksik/yanlış ara sertifika gönderiyor (katı istemciler bağlanamaz)",
+    "sertifika_dogrulanamadi": "SSL sertifikası doğrulanamadı",
+    "erisilemedi": "Sayfaya canlı olarak erişilemedi",
+    "sertifika_yakinda_bitiyor": "SSL sertifikasının süresinin dolmasına 30 günden az kaldı",
+    "uzun_yonlendirme_zinciri": "Adres birden fazla yönlendirmeden geçiyor",
+    "hata_durum_kodu": "Sunucu başarılı olmayan bir durum kodu döndürdü",
+    "hsts_yok": "HSTS (Strict-Transport-Security) başlığı yok",
+    "yavas_yanit": "Sunucu yanıt süresi yüksek (TTFB 1 saniyeden fazla)",
+    "cok_yavas_yanit": "Sunucu yanıt süresi çok yüksek (TTFB 2,5 saniyeden fazla)",
     # brotli paketi kuruluysa gzip/deflate/br, degilse gzip/deflate istenir (canli._kodlamalar)
-    "sikistirma_yok": "Yanit sikistirilmamis (gzip/deflate/br ile istendi, sikistirilmadi)",
-    "html_cok_buyuk": "HTML belgesi cok buyuk (500 KB ustu)",
-    "cok_fazla_kaynak": "Sayfa cok sayida dis kaynak yukluyor (100 ustu)",
-    "viewport_yok": "Mobil uyum icin viewport meta etiketi yok",
-    "yapisal_veri_yok": "Yapisal veri (schema.org/JSON-LD) yok",
-    "yapisal_veri_gecersiz": "JSON-LD yapisal verisi okunamiyor",
-    "og_etiketleri_yok": "Open Graph (og:) paylasim etiketleri yok",
+    "sikistirma_yok": "Yanıt sıkıştırılmamış (gzip/deflate/br ile istendi, sıkıştırılmadı)",
+    "html_cok_buyuk": "HTML belgesi çok büyük (500 KB üstü)",
+    "cok_fazla_kaynak": "Sayfa çok sayıda dış kaynak yüklüyor (100 üstü)",
+    "viewport_yok": "Mobil uyum için viewport meta etiketi yok",
+    "yapisal_veri_yok": "Yapısal veri (schema.org/JSON-LD) yok",
+    "yapisal_veri_gecersiz": "JSON-LD yapısal verisi okunamıyor",
+    "og_etiketleri_yok": "Open Graph (og:) paylaşım etiketleri yok",
     "twitter_card_yok": "Twitter Card etiketi yok",
-    "favicon_yok": "Favicon (site simgesi) tanimlanmamis",
-    "noindex": "Sayfa noindex ile aramaya kapatilmis",
+    "favicon_yok": "Favicon (site simgesi) tanımlanmamış",
+    "noindex": "Sayfa noindex ile aramaya kapatılmış",
     # --- baslik yapisi, uluslararasilastirma, yapisal veri turu, guvenlik ---
-    "baslik_atlamasi": "Baslik hiyerarsisinde seviye atlaniyor (ornegin H1'den H3'e)",
-    "hreflang_gecersiz": "hreflang degeri gecerli bir dil/bolge kodu degil",
-    "hreflang_x_default_yok": "hreflang kullaniliyor ama x-default tanimli degil",
-    "schema_kurum_turu_yok": "Yapisal veri var ama kurum turu (Organization/CollegeOrUniversity) yok",
-    "karisik_icerik": "HTTPS sayfa http:// uzerinden kaynak yukluyor (karisik icerik)",
+    "baslik_atlamasi": "Başlık hiyerarşisinde seviye atlanıyor (örneğin H1'den H3'e)",
+    "hreflang_gecersiz": "hreflang değeri geçerli bir dil/bölge kodu değil",
+    "hreflang_x_default_yok": "hreflang kullanılıyor ama x-default tanımlı değil",
+    "schema_kurum_turu_yok": "Yapısal veri var ama kurum türü (Organization/CollegeOrUniversity) yok",
+    "karisik_icerik": "HTTPS sayfa http:// üzerinden kaynak yüklüyor (karışık içerik)",
     # --- odak terim tutarliligi ---
-    "title_h1_uyumsuz": "Sayfa basligi (title) ile H1 ortak hicbir anahtar terim icermiyor",
-    "title_icerikle_uyumsuz": "Sayfa basligindaki terimler sayfa iceriginde gecmiyor",
+    "title_h1_uyumsuz": "Sayfa başlığı (title) ile H1 ortak hiçbir anahtar terim içermiyor",
+    "title_icerikle_uyumsuz": "Sayfa başlığındaki terimler sayfa içeriğinde geçmiyor",
     # --- sayfalar arasi (tarama geneli) ---
-    "title_tekrar": "Ayni sayfa basligi (title) baska sayfalarda da kullaniliyor",
-    "meta_tekrar": "Ayni meta aciklama baska sayfalarda da kullaniliyor",
-    "h1_tekrar": "Ayni H1 basligi baska sayfalarda da kullaniliyor",
+    "title_tekrar": "Aynı sayfa başlığı (title) başka sayfalarda da kullanılıyor",
+    "meta_tekrar": "Aynı meta açıklama başka sayfalarda da kullanılıyor",
+    "h1_tekrar": "Aynı H1 başlığı başka sayfalarda da kullanılıyor",
 }
 
 KURUM_SCHEMA_TURLERI = {"Organization", "EducationalOrganization", "CollegeOrUniversity",
@@ -116,7 +116,7 @@ def rule_checks(d: dict) -> list:
     if len(d["h1"]) == 0: add("h1_yok", "yuksek")
     elif len(d["h1"]) > 1: add("h1_birden_fazla", "orta", f"{len(d['h1'])} adet")
     if d.get("h1_bos_sayisi"): add("h1_bos", "dusuk", f"{d['h1_bos_sayisi']} adet metinsiz H1")
-    if d["img_no_alt"]: add("img_alt_eksik", "orta", f"{len(d['img_no_alt'])}/{d['img_total']} gorsel")
+    if d["img_no_alt"]: add("img_alt_eksik", "orta", f"{len(d['img_no_alt'])}/{d['img_total']} görsel")
     if not d["canonical"]: add("canonical_yok", "dusuk")
     if not d["lang"]: add("html_lang_yok", "dusuk")
     if d["word_count"] < 300: add("icerik_az", "dusuk", f"{d['word_count']} kelime")
@@ -125,7 +125,7 @@ def rule_checks(d: dict) -> list:
 
 def ek_html_denetimi(yv: dict, sayfa_url=None) -> list:
     """Yapisal veri, mobil uyum, paylasim etiketleri, baslik yapisi ve karisik icerik denetimi.
-    Tamami HTML'den gorulebildigi icin cevrimdisi modda da calisir; modele gonderilmez.
+    Tamami sayfanin HTML'inden gorulebilir; modele gonderilmez.
     sayfa_url verilirse ve https ise karisik icerik denetimi de yapilir."""
     issues = []
     def add(kod, ciddiyet, ayrinti=""):
@@ -287,18 +287,17 @@ def _normal_puan(issues, katmanlar, kategori=None):
     return max(0, round(100 * (1 - ceza / azami)))
 
 
-def puanlar(issues, site_olculdu=True, sayfa_olculdu=True) -> dict:
+def puanlar(issues, sayfa_olculdu=True) -> dict:
     """Katman ve kategori bazli, 0-100 arasina normallestirilmis puanlar.
     Her puan, o kapsamda gorulebilecek en kotu durumun cezasina bolunur; boylece birkac
-    sorun olcegi 0'a indirmez ve siteler birbirinden ayirt edilebilir. Site katmani
-    olculmediyse (cevrimdisi mod) site puani None olur, kategoriler yalnizca sayfa
-    katmanindan hesaplanir."""
+    sorun olcegi 0'a indirmez ve siteler birbirinden ayirt edilebilir. Sayfa katmani
+    olculmediyse (hata sayfasi) sayfa puani None olur, kategoriler site katmanindan hesaplanir."""
     # hata sayfasinda (4xx/5xx) sayfa katmani denetlenmez; bulgu olmamasi "kusursuz" demek degildir
-    katmanlar = tuple(k for k, olculdu in (("sayfa", sayfa_olculdu), ("site", site_olculdu)) if olculdu)
+    katmanlar = ("sayfa", "site") if sayfa_olculdu else ("site",)
     sonuc = {"sayfa": _normal_puan(issues, ("sayfa",)) if sayfa_olculdu else None,
-             "site": _normal_puan(issues, ("site",)) if site_olculdu else None}
+             "site": _normal_puan(issues, ("site",))}
     for kat in KATEGORILER:
-        sonuc[kat] = _normal_puan(issues, katmanlar, kat) if katmanlar else None
+        sonuc[kat] = _normal_puan(issues, katmanlar, kat)
     return sonuc
 
 

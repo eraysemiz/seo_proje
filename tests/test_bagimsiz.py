@@ -1,6 +1,9 @@
 """Adim 9: PageSpeed (Lighthouse) entegrasyonu. Ag kullanilmaz; API yaniti taklit edilir."""
 import csv
 import io
+from pathlib import Path
+
+from conftest import sahte_canli, sahte_model
 
 from seo_app import bagimsiz, boru, canli
 
@@ -58,19 +61,20 @@ def test_analiz_akisinda_rapora_ve_csvye_yazilir(monkeypatch, tmp_path):
         "html": "<html><head><title>Bolum</title></head><body><h1>Bolum</h1></body></html>"})
     monkeypatch.setattr(canli, "canli_denetim", lambda *a, **k: ([], {}))
     monkeypatch.setattr(boru, "pagespeed_seo", lambda url: {"seo_puani": 0, "hata": None})
+    sahte_model(monkeypatch)
     rapor = boru.topluca_analiz([{"tur": "canli", "url": "ornek.edu.tr"}],
-                                {"llm_kullan": False, "bagimsiz_olcum": True}, str(tmp_path), tmp_path / "c")
+                                {"model": "sahte", "bagimsiz_olcum": True}, str(tmp_path), tmp_path / "c")
     assert rapor[0]["lighthouse"]["once"]["seo_puani"] == 0
     assert rapor[0]["lighthouse"]["sonra"] is None
-    satir = next(csv.DictReader(io.StringIO((tmp_path / "c" / "ozet.csv").read_text(encoding="utf-8-sig")),
+    satir = next(csv.DictReader(io.StringIO((Path(rapor[0]["cikti_klasoru"]) / "ozet.csv").read_text(encoding="utf-8-sig")),
                                 delimiter=";"))
     assert satir["lighthouse_seo_once"] == "0" and satir["lighthouse_seo_sonra"] == ""
 
 
-def test_varsayilan_olarak_kapali_ve_cevrimdisi_modda_calismaz(monkeypatch, tmp_path):
+def test_varsayilan_olarak_kapali(monkeypatch, tmp_path):
     cagrildi = []
     monkeypatch.setattr(boru, "pagespeed_seo", lambda url: cagrildi.append(url))
-    (tmp_path / "s.html").write_text("<html><title>x</title></html>", encoding="utf-8")
-    boru.analiz_et({"tur": "dosya", "yol": str(tmp_path / "s.html")}, {"llm_kullan": False, "bagimsiz_olcum": True},
-                   str(tmp_path))
+    sahte_canli(monkeypatch, {"https://ornek.edu.tr": "<html><title>x</title></html>"})
+    sahte_model(monkeypatch)
+    boru.analiz_et({"url": "ornek.edu.tr"}, {"model": "sahte"}, str(tmp_path))
     assert cagrildi == [] and boru.VARSAYILAN_AYARLAR["bagimsiz_olcum"] is False

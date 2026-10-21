@@ -3,7 +3,7 @@ Senaryo, 20 Ekim'deki gercek testi yeniden uretir: ilk denemede title iki kez uz
 ikinci denemede model zaten kabul edilmis alanlari da tekrar gonderir."""
 import json
 
-from conftest import html_yap
+from conftest import html_yap, sahte_canli, sahte_model
 
 from seo_app import boru, llm
 from seo_app.cikarma import extract
@@ -60,18 +60,10 @@ def test_ayni_cevaptaki_cift_oneri_hala_ret_sayilir(monkeypatch):
 
 def test_modele_yalnizca_model_sinifi_sorunlar_gider(monkeypatch, tmp_path):
     """A1: canonical, lang, icerik_az gibi sorunlar modelin istemine girmez."""
-    gonderilen = {}
-
-    def sahte_llm_fixes(d, issues, *a, **k):
-        gonderilen["kodlar"] = [i["sorun"] for i in issues]
-        return {"fixes": [], "reddedilen": [], "yok_sayilan": [], "json_gecerli": True, "sure_sn": 0,
-                "bitis_nedeni": "stop", "dusunme_karakter": 0, "cevap_karakter": 0, "denemeler": [],
-                "ham": "", "dusunme_basi": ""}
-
-    monkeypatch.setattr(boru, "llm_fixes", sahte_llm_fixes)
-    yol = tmp_path / "sayfa.html"
-    yol.write_text("<html><head><title>Kisa</title></head><body><p>az metin</p></body></html>", encoding="utf-8")
-    kayit = boru.analiz_et({"tur": "dosya", "yol": str(yol)}, {"model": "sahte", "kosul": "sifir"}, str(tmp_path))
+    sahte_canli(monkeypatch, {"https://ornek.edu.tr":
+                              "<html><head><title>Kisa</title></head><body><p>az metin</p></body></html>"})
+    gonderilen = sahte_model(monkeypatch)
+    kayit = boru.analiz_et({"url": "ornek.edu.tr"}, {"model": "sahte"}, str(tmp_path))
     tum = {i["sorun"] for i in kayit["sorunlar"]}
     assert {"canonical_yok", "html_lang_yok", "icerik_az"} <= tum          # sorunlar tespit ediliyor
     assert set(gonderilen["kodlar"]) == {"title_kisa", "meta_description_yok", "h1_yok"}

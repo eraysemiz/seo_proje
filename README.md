@@ -19,30 +19,23 @@ py calistir.py
 
 Tarayıcıda `http://127.0.0.1:5000` açılır. Sunucu yalnızca bu bilgisayardan erişilebilir.
 
-Dil modeli önerisi isteniyorsa LM Studio'nun açık ve sunucusunun çalışır durumda olması
-gerekir (Developer sekmesi → Running). Arayüzdeki **Modelleri getir** düğmesi bağlantıyı
-sınar ve yüklü modelleri listeler. Model yoksa **"Dil modeli ile öneri üret"** kutusunun
-işaretini kaldırarak yalnızca kural denetimi (baseline) çalıştırılabilir.
+Her tarama dil modeliyle yapılır; bunun için LM Studio'nun açık ve sunucusunun çalışır durumda
+olması gerekir (Developer sekmesi → Running). Arayüzdeki **Modelleri getir** düğmesi bağlantıyı
+sınar ve yüklü modelleri listeler. Tarama başlamadan önce LM Studio'ya ulaşılıp ulaşılamadığı ve
+seçilen sohbet/gömme modellerinin yüklü olup olmadığı denetlenir; sorun varsa tarama başlamaz ve
+hangi modelin eksik olduğunu ve LM Studio adresini yazan bir hata gösterilir.
 
-## İki tarama modu
-
-| Mod | Girdi | Yapılabilen denetimler |
-|---|---|---|
-| **Canlı adresler** | URL listesi | Sayfa içi denetimlerin tamamı **+ site katmanı**: robots.txt, sitemap.xml, HTTPS/sertifika, yanıt süresi ve boyut |
-| **Kaydedilmiş HTML** | `.htm`/`.html` klasörü | Yalnızca sayfa içi denetimler (site katmanı ölçülemez) |
-
-Kaydedilmiş HTML modu, sayfaların zaman içinde değişmesinden etkilenmeyen tekrarlanabilir
-deneyler için kullanışlıdır; canlı mod ise gerçek bir denetimin tüm kapsamını sunar.
+Araç, verilen adresleri canlı olarak tarar.
 
 ## Denetim katmanları
 
-**Sayfa katmanı** (HTML'den görülebilir, her iki modda da çalışır)
+**Sayfa katmanı** (sayfanın HTML'inden görülebilir)
 
 - title, meta description, H1 varlığı ve uzunlukları
 - görsellerde alt metni, canonical, `html lang`, içerik uzunluğu
 - viewport (mobil uyum), JSON-LD/mikroveri, Open Graph, Twitter Card, favicon, meta robots
 
-**Site katmanı** (yalnızca canlı erişimde)
+**Site katmanı**
 
 - robots.txt: var mı, geçerli mi, sitemap bildiriyor mu, sayfayı engelliyor mu
 - sitemap.xml: erişilebilir mi, geçerli XML mi, kaç adres içeriyor, sayfa listede mi
@@ -60,19 +53,17 @@ Rapordaki her bulgu üç sınıftan birine düşer:
 Dil modeline **yalnızca** `model` sınıfındaki sorunlar gönderilir. Bu ayrım, "modelin başarısı"
 ile "aracın toplam başarısı" ölçümlerinin karışmasını önler.
 
-## Deney koşulları
+## Modele verilen ek bağlam
 
-| Koşul | Modele verilen ek bağlam |
-|---|---|
-| `sifir` | yok (temel karşılaştırma koşulu) |
-| `ornek` | few-shot örnekler (`ogretme/ornekler.json`) |
-| `bilgi` | SEO bilgi tabanından ilgili parçalar (`ogretme/bilgi_tabani.json`) |
-| `ornek+bilgi` | ikisi birden |
+Deney koşulu sabittir: **`ornek+bilgi`**. Modele her taramada few-shot örnekler
+(`ogretme/ornekler.json`) ve SEO bilgi tabanından ilgili parçalar (`ogretme/bilgi_tabani.json`)
+verilir; arayüzde koşul seçeneği yoktur.
 
-`bilgi` koşulunda bir **gömme (embedding) modeli** seçilirse gerçek anlamsal getirme (RAG)
-yapılır: sorgu ve bilgi parçaları vektöre çevrilip kosinüs benzerliğiyle en alakalı parçalar
-seçilir. Model seçilmezse veya ulaşılamazsa anahtar kelime eşleştirmesine düşülür — hangisinin
-kullanıldığı raporda `ogretme_yontemi` alanında yazar (`anlamsal` / `anahtar_kelime`).
+Bir **gömme (embedding) modeli** seçilirse bilgi parçaları anlamsal getirmeyle (RAG) seçilir:
+sorgu ve parçalar vektöre çevrilip kosinüs benzerliğiyle en alakalı olanlar alınır. Gömme modeli
+seçilmezse anahtar kelime eşleştirmesi kullanılır. Gömme modeli seçildiği hâlde ulaşılamazsa
+anahtar kelimeye sessizce geçilmez, hata verilir. Kullanılan yöntem raporda `ogretme_yontemi`
+alanında yazar (`anlamsal` / `anahtar_kelime`).
 
 ## Önerilerin doğrulanması
 
@@ -91,27 +82,31 @@ gerekçesiyle rapora yazılır:
 
 ## Çıktılar
 
-Her tarama `sonuclar/` altında kendi klasörüne yazar (ad verilmezse `sonuc_<tarih>`):
+Her taramanın çıktısı `sonuclar/<site adı>/sonuc_<YYYY-MM-DD_HH-MM-SS>/` klasörüne yazılır.
+Site adı adresin alan adından türetilir (`https://www.ornek.com.tr/x` → `ornek.com.tr`).
+Bir taramada birden fazla site varsa her site kendi klasörüne, aynı zaman damgasıyla yazılır:
 
 - `rapor.json` — sayfa başına tüm bulgular, öneriler, reddedilenler, ölçümler
 - `ozet.csv` — karşılaştırma tablosu (tarama bitince kendiliğinden yazılır)
 - `site_geneli.json` — sayfalar arasında tekrar eden title / meta açıklama / H1 grupları
+  (tekrarlar tüm tarama üzerinden bulunur; farklı sitelerde aynı meta açıklama da yakalanır)
 - `duzeltilmis_*.html` — düzeltmelerin uygulandığı sayfalar
 
 ## Deney matrisi
 
-Model × koşul × retry kombinasyonlarını tek komutla çalıştırır; her kombinasyon ayrı klasöre,
-karşılaştırması `sonuclar/<ad>/karsilastirma.csv` dosyasına yazılır:
+Model × retry kombinasyonlarını tek komutla çalıştırır (koşul sabit: `ornek+bilgi`). Her
+kombinasyon `sonuclar/<site>/sonuc_<tarih_saat>/<model>__ornek_bilgi__r<retry>/` klasörüne,
+her sitenin karşılaştırması `sonuclar/<site>/sonuc_<tarih_saat>/karsilastirma.csv` dosyasına yazılır.
+Başlamadan önce tüm modeller denetlenir; biri eksikse deney hiç başlamaz.
 
 ```
-py deney.py --klasor snapshots --modeller qwen/qwen3.5-9b,qwen3.8-4b-distill --ad deney1
 py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-9b ^
-            --kosullar sifir,bilgi --retry 0,1 --embed-model text-embedding-qwen3-embedding-0.6b
+            --retry 0,1 --embed-model text-embedding-qwen3-embedding-0.6b
 ```
 
 ## Bağımsız ölçüm (isteğe bağlı)
 
-Arayüzdeki "Lighthouse SEO puanını da al" seçeneği, canlı modda Google PageSpeed Insights
+Arayüzdeki "Lighthouse SEO puanını da al" seçeneği, Google PageSpeed Insights
 üzerinden Lighthouse SEO puanını rapora ve CSV'ye ekler. Anahtarsız kullanımın günlük kotası
 çabuk dolar; ücretsiz bir API anahtarı `PSI_API_ANAHTARI` ortam değişkenine yazılabilir.
 Düzeltilmiş sayfa yerel bir dosya olduğu için "sonra" puanı bu yöntemle ölçülemez.
@@ -133,8 +128,8 @@ py -m pytest tests
 Arayüz **sayfa** ve **site** puanlarını ayrı gösterir; ayrıntı panelinde ayrıca içerik, teknik,
 güvenlik ve performans kategori puanları vardır. Her puan 0-100 arasıdır ve o kapsamda görülebilecek
 en kötü durumun cezasına bölünerek hesaplanır (ceza ağırlıkları: yüksek 15, orta 8, düşük 3).
-Böylece birkaç sorun ölçeği 0'a indirmez. Ölçülemeyen kapsam (çevrimdışı modda site katmanı,
-hata sayfasında sayfa katmanı) "ölçülmedi" olarak gösterilir. Eski tek puan (`once_puan` /
+Böylece birkaç sorun ölçeği 0'a indirmez. Hata sayfasında (4xx/5xx) sayfa katmanı denetlenmez ve
+"ölçülmedi" olarak gösterilir. Eski tek puan (`once_puan` /
 `sonra_puan`) deney karşılaştırılabilirliği için raporda korunur.
 
 Bu puanlar aracın kendi ölçeğidir, Lighthouse gibi **bağımsız bir ölçüm değildir**. Aracın kendi

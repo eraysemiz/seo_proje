@@ -27,12 +27,6 @@ def kelimeler(metin):
 GENEL_KOKLER = {"resmi", "sites", "anasa", "sayfa", "hizme", "bilgi", "haber", "duyur", "kurum", "hakkı"}
 
 
-def sayfa_url_bul(html):
-    """Chrome 'farkli kaydet' dosyalarinin basindaki  saved from url=(NNNN)https://...  yorumundan adresi okur."""
-    m = re.search(r"saved from url=\(\d+\)\s*(\S+)", html[:2000])
-    return m.group(1).split("#")[0] if m else None
-
-
 def gorseller(soup):
     """Sayfadaki gorseller, belge sirasiyla (noscript/script icindeki yedekler haric).
     Cikarma ve uygulama ayni listeyi kullanir; boylece gorsel sira numaralari eslesir."""
@@ -112,8 +106,7 @@ def extract(html: str) -> dict:
 
 
 def yapisal_veri(html):
-    """Yapisal veri, mobil uyum ve paylasim etiketleri. Bunlarin tamami HTML'den
-    gorulebildigi icin cevrimdisi (kaydedilmis sayfa) modunda da olculebilir."""
+    """Yapisal veri, mobil uyum ve paylasim etiketleri (tamami sayfanin HTML'inden gorulebilir)."""
     soup = BeautifulSoup(html, "lxml")
     jsonld, jsonld_hata, turler = 0, 0, []
     for s in soup.find_all("script", attrs={"type": re.compile(r"application/ld\+json", re.I)}):

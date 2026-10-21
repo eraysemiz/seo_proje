@@ -49,5 +49,5 @@ def pagespeed_seo(url, anahtar=None, strateji="mobile", zaman_asimi=120):
                                                if k in kimlikler and v.get("score") == 0)
         sonuc["lighthouse_surumu"] = lr.get("lighthouseVersion")
     except (KeyError, TypeError) as e:
-        sonuc["hata"] = "beklenmeyen yanit bicimi: " + type(e).__name__
+        sonuc["hata"] = "beklenmeyen yanıt biçimi: " + type(e).__name__
     return sonuc

@@ -88,6 +88,33 @@ def model_durumlari(url, timeout=10):
                 for m in modelleri_listele(url, timeout)]
 
 
+class ModelHatasi(RuntimeError):
+    """LM Studio'ya ulasilamadiginda veya secilen model kullanilamadiginda firlatilir.
+    Mesaj kullaniciya oldugu gibi gosterilir."""
+
+
+def modelleri_dogrula(url, modeller, timeout=10):
+    """Taramadan once LM Studio sunucusunun acik ve secilen modellerin yuklu oldugunu denetler.
+    Sorun varsa ModelHatasi firlatir; sessizce baska bir modele veya modelsiz calismaya gecilmez."""
+    modeller = [m for m in modeller if m]
+    if not modeller:
+        raise ModelHatasi("Sohbet modeli seçilmedi. 'Modelleri getir' ile listeyi yenileyip bir model seçin.")
+    try:
+        durumlar = {m["id"]: m for m in model_durumlari(url, timeout)}
+    except (requests.RequestException, ValueError, KeyError) as e:
+        raise ModelHatasi("LM Studio sunucusuna ulaşılamadı (" + url + "). LM Studio'yu açıp Developer "
+                          "sekmesinden sunucuyu başlatın ve adresin doğru olduğunu kontrol edin. "
+                          "Ayrıntı: " + type(e).__name__) from e
+    bulunamayan = [m for m in modeller if m not in durumlar]
+    if bulunamayan:
+        raise ModelHatasi("Seçilen model LM Studio'da bulunamadı: " + ", ".join(bulunamayan) +
+                          " (" + url + "). Mevcut modeller: " + (", ".join(durumlar) or "yok") + ".")
+    yuklu_degil = [m for m in modeller if durumlar[m].get("yuklu") is False]
+    if yuklu_degil:
+        raise ModelHatasi("Seçilen model LM Studio'da yüklü değil: " + ", ".join(yuklu_degil) +
+                          " (" + url + "). Modeli LM Studio'da yükleyip tekrar deneyin.")
+
+
 def json_ayikla(metin):
     """<think> bloklarini temizler, metindeki ilk JSON nesnesini okur."""
     metin = re.sub(r"<think>.*?</think>", "", metin, flags=re.S)

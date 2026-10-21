@@ -3,7 +3,7 @@ A9 (hata sayfalari ve robots uyumu) regresyon testleri. Ag kullanilmaz."""
 from urllib.robotparser import RobotFileParser
 
 from bs4 import BeautifulSoup
-from conftest import html_yap
+from conftest import html_yap, sahte_model
 
 from seo_app import boru, canli
 from seo_app.cikarma import extract
@@ -125,7 +125,8 @@ def test_hata_sayfasinin_html_i_denetlenmez(monkeypatch, tmp_path):
     monkeypatch.setattr(canli, "canli_denetim",
                         lambda *a, **k: ([{"sorun": "hata_durum_kodu", "ciddiyet": "yuksek", "ayrinti": "404",
                                            "katman": "site", "cozum_yolu": "elle"}], {}))
-    k = boru.analiz_et({"tur": "canli", "url": "ornek.edu.tr"}, {"llm_kullan": False}, str(tmp_path))
+    sahte_model(monkeypatch)
+    k = boru.analiz_et({"url": "ornek.edu.tr"}, {"model": "sahte"}, str(tmp_path))
     assert k["hata_sayfasi"] is True
     assert [i["sorun"] for i in k["sorunlar"]] == ["hata_durum_kodu"]
     assert k["sonra_sorun_sayisi"] == 1
@@ -137,5 +138,5 @@ def test_yonlendirilen_hostun_robots_kurali_da_uygulanir(monkeypatch, tmp_path):
     monkeypatch.setattr(canli, "robots_bilgisi",
                         lambda kok_adres, *a, **k: engelli if "baska" in kok_adres else acik)
     monkeypatch.setattr(canli, "sayfa_getir", lambda *a, **k: _sahte_getirme(200, "https://baska.edu.tr/"))
-    k = boru.analiz_et({"tur": "canli", "url": "ornek.edu.tr"}, {"llm_kullan": False}, str(tmp_path))
+    k = boru.analiz_et({"url": "ornek.edu.tr"}, {"model": "sahte"}, str(tmp_path))
     assert k.get("atlandi") and "baska.edu.tr" in k["atlandi"]

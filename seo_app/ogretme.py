@@ -70,8 +70,10 @@ def anlamsal_getir(d, issues, klasor, embed_url, embed_model, k=4, esik=0.2):
     return secili or puanli[:1]   # hicbiri esigi gecmezse en yakin olani yine de ver
 
 
-def ogretme_metni(kosul, d, issues, klasor, k, embed_url, embed_model, gunluk=None):
-    """Sistem istemine eklenecek ek baglami uretir. (metin, bilgi) dondurur."""
+def ogretme_metni(kosul, d, issues, klasor, k, embed_url, embed_model):
+    """Sistem istemine eklenecek ek baglami uretir. (metin, bilgi) dondurur.
+    Gomme modeli secildiyse ve ulasilamazsa hata firlatilir; anahtar kelime yontemine
+    yalnizca gomme modeli hic secilmediginde gecilir (sessiz geri donus yok)."""
     kodlar = [i["sorun"] for i in issues]
     bilgi = {"ornek": 0, "kural": 0, "yontem": None}
     if kosul == "sifir":
@@ -80,20 +82,14 @@ def ogretme_metni(kosul, d, issues, klasor, k, embed_url, embed_model, gunluk=No
     alanlar = [a for a in IZINLI_ALANLAR if any(x in kodlar for x in ALAN_SORUN[a])]
     parcalar = []
     if "bilgi" in kosul:
-        secili = None
         if embed_model:
             try:
                 secili = anlamsal_getir(d, issues, klasor, embed_url, embed_model, k)
-                bilgi["yontem"] = "anlamsal"
             except (requests.RequestException, KeyError, ValueError) as e:
-                mesaj = ("UYARI: gomme modeline ulasilamadi (" + type(e).__name__ +
-                         "); anahtar kelime eslestirmesine dusuluyor.")
-                if gunluk:
-                    gunluk(mesaj)
-                else:
-                    print("   " + mesaj)
-                secili = None
-        if secili is None:
+                raise RuntimeError("Gömme modeline ulaşılamadı: " + embed_model + " (" + embed_url + "). "
+                                   "Ayrıntı: " + type(e).__name__) from e
+            bilgi["yontem"] = "anlamsal"
+        else:
             kurallar = json.loads((klasor / "seo_kurallari.json").read_text(encoding="utf-8"))
             secili = [{"icerik": "[" + r["alan"] + "] " + r["kural"]} for r in kurallar
                       if r["alan"] in alanlar or r["alan"] == "genel"]
