@@ -1,102 +1,282 @@
 [
   {
-    "id": "b01",
-    "konu": "title",
-    "icerik": "Sayfa basligi (title etiketi), arama sonuclarinda tiklanabilir mavi baslik olarak gorunur ve genellikle 50-60 karakter arasinda tam gosterilir; cok uzun basliklar sonunda ... ile kesilir. Baslik sayfanin konusunu dogru yansitmali, en onemli kavram basa yakin yer almali ve marka adi genellikle sonda kisa bir ek olarak bulunmalidir."
+    "id": "t01",
+    "alan": "title",
+    "baslik": "Title etiketinin görevi",
+    "icerik": "Title etiketi, arama sonucunda tıklanan başlık bağlantısının ana kaynağıdır. Her sayfada bir title bulunmalı; sayfanın konusunu kısa ve açıklayıcı biçimde söylemeli. Arama motoru başlık bağlantısını oluştururken title'ın yanında H1 ve sayfadaki diğer başlıklardan da yararlanabilir.",
+    "etiketler": ["temel", "baslik_baglantisi"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/title-link",
+    "kaynak_basligi": "Google Arama Merkezi: Influencing your title links in search results",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b02",
-    "konu": "title",
-    "icerik": "Ayni sitedeki her sayfanin basligi, o sayfaya ozgu ve diger sayfalardan farkli olmalidir. Tum sayfalarda ayni veya neredeyse ayni baslik kullanmak, arama motorlarinin sayfalari birbirinden ayirt etmesini zorlastirir ve tiklanma oranini dusurur."
+    "id": "t02",
+    "alan": "title",
+    "baslik": "Title uzunluğu",
+    "icerik": "Google title için sabit bir karakter sınırı koymaz; arama sonucunda yer yetmezse başlık kesilir. Bu yüzden en önemli kavram başa yakın yazılmalıdır. Bu araç, okunaklı ve kesilmeye dayanıklı olması için 30 ile 60 karakter arasını hedefler.",
+    "etiketler": ["uzunluk", "kisa", "uzun"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/title-link",
+    "kaynak_basligi": "Google Arama Merkezi: Influencing your title links in search results",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b03",
-    "konu": "meta_description",
-    "icerik": "Meta aciklama, arama sonucunda baslik altinda gorunen kisa ozettir; siralamayi dogrudan etkilemez ama tiklanma oranini etkiler. Sayfanin sundugu bilgiyi veya hizmeti gercekci bicimde ozetlemeli, kullanicinin aradigi cevabin o sayfada oldugunu gostermelidir."
+    "id": "t03",
+    "alan": "title",
+    "baslik": "Belirsiz ve kalıp başlıklardan kaçınma",
+    "icerik": "\"Anasayfa\", \"Hoş geldiniz\" ya da \"Yeni sayfa\" gibi belirsiz başlıklar sayfanın neyle ilgili olduğunu anlatmaz. Sitenin birçok sayfasında aynı kalıbı tekrarlamak da sayfaların birbirinden ayırt edilmesini zorlaştırır. Başlık, o sayfaya özgü konuyu söylemelidir.",
+    "etiketler": ["belirsiz", "tekrar", "kisa"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/title-link",
+    "kaynak_basligi": "Google Arama Merkezi: Influencing your title links in search results",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b04",
-    "konu": "meta_description",
-    "icerik": "Meta aciklamada abartili reklam dili veya dogrulanamayan iddialar ('en iyi', 'lider', 'bir numarali') kullanmak yerine, sayfada somut olarak bulunan bilgi, urun veya hizmet anlatilmalidir. Aciklama kisa olsa bile ozgun ve sayfaya ozel yazilmalidir."
+    "id": "t04",
+    "alan": "title",
+    "baslik": "Marka adının yeri",
+    "icerik": "Kurum ya da marka adı başlıkta yer alabilir; genellikle sayfa konusundan sonra kısa bir ek olarak ve bir ayraçla (| veya -) yazılır. Marka adı sayfa konusunun önüne geçmemeli ve başlığı gereksiz yere uzatmamalıdır.",
+    "etiketler": ["marka", "uzun"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/title-link",
+    "kaynak_basligi": "Google Arama Merkezi: Influencing your title links in search results",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b05",
-    "konu": "h1",
-    "icerik": "H1 basligi, sayfanin ana konusunu kullanicilara ve arama motorlarina gosteren goze carpan basliktir ve bir sayfada genellikle tek bir H1 bulunmasi onerilir. H1, title ile birebir ayni olmak zorunda degildir ama ayni ana konuyu yansitmalidir."
+    "id": "t05",
+    "alan": "title",
+    "baslik": "Başlıkta anahtar kelime yığmamak",
+    "icerik": "Başlığa aynı ya da benzer kelimeleri art arda dizmek okunurluğu bozar ve arama motorları tarafından düşük kalite işareti sayılabilir. Tek ve doğal bir ifade, kelime listesinden daha iyidir.",
+    "etiketler": ["yigma", "uzun"],
+    "kaynak": "https://developers.google.com/search/docs/essentials/spam-policies",
+    "kaynak_basligi": "Google Arama Merkezi: Spam policies for Google web search",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b06",
-    "konu": "img_alt",
-    "icerik": "Gorsellerin alt metni, gorseli goremeyen kullanicilar (ekran okuyucu kullananlar) ve gorseli indiremeyen tarayicilar icin gorselin islevini veya icerigini aciklar; ayrica arama motorlarinin gorsel aramada sayfayi bulmasina yardimci olur. Alt metin kisa, aciklayici ve 'resim', 'gorsel' gibi gereksiz kelimeler icermeyen bir cumle olmalidir."
+    "id": "m01",
+    "alan": "meta_description",
+    "baslik": "Meta açıklamanın görevi",
+    "icerik": "Meta açıklama, arama sonucunda başlığın altında görünebilen kısa özettir. Sıralamayı doğrudan belirlemez, ama kullanıcının tıklayıp tıklamayacağını etkiler. Google, sayfa içeriğinden daha uygun bir parça bulursa açıklama yerine onu gösterebilir.",
+    "etiketler": ["temel", "snippet"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/snippet",
+    "kaynak_basligi": "Google Arama Merkezi: Control your snippets in search results",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b07",
-    "konu": "img_alt",
-    "icerik": "Bir gorsel ayni zamanda bir baglantiysa (ornegin logo anasayfaya baglaniyorsa), alt metin gorselin gorundugu seyi degil, baglantinin kullaniciyi nereye gotürdugunu aciklamalidir."
+    "id": "m02",
+    "alan": "meta_description",
+    "baslik": "Meta açıklama uzunluğu",
+    "icerik": "Meta açıklama için kesin bir karakter sınırı yoktur; arama sonucunda gerektiği kadar kısaltılır. Çok kısa açıklama sayfayı anlatmaya yetmez, çok uzun olan ise kesilir. Bu araç 70 ile 160 karakter arasını hedefler.",
+    "etiketler": ["uzunluk", "kisa", "uzun"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/snippet",
+    "kaynak_basligi": "Google Arama Merkezi: Control your snippets in search results",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b08",
-    "konu": "canonical",
-    "icerik": "Canonical (standart) etiketi, ayni veya cok benzer icerigin birden fazla adreste (orn. www ile www'suz, http ile https, sondaki egik cizgiyle cizgisiz) erisilebilir oldugu durumlarda, arama motoruna hangi adresin 'asil' sayfa sayilmasi gerektigini bildirir. Bu, ayni icerigin farkli adreslerde birbiriyle yarismasini (icerik yinelenmesini) onler."
+    "id": "m03",
+    "alan": "meta_description",
+    "baslik": "Sayfaya özgü ve bilgilendirici açıklama",
+    "icerik": "Her sayfanın açıklaması o sayfaya özgü olmalıdır. Açıklama, sayfada gerçekten bulunan bilgiyi, hizmeti ya da içeriği özetlemeli; kullanıcıya aradığı şeyin bu sayfada olduğunu göstermelidir. Birçok sayfada aynı açıklamayı kullanmak yararsızdır.",
+    "etiketler": ["ozgun", "tekrar", "yok"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/snippet",
+    "kaynak_basligi": "Google Arama Merkezi: Control your snippets in search results",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b09",
-    "konu": "robots_sitemap",
-    "icerik": "robots.txt dosyasi, arama motoru botlarinin sitenin hangi bolumlerini tarayabilecegini belirtir; yanlis yapilandirilirsa onemli sayfalarin taranmasini engelleyebilir. Site haritasi (sitemap.xml) ise sitedeki sayfalarin listesini arama motorlarina bildirerek, ozellikle yeni veya derin baglantili sayfalarin kesfedilmesini hizlandirir."
+    "id": "m04",
+    "alan": "meta_description",
+    "baslik": "Açıklamada kelime listesi ve reklam dili",
+    "icerik": "Açıklama yalnızca anahtar kelimelerden oluşan bir liste olmamalıdır. \"En iyi\", \"lider\" gibi doğrulanamayan iddialar yerine sayfadaki somut bilgiler, tam ve okunaklı cümlelerle yazılmalıdır.",
+    "etiketler": ["yigma", "reklam_dili"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/snippet",
+    "kaynak_basligi": "Google Arama Merkezi: Control your snippets in search results",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b10",
-    "konu": "hiz_core_web_vitals",
-    "icerik": "Sayfa yukleme hizi ve Core Web Vitals (LCP, INP, CLS gibi olcutler) hem kullanici deneyimini hem de arama sirlamasini etkileyen teknik faktorlerdir. Buyuk, sikistirilmamis gorseller ve gereksiz betikler sayfa hizini dusuren en yaygin nedenlerdendir."
+    "id": "m05",
+    "alan": "meta_description",
+    "baslik": "Başlığı tekrar etmemek",
+    "icerik": "Meta açıklama title'ı kelimesi kelimesine tekrar etmemelidir; başlığın söylemediği, sayfada bulunan ek bilgiyi (kapsam, hizmet, içerik türü) vermelidir. Böylece başlık ve açıklama birbirini tamamlar.",
+    "etiketler": ["ozgun", "kisa"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/snippet",
+    "kaynak_basligi": "Google Arama Merkezi: Control your snippets in search results",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b11",
-    "konu": "yapilandirilmis_veri",
-    "icerik": "Yapilandirilmis veri (schema.org / JSON-LD), bir sayfadaki bilginin (ornegin bir isletmenin adresi, calisma saatleri veya bir urunun fiyati) arama motorlari tarafindan daha iyi anlasilmasini saglar ve bazen arama sonuclarinda zengin sonuc (rich result) olarak gosterilmesine yol acar."
+    "id": "h01",
+    "alan": "h1",
+    "baslik": "H1 başlığının görevi",
+    "icerik": "H1, sayfanın ana konusunu ziyaretçiye gösteren görünür ana başlıktır. Kısa, düz metin olmalı ve sayfanın gerçekten ne anlattığını söylemelidir. Title ile birebir aynı olması gerekmez, ama aynı ana konuyu yansıtmalıdır.",
+    "etiketler": ["temel", "yok"],
+    "kaynak": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+    "kaynak_basligi": "Google Arama Merkezi: SEO Starter Guide",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b12",
-    "konu": "mobil_uyumluluk",
-    "icerik": "Arama motorlari sayfalari oncelikle mobil surumleriyle degerlendirir (mobile-first indexing). Kucuk ekranlarda okunakli yazi boyutu, dokunma hedeflerinin yeterince buyuk olmasi ve yatay kaydirma gerektirmeyen bir duzen, mobil kullanilabilirligin temel gereksinimleridir."
+    "id": "h02",
+    "alan": "h1",
+    "baslik": "Başlık hiyerarşisi ve erişilebilirlik",
+    "icerik": "Başlıklar (H1-H6) içeriği bölümlere ayırarak okumayı kolaylaştırır. Ekran okuyucu kullananlar sayfada başlıklar arasında gezinir; bu yüzden tek bir ana başlık ve onun altında sıralı alt başlıklar erişilebilirlik için iyi bir uygulamadır.",
+    "etiketler": ["hiyerarsi", "erisilebilirlik"],
+    "kaynak": "https://www.w3.org/WAI/tutorials/page-structure/headings/",
+    "kaynak_basligi": "W3C WAI: Page Structure Tutorial, Headings",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b13",
-    "konu": "icerik_kalitesi_eeat",
-    "icerik": "Icerik kalitesini degerlendirirken deneyim, uzmanlik, yetki ve guvenilirlik (E-E-A-T) kavrami kullanilir: iceriğin kim tarafindan, ne deneyime dayanarak yazildiginin belli olmasi, kaynaklarin guvenilir olmasi ve iceriğin kullanicinin sorununu gercekten cozmesi onemlidir."
+    "id": "h03",
+    "alan": "h1",
+    "baslik": "H1 eksikse ne yazılmalı",
+    "icerik": "Sayfada H1 yoksa, sayfanın mevcut verisinden (title, alt başlıklar, içerik metni) çıkan ana konu kısa bir başlık olarak yazılır. Sayfada geçmeyen bir konu ya da nitelik eklenmez; kurum adı ile sayfa konusu çoğu durumda yeterlidir.",
+    "etiketler": ["yok", "sadakat"],
+    "kaynak": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+    "kaynak_basligi": "Google Arama Merkezi: SEO Starter Guide",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b14",
-    "konu": "ic_baglanti",
-    "icerik": "Ic baglantilar (bir sitedeki sayfalarin birbirine verdigi baglantilar), hem kullanicilarin ilgili icerige kolay ulasmasini saglar hem de arama motorlarinin site icindeki sayfalar arasindaki iliskiyi ve onem sirasini anlamasina yardimci olur. Baglanti metninin (anchor text) hedef sayfayi aciklayici olmasi onerilir."
+    "id": "g01",
+    "alan": "img_alt",
+    "baslik": "Alt metnin görevi",
+    "icerik": "Alt metin, görseli göremeyen kullanıcılar (ekran okuyucular) ve görsel yüklenemediğinde tarayıcılar için görselin içeriğini ya da işlevini anlatır. Arama motorları da görselin konusunu anlamak için alt metni sayfa içeriğiyle birlikte kullanır.",
+    "etiketler": ["temel", "erisilebilirlik"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/google-images",
+    "kaynak_basligi": "Google Arama Merkezi: Google Images SEO best practices",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b15",
-    "konu": "url_yapisi",
-    "icerik": "Kisa, okunakli ve sayfanin icerigini yansitan URL'ler, hem kullanicilar hem arama motorlari icin tercih edilir. Anlamsiz sayi/kod dizileri yerine sayfanin konusunu yansitan kelimeler icermesi, URL'nin anlasilirligini artirir."
+    "id": "g02",
+    "alan": "img_alt",
+    "baslik": "İyi bir alt metin nasıl yazılır",
+    "icerik": "Alt metin kısa, bilgilendirici ve görselin bulunduğu bağlama uygun olmalıdır. \"Resim\", \"görsel\" gibi gereksiz sözcüklerle başlamamalı; anahtar kelime yığını olmamalıdır. Görsel hakkında bilgi azsa genel ama doğru bir ifade, uydurma ayrıntıdan iyidir.",
+    "etiketler": ["yazim", "yigma"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/google-images",
+    "kaynak_basligi": "Google Arama Merkezi: Google Images SEO best practices",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b16",
-    "konu": "yinelenen_icerik",
-    "icerik": "Ayni veya cok benzer icerigin birden fazla URL'de yayinlanmasi (yinelenen icerik), arama motorunun hangi sayfayi one cikaracagina karar vermesini zorlastirabilir. Bu durum genellikle filtreleme parametreleri, yazdirma sayfalari veya hem www hem www'suz adreslerin ayni anda acik olmasindan kaynaklanir."
+    "id": "g03",
+    "alan": "img_alt",
+    "baslik": "Bağlantı olan görseller",
+    "icerik": "Görsel bir bağlantının tek içeriğiyse (örneğin anasayfaya giden logo ya da bir sosyal medya simgesi), alt metin görselin neye benzediğini değil, bağlantının nereye gittiğini veya ne yaptığını anlatmalıdır: \"Instagram sayfamız\" gibi.",
+    "etiketler": ["baglanti", "islevsel"],
+    "kaynak": "https://www.w3.org/WAI/tutorials/images/functional/",
+    "kaynak_basligi": "W3C WAI: Images Tutorial, Functional Images",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b17",
-    "konu": "yerel_seo",
-    "icerik": "Yerel isletmeler icin Google Isletme Profili'nin eksiksiz doldurulmasi, adres ve calisma saatlerinin sitedeki bilgilerle tutarli olmasi ve musteri yorumlarinin yonetilmesi, yerel aramalarda (orn. 'sehir adi + hizmet') gorunurlugu belirleyen onemli faktorlerdir."
+    "id": "g04",
+    "alan": "img_alt",
+    "baslik": "Süs görselleri ve metin içeren görseller",
+    "icerik": "Yalnızca süs amaçlı görseller boş alt metinle (alt=\"\") işaretlenir; bu bir eksik değil, bilinçli bir tercihtir. Görselin içinde okunması gereken bir yazı varsa, alt metin o yazıyı aktarmalıdır.",
+    "etiketler": ["dekoratif", "metin"],
+    "kaynak": "https://www.w3.org/WAI/tutorials/images/decision-tree/",
+    "kaynak_basligi": "W3C WAI: An alt Decision Tree",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b18",
-    "konu": "yapay_zeka_icerik_riski",
-    "icerik": "Yapay zeka ile uretilen icerik tek basina arama motorlari tarafindan cezalandirilmaz, ancak dusuk kaliteli, otomatik uretilmis ve kullaniciya gercek deger katmayan kitlesel icerik uretimi siralamayi olumsuz etkileyebilir. Uretilen icerigin dogrulugunun kontrol edilmesi ve insan tarafindan gozden gecirilmesi onerilir."
+    "id": "g05",
+    "alan": "img_alt",
+    "baslik": "Alt metnin uzunluğu",
+    "icerik": "Alt metin genellikle bir kısa cümle ya da ifadedir. Uzun açıklamalar ekran okuyucu kullanıcılarını yorar; ayrıntılı bilgi gerekiyorsa sayfa metninde verilmelidir. Bu araç alt metni en fazla 125 karakterle sınırlar.",
+    "etiketler": ["uzunluk"],
+    "kaynak": "https://www.w3.org/WAI/tutorials/images/informative/",
+    "kaynak_basligi": "W3C WAI: Images Tutorial, Informative Images",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b19",
-    "konu": "anahtar_kelime_yigma",
-    "icerik": "Baslik veya aciklama icine dogal akisi bozacak sekilde cok sayida anahtar kelime sikistirmak (anahtar kelime yigma), hem okunabilirligi dusurur hem de arama motorlari tarafindan dusuk kaliteli bir sinyal olarak degerlendirilebilir. Tek, dogal cumleler tercih edilmelidir."
+    "id": "n01",
+    "alan": "genel",
+    "baslik": "Sayfaya sadık kalmak",
+    "icerik": "Önerilen metinler yalnızca sayfada gerçekten bulunan bilgilere dayanmalıdır. Sayfada geçmeyen rakamlar, ödüller, sıralamalar ya da \"en iyi\", \"lider\" gibi doğrulanamayan nitelemeler eklemek kullanıcıyı yanıltır ve güveni zedeler.",
+    "etiketler": ["sadakat", "reklam_dili"],
+    "kaynak": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+    "kaynak_basligi": "Google Arama Merkezi: Creating helpful, reliable, people-first content",
+    "erisim_tarihi": "2026-10-22"
   },
   {
-    "id": "b20",
-    "konu": "https_guvenlik",
-    "icerik": "Sitenin HTTPS uzerinden sunulmasi hem kullanici guvenligi hem de arama motorlari tarafindan dikkate alinan bir faktordur; HTTP uzerinden sunulan veya karisik icerik (http ve https kaynaklarinin bir arada oldugu) sayfalar tarayicilarda guvensiz uyarisi gosterebilir."
+    "id": "n02",
+    "alan": "genel",
+    "baslik": "Anahtar kelime yığma",
+    "icerik": "Bir sayfayı arama sonuçlarında öne çıkarmak için anahtar kelimeleri doğal olmayan biçimde tekrarlamak (anahtar kelime yığma) spam politikalarına aykırıdır. Metinler önce kullanıcı için, doğal Türkçeyle yazılmalıdır.",
+    "etiketler": ["yigma"],
+    "kaynak": "https://developers.google.com/search/docs/essentials/spam-policies",
+    "kaynak_basligi": "Google Arama Merkezi: Spam policies for Google web search",
+    "erisim_tarihi": "2026-10-22"
+  },
+  {
+    "id": "n03",
+    "alan": "genel",
+    "baslik": "Yapay zekâyla üretilen metin",
+    "icerik": "Otomatik ya da yapay zekâyla üretilen içerik tek başına sorun sayılmaz; sorun, sıralamayı manipüle etmek için kullanıcıya değer katmayan içerik üretmektir. Üretilen metnin doğruluğu bir insan tarafından gözden geçirilmelidir.",
+    "etiketler": ["yapay_zeka", "denetim"],
+    "kaynak": "https://developers.google.com/search/blog/2023/02/google-search-and-ai-content",
+    "kaynak_basligi": "Google Arama Merkezi Blogu: Google Search's guidance about AI-generated content",
+    "erisim_tarihi": "2026-10-22"
+  },
+  {
+    "id": "n04",
+    "alan": "genel",
+    "baslik": "Kullanıcı odaklı içerik",
+    "icerik": "Arama motorları, öncelikle insanlara yardımcı olmak için yazılmış, güvenilir içeriği öne çıkarmayı hedefler. Başlık ve açıklamalar abartısız olmalı; sayfanın sunduğu şeyi açıkça söylemeli ve tıklayan kişiyi hayal kırıklığına uğratmamalıdır.",
+    "etiketler": ["kalite", "reklam_dili"],
+    "kaynak": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+    "kaynak_basligi": "Google Arama Merkezi: Creating helpful, reliable, people-first content",
+    "erisim_tarihi": "2026-10-22"
+  },
+  {
+    "id": "s01",
+    "alan": "canonical",
+    "baslik": "Canonical etiketi",
+    "icerik": "Aynı içerik birden fazla adresten açılabiliyorsa (www ile ve www'siz, http ve https, sondaki eğik çizgi), rel=\"canonical\" etiketi arama motoruna hangi adresin asıl sürüm sayılması gerektiğini bildirir. Bu, yinelenen adreslerin birbiriyle yarışmasını önler.",
+    "etiketler": ["yinelenen_icerik"],
+    "kaynak": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls",
+    "kaynak_basligi": "Google Arama Merkezi: How to specify a canonical URL",
+    "erisim_tarihi": "2026-10-22"
+  },
+  {
+    "id": "s02",
+    "alan": "robots_sitemap",
+    "baslik": "robots.txt ve site haritası",
+    "icerik": "robots.txt, tarayıcıların sitenin hangi bölümlerine erişebileceğini belirtir; yanlış bir kural önemli sayfaların taranmasını engelleyebilir. Site haritası (sitemap.xml) ise sitedeki sayfaları listeleyerek yeni ya da derindeki sayfaların bulunmasını kolaylaştırır.",
+    "etiketler": ["tarama"],
+    "kaynak": "https://developers.google.com/search/docs/crawling-indexing/robots/intro",
+    "kaynak_basligi": "Google Arama Merkezi: Introduction to robots.txt",
+    "erisim_tarihi": "2026-10-22"
+  },
+  {
+    "id": "s03",
+    "alan": "yapisal_veri",
+    "baslik": "Yapısal veri",
+    "icerik": "schema.org sözlüğüyle JSON-LD biçiminde yazılan yapısal veri, sayfadaki bilginin (kurum, adres, etkinlik, ürün) arama motorlarınca daha kesin anlaşılmasını sağlar ve bazı durumlarda zengin sonuç olarak gösterilmesine imkân verir.",
+    "etiketler": ["schema"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data",
+    "kaynak_basligi": "Google Arama Merkezi: Introduction to structured data markup",
+    "erisim_tarihi": "2026-10-22"
+  },
+  {
+    "id": "s04",
+    "alan": "performans",
+    "baslik": "Sayfa deneyimi ve Core Web Vitals",
+    "icerik": "Yükleme hızı ve Core Web Vitals ölçütleri (LCP, INP, CLS) kullanıcı deneyimini ölçer. Büyük ve sıkıştırılmamış görseller, gereksiz betikler ve yavaş sunucu yanıtı bu ölçütleri kötüleştiren yaygın nedenlerdir.",
+    "etiketler": ["hiz"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/core-web-vitals",
+    "kaynak_basligi": "Google Arama Merkezi: Understanding Core Web Vitals and Google search results",
+    "erisim_tarihi": "2026-10-22"
+  },
+  {
+    "id": "s05",
+    "alan": "mobil",
+    "baslik": "Mobil öncelikli dizine ekleme",
+    "icerik": "Google sayfaları öncelikle mobil sürümleriyle değerlendirir. Mobil sürüm, masaüstündeki içeriğin ve başlıkların aynısını sunmalı; viewport etiketi tanımlanmalı ve sayfa küçük ekranda yatay kaydırma gerektirmemelidir.",
+    "etiketler": ["viewport"],
+    "kaynak": "https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing",
+    "kaynak_basligi": "Google Arama Merkezi: Mobile site and mobile-first indexing best practices",
+    "erisim_tarihi": "2026-10-22"
+  },
+  {
+    "id": "s06",
+    "alan": "guvenlik",
+    "baslik": "HTTPS",
+    "icerik": "Sitenin HTTPS üzerinden sunulması ziyaretçinin verisini korur ve sayfa deneyiminin bir parçasıdır. HTTPS sayfanın http:// üzerinden kaynak yüklemesi (karışık içerik) tarayıcılarda güvenlik uyarısına ya da kaynağın engellenmesine yol açabilir.",
+    "etiketler": ["https", "karisik_icerik"],
+    "kaynak": "https://developers.google.com/search/docs/appearance/page-experience",
+    "kaynak_basligi": "Google Arama Merkezi: Understanding page experience in Google Search results",
+    "erisim_tarihi": "2026-10-22"
   }
 ]
