@@ -1,0 +1,2963 @@
+{
+ "ortalama": {
+  "kapsama": 1.0,
+  "isabet": 1.0,
+  "mrr": 0.969,
+  "parca_sayisi": 5.0,
+  "sorun_isabeti": 0.815,
+  "sure_ms": 84.532
+ },
+ "gruplar": {
+  "belediye": {
+   "sayfa": 10,
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "sorun_isabeti": 0.833
+  },
+  "blog_medya": {
+   "sayfa": 6,
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.889,
+   "sorun_isabeti": 0.945
+  },
+  "duzce_birim": {
+   "sayfa": 58,
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "sorun_isabeti": 0.759
+  },
+  "eticaret": {
+   "sayfa": 9,
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.778,
+   "sorun_isabeti": 0.815
+  },
+  "haber": {
+   "sayfa": 10,
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.933,
+   "sorun_isabeti": 0.917
+  },
+  "kamu": {
+   "sayfa": 13,
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.942,
+   "sorun_isabeti": 0.801
+  },
+  "saglik": {
+   "sayfa": 2,
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "sorun_isabeti": 1.0
+  },
+  "stk_kultur": {
+   "sayfa": 8,
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "sorun_isabeti": 0.854
+  },
+  "universite": {
+   "sayfa": 17,
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "sorun_isabeti": 0.863
+  }
+ },
+ "sayfalar": [
+  {
+   "ad": "http_diploma.ogrenciisleri.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "t05",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 76.015
+  },
+  {
+   "ad": "http_radyoduet.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 84.41
+  },
+  {
+   "ad": "http_sosyalsorumluluk.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 115.76
+  },
+  {
+   "ad": "https_aadek.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 115.255
+  },
+  {
+   "ad": "https_adayogrenci.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h03",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 83.849
+  },
+  {
+   "ad": "https_akademik.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h03",
+    "m05",
+    "m01",
+    "n04",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 96.727
+  },
+  {
+   "ad": "https_ardek.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 107.748
+  },
+  {
+   "ad": "https_bap.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 106.217
+  },
+  {
+   "ad": "https_bidek.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 126.463
+  },
+  {
+   "ad": "https_bilgiislem.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 86.27
+  },
+  {
+   "ad": "https_bilgiizleme.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 108.965
+  },
+  {
+   "ad": "https_biltek.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 110.735
+  },
+  {
+   "ad": "https_botanikbahce.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "h03",
+    "t05",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 102.101
+  },
+  {
+   "ad": "https_cdn.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "n04",
+    "m05",
+    "t03",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 66.309
+  },
+  {
+   "ad": "https_cevresaglik.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 129.335
+  },
+  {
+   "ad": "https_donersermaye.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 116.686
+  },
+  {
+   "ad": "https_dubam.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 126.524
+  },
+  {
+   "ad": "https_dugetam.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 105.582
+  },
+  {
+   "ad": "https_dukart.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 124.911
+  },
+  {
+   "ad": "https_dumeyok.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 100.363
+  },
+  {
+   "ad": "https_dusem.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h03",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 106.402
+  },
+  {
+   "ad": "https_dutok.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 101.935
+  },
+  {
+   "ad": "https_duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 105.212
+  },
+  {
+   "ad": "https_ebs.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "n04",
+    "m04",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 62.358
+  },
+  {
+   "ad": "https_ebys.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "h01",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 99.557
+  },
+  {
+   "ad": "https_egitimkoordinatorlugu.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 98.917
+  },
+  {
+   "ad": "https_engelsiz.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 99.627
+  },
+  {
+   "ad": "https_gensek.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 86.084
+  },
+  {
+   "ad": "https_haber.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "h01",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 99.663
+  },
+  {
+   "ad": "https_hastane.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "t03",
+    "m02",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 83.063
+  },
+  {
+   "ad": "https_hukuk.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 89.206
+  },
+  {
+   "ad": "https_icdenetim.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 89.493
+  },
+  {
+   "ad": "https_idarimali.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 115.87
+  },
+  {
+   "ad": "https_isg.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h03",
+    "m01",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 127.528
+  },
+  {
+   "ad": "https_itk.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 104.504
+  },
+  {
+   "ad": "https_kaliteyonetim.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "h1"
+   ],
+   "getirilen": [
+    "h03",
+    "h01",
+    "h02",
+    "n04",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 52.436
+  },
+  {
+   "ad": "https_kariyer.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 103.734
+  },
+  {
+   "ad": "https_kurulkararlari.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h03",
+    "h01",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 73.729
+  },
+  {
+   "ad": "https_kutuphane.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 102.139
+  },
+  {
+   "ad": "https_mbs.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "n04",
+    "m02",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 46.922
+  },
+  {
+   "ad": "https_obs.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "m05",
+    "t05",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 69.154
+  },
+  {
+   "ad": "https_ogrencidekanligi.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 83.025
+  },
+  {
+   "ad": "https_ogrenciisleri.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 103.146
+  },
+  {
+   "ad": "https_personel.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "m05",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 83.167
+  },
+  {
+   "ad": "https_rehber.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "h03",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 96.277
+  },
+  {
+   "ad": "https_rimer.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "h03",
+    "m02",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 74.022
+  },
+  {
+   "ad": "https_sanalsergi.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 84.021
+  },
+  {
+   "ad": "https_sks.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 98.622
+  },
+  {
+   "ad": "https_strateji.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h01",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 133.811
+  },
+  {
+   "ad": "https_surdurulebilirlik.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 103.438
+  },
+  {
+   "ad": "https_uabs.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "t05",
+    "t03",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 58.669
+  },
+  {
+   "ad": "https_uluslararasiofis.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 83.266
+  },
+  {
+   "ad": "https_uluslararasiogrenci.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 86.374
+  },
+  {
+   "ad": "https_uzem.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 94.83
+  },
+  {
+   "ad": "https_w3.api.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "h03",
+    "t03",
+    "t05"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 78.189
+  },
+  {
+   "ad": "https_www.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 99.081
+  },
+  {
+   "ad": "https_yapiisleri.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 99.895
+  },
+  {
+   "ad": "https_yzdd.duzce.edu.tr",
+   "grup": "duzce_birim",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 108.782
+  },
+  {
+   "ad": "Düzce Üniversitesi _ Anasayfa",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 100.721
+  },
+  {
+   "ad": "Marmara Üniversitesi _ Resmi Web Sitesi",
+   "grup": "universite",
+   "beklenen": [
+    "meta_description"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "n04",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 48.341
+  },
+  {
+   "ad": "https://www.metu.edu.tr/",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "h03",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 102.226
+  },
+  {
+   "ad": "https://www.metu.edu.tr/faculties-institutes-schools",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "t02",
+    "m05",
+    "t05"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 77.235
+  },
+  {
+   "ad": "https://bogazici.edu.tr/",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h01",
+    "m02",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 97.296
+  },
+  {
+   "ad": "https://bogazici.edu.tr/tr/pages/fahri-doktora/21",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "h01",
+    "m02",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 95.255
+  },
+  {
+   "ad": "https://www.itu.edu.tr/",
+   "grup": "universite",
+   "beklenen": [
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h03",
+    "h01",
+    "h02",
+    "n04",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 88.703
+  },
+  {
+   "ad": "https://www.itu.edu.tr/fakulte-listesi",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "t05",
+    "m02",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 62.107
+  },
+  {
+   "ad": "https://www.hacettepe.edu.tr/",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "t05",
+    "h03",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 86.219
+  },
+  {
+   "ad": "https://www.hacettepe.edu.tr/hakkinda/",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "t03",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 83.035
+  },
+  {
+   "ad": "https://www.ankara.edu.tr/",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "t05",
+    "m02",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 75.888
+  },
+  {
+   "ad": "https://www.ege.edu.tr/",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 100.338
+  },
+  {
+   "ad": "https://www.ege.edu.tr/tr-57/akademik_takvim.html",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h03",
+    "m02",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 96.545
+  },
+  {
+   "ad": "https://sakarya.edu.tr/",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 78.896
+  },
+  {
+   "ad": "https://sakarya.edu.tr/misyon-vizyon",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 110.14
+  },
+  {
+   "ad": "https://www.anadolu.edu.tr/",
+   "grup": "universite",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 97.712
+  },
+  {
+   "ad": "https://www.anadolu.edu.tr/kampuste-yasam/kampuste-olanaklar",
+   "grup": "universite",
+   "beklenen": [
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "m05",
+    "n02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 63.851
+  },
+  {
+   "ad": "https://www.turkiye.gov.tr/cevre-tarim-ve-hayvancilik-hizmetleri",
+   "grup": "kamu",
+   "beklenen": [
+    "title"
+   ],
+   "getirilen": [
+    "t05",
+    "t02",
+    "t03",
+    "n04",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 49.859
+  },
+  {
+   "ad": "https://www.meb.gov.tr/",
+   "grup": "kamu",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 80.905
+  },
+  {
+   "ad": "https://www.meb.gov.tr/elmadag-anadolu-lisesi-ogrencilerinden-gokyuzu-gozlem-senligi/duyuru/41187/",
+   "grup": "kamu",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "m05",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 99.634
+  },
+  {
+   "ad": "https://www.saglik.gov.tr/",
+   "grup": "kamu",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "m05",
+    "t05",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 64.16
+  },
+  {
+   "ad": "https://www.saglik.gov.tr/TR-11008/denetimli-serbestlik-tedbirleri-uygulanan-kisilerin-tedavileri-200982.html",
+   "grup": "kamu",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "t05",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 87.483
+  },
+  {
+   "ad": "https://www.tuik.gov.tr/",
+   "grup": "kamu",
+   "beklenen": [
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h03",
+    "h01",
+    "h02",
+    "n04",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 77.399
+  },
+  {
+   "ad": "https://www.tuik.gov.tr/Kurumsal/Yonetmelikler",
+   "grup": "kamu",
+   "beklenen": [
+    "img_alt"
+   ],
+   "getirilen": [
+    "n04",
+    "n02",
+    "n01",
+    "g04",
+    "g01"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.25,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 44.633
+  },
+  {
+   "ad": "https://www.afad.gov.tr/",
+   "grup": "kamu",
+   "beklenen": [
+    "title",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "t03",
+    "h03",
+    "h01",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 82.059
+  },
+  {
+   "ad": "https://www.afad.gov.tr/egitim-dokumanlari",
+   "grup": "kamu",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 103.385
+  },
+  {
+   "ad": "https://www.ktb.gov.tr/",
+   "grup": "kamu",
+   "beklenen": [
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "n04",
+    "m02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 80.934
+  },
+  {
+   "ad": "https://www.ktb.gov.tr/TR-96490/danimarka.html",
+   "grup": "kamu",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 89.984
+  },
+  {
+   "ad": "https://www.tcmb.gov.tr/",
+   "grup": "kamu",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "m05",
+    "n02",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 79.691
+  },
+  {
+   "ad": "https://www.tcmb.gov.tr/wps/wcm/connect/tr/tcmb+tr/main+menu/duyurular/basin/2026/duy2026-45",
+   "grup": "kamu",
+   "beklenen": [
+    "meta_description"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "n04",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 49.132
+  },
+  {
+   "ad": "https://www.ibb.istanbul/",
+   "grup": "belediye",
+   "beklenen": [
+    "meta_description"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "n04",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 59.68
+  },
+  {
+   "ad": "https://www.ibb.istanbul/tum-hizmetler/spor-hizmetleri/engellilere-yonelik-spor-hizmetleri/",
+   "grup": "belediye",
+   "beklenen": [
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "n04",
+    "m04",
+    "m03"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 59.927
+  },
+  {
+   "ad": "https://www.ankara.bel.tr/",
+   "grup": "belediye",
+   "beklenen": [
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h03",
+    "h01",
+    "h02",
+    "n04",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 84.273
+  },
+  {
+   "ad": "https://www.ankara.bel.tr/haberler/abb-den-baskentli-miniklere-trafik-egitimi-18522",
+   "grup": "belediye",
+   "beklenen": [
+    "title"
+   ],
+   "getirilen": [
+    "t05",
+    "t03",
+    "n04",
+    "t02",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 45.066
+  },
+  {
+   "ad": "https://www.izmir.bel.tr/",
+   "grup": "belediye",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "t05",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 111.235
+  },
+  {
+   "ad": "https://www.izmir.bel.tr/tr/IsyerlerininRuhsatlandirilmasi/39/104",
+   "grup": "belediye",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h01",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 96.725
+  },
+  {
+   "ad": "https://www.duzce.bel.tr/",
+   "grup": "belediye",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h03",
+    "h01",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 82.391
+  },
+  {
+   "ad": "https://www.duzce.bel.tr/proje/duzce-millet-bahcesi",
+   "grup": "belediye",
+   "beklenen": [
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "m02",
+    "n04",
+    "m04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 46.765
+  },
+  {
+   "ad": "https://www.bursa.bel.tr/",
+   "grup": "belediye",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h01",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 99.85
+  },
+  {
+   "ad": "https://www.bursa.bel.tr/iletisim",
+   "grup": "belediye",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 87.573
+  },
+  {
+   "ad": "https://www.aa.com.tr/tr",
+   "grup": "haber",
+   "beklenen": [
+    "title"
+   ],
+   "getirilen": [
+    "t05",
+    "t03",
+    "n04",
+    "n02",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 46.285
+  },
+  {
+   "ad": "https://www.aa.com.tr/tr/spor/yunanistan-basketbolunda-kaos/4097179",
+   "grup": "haber",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "m05",
+    "t03",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 64.62
+  },
+  {
+   "ad": "https://www.trthaber.com/",
+   "grup": "haber",
+   "beklenen": [
+    "img_alt"
+   ],
+   "getirilen": [
+    "n04",
+    "n02",
+    "g02",
+    "g04",
+    "g01"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.333,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 46.635
+  },
+  {
+   "ad": "https://www.trthaber.com/haber/gundem/fon-sorusturmasinda-31-supheli-gozaltinda-960841.html",
+   "grup": "haber",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "t05",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 83.621
+  },
+  {
+   "ad": "https://www.ntv.com.tr/",
+   "grup": "haber",
+   "beklenen": [
+    "h1"
+   ],
+   "getirilen": [
+    "h03",
+    "h01",
+    "n04",
+    "h02",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 46.306
+  },
+  {
+   "ad": "https://www.ntv.com.tr/teknoloji/galeri-dunyada-panik-buyuyor-turkiye-de-alarma-gecti-internetin-kara-ekimiyle-ilgili-neler-biliniyor-1747438",
+   "grup": "haber",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "t02",
+    "t05",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 67.779
+  },
+  {
+   "ad": "https://www.bbc.com/turkce",
+   "grup": "haber",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "t05",
+    "n02",
+    "m05"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 77.026
+  },
+  {
+   "ad": "https://www.bbc.com/turkce/articles/c6x2977zyv7ko",
+   "grup": "haber",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "t05",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 81.744
+  },
+  {
+   "ad": "https://www.dunya.com/",
+   "grup": "haber",
+   "beklenen": [
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "m05",
+    "n02",
+    "m04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 60.606
+  },
+  {
+   "ad": "https://www.dunya.com/finans/borsa/kap-haberleri/6843356",
+   "grup": "haber",
+   "beklenen": [
+    "title"
+   ],
+   "getirilen": [
+    "t02",
+    "t03",
+    "t05",
+    "t04",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 68.115
+  },
+  {
+   "ad": "https://www.lcw.com/",
+   "grup": "eticaret",
+   "beklenen": [
+    "title",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h01",
+    "h03",
+    "t03",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 88.419
+  },
+  {
+   "ad": "https://www.lcw.com/kiz-bebek-tayt-t-335",
+   "grup": "eticaret",
+   "beklenen": [
+    "img_alt"
+   ],
+   "getirilen": [
+    "n04",
+    "g04",
+    "n02",
+    "g02",
+    "n01"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.5,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 61.783
+  },
+  {
+   "ad": "https://www.koton.com/",
+   "grup": "eticaret",
+   "beklenen": [
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h03",
+    "h01",
+    "n04",
+    "h02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 80.707
+  },
+  {
+   "ad": "https://www.koton.com/erkek-spor-tisort/",
+   "grup": "eticaret",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m02",
+    "t02",
+    "m01",
+    "m05",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 97.598
+  },
+  {
+   "ad": "https://www.vatanbilgisayar.com/",
+   "grup": "eticaret",
+   "beklenen": [
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h03",
+    "h01",
+    "h02",
+    "n04",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 68.904
+  },
+  {
+   "ad": "https://www.vatanbilgisayar.com/sitemap.aspx",
+   "grup": "eticaret",
+   "beklenen": [
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "m05",
+    "g02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 83.5
+  },
+  {
+   "ad": "https://www.n11.com/",
+   "grup": "eticaret",
+   "beklenen": [
+    "img_alt"
+   ],
+   "getirilen": [
+    "n04",
+    "n02",
+    "n01",
+    "g04",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.25,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 60.937
+  },
+  {
+   "ad": "https://www.n11.com/lastik-ve-jant",
+   "grup": "eticaret",
+   "beklenen": [
+    "img_alt"
+   ],
+   "getirilen": [
+    "n04",
+    "n01",
+    "n02",
+    "g01",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.25,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 46.478
+  },
+  {
+   "ad": "https://www.boyner.com.tr/gunes-gozlugu-x-c20040737",
+   "grup": "eticaret",
+   "beklenen": [
+    "title"
+   ],
+   "getirilen": [
+    "t05",
+    "t03",
+    "t02",
+    "n04",
+    "t04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 45.176
+  },
+  {
+   "ad": "https://www.acibadem.com.tr/",
+   "grup": "saglik",
+   "beklenen": [
+    "title"
+   ],
+   "getirilen": [
+    "t05",
+    "t02",
+    "t03",
+    "n04",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 45.415
+  },
+  {
+   "ad": "https://www.medicalpark.com.tr/",
+   "grup": "saglik",
+   "beklenen": [
+    "title",
+    "h1"
+   ],
+   "getirilen": [
+    "h03",
+    "h01",
+    "t05",
+    "t03",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 63.56
+  },
+  {
+   "ad": "https://www.webtekno.com/",
+   "grup": "blog_medya",
+   "beklenen": [
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "m05",
+    "h01"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 63.682
+  },
+  {
+   "ad": "https://www.webtekno.com/gta-6-cikis-fragmani-h227251.html",
+   "grup": "blog_medya",
+   "beklenen": [
+    "title"
+   ],
+   "getirilen": [
+    "t02",
+    "t05",
+    "t03",
+    "n04",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 75.225
+  },
+  {
+   "ad": "https://yemek.com/hakkimizda/",
+   "grup": "blog_medya",
+   "beklenen": [
+    "title",
+    "h1"
+   ],
+   "getirilen": [
+    "h01",
+    "t03",
+    "t05",
+    "h03",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 71.455
+  },
+  {
+   "ad": "https://arkeofili.com/2026-agustos-ayinda-one-cikan-10-arkeoloji-haberi/",
+   "grup": "blog_medya",
+   "beklenen": [
+    "title"
+   ],
+   "getirilen": [
+    "t02",
+    "t05",
+    "t03",
+    "n04",
+    "t01"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 66.136
+  },
+  {
+   "ad": "https://www.donanimhaber.com/",
+   "grup": "blog_medya",
+   "beklenen": [
+    "img_alt"
+   ],
+   "getirilen": [
+    "n04",
+    "n02",
+    "g01",
+    "g02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.333,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 46.138
+  },
+  {
+   "ad": "https://www.donanimhaber.com/bildirim-tercihleri",
+   "grup": "blog_medya",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 80.712
+  },
+  {
+   "ad": "https://www.tema.org.tr/",
+   "grup": "stk_kultur",
+   "beklenen": [
+    "title",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h03",
+    "h01",
+    "t05",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 88.49
+  },
+  {
+   "ad": "https://www.tema.org.tr/gonulluluk/gonullulerimiz-ne-yapar",
+   "grup": "stk_kultur",
+   "beklenen": [
+    "title",
+    "img_alt"
+   ],
+   "getirilen": [
+    "t05",
+    "t02",
+    "t03",
+    "g02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 84.848
+  },
+  {
+   "ad": "https://www.kizilay.org.tr/",
+   "grup": "stk_kultur",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "m05",
+    "h01",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 97.021
+  },
+  {
+   "ad": "https://www.kizilay.org.tr/EtkinlikTakvimi",
+   "grup": "stk_kultur",
+   "beklenen": [
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "h01",
+    "n04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 96.457
+  },
+  {
+   "ad": "https://www.iksv.org/",
+   "grup": "stk_kultur",
+   "beklenen": [
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "h03",
+    "h01",
+    "n04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 76.427
+  },
+  {
+   "ad": "https://www.iksv.org/tr/ilkeler-ve-politikalar/kapsayicilik-ve-erisebilirlik-manifestosu",
+   "grup": "stk_kultur",
+   "beklenen": [
+    "meta_description"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "n04",
+    "m02",
+    "m04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 45.766
+  },
+  {
+   "ad": "https://www.muze.gov.tr/",
+   "grup": "stk_kultur",
+   "beklenen": [
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "n04",
+    "n02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 68.259
+  },
+  {
+   "ad": "https://www.muze.gov.tr/muze-detay?SectionId=EFS01&DistId=EFS",
+   "grup": "stk_kultur",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "m02",
+    "t02",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 93.277
+  }
+ ]
+}

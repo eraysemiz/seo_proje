@@ -1,6 +1,8 @@
 [
  {
   "ad": "http_diploma.ogrenciisleri.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Diploma Takip Sistemi",
   "h1": [
    "DİPLOMA TAKİP SİSTEMİ"
@@ -22,6 +24,8 @@
  },
  {
   "ad": "http_radyoduet.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Radyo Düet | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -41,6 +45,8 @@
  },
  {
   "ad": "http_sosyalsorumluluk.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "T.C. Düzce Üniversitesi Sağlık, Kültür ve Spor Daire Başkanlığı Topluluk Takip Yazılımı",
   "h1": [],
   "site_adi": null,
@@ -63,6 +69,8 @@
  },
  {
   "ad": "https_aadek.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Akreditasyon, Akademik Değerlendirme ve Kalite Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -85,6 +93,8 @@
  },
  {
   "ad": "https_adayogrenci.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi Aday Öğrenci Bilgi Sistemi",
   "h1": [],
   "site_adi": null,
@@ -104,6 +114,8 @@
  },
  {
   "ad": "https_akademik.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Akademik Personel Bilgi Bankası",
   "h1": [],
   "site_adi": null,
@@ -123,6 +135,8 @@
  },
  {
   "ad": "https_ardek.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Araştırma Dekanlığı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -142,6 +156,8 @@
  },
  {
   "ad": "https_bap.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Bilimsel Araştırma Projeleri Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -164,6 +180,8 @@
  },
  {
   "ad": "https_bidek.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Bilimsel Dergiler Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -186,6 +204,8 @@
  },
  {
   "ad": "https_bilgiislem.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Bilgi İşlem Daire Başkanlığı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -205,6 +225,8 @@
  },
  {
   "ad": "https_bilgiizleme.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Bilgi İzleme ve Raporlama Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -227,6 +249,8 @@
  },
  {
   "ad": "https_biltek.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Bilim ve Teknoloji Yarışmaları Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -249,6 +273,8 @@
  },
  {
   "ad": "https_botanikbahce.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "BOTANİK",
   "h1": [],
   "site_adi": null,
@@ -271,6 +297,8 @@
  },
  {
   "ad": "https_cdn.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Kaynak bulunamadı.",
   "h1": [
    "'/' Uygulamasında Sunucu Hatası."
@@ -289,6 +317,8 @@
  },
  {
   "ad": "https_cevresaglik.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Çevre ve Sağlık Teknolojilerinde İhtisaslaşma Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -311,6 +341,8 @@
  },
  {
   "ad": "https_donersermaye.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Döner Sermaye İşletme Müdürlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -333,6 +365,8 @@
  },
  {
   "ad": "https_dubam.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Bağımlılıkla Mücadele Uygulama ve Araştırma Merkezi | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -355,6 +389,8 @@
  },
  {
   "ad": "https_dugetam.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Geleneksel ve Tamamlayıcı Tıp (Gtt) Uygulama ve Araştırma Merkezi | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -377,6 +413,8 @@
  },
  {
   "ad": "https_dukart.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Kampüs Kart",
   "h1": [],
   "site_adi": "Kampüs Kart",
@@ -399,6 +437,8 @@
  },
  {
   "ad": "https_dumeyok.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Meslek Yüksekokulları Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -421,6 +461,8 @@
  },
  {
   "ad": "https_dusem.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Sürekli Eğitim Merkezi | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -440,6 +482,8 @@
  },
  {
   "ad": "https_dutok.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Toplumsal Katkı Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -462,6 +506,8 @@
  },
  {
   "ad": "https_duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -484,6 +530,8 @@
  },
  {
   "ad": "https_ebs.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Eğitim Öğretim Bilgi Sistemi | Düzce Üniversitesi",
   "h1": [
    "Eğitim Öğretim Bilgi Sistemi"
@@ -502,9 +550,11 @@
  },
  {
   "ad": "https_ebys.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "enVision - Giriş Sayfası",
   "h1": [],
-  "site_adi": "enVision",
+  "site_adi": "Giriş Sayfası",
   "text_sample": "Türkçe English Elektronik Belge Yönetim Sistemi (EBYS) duzce.edu.tr Etki Alanı Kullanıcı Bilgileri Kullanıcı İsmi Şifre Beni Hatırla Hatalı Kod Girdiniz Giriş Düzce Üniversitesi - Elektronik Belge Yönetim Sistemi [ebys.duzce.edu.tr:443] Sw-Lck v8.2. d1606 . b260655 .c0.u0 Kurum Haberleri {1} ##LOC[OK]## {1} ##LOC[OK]## ##LOC[Cancel]## {1} ##LOC[OK]## ##LOC[Cancel]##",
   "icerik_ozeti": "Türkçe English Elektronik Belge Yönetim Sistemi (EBYS) duzce.edu.tr Etki Alanı Kullanıcı Bilgileri Kullanıcı İsmi Şifre Beni Hatırla Hatalı Kod Girdiniz Giriş Düzce Üniversitesi - Elektronik Belge Yönetim Sistemi [ebys.duzce.edu.tr:443] Sw-Lck v8.2. d1606 . b260655 .c0.u0 Kurum Haberleri {1} ##LOC[OK]## {1} ##LOC[OK]## ##LOC[Cancel]## {1} ##LOC[OK]## ##LOC[Cancel]##",
   "sorunlar": [
@@ -524,6 +574,8 @@
  },
  {
   "ad": "https_egitimkoordinatorlugu.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Eğitim Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -543,6 +595,8 @@
  },
  {
   "ad": "https_engelsiz.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Engelsiz Üniversite Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -565,6 +619,8 @@
  },
  {
   "ad": "https_gensek.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Genel Sekreterlik | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -584,6 +640,8 @@
  },
  {
   "ad": "https_haber.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Haber Portalı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -603,6 +661,8 @@
  },
  {
   "ad": "https_hastane.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi Hastanesi",
   "h1": [],
   "site_adi": null,
@@ -622,6 +682,8 @@
  },
  {
   "ad": "https_hukuk.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Hukuk Müşavirliği | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -641,6 +703,8 @@
  },
  {
   "ad": "https_icdenetim.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | İç Denetim Birimi | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -660,6 +724,8 @@
  },
  {
   "ad": "https_idarimali.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | İdari ve Mali İşler Daire Başkanlığı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -682,6 +748,8 @@
  },
  {
   "ad": "https_isg.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | İş Sağlığı ve İş Güvenliği Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -704,6 +772,8 @@
  },
  {
   "ad": "https_itk.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Kurumsal İletişim Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -726,6 +796,8 @@
  },
  {
   "ad": "https_kaliteyonetim.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Kalite Yönetim Sistemi - Düzce Üniversitesi",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -739,6 +811,8 @@
  },
  {
   "ad": "https_kariyer.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Kariyer Geliştirme ve Mezun İzleme Uygulama Araştırma Merkezi | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -761,6 +835,8 @@
  },
  {
   "ad": "https_kurulkararlari.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Kullanıcı Girişi",
   "h1": [],
   "site_adi": null,
@@ -780,6 +856,8 @@
  },
  {
   "ad": "https_kutuphane.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Kütüphane ve Dokümantasyon Daire Başkanlığı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -802,6 +880,8 @@
  },
  {
   "ad": "https_mbs.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Anasayfa - Düzce Üniversitesi Mezun Bilgi Sistemi",
   "h1": [
    "Mezun Bilgi Sistemi"
@@ -817,11 +897,13 @@
  },
  {
   "ad": "https_obs.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "OBS - 4",
   "h1": [
    "Duyurular"
   ],
-  "site_adi": "4",
+  "site_adi": "OBS",
   "text_sample": "Duyurular × Ulusal Staj Programı (USP) Duyurusu Sevgili Öğrencilerimiz, Cumhurbaşkanlığı himayelerinde yürütülen ve öğrencilerin kamu kurumları ile özel sektör kuruluşları tarafından sunulan erken dönem kariyer imkânlarından fırsat eşitliği ve liyakat esasları çerçevesinde yararlanmalarını amaçlayan Ulusal Staj Programı (USP) başvuruları başlamıştır. Başvurular, Ulusal Staj Programı Başvuru Sistemi üzerinden 16 Mart 2026 tarihine kadar gerçekleştirilebilecektir. Üniversitemizde Ulusal Staj Programı kapsamındaki tüm süreçler Kariyer Merkezi tarafından yürütülmektedir. Gerekli hallerde Kariyer Merkezimize 1852 dahili numarasından ulaşabilirsiniz. Güncel bilgilendirmeler için: kariyer.duzce.edu.tr | WhatsApp Kanalı Tekrar Gösterme Kapat Duyurular Kullanıcı Girişi Hesabınıza giriş yapmak için ",
   "icerik_ozeti": "Duyurular × Ulusal Staj Programı (USP) Duyurusu Sevgili Öğrencilerimiz, Cumhurbaşkanlığı himayelerinde yürütülen ve öğrencilerin kamu kurumları ile özel sektör kuruluşları tarafından sunulan erken dönem kariyer imkânlarından fırsat eşitliği ve liyakat esasları çerçevesinde yararlanmalarını amaçlayan Ulusal Staj Programı (USP) başvuruları başlamıştır. Başvurular, Ulusal Staj Programı Başvuru Sistemi üzerinden 16 Mart 2026 tarihine kadar gerçekleştirilebilecektir. Üniversitemizde Ulusal Staj Programı kapsamındaki tüm süreçler Kariyer Merkezi tarafından yürütülmektedir. Gerekli hallerde Kariyer Merkezimize 1852 dahili numarasından ulaşabilirsiniz. Güncel bilgilendirmeler için: kariyer.duzce.edu.tr | WhatsApp Kanalı Tekrar Gösterme Kapat Duyurular Kullanıcı Girişi Hesabınıza giriş yapmak için bilgilerinizi girin Hızlı İşlemler › Güvenlik Doğrulaması Resimdeki iki sayının toplamını yazın. ↻ veya Öğrenci Bilgi Sistemi © 2023 Bilgi İşlem Daire Başkanlığı",
   "sorunlar": [
@@ -835,6 +917,8 @@
  },
  {
   "ad": "https_ogrencidekanligi.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Öğrenci Dekanlığı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -854,6 +938,8 @@
  },
  {
   "ad": "https_ogrenciisleri.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Öğrenci İşleri Daire Başkanlığı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -876,6 +962,8 @@
  },
  {
   "ad": "https_personel.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Personel Daire Başkanlığı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -895,6 +983,8 @@
  },
  {
   "ad": "https_rehber.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi Telefon Rehberi - Düzce Üniversitesi Telefon Rehberi",
   "h1": [],
   "site_adi": "Düzce Üniversitesi Telefon Rehberi",
@@ -914,6 +1004,8 @@
  },
  {
   "ad": "https_rimer.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "RİMER",
   "h1": [],
   "site_adi": null,
@@ -933,6 +1025,8 @@
  },
  {
   "ad": "https_sanalsergi.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Kırılganlıktan Dayanıklılığa Toplumsal Mekanların Yeniden Üretimi",
   "h1": [
    "Düzce Kalıcı Konutlar Bölgesi; Kırılganlıktan Dayanıklılığa Toplumsal Mekanların Yeniden Üretimi09-30Haziran2026"
@@ -954,6 +1048,8 @@
  },
  {
   "ad": "https_sks.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Sağlık Kültür ve Spor Daire Başkanlığı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -976,6 +1072,8 @@
  },
  {
   "ad": "https_strateji.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Strateji Geliştirme Daire Başkanlığı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -998,6 +1096,8 @@
  },
  {
   "ad": "https_surdurulebilirlik.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Sürdürülebilirlik Ofisi Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -1020,6 +1120,8 @@
  },
  {
   "ad": "https_uabs.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düz. Üni. - Ara",
   "h1": [
    "Uzmanlık Alan Bilgi Bankası"
@@ -1038,6 +1140,8 @@
  },
  {
   "ad": "https_uluslararasiofis.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Uluslararası Ofis | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -1057,6 +1161,8 @@
  },
  {
   "ad": "https_uluslararasiogrenci.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Uluslararası Öğrenci Birimi | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -1076,6 +1182,8 @@
  },
  {
   "ad": "https_uzem.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Uzaktan Eğitim Merkezi | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -1095,6 +1203,8 @@
  },
  {
   "ad": "https_w3.api.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": null,
   "h1": [],
   "site_adi": null,
@@ -1114,6 +1224,8 @@
  },
  {
   "ad": "https_www.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -1136,6 +1248,8 @@
  },
  {
   "ad": "https_yapiisleri.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Yapı İşleri ve Teknik Daire Başkanlığı | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -1158,6 +1272,8 @@
  },
  {
   "ad": "https_yzdd.duzce.edu.tr",
+  "grup": "duzce_birim",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Yapay Zeka ve Dijital Dönüşüm Koordinatörlüğü | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -1180,6 +1296,8 @@
  },
  {
   "ad": "Düzce Üniversitesi _ Anasayfa",
+  "grup": "universite",
+  "kaynak_turu": "kayitli_html",
   "title": "Düzce Üniversitesi | Anasayfa",
   "h1": [],
   "site_adi": "Düzce Üniversitesi",
@@ -1202,6 +1320,8 @@
  },
  {
   "ad": "Marmara Üniversitesi _ Resmi Web Sitesi",
+  "grup": "universite",
+  "kaynak_turu": "kayitli_html",
   "title": "Marmara Üniversitesi | Resmi Web Sitesi",
   "h1": [
    "Marmara Üniversitesi",
@@ -1244,5 +1364,1550 @@
     "sorun": "meta_description_uzun"
    }
   ]
+ },
+ {
+  "ad": "https://www.metu.edu.tr/",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "METU - Middle East Technical University | WE CAN CHANGE THE WORLD",
+  "h1": [],
+  "site_adi": "METU - Middle East Technical University",
+  "text_sample": "Jump to navigation Students Staff Alumni Researchers Visitors Media Türkçe \"WE CAN CHANGE THE WORLD\" About METU General History Mission & Vision Code of Ethics & Core Values University Administration Organization Chart General Information Location & The Campus METU Strategic Plan Quality Assurance System Visual Identity Standards University Senate Decisions University Administrative Board Decisions Middle East Technical University International Advisory Board Administrative Units Departments / Divisions Directorates Coordination Units Offices Right to Information Unit Other Units A Glance at METU Memoriam METU in the Press METU News METU through Visuals ODTÜLÜ Magazine (in Turkish) METU at a Glance (Visual) METU in Rankings Academic Academic Units and Programs Faculties, Institutes & Schoo",
+  "icerik_ozeti": "Prospective Students ODTÜ TEKNOKENT Featured Video Haftanın Videosu METU News NEWS - EVENTS QUICK LINKS all links Classrooms on ODTÜ Campus METU - Mail Undergraduate Programs Graduate Programs and Degrees Academic Calendar ODTÜ Class Research Information System Library Catalog Search Office of Research Coordination OpenMETU Radyo ODTÜ METU Map",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.metu.edu.tr/faculties-institutes-schools",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Faculties, Institutes & Schools | METU - Middle East Technical University",
+  "h1": [
+   "Faculties, Institutes & Schools"
+  ],
+  "site_adi": "METU - Middle East Technical University",
+  "text_sample": "Jump to navigation Students Staff Alumni Researchers Visitors Media Türkçe \"WE CAN CHANGE THE WORLD\" About METU General History Mission & Vision Code of Ethics & Core Values University Administration Organization Chart General Information Location & The Campus METU Strategic Plan Quality Assurance System Visual Identity Standards University Senate Decisions University Administrative Board Decisions Middle East Technical University International Advisory Board Administrative Units Departments / Divisions Directorates Coordination Units Offices Right to Information Unit Other Units A Glance at METU Memoriam METU in the Press METU News METU through Visuals ODTÜLÜ Magazine (in Turkish) METU at a Glance (Visual) METU in Rankings Academic Academic Units and Programs Faculties, Institutes & Schoo",
+  "icerik_ozeti": "Academic Units and Programs Last Updated: 31/12/2024 - 14:32 Faculty of Architecture Faculty of Arts and Science Faculty of Economic and Administrative Sciences Faculty of Education Faculty of Engineering Graduate Schools Technical Vocational School of Higher Education Department of Technical Programs Electrics Program Electronics Technology Program Food Technology Program Industrial Automation Program Industrial Electronics Program Welding Technology Program School of Foreign Languages Departments Reporting to Rectorate METU Northern Cyprus Campus METU-SUNY Dual Diploma Programs",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "meta_description_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://bogazici.edu.tr/",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "T.C. Boğaziçi Üniversitesi",
+  "h1": [],
+  "site_adi": "T.C. Boğaziçi Üniversitesi",
+  "text_sample": "BOĞAZİÇİ ÜNİVERSİTESİ Boğaziçi'nde Bugün ADAY ÖĞRENCİ ÖĞRENCİ MEZUN ACİLDURUM 1100 BOĞAZİÇİ HARİTA BOĞAZİÇİ ULAŞIM BOĞAZİÇİ REHBER BOĞAZİÇİ İLETİŞİM Personel EN ÜNİVERSİTEMİZ AKADEMİK ARAŞTIRMA ULUSLARARASI KAMPÜS YAŞAMI MENÜ ÜNİVERSİTEMİZ Tarihçe Boğaziçi Hakkında Misyon, Vizyon ve Değerler Sayılarla Boğaziçi Üniversitesi Tanıtım Boğaziçi Genel Tarihçe Boğaziçi Hakkında Misyon, Vizyon ve Değerler Kurumsal Kimlik & Logo Etik Değerler ve İlkeler Sayılarla Boğaziçi Üniversitesi Boğaziçi'nden Tanıtım Boğaziçi Rektörleri Bilgi Edinme Markalar 150. Yıl Filmi Boğaziçi Arşivleri Sunum Zemini Taslakları Kurumsal Stratejik Plan Plan, Proje ve Politikalar Kurul ve Komisyonlar Koordinatörlükler Ofisler Organizasyon Şemaları İç Kontrol İç Denetim Yönetmelikler ve Yönergeler Kurumsal Planlar & Raporlar",
+  "icerik_ozeti": "BOĞAZİÇİ ÜNİVERSİTESİ Boğaziçi'nde Bugün ADAY ÖĞRENCİ ÖĞRENCİ MEZUN ACİLDURUM 1100 BOĞAZİÇİ HARİTA BOĞAZİÇİ ULAŞIM BOĞAZİÇİ REHBER BOĞAZİÇİ İLETİŞİM Personel EN ÜNİVERSİTEMİZ Tarihçe Boğaziçi Hakkında Misyon, Vizyon ve Değerler Sayılarla Boğaziçi Üniversitesi Tanıtım Boğaziçi Genel Kurumsal Yönetim AKADEMİK Fakülteler Enstitüler Yüksekokullar Rektörlüğe Bağlı Akademik Birimler Uluslararası İlişkiler Sürekli Eğitim Kütüphane Akademik İş Başvuruları Atama - Yükseltme Kriterleri Senato Onaylı Yayınevleri Fahri Doktora AKADEMİK Araştırma Merkezleri Boğaziçi Teknopark ARAŞTIRMA Gelen Öğrenciler Giden Öğrenciler Aday Öğrenciler Uluslararası Anlaşmalar Uluslararası Eğitim Uluslararası Hizmetler Güvenli Kampüsler Kampüsler Kampüs Hizmetleri Güvenlik & İletişim Kampüs & Hizmetler Öğrenci & Sosyal Yaşam Boğaziçi HIZLI ERİŞİM SAYILARLA BOĞAZİÇİ BUCAMPUS TANITIM ÜNİVERSİTEYE KAYIT BOĞAZİÇİ'NE DESTEK PERSONEL REHBERİ E-POSTA ULAŞIM YEMEKHANE BİLGİ İŞLEM info@bogazici.edu.tr 0 212 359 54 00 AKADEMİK ÖĞRENCİ GENEL&İDARİ AKADEMİK İŞ BAŞVURULARI BİLİMSEL ARAŞTIRMA PROJELERİ KURUL VE KOMİSYONLAR YÖNETMELİK VE YÖNERGELER FORMLAR ÖĞRENCİ BİLGİ SİSTEMİ AKADEMİK TAKVİM PROJE OFİSİ AKADEMİK PERFORMANS YÖ",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://bogazici.edu.tr/tr/pages/fahri-doktora/21",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Fahri Doktora",
+  "h1": [],
+  "site_adi": "Fahri Doktora",
+  "text_sample": "BOĞAZİÇİ ÜNİVERSİTESİ Boğaziçi'nde Bugün ADAY ÖĞRENCİ ÖĞRENCİ MEZUN ACİLDURUM 1100 BOĞAZİÇİ HARİTA BOĞAZİÇİ ULAŞIM BOĞAZİÇİ REHBER BOĞAZİÇİ İLETİŞİM Personel EN ÜNİVERSİTEMİZ AKADEMİK ARAŞTIRMA ULUSLARARASI KAMPÜS YAŞAMI MENÜ ÜNİVERSİTEMİZ Tarihçe Boğaziçi Hakkında Misyon, Vizyon ve Değerler Sayılarla Boğaziçi Üniversitesi Tanıtım Boğaziçi Genel Tarihçe Boğaziçi Hakkında Misyon, Vizyon ve Değerler Kurumsal Kimlik & Logo Etik Değerler ve İlkeler Sayılarla Boğaziçi Üniversitesi Boğaziçi'nden Tanıtım Boğaziçi Rektörleri Bilgi Edinme Markalar 150. Yıl Filmi Boğaziçi Arşivleri Sunum Zemini Taslakları Kurumsal Stratejik Plan Plan, Proje ve Politikalar Kurul ve Komisyonlar Koordinatörlükler Ofisler Organizasyon Şemaları İç Kontrol İç Denetim Yönetmelikler ve Yönergeler Kurumsal Planlar & Raporlar",
+  "icerik_ozeti": "BOĞAZİÇİ ÜNİVERSİTESİ Boğaziçi'nde Bugün ADAY ÖĞRENCİ ÖĞRENCİ MEZUN ACİLDURUM 1100 BOĞAZİÇİ HARİTA BOĞAZİÇİ ULAŞIM BOĞAZİÇİ REHBER BOĞAZİÇİ İLETİŞİM Personel EN ÜNİVERSİTEMİZ Tarihçe Boğaziçi Hakkında Misyon, Vizyon ve Değerler Sayılarla Boğaziçi Üniversitesi Tanıtım Boğaziçi Genel Kurumsal Yönetim AKADEMİK Fakülteler Enstitüler Yüksekokullar Rektörlüğe Bağlı Akademik Birimler Uluslararası İlişkiler Sürekli Eğitim Kütüphane Akademik İş Başvuruları Atama - Yükseltme Kriterleri Senato Onaylı Yayınevleri Fahri Doktora AKADEMİK Araştırma Merkezleri Boğaziçi Teknopark ARAŞTIRMA Gelen Öğrenciler Giden Öğrenciler Aday Öğrenciler Uluslararası Anlaşmalar Uluslararası Eğitim Uluslararası Hizmetler Güvenli Kampüsler Kampüsler Kampüs Hizmetleri Güvenlik & İletişim Kampüs & Hizmetler Öğrenci & Sosyal Yaşam Boğaziçi HIZLI ERİŞİM SAYILARLA BOĞAZİÇİ BUCAMPUS TANITIM ÜNİVERSİTEYE KAYIT BOĞAZİÇİ'NE DESTEK PERSONEL REHBERİ E-POSTA ULAŞIM YEMEKHANE BİLGİ İŞLEM info@bogazici.edu.tr 0 212 359 54 00 AKADEMİK ÖĞRENCİ GENEL&İDARİ AKADEMİK İŞ BAŞVURULARI BİLİMSEL ARAŞTIRMA PROJELERİ KURUL VE KOMİSYONLAR YÖNETMELİK VE YÖNERGELER FORMLAR ÖĞRENCİ BİLGİ SİSTEMİ AKADEMİK TAKVİM PROJE OFİSİ AKADEMİK PERFORMANS YÖ",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.itu.edu.tr/",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "İTÜ | İstanbul Teknik Üniversitesi | İTÜ 1773",
+  "h1": [],
+  "site_adi": "Anasayfa",
+  "text_sample": "Aday Öğrenci Derecelendirmeler Onur ve Ödüller Mevzuatlar Kararlar Kalite Öğrenci İşleri Mezun İTÜ KKTC Duyurular İTÜ Ödülleri İletişim ENGLISH English Toggle navigation İTÜ Hakkında Eğitim Araştırma Uluslararası Kampüste Yaşam Kütüphane İTÜPORTAL Dünyada 241. Mezunlarına En İyi İstihdam Olanağı Sağlayan Üniversite Dünyanın 28. / Türkiye’nin 10 Yıldır Üst Üste 1. En Sürdürülebilir Üniversitesi Dünyada 251-300 aralığında “Bilgisayar Bilimi” alanında Dünyada 301-400 aralığında “Mühendislik” alanında Dünyada 279. / Türkiye'de 1. En İyi Üniversite Dünyada 501-600 aralığında En İyi Üniversite Avrupa’da 124. En İyi Üniversite Dünyada 39. Petrol Mühendisliğinde Dünyada 43. Maden & Mineral Mühendisliğinde Dünyada 367. Sürdürülebilirlik Genel Sıralamasında Türkiye’de 1. 6 Alanda Dünyada 35. Gemi/De",
+  "icerik_ozeti": "Dünyada 241. Mezunlarına En İyi İstihdam Olanağı Sağlayan Üniversite Dünyanın 28. / Türkiye’nin 10 Yıldır Üst Üste 1. En Sürdürülebilir Üniversitesi Dünyada 251-300 aralığında “Bilgisayar Bilimi” alanında Dünyada 301-400 aralığında “Mühendislik” alanında Dünyada 279. / Türkiye'de 1. En İyi Üniversite Dünyada 501-600 aralığında En İyi Üniversite Avrupa’da 124. En İyi Üniversite Dünyada 39. Petrol Mühendisliğinde Dünyada 43. Maden & Mineral Mühendisliğinde Dünyada 367. Sürdürülebilirlik Genel Sıralamasında Türkiye’de 1. 6 Alanda Dünyada 35. Gemi/Deniz Mühendisliği Dünyada 76-100 aralığında İnşaat Mühendisliği Dünyada 101-150 aralığında Gıda Bilimi ve Teknolojisi Dünyada 60. Disiplinler Arası Bilim Sıralaması Dünyada 91. / Türkiye’de 1. “Mühendislik ve Teknoloji” alanında Asya'da 97. En İyi Üniversite Türkiye’de Lider Üniversite 28 Bilimsel Alan ile Türkiye'de 1. Research Leaders Sıralamasında Türkiye'de 1. En Etkili Bilim İnsanları Listesinde Dünyada 4. Amaç 4 “Nitelikli Eğitim”de Türkiye'de 1. Çevresel Etki Kategorisinde Türkiye’de 1. / Avrupa’da 60. En İyi Üniversite Avrupa’da İlk 50’de 7 Mühendislik Alanının 4’ünde Avrupa’da 17. Çevre Mühendisliği Avrupa’da 30. İnşaat Mühendisliği",
+  "sorunlar": [
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.itu.edu.tr/fakulte-listesi",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "İTÜ | Fakülte Listesi",
+  "h1": [
+   "Fakülte Listesi"
+  ],
+  "site_adi": "Anasayfa",
+  "text_sample": "Aday Öğrenci Derecelendirmeler Onur ve Ödüller Mevzuatlar Kararlar Kalite Öğrenci İşleri Mezun İTÜ KKTC Duyurular İTÜ Ödülleri İletişim ENGLISH English Toggle navigation İTÜ Hakkında Eğitim Araştırma Uluslararası Kampüste Yaşam Kütüphane İTÜPORTAL Fakülte Listesi İTÜ’nün misyonu; bilim, teknoloji ve sanatta bilginin sınırlarını genişletmek ve uygulamaları ile toplumun ihtiyaçlarına cevap vermektir. Vizyonu ise bilim, teknoloji ve sanatta, uzmanlığı ile uluslararası lider bir üniversite olmaktır. Bu temel zeminde akademik eğitimini şekillendirmektedir. “İnsan odaklılık ve farklılıklara açıklık, özgürlükçülük ve eleştirellik, girişimcilik ve rekabetçilik, özgünlük ve yenilikçilik” İTÜ’nün temel değerleridir. İstanbul’un merkezi noktalarına konumlanmış 5 ayrı kampüste, 13 fakültede lisans pro",
+  "icerik_ozeti": "Fakülte Listesi İTÜ’nün misyonu; bilim, teknoloji ve sanatta bilginin sınırlarını genişletmek ve uygulamaları ile toplumun ihtiyaçlarına cevap vermektir. Vizyonu ise bilim, teknoloji ve sanatta, uzmanlığı ile uluslararası lider bir üniversite olmaktır. Bu temel zeminde akademik eğitimini şekillendirmektedir. “İnsan odaklılık ve farklılıklara açıklık, özgürlükçülük ve eleştirellik, girişimcilik ve rekabetçilik, özgünlük ve yenilikçilik” İTÜ’nün temel değerleridir. İstanbul’un merkezi noktalarına konumlanmış 5 ayrı kampüste, 13 fakültede lisans programı ve 7 enstitüde yüksek lisans ve doktora programlarında eğitim veriliyor. İTÜ adıyla markalaşan köklü bölümlere de çağın gereklerine ve ihtiyaçlarına göre şekillenen yeni alanlara da sahip. İTÜ’de Türkçe ve İngilizce eğitim veriliyor. Yüzde 100 İngilizce eğitim veren bölümler ve yüzde 30 İngilizce eğitim veren bölümler bulunuyor. Öğrenciler, Türkiye’nin en seçkin öğretim üyelerinin ve araştırmacıların yer aldığı akademik kadrodan ders alma, bilgi ve deneyimlerinden yararlanma ayrıcalığı ile vizyonlarını geliştirerek ve yüksek donanım edinerek mezun oluyor. 13 Fakülte 2.174 Akademisyen 1.389 Yayın İnşaat Fakültesi Mimarlık Fakültesi Mak",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.hacettepe.edu.tr/",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Hacettepe Üniversitesi",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "İçeriğe geç/Skip to content Erişilebilirlik Menüsü X Yazıyı Büyüt Kontrast Sesli Okuma Link Vurgula İmleç Büyüt Okuma Çubuğu Görsel Gizle Sıfırla Erişilebilirlik Taahhüdü HUYSIS Hacettepe Yönetim Sistemlerini ziyaret edin Site içi arama sayfasını ziyaret ediniz Hacettepe Bilgi İşlem E-posta sayfasını ziyaret ediniz Instagram sayfamızı ziyaret edin Facebook sayfamızı ziyaret edin X sayfamızı ziyaret edin Youtube sayfamızı ziyaret edin Linkedin sayfamızı ziyaret edin Geri Bildirim sayfamızı ziyaret edin İletişim sayfamızı ziyaret edin Sürdürülebilirlik | Kalite | Öğrenci | Personel | Mezun | Aday Öğrenci | International Students | ﻿ EN Öğretim Araştırma İnovasyon Toplumsal Katkı Sağlık Uluslararası Yerleşkeler Hakkında Sürdürülebilirlik Kalite Öğrenci Personel Mezun Aday Öğrenci Internationa",
+  "icerik_ozeti": "Etkinlikler PlantArt’26 Bitki İllüstrasyonu Sergisi 20.10.2026 | Sergi Enkazın Ötesinde: Afet Sahasında Gönüllülük, Dayanışma ve Psikososyal Destek 23.10.2026 | Eğitim Prof. Dr. Dursun Yıldırım’ı Anma Programı 27.10.2026 | Diğer Adli Olayların Haberleştirilmesi: Çarpıcı Bir Haber Başlığı mı, Sarsıcı Bir Yaşantı mı 27.10.2026 | Konferans / Seminer İnsan Ne ile Yaşar 05.11.2026 | Konferans / Seminer Öğrencilerin Motivasyonunu Desteklemeye Yönelik Öğretim Stratejileri 17.11.2026 | Eğitim Girişimcilik: Kendi Yolunu Çizmek 30.11.2026 | Konferans / Seminer Ekranın Öteki Yüzü: Dijital Bağımlılık, Özdenetim ve Dijital İyi Oluş 18.12.2026 | Eğitim TÜM ETKİNLİKLER",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.hacettepe.edu.tr/hakkinda/",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Hacettepe Üniversitesi",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "İçeriğe geç/Skip to content Erişilebilirlik Menüsü X Yazıyı Büyüt Kontrast Sesli Okuma Link Vurgula İmleç Büyüt Okuma Çubuğu Görsel Gizle Sıfırla Erişilebilirlik Taahhüdü HUYSIS Hacettepe Yönetim Sistemlerini ziyaret edin Site içi arama sayfasını ziyaret ediniz Hacettepe Bilgi İşlem E-posta sayfasını ziyaret ediniz Instagram sayfamızı ziyaret edin Facebook sayfamızı ziyaret edin X sayfamızı ziyaret edin Youtube sayfamızı ziyaret edin Linkedin sayfamızı ziyaret edin Geri Bildirim sayfamızı ziyaret edin İletişim sayfamızı ziyaret edin Sürdürülebilirlik | Kalite | Öğrenci | Personel | Mezun | Aday Öğrenci | International Students | ﻿ EN Öğretim Araştırma İnovasyon Toplumsal Katkı Sağlık Uluslararası Yerleşkeler Hakkında Sürdürülebilirlik Kalite Öğrenci Personel Mezun Aday Öğrenci Internationa",
+  "icerik_ozeti": "İçeriğe geç/Skip to content Erişilebilirlik Menüsü X Yazıyı Büyüt Kontrast Sesli Okuma Link Vurgula İmleç Büyüt Okuma Çubuğu Görsel Gizle Sıfırla Erişilebilirlik Taahhüdü HUYSIS Hacettepe Yönetim Sistemlerini ziyaret edin Site içi arama sayfasını ziyaret ediniz Hacettepe Bilgi İşlem E-posta sayfasını ziyaret ediniz Instagram sayfamızı ziyaret edin Facebook sayfamızı ziyaret edin X sayfamızı ziyaret edin Youtube sayfamızı ziyaret edin Linkedin sayfamızı ziyaret edin Geri Bildirim sayfamızı ziyaret edin İletişim sayfamızı ziyaret edin Sürdürülebilirlik | Kalite | Öğrenci | Personel | Mezun | Aday Öğrenci | International Students | ﻿ EN İlklerin ve Başarıların Üniversitesi HACETTEPEYİ KEŞFET Sayılarla Hacettepe 17 Fakülte 15 Enstitü 4 Meslek Yüksekokulu 1 Konservatuvar Hacettepe Üniversitesi Tarihçe Yönetim Kurumsal Kimlik Kurumsal Yapı Hacettepe Üniversitesi, ülkemizin önde gelen üniversitelerinden biri olarak 17 Fakülte, 15 Enstitü, 4 Meslek Yüksekokulu, 2 Yüksekokul, 1 Konservatuvar, 98 Araştırma ve Uygulama Merkezi ile bilim, teknoloji ve sanat alanlarında toplumsal kalkınmaya ve evrensel değerlere katkılarını sürdürmektedir. KEŞFET Misyon ve Vizyon Etik Değerler ve İlkeler Bütünl",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ankara.edu.tr/",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Ankara Üniversitesi",
+  "h1": [],
+  "site_adi": "Ankara Üniversitesi",
+  "text_sample": "",
+  "icerik_ozeti": "",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ege.edu.tr/",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Ege Üniversitesi",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "X Kapat EN Ege Rehber İletişim SSO Engelsiz Ege KURUMSAL YÖNETİM Rektörlük Senato Yönetim Kurulu Kurullar Teşkilat Şeması Komisyonlar Komiteler Rektörlerimiz HAKKIMIZDA Dünden Bugüne Ege Üniversitesi Misyon-Vizyon Tanıtım Filmi E.Ü. 2024-2028 Stratejik Planı Ege Üniversitesi Kalite Politikası Kalite Güvencesi Kurum İç Değerlendirme Raporu Mevzuat Yükseköğretim Kurumu Mevzuat Aramıza Katılanlar / Ayrılanlar GENEL SEKRETERLİK DAİRE BAŞKANLIKLARI Bilgi İşlem Daire Başkanlığı Hukuk Müşavirliği İdari ve Mali İşler Daire Başkanlığı Kütüphane ve Dokümantasyon Daire Başkanlığı Öğrenci İşleri Daire Başkanlığı Personel Daire Başkanlığı Sağlık Kültür ve Spor Daire Başkanlığı Strateji Geliştirme Daire Başkanlığı Yapı İşleri Daire Başkanlığı Hizmetiçi Eğitimler ve Oryantasyon Programları KOORDİNATÖRLÜK",
+  "icerik_ozeti": "X Kapat EN Ege Rehber İletişim SSO Engelsiz Ege KURUMSAL YÖNETİM Rektörlük Senato Yönetim Kurulu Kurullar Teşkilat Şeması Komisyonlar Komiteler Rektörlerimiz HAKKIMIZDA Dünden Bugüne Ege Üniversitesi Misyon-Vizyon Tanıtım Filmi E.Ü. 2024-2028 Stratejik Planı Ege Üniversitesi Kalite Politikası Kalite Güvencesi Kurum İç Değerlendirme Raporu Mevzuat Yükseköğretim Kurumu Mevzuat Aramıza Katılanlar / Ayrılanlar GENEL SEKRETERLİK DAİRE BAŞKANLIKLARI Bilgi İşlem Daire Başkanlığı Hukuk Müşavirliği İdari ve Mali İşler Daire Başkanlığı Kütüphane ve Dokümantasyon Daire Başkanlığı Öğrenci İşleri Daire Başkanlığı Personel Daire Başkanlığı Sağlık Kültür ve Spor Daire Başkanlığı Strateji Geliştirme Daire Başkanlığı Yapı İşleri Daire Başkanlığı Hizmetiçi Eğitimler ve Oryantasyon Programları KOORDİNATÖRLÜKLER Araştırma Koordinatörlüğü Bilim İletişimi Ofisi Koordinatörlüğü Bilimsel Araştırma Projeleri Koordinatörlüğü Dijital Dönüşüm Koordinatörlüğü Enerji Yönetimi Koordinatörlüğü Engelsiz Ege Koordinatörlüğü İş Sağlığı ve Güvenliği Koordinatörlüğü Kalite Koordinatörlüğü Kariyer Planlama ve Başarı Koordinatörlüğü Öğrenci Koordinatörlüğü Öğretim Teknolojileri Koordinatörlüğü Sosyal Sorumluluk Projeler",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ege.edu.tr/tr-57/akademik_takvim.html",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Ege Üniversitesi",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "X Kapat EN Ege Rehber İletişim SSO Engelsiz Ege KURUMSAL YÖNETİM Rektörlük Senato Yönetim Kurulu Kurullar Teşkilat Şeması Komisyonlar Komiteler Rektörlerimiz HAKKIMIZDA Dünden Bugüne Ege Üniversitesi Misyon-Vizyon Tanıtım Filmi E.Ü. 2024-2028 Stratejik Planı Ege Üniversitesi Kalite Politikası Kalite Güvencesi Kurum İç Değerlendirme Raporu Mevzuat Yükseköğretim Kurumu Mevzuat Aramıza Katılanlar / Ayrılanlar GENEL SEKRETERLİK DAİRE BAŞKANLIKLARI Bilgi İşlem Daire Başkanlığı Hukuk Müşavirliği İdari ve Mali İşler Daire Başkanlığı Kütüphane ve Dokümantasyon Daire Başkanlığı Öğrenci İşleri Daire Başkanlığı Personel Daire Başkanlığı Sağlık Kültür ve Spor Daire Başkanlığı Strateji Geliştirme Daire Başkanlığı Yapı İşleri Daire Başkanlığı Hizmetiçi Eğitimler ve Oryantasyon Programları KOORDİNATÖRLÜK",
+  "icerik_ozeti": "Akademik Takvim 2026 - 2027 Eğitim - Öğretim Yılı Detaylı Akademik Takvim için tıklayınız. 2026 - 2027 Eğitim - Öğretim Yılı Akademik Takvimi için tıklayınız. 2026 - 2027 Eğitim - Öğretim Yılı Tıp Fakültesi Akademik Takvim için tıklayınız. 2026 - 2027 Eğitim - Öğretim Yılı Diş Hekimliği Fakültesi Akademik Takvim için tıklayınız. 2026 - 2027 Eğitim - Öğretim Yılı Hemşirelik Fakültesi Akademik Takvim için tıklayınız. 2026 - 2027 Eğitim - Öğretim Yılı Yabancı Diller Akademik Takvim için tıklayınız. 2026 - 2027 Eğitim - Öğretim Yılı Çeşme Turizm Fakültesi Akademik Takvim için tıklayınız. 2026 - 2027 Eğitim - Öğretim Yılı İngilizce Akademik Takvim için tıklayınız. 2025 - 2026 Eğitim - Öğretim Yılı Detaylı Akademik Takvimi için tıklayınız. 2025 - 2026 Eğitim - Öğretim Yılı Akademik Takvimi için tıklayınız. 2025 - 2026 Eğitim - Öğretim Yılı Tıp Fakültesi Akademik Takvim için tıklayınız. 2025 - 2026 Eğitim - Öğretim Yılı Diş Hekimliği Fakültesi Akademik Takvim için tıklayınız. 2025 - 2026 Eğitim - Öğretim Yılı Hemşirelik Fakültesi Akademik Takvim için tıklayınız. 2025 - 2026 Eğitim - Öğretim Yılı Yabancı Diller Akademik Takvim için tıklayınız. 2024 - 2025 Eğitim - Öğretim Yılı Detaylı Akad",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://sakarya.edu.tr/",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Sakarya Üniversitesi",
+  "h1": [
+   "Bugün Gururla SAU Araştırma Üniversitesi",
+   "Sakarya Üniversitesi YÖK İzleme ve Değerlendirme Raporuna Göre 24 Kategoride İlk 20’ye Girmeyi Başardı",
+   "SAU, QS 2026’da Avrupa’da Yükselen Üniversiteler Arasında",
+   "Sakarya Üniversitesi TÜBİTAK 2209-B'de Türkiye 2'ncisi Oldu",
+   "SAU, THE 2026 Alan Bazlı Dünya Sıralamalarında İlk 1000'de",
+   "TÜBİTAK Yapay Zeka Ekosistem Çağrısı Sözleşmeleri İmzalandı",
+   "SAU zirveyi zorluyor, hedef ilk 1000",
+   "Sakarya Üniversitesi, U.S. News Dünya Üniversiteleri Sıralamasında Yükselişini Sürdürdü"
+  ],
+  "site_adi": null,
+  "text_sample": "Eğitim Araştırma Uluslararası Aday Öğrenci Mezun SAU Hakkında Kampüste Yaşam Vakıf Etkinlik Sayfası İletişim Eğitim Araştırma Uluslararası Aday Öğrenci Mezun SAU Hakkında Kampüste Yaşam Vakıf Etkinlik Sayfası İletişim Bugün Gururla SAU Araştırma Üniversitesi Sakarya Üniversitesi, Türkiye’de ilk 20 devlet üniversitesi arasına girerek “Araştırma Üniversitesi” unvanını kazandı. YÖK, SAU’yü bilimsel çalışma performansı en yüksek 12’nci devlet üniversitesi ilan etti. Haberin devamı için tıklayınız Sakarya Üniversitesi YÖK İzleme ve Değerlendirme Raporuna Göre 24 Kategoride İlk 20’ye Girmeyi Başardı Sakarya Üniversitesi (SAU), ulusal projeler, araştırma bütçeleri, patent performansı, bilimsel yayın, program akreditasyonu, sürdürülebilirlik ve toplumsal katkı göstergelerindeki yüksek performansıy",
+  "icerik_ozeti": "Bugün Gururla SAU Araştırma Üniversitesi Sakarya Üniversitesi, Türkiye’de ilk 20 devlet üniversitesi arasına girerek “Araştırma Üniversitesi” unvanını kazandı. YÖK, SAU’yü bilimsel çalışma performansı en yüksek 12’nci devlet üniversitesi ilan etti. Haberin devamı için tıklayınız Sakarya Üniversitesi YÖK İzleme ve Değerlendirme Raporuna Göre 24 Kategoride İlk 20’ye Girmeyi Başardı Sakarya Üniversitesi (SAU), ulusal projeler, araştırma bütçeleri, patent performansı, bilimsel yayın, program akreditasyonu, sürdürülebilirlik ve toplumsal katkı göstergelerindeki yüksek performansıyla Türkiye’nin önde gelen üniversiteleri arasında yer aldı. Haberin devamı için tıklayınız SAU, QS 2026’da Avrupa’da Yükselen Üniversiteler Arasında Sakarya Üniversitesi, QS Avrupa 2026 sonuçlarında sürdürülebilirlik, akademik itibar ve araştırma gücüyle öne çıkarak hem Türkiye’de hem Avrupa’da yükselen konumunu pekiştirdi. Haberin devamı için tıklayınız Sakarya Üniversitesi TÜBİTAK 2209-B'de Türkiye 2'ncisi Oldu “Üniversite Öğrencileri Araştırma Projeleri Destekleme Programı” kapsamında 2024 yılı birinci dönem TÜBİTAK 2209-B “Üniversite Öğrencileri Sanayiye Yönelik Araştırma Projeleri Destekleme Programı”na 86",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://sakarya.edu.tr/misyon-vizyon",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Sakarya Üniversitesi",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "Eğitim Araştırma Uluslararası Aday Öğrenci Mezun SAU Hakkında Kampüste Yaşam Vakıf Etkinlik Sayfası İletişim Eğitim Araştırma Uluslararası Aday Öğrenci Mezun SAU Hakkında Kampüste Yaşam Vakıf Etkinlik Sayfası İletişim Misyon ve Vizyon Misyonumuz İnsanlığa değer katan, hayat boyu öğrenme becerilerine sahip girişimci bireyler yetiştirmek ve evrensel nitelikte bilgi, teknoloji ve toplumsal hizmet üretmektir. Vizyonumuz Evrensel nitelikte bilgi ve teknoloji üreterek paydaşlarıyla birlikte geleceğe yön veren bir üniversite olmaktır. SAU BİLGİ SİSTEMİ AKREDİTE PROGRAMLAR KURUMSAL YÖNETİM BİLGİ SİSTEMİ EĞİTİM BİLGİ SİSTEMİ SAYILARLA SAU ÖNERİ, ŞİKAYET BİLGİ TALEBİ Üniversitemiz Rektörün Mesajı Tarihçe Misyon ve Vizyon Politikalarımız Eski Rektörlerimiz Organizasyon Şeması Akademik Enstitüler Fakü",
+  "icerik_ozeti": "Misyon ve Vizyon Misyonumuz İnsanlığa değer katan, hayat boyu öğrenme becerilerine sahip girişimci bireyler yetiştirmek ve evrensel nitelikte bilgi, teknoloji ve toplumsal hizmet üretmektir. Vizyonumuz Evrensel nitelikte bilgi ve teknoloji üreterek paydaşlarıyla birlikte geleceğe yön veren bir üniversite olmaktır.",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.anadolu.edu.tr/",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Anadolu Üniversitesi",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "ANASAYFA ÜNİVERSİTEMİZ AKADEMİK AÇIKÖĞRETİM ÖĞRENCİ İŞLEMLERİ ARAŞTIRMA KAMPÜSTE YAŞAM KÜTÜPHANE E-POSTA REHBER ETKİNLİKLER DUYURULAR AKADEMİK TAKVİM INTERNATIONAL ADAY ÖĞRENCİLER PERSONEL MEZUNLAR KALİTE SATIN ALMA KVKK INTERNATIONAL ADAY ÖĞRENCİLER PERSONEL MEZUNLAR KALİTE STRATEJİK PLANLAR 2024-2028 Dönemi Stratejik Planı (2026-2028 Güncellenmiş Versiyon) 2024-2028 Dönemi Stratejik Planı 2019-2023 Dönemi Stratejik Planı 2014-2018 Dönemi Stratejik Planı 2009-2013 Dönemi Stratejik Planı KVKK Menü TR EN ÜNİVERSİTEMİZ Rektörlük Önü Hızlı Bağlantılar Kütüphane E-Posta Yemekhane Restoranlar Rehber Etkinlikler Duyurular Akademik Takvim Anadolu Hakkında Yönetim İç Denetim Birim Başkanlığı Genel Sekreterlik İdari Birimler Kurullar - Komisyonlar Kurumsal İletişim Bilgi Edinme Satın Alma Anadolu Ü",
+  "icerik_ozeti": "7592 Sayılı Kanun Kapsamında Örgün Ön Lisans/ Lisans Programlarına Başvuru, Kabul ve Uygulama Esasları AF BAŞVURUSU Kurum İçi Duyurular Kurum Dışı Duyurular 2026-2027 Admission Process for International Students is Closed Click for Details Haberler Tüm Haberler DEVAMINI OKUYUN ESOGÜ Rektörü Gümüşsoy’dan Rektör Adıgüzel’e iadeiziyaret DEVAMINI OKUYUN Anadolu Üniversitesinde Azerbaycan’ın bağımsızlığı ve Türk dünyasının geleceği ele alındı DEVAMINI OKUYUN 12. Ulusal Sosyoloji Kongresi Anadolu Üniversitesinde düzenlenecek DEVAMINI OKUYUN Doç. Dr. Belgin Sever’e L’Oréal-UNESCO “Bilim Kadınları İçin” programı ödülü Etkinlik Takvimi Tüm Etkinlikler GÖRÜNTÜLE \"Hukuk Fakültesi Ulusal Kongre Serisi 3. Ceza Hukuku Kongresi\" Tarih: 21 Ekim 2026 09:00 - 23 Ekim 2026 17:00 Kongreler Hukuk Fakültesi KÜL 199 GÖRÜNTÜLE \"6. Uluslararası Piyano Günleri\" Liebestraum Resitali Tarih: 22 Ekim 2026 20:00 - 22:00 Konser ve Dinletiler Devlet Konservatuvarı KÜL 199 Etkinliği GÖRÜNTÜLE \"6. Uluslararası Piyano Günleri\" Masterclass İris ŞENTÜRKER Tarih: 23 Ekim 2026 09:30 - 10:30 Konser ve Dinletiler Devlet Konservatuvarı KÜL 199 GÖRÜNTÜLE \"Cibran Halil Cibran'ın Mektuplarında Osmanlı Hükümeti\" Tarih: 23 Ekim ",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.anadolu.edu.tr/kampuste-yasam/kampuste-olanaklar",
+  "grup": "universite",
+  "kaynak_turu": "canli",
+  "title": "Kampüste Olanaklar  | Anadolu Üniversitesi",
+  "h1": [
+   "KAMPÜSTEOLANAKLAR"
+  ],
+  "site_adi": "Anadolu Üniversitesi",
+  "text_sample": "ANASAYFA ÜNİVERSİTEMİZ AKADEMİK AÇIKÖĞRETİM ÖĞRENCİ İŞLEMLERİ ARAŞTIRMA KAMPÜSTE YAŞAM KÜTÜPHANE E-POSTA REHBER ETKİNLİKLER DUYURULAR AKADEMİK TAKVİM INTERNATIONAL ADAY ÖĞRENCİLER PERSONEL MEZUNLAR KALİTE SATIN ALMA KVKK INTERNATIONAL ADAY ÖĞRENCİLER PERSONEL MEZUNLAR KALİTE STRATEJİK PLANLAR 2024-2028 Dönemi Stratejik Planı (2026-2028 Güncellenmiş Versiyon) 2024-2028 Dönemi Stratejik Planı 2019-2023 Dönemi Stratejik Planı 2014-2018 Dönemi Stratejik Planı 2009-2013 Dönemi Stratejik Planı KVKK Menü TR EN ÜNİVERSİTEMİZ Rektörlük Önü Hızlı Bağlantılar Kütüphane E-Posta Yemekhane Restoranlar Rehber Etkinlikler Duyurular Akademik Takvim Anadolu Hakkında Yönetim İç Denetim Birim Başkanlığı Genel Sekreterlik İdari Birimler Kurullar - Komisyonlar Kurumsal İletişim Bilgi Edinme Satın Alma Anadolu Ü",
+  "icerik_ozeti": "KAMPÜSTE OLANAKLAR Geri Dön Web sitemizdeki çerezleri (cookie) kullanıcı deneyimini artıran teknik özellikleri desteklemek için kullanıyoruz. Detaylı bilgi için tıklayınız . Google Analytics tarafından yönetilen çerezleri devre dışı bırakabilir veya kabul edebilirsiniz. Kabul Et Devre Dışı Bırak",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.turkiye.gov.tr/cevre-tarim-ve-hayvancilik-hizmetleri",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "Çevre, Tarım ve Hayvancılık",
+  "h1": [
+   "e-Devlet Kapısı"
+  ],
+  "site_adi": null,
+  "text_sample": "İçeriğe Git Ana Sayfa e-Devlet Kapısı Ana Bölümler Hızlı Çözüm Erişilebilirlik Özellikleri Salt Metin Görünümü Daha Belirgin Odaklama Aranan Terim Giriş Yap Kurum Hizmetleri Belediye Hizmetleri Firma Hizmetleri Üniversiteler Diğer Kurum Portallerine Giriş Yeni Eklenen Hizmetler Çok Kullanılanlar Çevre, Tarım ve Hayvancılık Tarım, Hayvancılık faaliyetleri ve çevre konusundaki hizmetlerden faydalanın. A B C Ç D E G H İ K M N Ö P S T U Y Afet ve Acil Durum Yönetimi Başkanlığı 1 Hizmet Hak Sahipliği için Talep ve Taahhütname Başvurusu Çay İşletmeleri Genel Müdürlüğü 6 Hizmet Üretici Destek Bilgileri Sorgulama Üretici Budama Desteği Sorgulama Üretici Bilgileri Sorgulama Üretici Yıllık Alımlar Sorgulama Üretici Bordro Bilgileri Sorgulama Üretici Satış Bilgileri Sorgulama Çevre, Şehircilik ve İkl",
+  "icerik_ozeti": "Kurum Hizmetleri Belediye Hizmetleri Firma Hizmetleri Üniversiteler Diğer Kurum Portallerine Giriş Yeni Eklenen Hizmetler Çok Kullanılanlar Çevre, Tarım ve Hayvancılık Tarım, Hayvancılık faaliyetleri ve çevre konusundaki hizmetlerden faydalanın. A B C Ç D E G H İ K M N Ö P S T U Y Afet ve Acil Durum Yönetimi Başkanlığı 1 Hizmet Hak Sahipliği için Talep ve Taahhütname Başvurusu Çay İşletmeleri Genel Müdürlüğü 6 Hizmet Üretici Destek Bilgileri Sorgulama Üretici Budama Desteği Sorgulama Üretici Bilgileri Sorgulama Üretici Yıllık Alımlar Sorgulama Üretici Bordro Bilgileri Sorgulama Üretici Satış Bilgileri Sorgulama Çevre, Şehircilik ve İklim Değişikliği Bakanlığı 20 Hizmet Deprem İllerinde Yerinde Dönüşüm Uygulaması Deprem Bölgesinde Yerinde Dönüşüm Hibe / Kredi Ön Başvurusu Deprem Bölgesinde Yerinde Dönüşüm Hibe / Kredi Ön Başvurusu (Tüzel Kişi) Milli Emlak Genel Müdürlüğü İrtifak Hakkı İlanları - İhaleye Çıkanlar İrtifak Hakkı İlanları - İrtifak Hakkına Hazırlananlar Kiralama İlanları - İhaleye Çıkanlar Kiralama İlanları - Kiralamaya Hazırlananlar Taşınmaz Satış İlanları - İhaleye Çıkanlar Taşınmaz Satış İlanları - Satışa Hazırlananlar Yatırım Teşvik İlanları - Başvuruya Çıkanlar Yat",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.meb.gov.tr/",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "T.C. Millî Eğitim Bakanlığı",
+  "h1": [
+   "Erişilebilirlik"
+  ],
+  "site_adi": null,
+  "text_sample": "Anasayfa / e-Posta / S.S.S / English E-Okul MEBBİS EBA ÖBA EBYS E-Okul MEBBİS EBA ÖBA EBYS HABER BAKAN TEKİN, MACARİSTAN MİLLÎ GÜNÜ RESEPSİYONUNA KATILDI Millî Eğitim Bakanı Yusuf Tekin; eğitim modellerinin geliştirilmesi, müfredat çalışmaları, öğretmen eğitimi ve yenilikçi öğretim yöntemleri [...] HABER \"MEB SÖZ VARLIĞI BİLGİ AĞI\" TANITIM PROGRAMI, BAKAN TEKİN'İN KATILIMIYLA GERÇEKLEŞTİ \"MEB Söz Varlığı Bilgi Ağı\" Tanıtım Programı'nda konuşan Millî Eğitim Bakanı Yusuf Tekin, \"Türkçenin bir bilim dili olarak [...] HABER YELKENCİ, \"TÜRKİYE YÜZYILI MAARİF MODELİ'NDE MÜZE TEMELLİ TARİH EĞİTİMİ\" KONFERANSINA KATILDI Millî Eğitim Bakan Yardımcısı Ömer Faruk Yelkenci, Gaziantep'te \"Türkiye Yüzyılı Maarif Modeli'nde Müze Temelli Tarih Eğitimi\" [...] HABER YURT DIŞINDAKİ ÖĞRENCİLER İÇİN YENİLENEN ",
+  "icerik_ozeti": "E-Okul MEBBİS EBA ÖBA EBYS HABER BAKAN TEKİN, MACARİSTAN MİLLÎ GÜNÜ RESEPSİYONUNA KATILDI Millî Eğitim Bakanı Yusuf Tekin; eğitim modellerinin geliştirilmesi, müfredat çalışmaları, öğretmen eğitimi ve yenilikçi öğretim yöntemleri [...] HABER \"MEB SÖZ VARLIĞI BİLGİ AĞI\" TANITIM PROGRAMI, BAKAN TEKİN'İN KATILIMIYLA GERÇEKLEŞTİ \"MEB Söz Varlığı Bilgi Ağı\" Tanıtım Programı'nda konuşan Millî Eğitim Bakanı Yusuf Tekin, \"Türkçenin bir bilim dili olarak [...] HABER YELKENCİ, \"TÜRKİYE YÜZYILI MAARİF MODELİ'NDE MÜZE TEMELLİ TARİH EĞİTİMİ\" KONFERANSINA KATILDI Millî Eğitim Bakan Yardımcısı Ömer Faruk Yelkenci, Gaziantep'te \"Türkiye Yüzyılı Maarif Modeli'nde Müze Temelli Tarih Eğitimi\" [...] HABER YURT DIŞINDAKİ ÖĞRENCİLER İÇİN YENİLENEN \"TÜRKÇE VE TÜRK KÜLTÜRÜ\" DERS KİTAPLARI, YAYIMLANDI Millî Eğitim Bakanlığınca, Türkiye Yüzyılı Maarif Modeli doğrultusunda yurt dışında yaşayan Türk çocuklarının ana dilleriyle bağlarını [...] HABER \"AİLE EĞİTİM BÜLTENİ\" EKİM SAYISI, YAYIMLANDI Millî Eğitim Bakanlığınca, okul öncesi eğitim kademesindeki çocukların ailelerine yönelik eğitim ve katılım süreçlerinin desteklenmesi amacıyla [...] HABER BAKAN TEKİN, \"GELİN HAZİNELERİ: OSMANLI VE ANADOLU ÇEYİZLERİNDE",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.meb.gov.tr/elmadag-anadolu-lisesi-ogrencilerinden-gokyuzu-gozlem-senligi/duyuru/41187/",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "Elmadağ Anadolu Lisesi Öğrencilerinden \"Gökyüzü Gözlem Şenliği\"",
+  "h1": [
+   "Erişilebilirlik"
+  ],
+  "site_adi": null,
+  "text_sample": "Anasayfa / e-Posta / S.S.S / English E-Okul MEBBİS EBA ÖBA EBYS E-Okul MEBBİS EBA ÖBA EBYS Anasayfa Maarif Ailemizin Sesi Elmadağ Anadolu Lisesi Öğrencilerinden \"Gökyüzü Gözlem Şenliği\" Elmadağ Anadolu Lisesi öğrencileri tarafından hazırlanan dört adet el yapımı Newton tipi teleskop ile \"Gökyüzü Gözlem Şenliği\" etkinliği düzenlendi. 5667 25 Haziran 2026 14:01 Ankara'nın Elmadağ ilçesinde öğrencilerin bilimsel üretim süreçlerine aktif katılımını teşvik etmek amacıyla düzenlenen etkinlikte, katılımcılar teleskoplar aracılığıyla gökyüzü gözlemi yapma imkânı buldu. \"Gökyüzüne çevrilen her teleskop, gençlerin hayallerine açılan bir pencere\" Elmadağ Anadolu Lisesi Müdürü Gökhan Külünk, projede görev alan öğretmen ve öğrencileri, gösterdikleri özverili çalışmalardan dolayı tebrik ederek bilimsel ",
+  "icerik_ozeti": "E-Okul MEBBİS EBA ÖBA EBYS Elmadağ Anadolu Lisesi Öğrencilerinden \"Gökyüzü Gözlem Şenliği\" Elmadağ Anadolu Lisesi öğrencileri tarafından hazırlanan dört adet el yapımı Newton tipi teleskop ile \"Gökyüzü Gözlem Şenliği\" etkinliği düzenlendi. 5667 25 Haziran 2026 14:01 Ankara'nın Elmadağ ilçesinde öğrencilerin bilimsel üretim süreçlerine aktif katılımını teşvik etmek amacıyla düzenlenen etkinlikte, katılımcılar teleskoplar aracılığıyla gökyüzü gözlemi yapma imkânı buldu. \"Gökyüzüne çevrilen her teleskop, gençlerin hayallerine açılan bir pencere\" Elmadağ Anadolu Lisesi Müdürü Gökhan Külünk, projede görev alan öğretmen ve öğrencileri, gösterdikleri özverili çalışmalardan dolayı tebrik ederek bilimsel üretim ve araştırma faaliyetlerinin eğitim süreçlerindeki öneminin farkında olduklarını ve bu doğrultuda hareket ettiklerini söyledi. Bilimin ışığında geleceğe yürüyen öğrencilerin, bu anlamlı çalışmayla yalnızca teleskop üretmekle kalmadığını; aynı zamanda merak etmeyi, sorgulamayı ve üretmeyi de öğrendiklerini söyleyen Külünk, gökyüzüne çevrilen her teleskobun, aslında gençlerin hayallerine ve geleceğine açılan bir pencere olduğunu belirtti. Türk-İslam bilim tarihinin önemli isimlerinden ",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.saglik.gov.tr/",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "T.C. Sağlık Bakanlığı",
+  "h1": [
+   "Sağlık Bakanı Prof. Dr. Kemal Memişoğlu Singapur’da Resmî Temaslarda Bulundu",
+   "Sağlık Bakanı Memişoğlu Güney Kore’deki Görüşmelerine Devam Ediyor",
+   "Sağlık Bakanı Memişoğlu Güney Kore’de 5. Dünya Biyo Zirvesi’nde Konuştu",
+   "Sağlık Bakanı Prof. Dr. Kemal Memişoğlu, Güney Kore’de Türkiye’de Kurulması Planlanan Üretim Tesisi İçin Resmi Temaslarda Bulundu",
+   "Bağlantı Gezgini"
+  ],
+  "site_adi": null,
+  "text_sample": "Kapat Anasayfa Bakan Sağlık Bakanımız Bakan Yardımcıları Bakanlık Tarihçe Bakanlık Birimleri Kurumsal Politikalarımız Teşkilat Şeması Stratejik Yönetim Görev ve Yetkiler İç Kontrol Sağlık Mevzuatı Kanunlar Yönetmelikler Genelgeler Yönergeler Tüzükler Tebliğler Hizmetlerimiz Kurumsal Uygulamalar Çağrı Merkezleri İstatistikler ve Yayınlar Basın Odası Haberler Ziyaretler Basın Duyuruları Basında Biz Video Galeri Haber Arşivi İletişim T.C. Sağlık Bakanlığı Adres: T.C.Sağlık Bakanlığı Üniversiteler Mahallesi Şehit Mehmet Bayraktar Caddesi No:3 Çankaya/Ankara Santral: +90 312 585 10 00 4. Uluslararası Geleneksel ve Tamamlayıcı Tıp Kongresi ve 18. Avrupa İntegratif Tıp Kongresi (ECIM) × İçeriğe Git Facebook Instagram Youtube Linkedin NSosyal X (Twitter) Whatsapp Site Haritası İletişim English Sit",
+  "icerik_ozeti": "Kapat Anasayfa Bakan Bakanlık Sağlık Mevzuatı Hizmetlerimiz Basın Odası İletişim T.C. Sağlık Bakanlığı Adres: T.C.Sağlık Bakanlığı Üniversiteler Mahallesi Şehit Mehmet Bayraktar Caddesi No:3 Çankaya/Ankara Santral: +90 312 585 10 00 4. Uluslararası Geleneksel ve Tamamlayıcı Tıp Kongresi ve 18. Avrupa İntegratif Tıp Kongresi (ECIM) × Sağlık Bakanı Prof. Dr. Kemal Memişoğlu Singapur’da Resmî Temaslarda Bulundu Sağlık Bakanı Memişoğlu Güney Kore’deki Görüşmelerine Devam Ediyor Sağlık Bakanı Memişoğlu Güney Kore’de 5. Dünya Biyo Zirvesi’nde Konuştu Sağlık Bakanı Prof. Dr. Kemal Memişoğlu, Güney Kore’de Türkiye’de Kurulması Planlanan Üretim Tesisi İçin Resmi Temaslarda Bulundu 1 / Total Başlat Durdur e-Nabız Acil Sağlık SABİM MHRS Bilgi Edinme HealthTürkiye Haberler Tümü Sağlık Bakanı Memişoğlu Milli Savunma Eski Bakanı Akar ile Bir Araya Geldi 17 Ekim 2026 Sağlık Bakanı Memişoğlu AK Parti Bursa Milletvekilleri ve Beraberlerindeki Heyet ile Bir Araya ... 01 Ekim 2026 Sağlık Bakanı Memişoğlu AFAD Başkanı Vali Pehlivan ile Bir Araya Geldi 06 Ağustos 2026 Sağlık Bakanı Memişoğlu İçişleri Bakanı Çiftçi ile Bir Araya Geldi 03 Ağustos 2026 Sağlık Bakanı Memişoğlu Kültür ve Turizm Eski Bakanı ",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.saglik.gov.tr/TR-11008/denetimli-serbestlik-tedbirleri-uygulanan-kisilerin-tedavileri-200982.html",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "Denetimli Serbestlik Tedbirleri Uygulanan Kişilerin Tedavileri 2009/82",
+  "h1": [
+   "Bağlantı Gezgini"
+  ],
+  "site_adi": null,
+  "text_sample": "Kapat Anasayfa Bakan Sağlık Bakanımız Bakan Yardımcıları Bakanlık Tarihçe Bakanlık Birimleri Kurumsal Politikalarımız Teşkilat Şeması Stratejik Yönetim Görev ve Yetkiler İç Kontrol Sağlık Mevzuatı Kanunlar Yönetmelikler Genelgeler Yönergeler Tüzükler Tebliğler Hizmetlerimiz Kurumsal Uygulamalar Çağrı Merkezleri İstatistikler ve Yayınlar Basın Odası Haberler Ziyaretler Basın Duyuruları Basında Biz Video Galeri Haber Arşivi İletişim T.C. Sağlık Bakanlığı Adres: T.C.Sağlık Bakanlığı Üniversiteler Mahallesi Şehit Mehmet Bayraktar Caddesi No:3 Çankaya/Ankara Santral: +90 312 585 10 00 İçeriğe Git Facebook Instagram Youtube Linkedin NSosyal X (Twitter) Whatsapp Site Haritası İletişim English Site içi arama Ara Kapat T.C. SAĞLIK BAKANLIĞI Bakan Prof. Dr. Kemal MEMİŞOĞLU T.C. Sağlık Bakanı Bakan Y",
+  "icerik_ozeti": "Kapat Anasayfa Bakan Sağlık Bakanımız Bakan Yardımcıları Bakanlık Tarihçe Bakanlık Birimleri Kurumsal Politikalarımız Teşkilat Şeması Stratejik Yönetim Görev ve Yetkiler İç Kontrol Sağlık Mevzuatı Kanunlar Yönetmelikler Genelgeler Yönergeler Tüzükler Tebliğler Hizmetlerimiz Kurumsal Uygulamalar Çağrı Merkezleri İstatistikler ve Yayınlar Basın Odası Haberler Ziyaretler Basın Duyuruları Basında Biz Video Galeri Haber Arşivi İletişim T.C. Sağlık Bakanlığı Adres: T.C.Sağlık Bakanlığı Üniversiteler Mahallesi Şehit Mehmet Bayraktar Caddesi No:3 Çankaya/Ankara Santral: +90 312 585 10 00 İçeriğe Git Facebook Instagram Youtube Linkedin NSosyal X (Twitter) Whatsapp Site Haritası İletişim English Site içi arama Ara Kapat T.C. SAĞLIK BAKANLIĞI Bakan Prof. Dr. Kemal MEMİŞOĞLU T.C. Sağlık Bakanı Bakan Yardımcıları Doç. Dr. Şuayıp BİRİNCİ Prof. Dr. Nurullah OKUMUŞ Dr. Öğr. Üyesi Halim ÖZÇEVİK Dr. Yasin ERKOÇ Bakanlık Tarihçe Bakanlık Birimleri Kurumsal Politikalarımız Teşkilat Şeması Stratejik Yönetim Görev ve Yetkiler İç Kontrol Sağlık Mevzuatı Kanunlar Yönetmelikler Genelgeler Yönergeler Tüzükler Tebliğler Hizmetlerimiz Kurumsal Uygulamalar Çağrı Merkezleri İstatistikler ve Yayınlar Basın Odası",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "meta_description_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.tuik.gov.tr/",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "Türkiye İstatistik Kurumu (TÜİK)",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "\"Türkiye'nin Bilgi Kaynağı\" Loading... Ara İSTATİSTİKLER PORTALLAR PORTALLAR Coğrafi İstatistik Portalı Veri Portalı Nüfus İstatistikleri Portalı Resmi İstatistik Portalı SDG Portalı Sınıflama Sunucusu TÜİK Çocuk Portalı METABİLGİ Metaveri Metaveri Nedir? TÜİK Revizyon Politikası Revizyon Cari Yıl Revizyon Planı Geçmiş Yıl Revizyonları Dokümanlar TÜİK Kalite Güvence Çerçevesi Belgesi Avrupa İstatistikleri Uygulama Esasları (COP) Soru Formu Nasıl Hazırlanır, Tasarımdan Teste Tüm Adımlarıyla Kaliteli Bir Araştırmanın El Kitabı İstatistik Üretiminde İdari Kayıtların Rolü Haber Bülteni Hazırlama El Kitabı Revizyon El Kitabı Terminoloji / Sözlük Kalite Raporları CATI Uygulama Metodolojisi Kalite Raporu El Kitabı Sınıflamalar Sınıflamalar İstatistik Ofisleri Ülke İstatistik Ofisleri Bağlantılar ",
+  "icerik_ozeti": "\"Türkiye'nin Bilgi Kaynağı\" Loading... Hanehalkı Yurt İçi Turizm II. Çeyrek: Nisan-Haziran 2026 Haber bülteni metni için tıklayınız Tüketici Güven Endeksi Ekim 2026 Haber bülteni metni için tıklayınız Yurt Dışı Üretici Fiyat Endeksi Eylül 2026 Haber bülteni metni için tıklayınız Tarımsal Girdi Fiyat Endeksi Ağustos 2026 Haber bülteni metni için tıklayınız Hanehalkı Tüketim Harcaması (Bölgesel) 2025 Haber bülteni metni için tıklayınız Konut ve İş Yeri Satış İstatistikleri Eylül 2026 Haber bülteni metni için tıklayınız Previous Next AYLIK VERİ YAYIMLAMA TAKVİMİ Tematik Haritalar - Coğrafi Bilgi Sistemleri (CBS) Tematik Haritalar - Coğrafi İstatistik Portalı × Sayın Kullanıcımız, Kullanıcılarımızı tanımak ve ihtiyaçlarını belirlemek amacıyla düzenlenen Kullanıcı Memnuniyet Anketi’ne yapacağınız katkı ile Kurumumuz hakkındaki görüşlerinizi öğrenmemizi sağlayacak, ürün ve hizmetlerimizi iyileştirmemize katkıda bulunacaksınız. Anketimiz yaklaşık 5 dakika sürmektedir. Göstermiş olduğunuz ilgi ve işbirliği için teşekkür ederiz. Tekrar Gösterme Daha Sonra Hatırlat Ankete Katıl",
+  "sorunlar": [
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.tuik.gov.tr/Kurumsal/Yonetmelikler",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "Türkiye İstatistik Kurumu (TÜİK)",
+  "h1": [
+   "Yönetmelikler"
+  ],
+  "site_adi": null,
+  "text_sample": "\"Türkiye'nin Bilgi Kaynağı\" Loading... Ara İSTATİSTİKLER PORTALLAR PORTALLAR Coğrafi İstatistik Portalı Veri Portalı Nüfus İstatistikleri Portalı Resmi İstatistik Portalı SDG Portalı Sınıflama Sunucusu TÜİK Çocuk Portalı METABİLGİ Metaveri Metaveri Nedir? TÜİK Revizyon Politikası Revizyon Cari Yıl Revizyon Planı Geçmiş Yıl Revizyonları Dokümanlar TÜİK Kalite Güvence Çerçevesi Belgesi Avrupa İstatistikleri Uygulama Esasları (COP) Soru Formu Nasıl Hazırlanır, Tasarımdan Teste Tüm Adımlarıyla Kaliteli Bir Araştırmanın El Kitabı İstatistik Üretiminde İdari Kayıtların Rolü Haber Bülteni Hazırlama El Kitabı Revizyon El Kitabı Terminoloji / Sözlük Kalite Raporları CATI Uygulama Metodolojisi Kalite Raporu El Kitabı Sınıflamalar Sınıflamalar İstatistik Ofisleri Ülke İstatistik Ofisleri Bağlantılar ",
+  "icerik_ozeti": "\"Türkiye'nin Bilgi Kaynağı\" Loading... Yönetmelikler .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. Sayın Kullanıcımız, Kullanıcılarımızı tanımak ve ihtiyaçlarını belirlemek amacıyla düzenlenen Kullanıcı Memnuniyet Anketi’ne yapacağınız katkı ile Kurumumuz hakkındaki görüşlerinizi öğrenmemizi sağlayacak, ürün ve hizmetlerimizi iyileştirmemize katkıda bulunacaksınız. Anketimiz yaklaşık 5 dakika sürmektedir. Göstermiş olduğunuz ilgi ve işbirliği için teşekkür ederiz. Tekrar Gösterme Daha Sonra Hatırlat Ankete Katıl",
+  "sorunlar": [
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.afad.gov.tr/",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "T.C. İçişleri Bakanlığı Afet ve Acil Durum Yönetimi Başkanlığı",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "Modal content × T.C. İÇİŞLERİ BAKANLIĞI WEB SİTESİ GİZLİLİK VE ÇEREZ POLİTİKASI Web sitemizi ziyaret edenlerin kişisel verilerini 6698 sayılı Kişisel Verilerin Korunması Kanunu uyarınca işlemekte ve gizliliğini korumaktayız. Bu Web Sitesi Gizlilik ve Çerez Politikası ile ziyaretçilerin kişisel verilerinin işlenmesi, çerez politikası ve internet sitesi gizlilik ilkeleri belirlenmektedir. Çerezler (cookies), küçük bilgileri saklayan küçük metin dosyalarıdır. Çerezler, ziyaret ettiğiniz internet siteleri tarafından, tarayıcılar aracılığıyla cihazınıza veya ağ sunucusuna depolanır. İnternet sitesi tarayıcınıza yüklendiğinde çerezler cihazınızda saklanır. Çerezler, internet sitesinin düzgün çalışmasını, daha güvenli hale getirilmesini, daha iyi kullanıcı deneyimi sunmasını sağlar. Oturum ve yer",
+  "icerik_ozeti": "Modal content × T.C. İÇİŞLERİ BAKANLIĞI WEB SİTESİ GİZLİLİK VE ÇEREZ POLİTİKASI Web sitemizi ziyaret edenlerin kişisel verilerini 6698 sayılı Kişisel Verilerin Korunması Kanunu uyarınca işlemekte ve gizliliğini korumaktayız. Bu Web Sitesi Gizlilik ve Çerez Politikası ile ziyaretçilerin kişisel verilerinin işlenmesi, çerez politikası ve internet sitesi gizlilik ilkeleri belirlenmektedir. Çerezler (cookies), küçük bilgileri saklayan küçük metin dosyalarıdır. Çerezler, ziyaret ettiğiniz internet siteleri tarafından, tarayıcılar aracılığıyla cihazınıza veya ağ sunucusuna depolanır. İnternet sitesi tarayıcınıza yüklendiğinde çerezler cihazınızda saklanır. Çerezler, internet sitesinin düzgün çalışmasını, daha güvenli hale getirilmesini, daha iyi kullanıcı deneyimi sunmasını sağlar. Oturum ve yerel depolama alanları da çerezlerle aynı amaç için kullanılır. İnternet sitemizde çerez bulunmamakta, oturum ve yerel depolama alanları çalışmaktadır. Web sitemizin ziyaretçiler tarafından en verimli şekilde faydalanılması için çerezler kullanılmaktadır. Çerezler tercih edilmemesi halinde tarayıcı ayarlarından silinebilir ya da engellenebilir. Ancak bu web sitemizin performansını olumsuz etkileyebi",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.afad.gov.tr/egitim-dokumanlari",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "T.C. İçişleri Bakanlığı Afet ve Acil Durum Yönetimi Başkanlığı - Eğitim Dokümanları",
+  "h1": [],
+  "site_adi": "Eğitim Dokümanları",
+  "text_sample": "Modal content × T.C. İÇİŞLERİ BAKANLIĞI WEB SİTESİ GİZLİLİK VE ÇEREZ POLİTİKASI Web sitemizi ziyaret edenlerin kişisel verilerini 6698 sayılı Kişisel Verilerin Korunması Kanunu uyarınca işlemekte ve gizliliğini korumaktayız. Bu Web Sitesi Gizlilik ve Çerez Politikası ile ziyaretçilerin kişisel verilerinin işlenmesi, çerez politikası ve internet sitesi gizlilik ilkeleri belirlenmektedir. Çerezler (cookies), küçük bilgileri saklayan küçük metin dosyalarıdır. Çerezler, ziyaret ettiğiniz internet siteleri tarafından, tarayıcılar aracılığıyla cihazınıza veya ağ sunucusuna depolanır. İnternet sitesi tarayıcınıza yüklendiğinde çerezler cihazınızda saklanır. Çerezler, internet sitesinin düzgün çalışmasını, daha güvenli hale getirilmesini, daha iyi kullanıcı deneyimi sunmasını sağlar. Oturum ve yer",
+  "icerik_ozeti": "Modal content × T.C. İÇİŞLERİ BAKANLIĞI WEB SİTESİ GİZLİLİK VE ÇEREZ POLİTİKASI Web sitemizi ziyaret edenlerin kişisel verilerini 6698 sayılı Kişisel Verilerin Korunması Kanunu uyarınca işlemekte ve gizliliğini korumaktayız. Bu Web Sitesi Gizlilik ve Çerez Politikası ile ziyaretçilerin kişisel verilerinin işlenmesi, çerez politikası ve internet sitesi gizlilik ilkeleri belirlenmektedir. Çerezler (cookies), küçük bilgileri saklayan küçük metin dosyalarıdır. Çerezler, ziyaret ettiğiniz internet siteleri tarafından, tarayıcılar aracılığıyla cihazınıza veya ağ sunucusuna depolanır. İnternet sitesi tarayıcınıza yüklendiğinde çerezler cihazınızda saklanır. Çerezler, internet sitesinin düzgün çalışmasını, daha güvenli hale getirilmesini, daha iyi kullanıcı deneyimi sunmasını sağlar. Oturum ve yerel depolama alanları da çerezlerle aynı amaç için kullanılır. İnternet sitemizde çerez bulunmamakta, oturum ve yerel depolama alanları çalışmaktadır. Web sitemizin ziyaretçiler tarafından en verimli şekilde faydalanılması için çerezler kullanılmaktadır. Çerezler tercih edilmemesi halinde tarayıcı ayarlarından silinebilir ya da engellenebilir. Ancak bu web sitemizin performansını olumsuz etkileyebi",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ktb.gov.tr/",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "T.C. Kültür ve Turizm Bakanlığı",
+  "h1": [
+   "Bağlantı Gezgini"
+  ],
+  "site_adi": null,
+  "text_sample": "ARA select ARA select BAKANLIĞIMIZ Bakanımız Bakan Yardımcılarımız Kuruluş ve Görevler Misyonumuz Vizyonumuz Teşkilat Şeması Birimlerimiz Mevzuat Kamu Hizmet Standartları BAKANLIĞIMIZ Kültür ve Turizm Bakanlığı 10.07.2018 tarih ve Cumhurbaşkanlığı Teşkilatı Hakkında Cumhurbaşkanlığı 1 Nolu Kararnamesi ile kurulmuştur. BAKANLIĞIMIZ BAKANIMIZ BAKAN YARDIMCILARIMIZ KURULUŞ VE GÖREVLER MİSYONUMUZ VİZYONUMUZ TEŞKİLAT ŞEMASI BİRİMLERİMİZ MEVZUAT KAMU HİZMET STANDARTLARI KÜLTÜR KÜLTÜR KÜLTÜR SANAT TURİZM TURİZM Türkiye turizmine dair bilgiler TURİZM DUYURULAR Sınav Duyuruları Arşiv Tüm Duyurular DUYURULAR Haberler - Duyurular - Haber Arşivi - İhale Duyuruları DUYURULAR SINAV DUYURULARI ARŞİV TÜM DUYURULAR UYGULAMALAR İLETİŞİM İLETİŞİM İLETİŞİM X Ephesus Dünyanın en etkileyici ve en büyük antik ke",
+  "icerik_ozeti": "Ephesus Dünyanın en etkileyici ve en büyük antik kentlerinden biri olan Efes, deniz kanalı ve liman havzasıyla Roma liman kentlerinin en iyi örnekleri arasında yer alır. M.Ö. 2. binyılda kurulan Efes, antik… AYRINTILAR Çatalhöyük Çatalhöyük, Orta Anadolu’daki Konya Ovası’nda yer alan ve MÖ 7400–6200 yıllarına tarihlenen, insanlık tarihinin en erken yerleşim örneklerinden biridir. 2012 yılında UNESCO Dünya Mirası Listesi’ne… AYRINTILAR Pergamon Pergamon, Batı Anadolu’nun bereketli topraklarında, çok katmanlı kültürel mirası ve görkemli tarihiyle dikkat çeker. Hellenistik Attalid Hanedanlığı’nın başkenti olarak MÖ 3. yüzyılda kurulan şehir,… AYRINTILAR Hattuşa Anadolu’nun kalbinde, Boğazköy'de yer alan Hattuşa, MÖ 2. binyılda Hitit İmparatorluğu’nun başkenti olarak tarih sahnesine adını yazdırmıştır. Hattuşa, gelişmiş şehir planlaması ve göz alıcı… AYRINTILAR Hierapolis Hierapolis, Denizli’nin 18 km kuzeyinde yer alan antik bir şehir olup, MÖ 2. yüzyılda Bergama Kralı Eumenes II tarafından kurulmuştur. Şehrin adı, Pergamon'un efsanevi kurucusu Telephos’un eşi… AYRINTILAR Aphrodisias Batı Anadolu’nun bereketli Dandalaz (Morsynus) Vadisi'nde yer alan Aphrodisias, antik Karia bölgesinin",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ktb.gov.tr/TR-96490/danimarka.html",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "Danimarka",
+  "h1": [
+   "Bağlantı Gezgini"
+  ],
+  "site_adi": null,
+  "text_sample": "ARA select ARA select BAKANLIĞIMIZ Bakanımız Bakan Yardımcılarımız Kuruluş ve Görevler Misyonumuz Vizyonumuz Teşkilat Şeması Birimlerimiz Mevzuat Kamu Hizmet Standartları BAKANLIĞIMIZ Kültür ve Turizm Bakanlığı 10.07.2018 tarih ve Cumhurbaşkanlığı Teşkilatı Hakkında Cumhurbaşkanlığı 1 Nolu Kararnamesi ile kurulmuştur. BAKANLIĞIMIZ BAKANIMIZ BAKAN YARDIMCILARIMIZ KURULUŞ VE GÖREVLER MİSYONUMUZ VİZYONUMUZ TEŞKİLAT ŞEMASI BİRİMLERİMİZ MEVZUAT KAMU HİZMET STANDARTLARI KÜLTÜR KÜLTÜR KÜLTÜR SANAT TURİZM TURİZM Türkiye turizmine dair bilgiler TURİZM DUYURULAR Sınav Duyuruları Arşiv Tüm Duyurular DUYURULAR Haberler - Duyurular - Haber Arşivi - İhale Duyuruları DUYURULAR SINAV DUYURULARI ARŞİV TÜM DUYURULAR UYGULAMALAR İLETİŞİM İLETİŞİM İLETİŞİM Danimarka ATATÜRK İÇİN DİYORLAR Kİ! Danimarka \"Atatür",
+  "icerik_ozeti": "Danimarka ATATÜRK İÇİN DİYORLAR Kİ! Danimarka \"Atatürk, ömrünün en mükemmel çağında ve işbaşında iken ölmüştür. Fakat O'nun hayatındaki eseri, tarihte kahramanlığın çift destanı olarak yaşıyacaktır. Eserini O, bir savaşçı ve bir de devlet adamı olarak meydana getirmiştir. Kılıç sayesinde iktidar mevkiini kuranların bir çoğundan tamamıyle farklı olarak O, zaferi kazandıktan sonra kılıcını çekmiştir. Atatürk'ün askerlik eserini iyice anlayabilmek, lâzımdır: Yıkılmış bir devlet, bozguna uğramış bir ordu, bitkin ve umutsuz bir millet! Buna rağmen Atatürk, karşısına çıkarılan bütün orduları ezdikten sonra, Lozan'da 1923 Haziran'ında yenilmişlere millî Türkiye Devleti'ni dikte etmiştir. Atatürk, hudutlarını çizmiş olduğu Türkiye'nin O'na öncekinden daha büyük görevler yükleyeceğini kavramıştı. O, arkasında batılılaşma modern bir devlet bırakmıştır. Şapka giymek, Arap harflerini atıp bizzat öğretmenliğini yaptığı yeni Türk harflerini kabul etmek gibi tamamiyle zevahirden sanılan yenilikler, Türklerde ezelden beri var olan savaşçı ruhu bugün de yaşamakta olmasına rağmen, kurulan yeni devlet barış politikasının en sağlam dayanağı olmuştur. Atatürk, Montrö ve Hatay sorunlarını çözmüş, memlek",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.tcmb.gov.tr/",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "TCMB",
+  "h1": [
+   "Para Politikası Kurulu Toplantı Kararı",
+   "Başkanımız Dr. Fatih Karahan’ın “Türkiye’de Makroekonomik Görünüm ve Para Politikası” Başlıklı Sunumu",
+   "İstanbul Ekonomi Forumu",
+   "Başkanımız Dr. Fatih Karahan’ın “Enflasyon ve Para Politikası” Başlıklı Sunumu",
+   "Başkanımız Dr. Fatih Karahan’ın Türkiye Büyük Millet Meclisi Plan ve Bütçe Komisyonu Sunumu",
+   "Başkanımız Dr. Fatih Karahan’ın “Enflasyon ve Makroekonomik Görünüm” Başlıklı Sunumu",
+   "Başkanımız Dr. Fatih Karahan’ın “Enflasyon ve Makroekonomik Görünüm” Başlıklı Sunumu"
+  ],
+  "site_adi": null,
+  "text_sample": "Merkez Bankasının temel amacı fiyat istikrarını sağlamaktır. Filter sub sontent Filter sub sontent Banka Hakkında Temel Faaliyetler İstatistikler Araştırma ve Yayınlar Duyurular ve Konuşmalar Banknotlar Banka Hakkında Genel Bakış Kurumsal Yapı Mevzuat Tarihçe Uluslararası İlişkiler Yatırımcı İlişkileri İnsan Kaynakları Eğitim & Akademik TL Simgesi Sıkça Sorulan Sorular Kültürel ve Sanatsal Faaliyetler İletişim Temel Faaliyetler Para Politikası Piyasa İşlemleri Hazine İşlemleri Döviz Kuru Politikası Rezerv Yönetimi Ödeme Sistemleri Ödeme Hizmetleri Banknot Basımı İstatistikler Elektronik Veri Dağıtım Sistemi Veri Yayımlama Takvimi Enflasyon Verileri Ödemeler Dengesi ve İlgili İstatistikler Parasal ve Finansal İstatistikler Faiz ve Kâr Payı İstatistikleri Reel Sektör İstatistikleri Eğilim An",
+  "icerik_ozeti": "Para Politikası Kurulu Toplantı Kararı Para Politikası Kurulu (Kurul), politika faizi olan bir hafta vadeli repo ihale faiz oranının yüzde 37’den yüzde 36’ya indirilmesine karar vermiştir. Kurul ayrıca, Merkez Bankası gecelik vadede borç verme faiz oranını yüzde 40’tan yüzde 39’a, gecelik vadede borçlanma faiz oranını ise yüzde 35,5’ten yüzde 34,5’e indirmiştir. Başkanımız Dr. Fatih Karahan’ın “Türkiye’de Makroekonomik Görünüm ve Para Politikası” Başlıklı Sunumu Başkanımız Dr. Fatih Karahan Bangkok’ta “Türkiye’de Makroekonomik Görünüm ve Para Politikası” başlıklı bir sunum (İngilizce) gerçekleştirdi. İstanbul Ekonomi Forumu Türkiye Cumhuriyet Merkez Bankası, 8-9 Ekim 2026 tarihlerinde TCMB İstanbul Finans Merkezi Yerleşkesinde İstanbul Ekonomi Forumu’nu düzenlemiştir. Başkanımız Dr. Fatih Karahan’ın “Enflasyon ve Para Politikası” Başlıklı Sunumu Başkanımız Dr. Fatih Karahan İstanbul’da “Enflasyon ve Para Politikası” başlıklı bir sunum gerçekleştirdi. Başkanımız Dr. Fatih Karahan’ın Türkiye Büyük Millet Meclisi Plan ve Bütçe Komisyonu Sunumu Başkanımız Dr. Fatih Karahan Ankara'da Türkiye Büyük Millet Meclisi Plan ve Bütçe Komisyonunda bir sunum gerçekleştirdi. Başkanımız Dr. Fatih K",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.tcmb.gov.tr/wps/wcm/connect/tr/tcmb+tr/main+menu/duyurular/basin/2026/duy2026-45",
+  "grup": "kamu",
+  "kaynak_turu": "canli",
+  "title": "TCMB - Faiz Oranlarına İlişkin Basın Duyurusu (2026-45)",
+  "h1": [
+   "Faiz Oranlarına İlişkin Basın Duyurusu (2026-45)"
+  ],
+  "site_adi": "Faiz Oranlarına İlişkin Basın Duyurusu (2026-45)",
+  "text_sample": "Merkez Bankasının temel amacı fiyat istikrarını sağlamaktır. Filter sub sontent Filter sub sontent Banka Hakkında Temel Faaliyetler İstatistikler Araştırma ve Yayınlar Duyurular ve Konuşmalar Banknotlar Banka Hakkında Genel Bakış Kurumsal Yapı Mevzuat Tarihçe Uluslararası İlişkiler Yatırımcı İlişkileri İnsan Kaynakları Eğitim & Akademik TL Simgesi Sıkça Sorulan Sorular Kültürel ve Sanatsal Faaliyetler İletişim Temel Faaliyetler Para Politikası Piyasa İşlemleri Hazine İşlemleri Döviz Kuru Politikası Rezerv Yönetimi Ödeme Sistemleri Ödeme Hizmetleri Banknot Basımı İstatistikler Elektronik Veri Dağıtım Sistemi Veri Yayımlama Takvimi Enflasyon Verileri Ödemeler Dengesi ve İlgili İstatistikler Parasal ve Finansal İstatistikler Faiz ve Kâr Payı İstatistikleri Reel Sektör İstatistikleri Eğilim An",
+  "icerik_ozeti": "Başkan'ın Konuşmaları Basın Duyuruları Görsel Kütüphane Sosyal Medya Canlı Yayın Takvim Basınla İlişkiler Faiz Oranlarına İlişkin Basın Duyurusu (2026-45) Sayı: 2026-45 22 Ekim 2026 Faiz Oranlarına İlişkin Basın Duyurusu Toplantıya Katılan Kurul Üyeleri Yaşar Fatih Karahan (Başkan), Hatice Karahan, Fatma Özkul, Gazi İshak Kara, Yusuf Emre Akgündüz, Elif Haykır Hobikoğlu. Para Politikası Kurulu (Kurul), politika faizi olan bir hafta vadeli repo ihale faiz oranının yüzde 37’den yüzde 36’ya indirilmesine karar vermiştir. Kurul ayrıca, Merkez Bankası gecelik vadede borç verme faiz oranını yüzde 40’tan yüzde 39’a, gecelik vadede borçlanma faiz oranını ise yüzde 35,5’ten yüzde 34,5’e indirmiştir. Aylık dalgalanmalara karşın, son dönem enflasyon gerçekleşmeleri ve öncü göstergeler ana eğilimdeki gerilemeyi teyit etmektedir. İktisadi faaliyete ilişkin veriler ve arz şoklarının yurt içi fiyatlara yansımasının sınırlı kalması, iç talepteki zayıf seyrin devam ettiğini göstermektedir. Diğer taraftan, canlılığını koruyan jeopolitik gerilimler neticesinde yüksek seyreden enerji fiyatlarının enflasyon görünümü üzerinde oluşturduğu yukarı yönlü riskler sürmektedir. Jeopolitik gelişmelerin maliyet ",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ibb.istanbul/",
+  "grup": "belediye",
+  "kaynak_turu": "canli",
+  "title": "İstanbul Büyükşehir Belediyesi Kurumsal Web Sitesi",
+  "h1": [
+   "Anasayfa"
+  ],
+  "site_adi": "IBB",
+  "text_sample": "Anasayfa DUYURULAR Haberler Kadın Dostu Kentler Çözüm Merkezi Kent Lokantası Kameralar Bağış Yap ULAŞIM İETT Şehir Hatları İBB Trafik Yol Bakım Çalışmaları İSFALT A.Ş. İSPARK A.Ş. Metro İstanbul A.Ş. SAĞLIK VE SOSYAL HİZMETLER Bilgi Hizmetleri Cenaze İşlemleri Nasıl Yapılır Engellilere Yönelik Spor Hizmetleri Evde Sağlık Hizmetleri Gençlik Ofisleri Psikolojik Danışmanlık Merkezleri (PDM) Enstitü İstanbul İSMEK Bölgesel İstihdam Ofisleri KÜLTÜR SANAT Kültür A.Ş. İBB Kültür Kütüphaneler ve Müzeler Orkestralar Sesli Kütüphane HABERLER Özel Sektörde Binlerce İlan Arasında İş Bul İş Bul Üye Ol Yeni Yatırımlar Yeni Atılımlar İstanbul Yatırımla Güçleniyor İstanbul Büyükşehir Belediyesi’nin 300 günde gerçekleştireceği 300 proje İstanbullularla buluşuyor PROJELERİ İNCELE ŞEHİRDE BU AY İCRAATLAR VİZ",
+  "icerik_ozeti": "Anasayfa DUYURULAR Haberler Kadın Dostu Kentler Çözüm Merkezi Kent Lokantası Kameralar Bağış Yap ULAŞIM İETT Şehir Hatları İBB Trafik Yol Bakım Çalışmaları İSFALT A.Ş. İSPARK A.Ş. Metro İstanbul A.Ş. SAĞLIK VE SOSYAL HİZMETLER Bilgi Hizmetleri Cenaze İşlemleri Nasıl Yapılır Engellilere Yönelik Spor Hizmetleri Evde Sağlık Hizmetleri Gençlik Ofisleri Psikolojik Danışmanlık Merkezleri (PDM) Enstitü İstanbul İSMEK Bölgesel İstihdam Ofisleri KÜLTÜR SANAT Kültür A.Ş. İBB Kültür Kütüphaneler ve Müzeler Orkestralar Sesli Kütüphane HABERLER Özel Sektörde Binlerce İlan Arasında İş Bul İş Bul Üye Ol Yeni Yatırımlar Yeni Atılımlar İstanbul Yatırımla Güçleniyor İstanbul Büyükşehir Belediyesi’nin 300 günde gerçekleştireceği 300 proje İstanbullularla buluşuyor PROJELERİ İNCELE ŞEHİRDE BU AY İCRAATLAR VİZYON 2050 HEDEFLERİMİZ Hedefimiz , yaşanabilir, doğaya saygılı, kültürel mirasa sahip çıkan, çevreyle uyumlu, altyapısı tamamlanmış ve geleceğine dair kararları ortak akılla alan bir İstanbul’u hep birlikte planlamak. İstanbul’u mutlu insanların bir arada barış ve huzur içerisinde yaşayabileceği, adil ve yaratıcı bir hale getirmeyi, dünyaya örnek olacak bir yerel demokrasi modeli oluşturmayı arzulu",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_kisa"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ibb.istanbul/tum-hizmetler/spor-hizmetleri/engellilere-yonelik-spor-hizmetleri/",
+  "grup": "belediye",
+  "kaynak_turu": "canli",
+  "title": "Engellilere Yönelik Spor Hizmetleri | IBB",
+  "h1": [
+   "Engellilere Yönelik Spor Hizmetleri"
+  ],
+  "site_adi": "IBB",
+  "text_sample": "Engellilere Yönelik Spor Hizmetleri İBB spor tesislerindeki engelli seanslarının içinde Özel gereksinimli Çocuklar önemli bir yer tutmaktadır. Özel çocuklar İBB spor tesislerine geldiklerinde ilk olarak uzman eğitmenler tarafından çeşitli testlerden geçirilmektedir. Eğitim ve gelişim karnesinin oluşturulduğu test sonrasında, çocuklarda oluşmakta olan ve eksik olan motor becerilerine göre çalışmalar yapılmaktadır. Motor becerilerin gelişme göstermesi ile birlikte çocukların spor ile ilgili gelecek hedefleri de planlanmaktadır. Eğitim aldıkları branşlardan birinde yetenekli olduklarının tespit edilmesi durumunda ailelere bilgi verilmekte ve çocukların spor yaşamları ile ilgili çalışmaların yol haritası çizilmektedir. İBB spor tesislerinde özel gereksinimli çocukların en fazla katıldıkları br",
+  "icerik_ozeti": "Engellilere Yönelik Spor Hizmetleri İBB spor tesislerindeki engelli seanslarının içinde Özel gereksinimli Çocuklar önemli bir yer tutmaktadır. Özel çocuklar İBB spor tesislerine geldiklerinde ilk olarak uzman eğitmenler tarafından çeşitli testlerden geçirilmektedir. Eğitim ve gelişim karnesinin oluşturulduğu test sonrasında, çocuklarda oluşmakta olan ve eksik olan motor becerilerine göre çalışmalar yapılmaktadır. Motor becerilerin gelişme göstermesi ile birlikte çocukların spor ile ilgili gelecek hedefleri de planlanmaktadır. Eğitim aldıkları branşlardan birinde yetenekli olduklarının tespit edilmesi durumunda ailelere bilgi verilmekte ve çocukların spor yaşamları ile ilgili çalışmaların yol haritası çizilmektedir. İBB spor tesislerinde özel gereksinimli çocukların en fazla katıldıkları branşlar yüzme, hareket eğitimleri ve çeşitli egzersiz programları, fitness ve buz pateni olarak öne çıkmaktadır. Sportif ve yaşamsal becerilerinin gelişmesine katkı sağlanması amacıyla uygulanan spor eğitimleri çocukların öz bakımlarını geliştirmelerini sağlayan ince motor hareketlerinden yürüme, koşma, zıplama, vurma gibi eylemleri yapabilecekleri kaba motor hareketlerine, el göz koordinasyonundan",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ankara.bel.tr/",
+  "grup": "belediye",
+  "kaynak_turu": "canli",
+  "title": "T.C. Ankara Büyükşehir Belediyesi",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "22 Ekim 2026 Perşembe 11.3 &degC Açık Online Numarataj Başvurusu Başkent Tarım Destek Başkent Mobil Şeffaf Ankara Başkent Wi-Fi Şeffaflık ve Hesapverebilirlik EFQM Mükemmellik Maratonu Ankara Miras Kent Rehberi Gençlikle Gelecek CBS Başkent Ankara Kültür Sanat Kadın ve Aile Hizmetleri Kadın Çalışmaları KVKK Askıya Çıkarılan Planlar E-Belediye İşlemleri SMA'lı Çocuklarımıza Destek Sayfası E-Pati Başkentkart Yayınlar Sosyal Hizmetler Yeşilin Başkenti Ankara Tek Yürek C Plaka Uygunluk Portalı ABB Tv Hal Fiyatları Toplanma Alanları Zabıta Alo112 İtfaiye Başkent153 Başkan Hakkında Başkan'a Mesaj Başkan'ın Yetkileri Fotoğraf Albümü Mal Varlığı İlkleri Kurumsal Teşkilat Şeması Belediye Hakkında Tarihçe Misyon ve Vizyon Yetki Alanı Etik Komisyonu Belediye Encümeni Kamu Hizmet Standartları Meclis M",
+  "icerik_ozeti": "Çözüm Merkezi Başkent153 Sosyal Yardım Sağlık Hizmetleri Nikah İşlemleri Cenaze İşlemleri Hizmet Tesisleri Şeffaflık ve Hesap Verebilirlik Kırsal Kalkınma Hal Fiyatları Toplam Kart Harcaması 1,464,982,299 ₺ Son 24 Saatlik Harcama 10,786,968 ₺ Sağlık Harcaması 2,323 ₺ Eğitim Harcaması 228,675 ₺ Giyim Harcaması 474,727 ₺ Oyuncak-Hediyelik ve Oyun Harcaması 37,255 ₺ Bebek Ürünleri Harcaması 88,148 ₺ Diğer Harcaması 3,967,213 ₺ Restoran, Cafe, Yemek Hizmetleri Harcaması 594,743 ₺ Gıda Harcaması 5,390,742 ₺ Fatura ödeme ve Kamu hizmetleri Harcaması 3,139 ₺ Haberler ABB KARİYER MERKEZİ’NDEN BAŞKENTLİLERE İSTİHDAM DESTEĞİ ABB’DEN BAŞKENTLİ MİNİKLERE TRAFİK EĞİTİMİ ABB BAĞIMLILIKLA MÜCADELE POLİTİKALARINI GENÇLERLE BİRLİKTE GELİŞTİRECEK ABB’DEN POLİS VE ASKER ADAYLARINA ÜCRETSİZ PARKUR HAZIRLIK KURSU 22 Ekim 2026 ABB KARİYER MERKEZİ’NDEN BAŞKENTLİLERE İSTİHDAM DESTEĞİ 21 Ekim 2026 ABB’DEN BAŞKENTLİ MİNİKLERE TRAFİK EĞİTİMİ 20 Ekim 2026 ABB BAĞIMLILIKLA MÜCADELE POLİTİKALARINI GENÇLERLE BİRLİKTE GELİŞTİRECEK 20 Ekim 2026 ABB’DEN POLİS VE ASKER ADAYLARINA ÜCRETSİZ PARKUR HAZIRLIK KURSU Diğer Haberler Duyurular Diğer Duyurular 02 Ekim Elektrikli Skuter İşletme İlanı 25 Eylül 2026-2027 YILI SÜ",
+  "sorunlar": [
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ankara.bel.tr/haberler/abb-den-baskentli-miniklere-trafik-egitimi-18522",
+  "grup": "belediye",
+  "kaynak_turu": "canli",
+  "title": "Haberler",
+  "h1": [
+   "Haberler"
+  ],
+  "site_adi": null,
+  "text_sample": "22 Ekim 2026 Perşembe 11.3 &degC Açık Online Numarataj Başvurusu Başkent Tarım Destek Başkent Mobil Şeffaf Ankara Başkent Wi-Fi Şeffaflık ve Hesapverebilirlik EFQM Mükemmellik Maratonu Ankara Miras Kent Rehberi Gençlikle Gelecek CBS Başkent Ankara Kültür Sanat Kadın ve Aile Hizmetleri Kadın Çalışmaları KVKK Askıya Çıkarılan Planlar E-Belediye İşlemleri SMA'lı Çocuklarımıza Destek Sayfası E-Pati Başkentkart Yayınlar Sosyal Hizmetler Yeşilin Başkenti Ankara Tek Yürek C Plaka Uygunluk Portalı ABB Tv Hal Fiyatları Toplanma Alanları Zabıta Alo112 İtfaiye Başkent153 Başkan Hakkında Başkan'a Mesaj Başkan'ın Yetkileri Fotoğraf Albümü Mal Varlığı İlkleri Kurumsal Teşkilat Şeması Belediye Hakkında Tarihçe Misyon ve Vizyon Yetki Alanı Etik Komisyonu Belediye Encümeni Kamu Hizmet Standartları Meclis M",
+  "icerik_ozeti": "Gündem ABB’DEN BAŞKENTLİ MİNİKLERE TRAFİK EĞİTİMİ 21 Ekim 2026 Ankara Büyükşehir Belediyesi Kurtuluş Parkı Trafik Eğitim Merkezi, Başkentli minikleri ağırlamaya devam ediyor. Minikler, merkezde trafik kurallarını eğlenerek öğreniyorlar. Ankara Büyükşehir Belediyesi Ulaşım Dairesi Başkanlığı Sinyalizasyon ve Altyapı Şube Müdürlüğü, Kurtuluş Parkı Trafik Eğitim Merkezi’nde, Başkentli miniklere trafik bilinci kazandırmaya devam ediyor. Merkezde eğitimler yıl içerisinde iki dönem veriliyor. Kent genelindeki okullardan randevu sistemiyle gelen anasınıfı, ilkokul 1. ve 2. sınıf öğrencisi minikler, hem trafik kurallarını öğreniyor hem de keyifli vakit geçiriyor. MİNİKLER, TRAFİK KURALLARINI EĞLENEREK ÖĞRENİYOR Okulların açılmasıyla başlayan eğitim programı iki aşamadan oluşuyor. İlk aşamada, miniklere sınıf içerisinde trafik ile ilgili teorik bilgiler öğretilirken, ikinci aşamada ise özel alanda uygulamalı eğitim veriliyor. Bu alanda öğrenciler karşıdan karşıya güvenli geçebilmeyi, yaya geçidi, trafik ışıkları, okul geçidi, yaya üst geçidi kullanımını uygulamalı olarak öğreniyor. Uygulamalı eğitimin ardından ise, çocuklar akülü arabalarla sürüş yaparak hem eğleniyor hem de öğrendiklerini ",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.izmir.bel.tr/",
+  "grup": "belediye",
+  "kaynak_turu": "canli",
+  "title": "İzmir Büyükşehir Belediyesi",
+  "h1": [
+   "Küçük Değişiklikler Büyük Tasarruflar Sağlar",
+   "Projelerimiz"
+  ],
+  "site_adi": "İzmir Büyükşehir Belediyesi",
+  "text_sample": "TR EN TR 27°C Anasayfa Kurumsal Hizmetler Projeler İzmir HIZLI MENÜ ULAŞIM BİZE ULAŞIN İZMİR BİZİZMİR İBB Meclisi İBB Encümeni Birimlerimiz Şirketlerimiz Etik Komisyon Üyeleri Görevlerimiz Stratejik Plan Dijital Platformlarımız Kişisel Verilerin Korunması ve Bilgi Güvenliği Muhtarlıklar Kurum Politikaları AB ve Proje Çalışmalarımız Kardeş Kentlerimiz İzmir Belediye Tarihçesi Belediye Başkanlarımız CV Bankası Şeffaf İzmir Başkanlık Divanı ve Divan Katipleri Komisyonlar Meclis Gündemi Ana Gündeme İlave Edilen Maddeler Meclis Toplantı Tutanakları Karar Özetleri Meclis Kararları ve Komisyon Raporları Meclis Canlı Yayın Meclis Üyelerimiz Meclis Videoları Encümen Üyeleri Encümen Gündemi Encümen Kararları Kişisel Verilerin Korunması ve Bilgi Güvenliği Aydınlatma Metni Kişisel Verilerin İşlenmesi ",
+  "icerik_ozeti": "Arama Aramayı Temizle Küçük Değişiklikler Büyük Tasarruflar Sağlar Geleceği Şekillendirmenin Anahtarı Enerji Verimliliği Hk. Video Detayları Gör Tüm Duyuruları Gör Haberler Dijital Platformlarımız Yayınlar Dokümanlar E-İşlem “Suya indirim geliyor, ulaşıma zam yok” 22 Ekim 2026 Perşembe İzmir Esnaf ve Sanatkârlar Odaları Birliği’ni ziyaret eden İzmir Büyükşehir Belediye Başkanı Dr. Cemil Tugay, su tarifelerinde indirime gidileceğini, toplu ulaşıma zam yapmayacaklarını açıkladı. Detaya Git Başkan Tugay: Kısa zamanda çok iş yapalım 22 Ekim 2026 Perşembe İzmir Büyükşehir Belediye Başkanı Dr. Cemil Tugay, EBSO’nun yeni yönetimini ziyaretinde üretim ve ticaret kapasitesinin artırılması, sanayicilerin desteklenmesi için iş birliği çağrısı yaptı. Detaya Git Görme engelliler Kültürpark’ta pedal çevirdi 22 Ekim 2026 Perşembe İzmir Büyükşehir Belediyesi, Eşpedal Derneği iş birliğiyle Beyaz Baston Körler ve Güvenlik Günü kapsamında görme engelli vatandaşları Kültürpark’ta bisikletle buluşturdu. Detaya Git İzmir’de vapur yolcuları güne sporla başlıyor 22 Ekim 2026 Perşembe İzmir Büyükşehir Belediyesi ve İZDENİZ iş birliğiyle düzenlenen “Günaydın Sporu” etkinliği, pazartesi ve çarşamba sabahları",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.izmir.bel.tr/tr/IsyerlerininRuhsatlandirilmasi/39/104",
+  "grup": "belediye",
+  "kaynak_turu": "canli",
+  "title": "İzmir Büyükşehir Belediyesi",
+  "h1": [],
+  "site_adi": "İzmir Büyükşehir Belediyesi",
+  "text_sample": "TR EN TR 27°C Anasayfa Kurumsal Hizmetler Projeler İzmir HIZLI MENÜ ULAŞIM BİZE ULAŞIN İZMİR BİZİZMİR İBB Meclisi İBB Encümeni Birimlerimiz Şirketlerimiz Etik Komisyon Üyeleri Görevlerimiz Stratejik Plan Dijital Platformlarımız Kişisel Verilerin Korunması ve Bilgi Güvenliği Muhtarlıklar Kurum Politikaları AB ve Proje Çalışmalarımız Kardeş Kentlerimiz İzmir Belediye Tarihçesi Belediye Başkanlarımız CV Bankası Şeffaf İzmir Başkanlık Divanı ve Divan Katipleri Komisyonlar Meclis Gündemi Ana Gündeme İlave Edilen Maddeler Meclis Toplantı Tutanakları Karar Özetleri Meclis Kararları ve Komisyon Raporları Meclis Canlı Yayın Meclis Üyelerimiz Meclis Videoları Encümen Üyeleri Encümen Gündemi Encümen Kararları Kişisel Verilerin Korunması ve Bilgi Güvenliği Aydınlatma Metni Kişisel Verilerin İşlenmesi ",
+  "icerik_ozeti": "Arama Aramayı Temizle İŞYERLERİNİN RUHSATLANDIRILMASI İŞYERLERİNİN RUHSATLANDIRILMASI VE DENETLENMESİ 6330 sayılı \"14 ilde büyükşehir belediyesi ve 27 ilçe kurulması ile bazı kanun ve kanun hükmünde kararnamelerde değişlik yapılmlasına dair kanunun 1.md'sinin 2.bendinde belirtilen Adana, Ankara, Bursa, Diyarbakır, Eskişehir, Erzurum, Gaziantep, İzmir, Kayseri, Konya, Mersin, Sakarya ve Samsun büyükşehir belediyelerinin sınırları il mülki sınırlarıdır.\" hükmü gereğince sorumluluk alanımız 21 ilçeden 30 ilçeye çıktığından, hizmet alanımız 30 ilçeyi kapsamaktadır. İşyerlerin ruhsatlandırılması işlemleri, 10.08.2005 tarih ve 25902 Sayılı Resmi Gazete'de yayımlanarak yürürlüğe giren İşyeri Açma ve Çalışma Ruhsatlarına İlişkin Yönetmelik hükümleri çerçevesinde yürütülmektedir. İşletmeler bu yönetmelik kapsamında; 1. Sınıf G.S.M. ( Akaryakıt dolum veya depolama tesisleri, çimento fabrikası vb.) 2. Sınıf G.S.M. ( Akaryakıt ve otogaz (LPG, LNG, CNG) satış stasyonu, sigara fabrikaları, oto bakım ve servis istasyonları vb.) 3. Sınıf G.S.M. ( Kuru temizleme, yufka simit üretim tesisleri vb.) Sıhhi müesseseler (Kuaför, lokanta, pastane vb.) Umuma açık istirahat ve eğlence yerleri (kahvehane, in",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.duzce.bel.tr/",
+  "grup": "belediye",
+  "kaynak_turu": "canli",
+  "title": "DÜZCE BELEDİYESİ",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "ANA SAYFA DÜZCE DÜZCE TARİHİ GENEL BİLGİ COĞRAFİ YAPI DOĞA ESKİ BAŞKANLAR MİLLETVEKİLLERİMİZ BAŞKAN BAŞKAN ÖZGEÇMİŞ FOTOĞRAF GALERİSİ KURUMSAL BAŞKAN YARDIMCILARI MECLİS ÜYELERİ TEŞKİLAT ŞEMASI ŞİRKETLER KURUMSAL POLİTİKALARIMIZ KURUMSAL SORUMLULUK VE AMAÇLARI ENCÜMEN ÜYELERİ MÜDÜRLÜKLER ETİK KOMİSYON STRATEJİK PLAN FAALİYET RAPORLARI PERFORMANS PROGRAMLARI MALİ DURUM BEKLENTİLER RAPORU KVKK KURUMSAL KİMLİK HİZMET STANDARTLARI HAYVAN SAHİPLENDİRME YÖNETMELİKLER İŞ AKIŞ ŞEMALARI PROJELER KENT REHBERİ İLETİŞİM 153 BİZE ULAŞIN E-BELEDİYE Haberler Tüm Haberler KONURALP YENİ MÜZESİ İÇİN PROTOKOL İMZALANDI PROJE DÜZCE BELEDİYESİ’NDEN, İHALE BAKANLIKTAN 22 Ekim 2026 KAMUSAL ALANLARDA HURDACILIK FAALİYETLERİ YASAK DÜZCE BELEDİYESİ’NDEN SIKI DENETİM 22 Ekim 2026 BAŞKAN ÖZLÜ MARKA ŞEHİRLER ZİRVESİND",
+  "icerik_ozeti": "Haberler Tüm Haberler KONURALP YENİ MÜZESİ İÇİN PROTOKOL İMZALANDI PROJE DÜZCE BELEDİYESİ’NDEN, İHALE BAKANLIKTAN 22 Ekim 2026 KAMUSAL ALANLARDA HURDACILIK FAALİYETLERİ YASAK DÜZCE BELEDİYESİ’NDEN SIKI DENETİM 22 Ekim 2026 BAŞKAN ÖZLÜ MARKA ŞEHİRLER ZİRVESİNDE DÜZCE'Yİ ANLATTI “BELEDİYECİLİĞİN TEMEL TAŞI ALTYAPIDIR” 22 Ekim 2026 PROJELERİMİZİ İNCELEMEK İÇİN TIKLAYINIZ DUYURULAR ONLİNE ÖDEME İŞLEMLERİ HİZMETLER VEFAT EDENLER GELİR TARİFELERİ VERGİ BEYANNAMELERİ Bir Fikrim Var Projelerimiz Tüm Projeler TAMAMLANDI DÜZCE MİLLET BAHÇESİ TAMAMLANDI KOKOREÇÇİLER ÇARŞISI TAMAMLANDI FİBROBETON KÜTÜPHANESİ TAMAMLANDI KATI ATIK TESİSİ TAMAMLANDI TIBBİ ATIK VE STERİLİZASYON TESİSİ Dr. Faruk ÖZLÜ Düzce Belediye Başkanı FACEBOOK @DrOzluFaruk Facebook'ta Takip Et → INSTAGRAM @dr_farukozlu Instagram'da Takip Et → X / TWITTER @Dr_Faruk_Ozlu X'te Takip Et → Başkanımızın resmî sosyal medya hesaplarından güncel gelişmeleri takip edin “ SÖZ SİZDE Mahalle Sohbetleri Mahallelerimizi birlikte yönetiyor, ihtiyaçları yerinde dinliyor, çözümleri ortak akılla üretiyoruz. Söz Sizde, Çözüm Bizde İşin Özü Çalışmak Tüm Mahalle Buluşmalarını Gör Dinliyoruz Değerlendiriyoruz Çözüyoruz SARAYYERİ 20.10.2026 • 13:44 M",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.duzce.bel.tr/proje/duzce-millet-bahcesi",
+  "grup": "belediye",
+  "kaynak_turu": "canli",
+  "title": "DÜZCE MİLLET BAHÇESİ — DÜZCE BELEDİYESİ",
+  "h1": [
+   "DÜZCE MİLLET BAHÇESİ"
+  ],
+  "site_adi": "DÜZCE MİLLET BAHÇESİ",
+  "text_sample": "ANA SAYFA DÜZCE DÜZCE TARİHİ GENEL BİLGİ COĞRAFİ YAPI DOĞA ESKİ BAŞKANLAR MİLLETVEKİLLERİMİZ BAŞKAN BAŞKAN ÖZGEÇMİŞ FOTOĞRAF GALERİSİ KURUMSAL BAŞKAN YARDIMCILARI MECLİS ÜYELERİ TEŞKİLAT ŞEMASI ŞİRKETLER KURUMSAL POLİTİKALARIMIZ KURUMSAL SORUMLULUK VE AMAÇLARI ENCÜMEN ÜYELERİ MÜDÜRLÜKLER ETİK KOMİSYON STRATEJİK PLAN FAALİYET RAPORLARI PERFORMANS PROGRAMLARI MALİ DURUM BEKLENTİLER RAPORU KVKK KURUMSAL KİMLİK HİZMET STANDARTLARI HAYVAN SAHİPLENDİRME YÖNETMELİKLER İŞ AKIŞ ŞEMALARI PROJELER KENT REHBERİ İLETİŞİM 153 BİZE ULAŞIN E-BELEDİYE Ana Sayfa / Projelerimiz / DÜZCE MİLLET BAHÇESİ PROJE DETAY TAMAMLANDI DÜZCE MİLLET BAHÇESİ Düzce şehir merkezindeki Avni Akyol ve İnönü Parklarını kapsayan yaklaşık 34.000 m² alan üzerine TOKİ işbirliğiyle inşa edilen Düzce Millet Bahçesi 29 Ekim 2021’de res",
+  "icerik_ozeti": "Ana Sayfa / Projelerimiz / DÜZCE MİLLET BAHÇESİ PROJE DETAY TAMAMLANDI DÜZCE MİLLET BAHÇESİ Düzce şehir merkezindeki Avni Akyol ve İnönü Parklarını kapsayan yaklaşık 34.000 m² alan üzerine TOKİ işbirliğiyle inşa edilen Düzce Millet Bahçesi 29 Ekim 2021’de resmi olarak… Düzce şehir merkezindeki Avni Akyol ve İnönü Parklarını kapsayan yaklaşık 34.000 m² alan üzerine TOKİ işbirliğiyle inşa edilen Düzce Millet Bahçesi 29 Ekim 2021’de resmi olarak hizmete açıldı. *Millet Kütüphanesi ve Millet Kıraathanesi *Kafeteryalar ve yöresel ürün satış noktaları *İki çocuk parkı *Açık hava tiyatrosu *İki süs havuzu *Yürüyüş yolları ve spor alanlarına sahip Düzce Millet Bahçesi; Düzce halkının buluşma ve sosyal etkinlik alanı haline geldi. Projeyle İlgili Diğer Görseller SONRAKİ PROJE KATI ATIK TESİSİ Benzer Projeler Tüm Projeler TAMAMLANDI KOKOREÇÇİLER ÇARŞISI Melensu Park içerisinde 7 adet dükkan inşa edilmiştir. Her biri 40’ar m2 büyüklüğünde. İçerisinde geniş oturma alanı, mutfak ve servis alanı, aynı zamanda tüm dükkanlarda ayrı… TAMAMLANDI FİBROBETON KÜTÜPHANESİ Fibrobeton Kütüphanesi; Cumhuriyet Mahallesi’nde Düzce Bilim Merkezi, Çocuk Üniversitesi ve Sıfır Atık Oyuncak Müzesi’nin de içerisin",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.bursa.bel.tr/",
+  "grup": "belediye",
+  "kaynak_turu": "canli",
+  "title": "BURSA BÜYÜKŞEHİR BELEDİYESİ",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "En az 3 harf giriniz KURUMSAL BELEDİYE İDARİ YAPI YETKİ VE SORUMLULUKLAR TARİHÇE ŞİRKETLER VE KURULUŞLAR ETİK KOMİSYONU ULUSAL / ULUSLARARASI İLİŞKİLER LOGOLAR AMBLEMLER BİLGİ EDİNME MECLİS MECLİS ÜYELERİ KOMİSYON ÜYELERİ MECLİS KARARLARI MECLİS GÜNDEMİ VE KARAR ÖZETLERİ YAYIN / PLAN / RAPOR STRATEJİK PLANLAR PERFORMANS PROGRAMI BÜTÇE FAALİYET RAPORLARI KESİN HESAPLAR GELİR TARİFESİ İMAR PLANI DEĞİŞİKLİKLERİ UKOME TOPLANTILARI FOTOĞRAF GALERİSİ BURSA GÜNLÜĞÜ DERGİSİ AYKOME KARARLARI BURSA YAYINLARI YÖNETİM SİSTEMLERİ VİZYON & MİSYON POLİTİKALARIMIZ Entegre Yönetim Sistemi Kalite Belgelerimiz KVKK Aydınlatma Metni Yönetmelikler / Yönergeler KAMU HİZMET STANDARTLARI (KAHİS) BAŞKAN Şahin BİBA Başkan'a Mesaj Özgeçmiş Görevleri HİZMETLERİMİZ Ulaşım Kültür - Sanat Zabıta İmar Sağlık Çevre Sosyal",
+  "icerik_ozeti": "Detaylı Bilgi Detaylı Bilgi Detaylı Bilgi Detaylı Bilgi Detaylı Bilgi Detaylı Bilgi Detaylı Bilgi SOSYAL DESTEK HAVA KALİTESİ ÇEVRE BEYAZ MASA ETKİNLİKLER HABERLER Patili Bir Yuva KIRSAL DESTEK E-BELEDİYE İHALE CANLI YAYINLARI GÜNLÜK KAZI ÇALIŞMALARI SOSYAL DESTEK HAVA KALİTESİ ÇEVRE BEYAZ MASA ETKİNLİKLER HABERLER Patili Bir Yuva KIRSAL DESTEK E-BELEDİYE İHALE CANLI YAYINLARI GÜNLÜK KAZI ÇALIŞMALARI GÜNCEL Orhangazi'de altyapı Büyükşehir ile güçleniyor Bursa Büyükşehir Belediyesi, Orhangazi ilçesine bağlı Sölöz Mahallesi’nde 3 bin 800 metre uzunluğunda yeni kanalizasyon hattı imalatı gerçekleştiriyor. HABERE GİT 22.10.2026 Bursa'da Karagöz geleneği gelecek kuşaklara aktarılıyor 22.10.2026 Büyükşehir ile meme kanseri farkındalığı artıyor 22.10.2026 Büyükşehir Bandosu'ndan uluslararası temsil 22.10.2026 Büyükşehir’den park ve bahçelere düzenli bakım 21.10.2026 Ünlü piyanist Bursa'da müzikseverlerle buluştu 21.10.2026 Büyükşehir’den stajyer öğrencilere oryantasyon eğitimi 20.10.2026 'Mehterler Buluşması'na muhteşem final 20.10.2026 Başkan Vekili Biba: Hizmet gitmeyen mahalle kalmayacak 20.10.2026 Bursa Şehir Tiyatrosu'ndan 20. yılında çifte prömiyer gururu: 'Hisse-i Şayia' sahnede! 1",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.bursa.bel.tr/iletisim",
+  "grup": "belediye",
+  "kaynak_turu": "canli",
+  "title": "İletişim",
+  "h1": [
+   "İletişim"
+  ],
+  "site_adi": null,
+  "text_sample": "En az 3 harf giriniz KURUMSAL BELEDİYE İDARİ YAPI YETKİ VE SORUMLULUKLAR TARİHÇE ŞİRKETLER VE KURULUŞLAR ETİK KOMİSYONU ULUSAL / ULUSLARARASI İLİŞKİLER LOGOLAR AMBLEMLER BİLGİ EDİNME MECLİS MECLİS ÜYELERİ KOMİSYON ÜYELERİ MECLİS KARARLARI MECLİS GÜNDEMİ VE KARAR ÖZETLERİ YAYIN / PLAN / RAPOR STRATEJİK PLANLAR PERFORMANS PROGRAMI BÜTÇE FAALİYET RAPORLARI KESİN HESAPLAR GELİR TARİFESİ İMAR PLANI DEĞİŞİKLİKLERİ UKOME TOPLANTILARI FOTOĞRAF GALERİSİ BURSA GÜNLÜĞÜ DERGİSİ AYKOME KARARLARI BURSA YAYINLARI YÖNETİM SİSTEMLERİ VİZYON & MİSYON POLİTİKALARIMIZ Entegre Yönetim Sistemi Kalite Belgelerimiz KVKK Aydınlatma Metni Yönetmelikler / Yönergeler KAMU HİZMET STANDARTLARI (KAHİS) BAŞKAN Şahin BİBA Başkan'a Mesaj Özgeçmiş Görevleri HİZMETLERİMİZ Ulaşım Kültür - Sanat Zabıta İmar Sağlık Çevre Sosyal",
+  "icerik_ozeti": "Anasayfa İletişim İletişim Telefon: Alo 153 Beyaz Masa / Santral: 444 16 00 Whatsapp Hattı : 0501 153 16 16 Faks: (0224) 716 15 50 Adres: Zafer Mh. Ankara Yolu Cd. C Blok No:1 PK:16080 Osmangazi / BURSA E-Posta: beyazmasa@bursa.bel.tr KEP Adresi: bursabuyuksehir.genelevrak@hs03.kep.tr UETS Adresi: 35590-60952-10481 Belediyemiz Arabuluculuk iletişim bilgileri: Telefon 444 16 00 Faks (0224) 716 15 50 Adres Zafer Mh. Ankara Yolu Cd. C Blok No:1 PK:16080 Osmangazi / BURSA E-Posta: arabuluculuk@bursa.bel.tr İstek, şikayet ve önerileriniz için: Beyaz Masa Bilgi edinme Bilgi Edinme Başvuru Formu Büyükşehir Birim Rehberi Rehber Mahelle Muhtarları Listesi Muhtarlar Daha Büyük Haritayı Göster Web sitemizde istatistiksel analiz amacıyla çerezler kullanılmaktadır. Detaylı bilgi Kabul Et Reddet",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.aa.com.tr/tr",
+  "grup": "haber",
+  "kaynak_turu": "canli",
+  "title": "Anadolu Ajansı",
+  "h1": [
+   "Anadolu Ajansı"
+  ],
+  "site_adi": "Anadolu Ajansı",
+  "text_sample": "Ana içeriğe atla Anadolu Ajansı Değişen Dünyanın Habercisi KURUMSAL Tarihçe Künye Kalite Yönetim Yayın İlkeleri Habercilik ve KVKK İlkeleri Sosyal Medya İlkeleri Logolar Gizlilik ve Çerez Politikası Aydınlatma Metni Yasal Uyarı AA WhatsApp Kanalları RSS Gündem İLETİŞİM İletişim Abonelik Talepleri Yurt İçi Bürolar Yurt Dışı Bürolar Anadolu Ajansı © 2026 GÜNDEM DÜNYA EKONOMİ SPOR ANALİZ Anadolu Ajansı Fransa'da eylemler Yemen'de savaş İsrail’in Gazze saldırıları Dolar 49,63 0.14% Euro 55,84 0.37% Altın TL/GR 6.439,42 -2.41% Altın ONS 4.036,36 -2.54% BIST 100 11.220,37 -3,08% BTC/USDT 81.267,00 -4,13% ETH/USDT 2.379,20 -5,47% EDITION Türkçe English BHSC Pусский Français العربية Kurdî کوردی Shqip فارسی македонски Bahasa Indonesia Español Dolar 49,63 0.14% Euro 55,84 0.37% Altın TL/GR 6.439,42 ",
+  "icerik_ozeti": "Ana içeriğe atla Anadolu Ajansı Değişen Dünyanın Habercisi KURUMSAL Tarihçe Künye Kalite Yönetim Yayın İlkeleri Habercilik ve KVKK İlkeleri Sosyal Medya İlkeleri Logolar Gizlilik ve Çerez Politikası Aydınlatma Metni Yasal Uyarı AA WhatsApp Kanalları RSS Gündem İLETİŞİM İletişim Abonelik Talepleri Yurt İçi Bürolar Yurt Dışı Bürolar Anadolu Ajansı © 2026 GÜNDEM DÜNYA EKONOMİ SPOR ANALİZ Anadolu Ajansı Fransa'da eylemler Yemen'de savaş İsrail’in Gazze saldırıları Dolar 49,63 0.14% Euro 55,84 0.37% Altın TL/GR 6.439,42 -2.41% Altın ONS 4.036,36 -2.54% BIST 100 11.220,37 -3,08% BTC/USDT 81.267,00 -4,13% ETH/USDT 2.379,20 -5,47% EDITION Türkçe English BHSC Pусский Français العربية Kurdî کوردی Shqip فارسی македонски Bahasa Indonesia Español Dolar 49,63 0.14% Euro 55,84 0.37% Altın TL/GR 6.439,42 -2.41% Altın ONS 4.036,36 -2.54% BIST 100 11.220,37 -3,08% BTC/USDT 81.267,00 -4,13% ETH/USDT 2.379,20 -5,47% PODCAST TÜMÜNÜ GÖR Analiz ve görüşler Analiz ve görüşler Rusya-Ukrayna Savaşı: Bitişe mi başlangıca mı yakınız? Mahreç: Dünya Mahreç: Dünya Rusya-Ukrayna savaşında enerji tesisleri neden hedefte? Analiz ve görüşler Analiz ve görüşler Batı'dan yükselen aykırı ses: Kanada Başbakanı Carney'in",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.aa.com.tr/tr/spor/yunanistan-basketbolunda-kaos/4097179",
+  "grup": "haber",
+  "kaynak_turu": "canli",
+  "title": "Yunanistan basketbolunda kaos",
+  "h1": [
+   "Yunanistan basketbolunda kaos"
+  ],
+  "site_adi": "Anadolu Ajansı",
+  "text_sample": "Ana içeriğe atla Değişen Dünyanın Habercisi KURUMSAL Tarihçe Künye Kalite Yönetim Yayın İlkeleri Habercilik ve KVKK İlkeleri Sosyal Medya İlkeleri Logolar Gizlilik ve Çerez Politikası Aydınlatma Metni Yasal Uyarı AA WhatsApp Kanalları RSS Gündem İLETİŞİM İletişim Abonelik Talepleri Yurt İçi Bürolar Yurt Dışı Bürolar Anadolu Ajansı © 2026 GÜNDEM DÜNYA EKONOMİ SPOR ANALİZ Fransa'da eylemler Yemen'de savaş İsrail’in Gazze saldırıları EDITION Türkçe English BHSC Pусский Français العربية Kurdî کوردی Shqip فارسی македонски Bahasa Indonesia Español Spor Dünyadan Spor Basketbol Yunanistan basketbolunda kaos Yunanistan Basketbol Federasyonu Başkanı Vangelis Liolios ve Avrupa Ligi hakemi Vasiliki Tsaroucha'nın da aralarında bulunduğu 6 kişinin şike ve rüşvet suçlamalarıyla gözaltına alınması, ülke b",
+  "icerik_ozeti": "Ana içeriğe atla Değişen Dünyanın Habercisi KURUMSAL Tarihçe Künye Kalite Yönetim Yayın İlkeleri Habercilik ve KVKK İlkeleri Sosyal Medya İlkeleri Logolar Gizlilik ve Çerez Politikası Aydınlatma Metni Yasal Uyarı AA WhatsApp Kanalları RSS Gündem İLETİŞİM İletişim Abonelik Talepleri Yurt İçi Bürolar Yurt Dışı Bürolar Anadolu Ajansı © 2026 GÜNDEM DÜNYA EKONOMİ SPOR ANALİZ Fransa'da eylemler Yemen'de savaş İsrail’in Gazze saldırıları EDITION Türkçe English BHSC Pусский Français العربية Kurdî کوردی Shqip فارسی македонски Bahasa Indonesia Español Spor Dünyadan Spor Basketbol Yunanistan basketbolunda kaos Yunanistan Basketbol Federasyonu Başkanı Vangelis Liolios ve Avrupa Ligi hakemi Vasiliki Tsaroucha'nın da aralarında bulunduğu 6 kişinin şike ve rüşvet suçlamalarıyla gözaltına alınması, ülke basketbolunu derinden sarstı. Mutlu Demirtaştan 22 Ekim 2026 • Güncelleme : 22 Ekim 2026 İSTANBUL Nisan ayında başlatılan soruşturmanın ardından Yunan basketbolunda büyük bir skandal ortaya çıktı. Yunan basınında yer alan haberlere göre Atina savcılığı, birinci ligin de dahil olduğu maçlarda şike ve yasa dışı bahis yapıldığına ilişkin bulgulara rastladı. Panathinaikos'lu basketbolcu Nunn, Yunanista",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.trthaber.com/",
+  "grup": "haber",
+  "kaynak_turu": "canli",
+  "title": "TRT Haber: Son Dakika Haberler ile Türkiye’nin Haber Kaynağı",
+  "h1": [
+   "SON HABERLER"
+  ],
+  "site_adi": "TRT Haber",
+  "text_sample": "SICAK GÜNDEM TÜRKİYE DÜNYA TÜRK DÜNYASI EKONOMİ SPOR SAVUNMA ÇOCUK ÖZEL HABER DOSYA HABER DİĞER SON HABERLER TÜM MANŞETLER FOTO FOKUS DÜNYA DIŞI VİDEO GALERİ KÜLTÜR-SANAT DOSYA HABER YAŞAM SAĞLIK GEZİ TEKNOLOJİ ÇEVRE EĞİTİM GÜNCEL ÇOCUK PODCAST HAVA DURUMU TRT'DEN HABERLER HAVA UYARILARI TRT AKADEMİ PROGRAMLAR TRT ARŞİV 11.3ºC Ankara Adana Adıyaman Afyonkarahisar Ağrı Aksaray Amasya Ankara Antalya Ardahan Artvin Aydın Balıkesir Bartın Batman Bayburt Bilecik Bingöl Bitlis Bolu Burdur Bursa Çanakkale Çankırı Çorum Denizli Diyarbakır Düzce Edirne Elazığ Erzincan Erzurum Eskişehir Gaziantep Giresun Gümüşhane Hakkari Hatay Iğdır Isparta İstanbul İzmir Kahramanmaraş Karabük Karaman Kars Kastamonu Kayseri Kırıkkale Kırklareli Kırşehir Kilis Kocaeli Konya Kütahya Malatya Manisa Mardin Mersin Muğla",
+  "icerik_ozeti": "11.3ºC Ankara Adana Adıyaman Afyonkarahisar Ağrı Aksaray Amasya Ankara Antalya Ardahan Artvin Aydın Balıkesir Bartın Batman Bayburt Bilecik Bingöl Bitlis Bolu Burdur Bursa Çanakkale Çankırı Çorum Denizli Diyarbakır Düzce Edirne Elazığ Erzincan Erzurum Eskişehir Gaziantep Giresun Gümüşhane Hakkari Hatay Iğdır Isparta İstanbul İzmir Kahramanmaraş Karabük Karaman Kars Kastamonu Kayseri Kırıkkale Kırklareli Kırşehir Kilis Kocaeli Konya Kütahya Malatya Manisa Mardin Mersin Muğla Muş Nevşehir Niğde Ordu Osmaniye Rize Sakarya Samsun Siirt Sinop Sivas Şanlıurfa Şırnak Tekirdağ Tokat Trabzon Tunceli Uşak Van Yalova Yozgat Zonguldak SON HABERLER Tümü Gündem \"Kanada ile yeni bir dönemi başlatıyoruz\" Cumhurbaşkanı Erdoğan: Kanada ile ilişkilerimizin geleceğine yönelik tarihi bir adım attık. Çok geniş yelpazeye yayılan iş birliği potansiyelimizi gerçek anlamda hayata geçirmek için önemli bir süreci başlattık. İlişkilerimizi stratejik ortaklık düzeyine çıkarmamız kağıt üzerinde kalacak sembolik bir adım olmayacak. Gündem \"Kanada ile yeni bir dönemi başlatıyoruz\" Cumhurbaşkanı Erdoğan: Kanada ile ilişkilerimizin geleceğine yönelik tarihi bir adım attık. Çok geniş yelpazeye yayılan iş birliği pota",
+  "sorunlar": [
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.trthaber.com/haber/gundem/fon-sorusturmasinda-31-supheli-gozaltinda-960841.html",
+  "grup": "haber",
+  "kaynak_turu": "canli",
+  "title": "Fon soruşturmasında 31 şüpheli gözaltında - Son Dakika Haberleri",
+  "h1": [
+   "Fon soruşturmasında 31 şüpheli gözaltında"
+  ],
+  "site_adi": "TRT Haber",
+  "text_sample": "SICAK GÜNDEM TÜRKİYE DÜNYA TÜRK DÜNYASI EKONOMİ SPOR SAVUNMA ÇOCUK ÖZEL HABER DOSYA HABER DİĞER SON HABERLER TÜM MANŞETLER FOTO FOKUS DÜNYA DIŞI VİDEO GALERİ KÜLTÜR-SANAT DOSYA HABER YAŞAM SAĞLIK GEZİ TEKNOLOJİ ÇEVRE EĞİTİM GÜNCEL ÇOCUK PODCAST HAVA DURUMU TRT'DEN HABERLER HAVA UYARILARI TRT AKADEMİ PROGRAMLAR TRT ARŞİV 11.3ºC Ankara Adana Adıyaman Afyonkarahisar Ağrı Aksaray Amasya Ankara Antalya Ardahan Artvin Aydın Balıkesir Bartın Batman Bayburt Bilecik Bingöl Bitlis Bolu Burdur Bursa Çanakkale Çankırı Çorum Denizli Diyarbakır Düzce Edirne Elazığ Erzincan Erzurum Eskişehir Gaziantep Giresun Gümüşhane Hakkari Hatay Iğdır Isparta İstanbul İzmir Kahramanmaraş Karabük Karaman Kars Kastamonu Kayseri Kırıkkale Kırklareli Kırşehir Kilis Kocaeli Konya Kütahya Malatya Manisa Mardin Mersin Muğla",
+  "icerik_ozeti": "11.3ºC Ankara Adana Adıyaman Afyonkarahisar Ağrı Aksaray Amasya Ankara Antalya Ardahan Artvin Aydın Balıkesir Bartın Batman Bayburt Bilecik Bingöl Bitlis Bolu Burdur Bursa Çanakkale Çankırı Çorum Denizli Diyarbakır Düzce Edirne Elazığ Erzincan Erzurum Eskişehir Gaziantep Giresun Gümüşhane Hakkari Hatay Iğdır Isparta İstanbul İzmir Kahramanmaraş Karabük Karaman Kars Kastamonu Kayseri Kırıkkale Kırklareli Kırşehir Kilis Kocaeli Konya Kütahya Malatya Manisa Mardin Mersin Muğla Muş Nevşehir Niğde Ordu Osmaniye Rize Sakarya Samsun Siirt Sinop Sivas Şanlıurfa Şırnak Tekirdağ Tokat Trabzon Tunceli Uşak Van Yalova Yozgat Zonguldak Gündem KAYNAK AA HABER GİRİŞ 22.10.2026 09:12 , 22.10.2026 10:24 Fon soruşturmasında 31 şüpheli gözaltında İstanbul'da sermaye piyasalarında gerçekleştirilen işlemlere ilişkin yürütülen fon soruşturmaları kapsamında yapılan incelemeler doğrultusunda 5 şüpheli daha gözaltına alındı. Böylece gözaltına alınanların sayısı 31'e yükseldi. İstanbul Cumhuriyet Başsavcılığınca, sermaye piyasalarında gerçekleştirilen işlemlere ilişkin yürütülen fon soruşturmaları sürüyor. Bu kapsamda hakkında gözaltı kararı verilen 31 şüpheliden yakalanan 26'sının emniyetteki işlemleri dev",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "meta_description_uzun"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ntv.com.tr/",
+  "grup": "haber",
+  "kaynak_turu": "canli",
+  "title": "NTV Haber - Haberler, En Son Güncel Haberler",
+  "h1": [],
+  "site_adi": "Haberler, En Son Güncel Haberler",
+  "text_sample": "00 GÜN 00 SAAT 00 DAKİKA 00 SANİYE Menüyü Aç Canlı İzle Son Dakika NTV Arama Aç Menüyü Aç Gündem Türkiye NTV Para Dünya Yaşam Spor&Skor Teknoloji Otomobil Eğitim Resmi İlanlar Ödemeler ne zaman başlayacak? Fonların tasfiyesine ilişkin kanun teklifi, TBMM Genel Kurulu'nda kabul edildi. Cumhurbaşkanı Erdoğan: Kanada ile tarihi bir adım attık Cumhurbaşkanı Erdoğan, Kanada ve Türkiye arasındaki ilişkilerin stratejik ortaklığa yükseltildiğini açıkladı. Sistem nasıl işliyordu? Sipariş bebek çetesine yönelik soruşturmada gözaltına alınan 44 şüpheliden 8'i tutuklandı. Tabzonspor-Hearts maçı Trabzonspor, İskoç ekibi Hearts of Midlothian'ı Papara Park'ta konuk ediyor. Merakla bekleniyordu Türkiye Cumhuriyet Merkez Bankası, piyasaların merakla beklediği faiz kararını duyurdu. Yeni dalga operasyon yap",
+  "icerik_ozeti": "00 GÜN 00 SAAT 00 DAKİKA 00 SANİYE Menüyü Aç Canlı İzle Son Dakika NTV Arama Aç Menüyü Aç Ödemeler ne zaman başlayacak? Fonların tasfiyesine ilişkin kanun teklifi, TBMM Genel Kurulu'nda kabul edildi. Cumhurbaşkanı Erdoğan: Kanada ile tarihi bir adım attık Cumhurbaşkanı Erdoğan, Kanada ve Türkiye arasındaki ilişkilerin stratejik ortaklığa yükseltildiğini açıkladı. Sistem nasıl işliyordu? Sipariş bebek çetesine yönelik soruşturmada gözaltına alınan 44 şüpheliden 8'i tutuklandı. Tabzonspor-Hearts maçı Trabzonspor, İskoç ekibi Hearts of Midlothian'ı Papara Park'ta konuk ediyor. Merakla bekleniyordu Türkiye Cumhuriyet Merkez Bankası, piyasaların merakla beklediği faiz kararını duyurdu. Yeni dalga operasyon yapıldı Fon soruşturmasında yapılan yeni operasyonda beş şüpheli daha gözaltına alındı. Haklarında dün gözaltı kararı çıkarılan beş kişiyi yakalama çalışması ise sürüyor. Gözaltı listesinde bir holdingin patronu da yer alıyor. 850 adet F-35 üretilecek Pentagon, Lockheed Martin şirketiyle 10 yılda en az 850 adet F-35 üretimini içeren çerçeve anlaşma imzaladı. Rakip Crystal Palace. Beşiktaş'ın ilk 11'inde sürpriz Çin'de 7 büyüklüğünde deprem Çin'in Tibet bölgesinde 7 büyüklüğünde deprem",
+  "sorunlar": [
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.ntv.com.tr/teknoloji/galeri-dunyada-panik-buyuyor-turkiye-de-alarma-gecti-internetin-kara-ekimiyle-ilgili-neler-biliniyor-1747438",
+  "grup": "haber",
+  "kaynak_turu": "canli",
+  "title": "Dünyada panik büyüyor, Türkiye de alarma geçti. İnternetin Kara Ekim'iyle ilgili neler biliniyor? | NTV Haber",
+  "h1": [
+   "Dünyada panik büyüyor, Türkiye de alarma geçti. İnternetin Kara Ekim'iyle ilgili neler biliniyor?"
+  ],
+  "site_adi": "NTV.com.tr",
+  "text_sample": "00 GÜN 00 SAAT 00 DAKİKA 00 SANİYE Menüyü Aç Canlı İzle Son Dakika NTV Arama Aç Menüyü Aç Gündem Türkiye NTV Para Dünya Yaşam Spor&Skor Teknoloji Otomobil Eğitim Resmi İlanlar Haberler Galeri Teknoloji Haberleri Dünyada panik büyüyor, Türkiye de alarma geçti. İnternetin Kara Ekim'iyle ilgili neler biliniyor? Dünyada panik büyüyor, Türkiye de alarma geçti. İnternetin Kara Ekim'iyle ilgili neler biliniyor? 22.10.2026 09:49 Son Güncelleme: 22.10.2026 16:31 Özgür Yusuf Cevahir Dış haberler editörü Paylaş Dünya genelinde internet altyapısında kullanılan PHP yazılımındaki güvenlik açıkları nedeniyle Türkiye dahil birçok ülke alarma geçti. Peki nedir bu PHP? Korsanlar nasıl zararlar verebilir? iStockPhoto Dün gece dünya çapında büyük bir siber güvenlik alarmı yaşandı. İnternet sitelerinin neredey",
+  "icerik_ozeti": "00 GÜN 00 SAAT 00 DAKİKA 00 SANİYE Menüyü Aç Canlı İzle Son Dakika NTV Arama Aç Menüyü Aç Dünyada panik büyüyor, Türkiye de alarma geçti. İnternetin Kara Ekim'iyle ilgili neler biliniyor? 22.10.2026 09:49 Son Güncelleme: 22.10.2026 16:31 Özgür Yusuf Cevahir Dış haberler editörü Paylaş Dünya genelinde internet altyapısında kullanılan PHP yazılımındaki güvenlik açıkları nedeniyle Türkiye dahil birçok ülke alarma geçti. Peki nedir bu PHP? Korsanlar nasıl zararlar verebilir? iStockPhoto Dün gece dünya çapında büyük bir siber güvenlik alarmı yaşandı. İnternet sitelerinin neredeyse yüzde 70'inde kullanılan PHP (Hypertext Preprocessor - Hiper Metin Önişlemcisi) programlama dilindeki iki kritik güvenlik açığı, çeşitli yapay zeka modelleri tarafından tespit edildi . Panik öyle büyüktü ki, siber güvenlik tarihinde gelmiş geçmiş en sıkıntılı 48 saat olarak gösterildi, hatta \"Kara Ekim\" olarak nitelendirildi. Önlem olarak Avrupa'da çok sayıda kamu kurumunun internet sitesi erişime kapatıldı. ABD, Avrupa Birliği, İngiltere, Japonya ve Avustralya'daki siber güvenlik kurumları, internet sitesi yöneticilerine sistemlerini acilen güncelleme çağrısında bulundu. iStockPhoto MİLYONLARCA SİBER SALDIRI ",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "meta_description_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.bbc.com/turkce",
+  "grup": "haber",
+  "kaynak_turu": "canli",
+  "title": "Haberler - BBC News Türkçe",
+  "h1": [
+   "BBC News,Türkçe-Ana sayfa"
+  ],
+  "site_adi": "BBC News Türkçe",
+  "text_sample": "BBC News, Türkçe İçeriğe götür Bulunduğunuz sayfa, Haberler Kategoriler Haberler Türkiye İran Savaşı Dünya Ekonomi Kadın Sağlık Bilim Teknoloji Türkiye İran Savaşı Dünya Ekonomi Kadın Sağlık Bilim Teknoloji BBC News , Türkçe - Ana sayfa Manşet haber Fon kanun teklifi Meclis'ten geçti Tasfiyesine karar verilen bazı yatırım fonlarına ilişkin düzenlemeleri içeren kanun teklifi Meclis'ten geçti. 21 Ekim'de Meclis Genel Kurulu'nda görüşülmeye başlanan teklifin 3. maddesinde AKP önergesiyle yapılan değişikliğin odağında 'PBLK' olarak görülen iade taleplerinin tasfiye sürecine dahil edilmesi var. bir saat önce Merkez Bankası'nın 9 ay sonra ilk kez faiz indirmesi ne anlama geliyor? Türkiye Cumhuriyet Merkez Bankası (TCMB) Para Politikası Kurulu (PPK) bugün politika faizini 100 baz puan indirerek %",
+  "icerik_ozeti": "BBC News , Türkçe - Ana sayfa Manşet haber Fon kanun teklifi Meclis'ten geçti Tasfiyesine karar verilen bazı yatırım fonlarına ilişkin düzenlemeleri içeren kanun teklifi Meclis'ten geçti. 21 Ekim'de Meclis Genel Kurulu'nda görüşülmeye başlanan teklifin 3. maddesinde AKP önergesiyle yapılan değişikliğin odağında 'PBLK' olarak görülen iade taleplerinin tasfiye sürecine dahil edilmesi var. bir saat önce Merkez Bankası'nın 9 ay sonra ilk kez faiz indirmesi ne anlama geliyor? Türkiye Cumhuriyet Merkez Bankası (TCMB) Para Politikası Kurulu (PPK) bugün politika faizini 100 baz puan indirerek % 36'ya çekti. Böylece TCMB 9 ay sonra ilk kez faiz indirimine gitmiş oldu. Koç Üniversitesi Öğretim Üyesi Prof. Dr. Selva Demiralp, \"Bu, fon krizinin gölgesinde temkinli bir indirim. Kararın yönü sürpriz değildi\" diyor. 5 saat önce Türkiye - Kanada ilişkileri 'stratejik ortaklık' düzeyine yükseltildi Mark Carney Kanada'dan Türkiye'ye başbakan düzeyinde resmi ziyaret gerçekleştiren ilk lider oldu. Ziyaret hem sembolik hem de çok kapsamlı gündemi nedeniyle Türkiye-Kanada ilişkilerinde tarihi bir dönüm noktası olarak değerlendiriliyor. İki ülkenin ekonomi ve savunma alanlarında önemli anlaşmalar imzalam",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.bbc.com/turkce/articles/c6x2977zyv7ko",
+  "grup": "haber",
+  "kaynak_turu": "canli",
+  "title": "Mehmet Şimşek fon soruşturmalarıyla ilgili neler açıkladı? - BBC News Türkçe",
+  "h1": [
+   "Bakan Şimşek'ten, fonlardan 10 milyon TL'den fazla kazanç sağlayanlara yasal süreç uyarısı"
+  ],
+  "site_adi": "BBC News Türkçe",
+  "text_sample": "BBC News, Türkçe İçeriğe götür Haberler Kategoriler Haberler Türkiye İran Savaşı Dünya Ekonomi Kadın Sağlık Bilim Teknoloji Türkiye İran Savaşı Dünya Ekonomi Kadın Sağlık Bilim Teknoloji Bakan Şimşek'ten, fonlardan 10 milyon TL'den fazla kazanç sağlayanlara yasal süreç uyarısı Kaynak, Celal Gunes/Anadolu/Getty Images Fotoğraf altı yazısı, Şimşek, bankacılık sektörünün doğrudan fon riskinin 1,3 milyar lira seviyesinde olduğunu söyledi. Haber bilgisi Yazan, BBC News Türkçe Bildirdiği yer, Londra Yayın tarihi 20 Ekim 2026 Okuma süresi 2 dk Hazine ve Maliye Bakanı Mehmet Şimşek, fon piyasalarında yürütülen tasfiye sürecinde usulsüz kazanç elde ettiği tespit edilen kişilere yönelik yeni adımların atılacağını söyledi. Bloomberg HT ve Habertürk ortak yayınında konuşan Şimşek, ilk aşamada 10 milyo",
+  "icerik_ozeti": "Bakan Şimşek'ten, fonlardan 10 milyon TL'den fazla kazanç sağlayanlara yasal süreç uyarısı Kaynak, Celal Gunes/Anadolu/Getty Images Fotoğraf altı yazısı, Şimşek, bankacılık sektörünün doğrudan fon riskinin 1,3 milyar lira seviyesinde olduğunu söyledi. Haber bilgisi Yazan, BBC News Türkçe Bildirdiği yer, Londra Yayın tarihi 20 Ekim 2026 Okuma süresi 2 dk Hazine ve Maliye Bakanı Mehmet Şimşek, fon piyasalarında yürütülen tasfiye sürecinde usulsüz kazanç elde ettiği tespit edilen kişilere yönelik yeni adımların atılacağını söyledi. Bloomberg HT ve Habertürk ortak yayınında konuşan Şimşek, ilk aşamada 10 milyon TL ve üzeri reel kazanç sağlayanların hedef alınacağını söyledi. Şimşek, \"İade hesaplarına bir miktar ödeme var. Belli eşikler belirledik, ilk önce 10 milyon TL ve üzeri reel geri kazananlara başvurulacak. Gönüllü iade olmazsa Adalet Bakanlığı ilgili süreçleri işletecek\" dedi. Sürecin planlandığı şekilde ilerlediğini belirten Şimşek, \"Piyasa bozucu faaliyetlerden kazanım sağlayanların hepsi tespit edildi\" dedi. Sürecin ilgili kurumların koordinasyonunda sürdürüldüğünü söyleyen Bakan, tasfiyesi tamamlanan üç portföy yönetim şirketine bağlı 66 fon hakkında bilgi verdi. Şimşek, \"45",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "meta_description_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.dunya.com/",
+  "grup": "haber",
+  "kaynak_turu": "canli",
+  "title": "Dünya Gazetesi - Ekonomi, Finans ve İş Dünyası Haberleri",
+  "h1": [
+   "GÖZDEN KAÇMASIN"
+  ],
+  "site_adi": "Dünya Gazetesi",
+  "text_sample": "ABONE OL E-GAZETE BİST 100 11.220,37 -3,08% DOLAR 49,6248 0,13% EURO 55,8300 0,28% ALTIN (ONS) 4.038,96 -2,47% GRAM ALTIN 6.491,39 -1,33% Anasayfa Son Dakika Finans Borsa Haberleri Hisseler Seans İstatistiği Endeksler Dolar Haberleri Döviz Kurları Altın Kripto Para Haberleri Emtia Faiz Ekonomi Ekonomik Veriler İş Dünyası İhracat Yazarlar Tüm Yazarlar Dünya Enerji Gündem Sektörler Yazarlar Ekonomi Finans Altın Borsa Döviz Kurları Emtia Gündem Sektör Haberleri Dünya Foto Galeri Video Galeri e-Dünya İş Dünyası İklim Ekonomisi Sürdürülebilirlik Finansmanı Sürdürülebilir Ulaştırma Sürdürülebilir Tarım Tekstil Teknoloji Enerji KOBİ Dünya 45 Yaşında Dünya'yla Zamanda Yolculuk Sigortacılık Otomotiv Makine Kültür-Sanat Lojistik Tarım Fintech Yaşam Keyfi Dünya + Dünya # Sürdürülebilir Dünya Yaşam Sa",
+  "icerik_ozeti": "-- -- -- -- Bakan Göktaş duyurdu: İstanbul'daki selzedelere 230 milyon lira ek destek ABD'den İran açıklaması: 3 Kasım'dan önce saldırı olmayacak Bankacılıkta dikkat çeken tablo: Krediler artarken kart borçları geriledi FON TEKLİFİ TBMM'DE KABUL EDİLDİ: Usulsüzlük yapanlara ödeme yok TÜRKİYE-KANADA İLİŞKİLERİNDE YENİ DÖNEM: Ticaret hacmi 10 milyar dolara çıkacak MERT BAŞARAN'DAN YATIRIMCILARA UYARI Para arttıkça herkes bu hatayı yapıyor FON TASFİYESİNDE KAPSAM NETLEŞTİ SPK'dan takas ve blokaj açıklaması İHRACAT NORMALE YAKLAŞTI Petrolde savaş öncesine dönüş sinyali EKONOMİSTLERDEN FAİZ KARARINA İLK YORUMLAR 'İndirimlere devam' mesajı mı verildi? FON TASFİYESİ DEVAM EDİYOR 10 bin 8 hesaba 8,9 milyar TL ödendi OCAK AYINDAN BU YANA İLK! Merkez Bankası faiz kararını açıkladı ANALİSTLER TARİH VERİP AÇIKLADI Altında büyük patlama yaklaşıyor! ÜST DÜZEY YÖNETİCİSİ AÇIKLADI İngiliz bankacılık devi Barclays'ten Türkiye kararı FAİZ BASKISINDAN KAÇAMADI Dünyanın en büyük varlık fonu zarar açıkladı GOOGLE'IN ESKİ CEO'SU UYARDI \"ABD yarışı şimdiden kaybediyor\" GÖZLER ŞİMDİ KREDİ FAİZLERİNDE Konut satışları yılın zirvesinde TEK BİR ŞARTLARI VAR Dükkanlar kapanmasın diye bedava devrediliyor T YÖK'",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.dunya.com/finans/borsa/kap-haberleri/6843356",
+  "grup": "haber",
+  "kaynak_turu": "canli",
+  "title": "FENER FENERBAHÇE FUTBOL A.Ş. Kar Payı Dağıtım İşlemlerine İlişkin Bildirim | Dünya Gazetesi » KAP Haberleri",
+  "h1": [
+   "FENER FENERBAHÇE FUTBOL A.Ş. Kar Payı Dağıtım İşlemlerine İlişkin Bildirim"
+  ],
+  "site_adi": "Dünya Gazetesi",
+  "text_sample": "ABONE OL E-GAZETE BİST 100 11.220,37 -3,08% DOLAR 49,6246 0,13% EURO 55,8291 0,28% ALTIN (ONS) 4.036,13 -2,54% GRAM ALTIN 6.491,39 -1,33% Anasayfa Son Dakika Finans Borsa Haberleri Hisseler Seans İstatistiği Endeksler Dolar Haberleri Döviz Kurları Altın Kripto Para Haberleri Emtia Faiz Ekonomi Ekonomik Veriler İş Dünyası İhracat Yazarlar Tüm Yazarlar Dünya Enerji Gündem Sektörler Yazarlar Ekonomi Finans Altın Borsa Döviz Kurları Emtia Gündem Sektör Haberleri Dünya Foto Galeri Video Galeri e-Dünya İş Dünyası İklim Ekonomisi Sürdürülebilirlik Finansmanı Sürdürülebilir Ulaştırma Sürdürülebilir Tarım Tekstil Teknoloji Enerji KOBİ Dünya 45 Yaşında Dünya'yla Zamanda Yolculuk Sigortacılık Otomotiv Makine Kültür-Sanat Lojistik Tarım Fintech Yaşam Keyfi Dünya + Dünya # Sürdürülebilir Dünya Yaşam Sa",
+  "icerik_ozeti": "Dünya Gazetesi Finans Borsa KAP Haberleri FENER FENERBAHÇE FUTBOL A.Ş. Kar Payı Dağıtım İşlemlerine İlişkin Bildirim FENER FENERBAHÇE FUTBOL A.Ş. Kar Payı Dağıtım İşlemlerine İlişkin Bildirim 22 Ekim 2026 20:02 İlgili Hisseler: Fenerbahçe Futbol A.Ş. Özet Bilgi Kar Dağıtımı Yapılmaması Hakkında Yapılan Açıklama Güncelleme mi ? Evet Yapılan Açıklama Düzeltme mi ? Hayır Yapılan Açıklama Ertelenmiş Bir Açıklama mı ? Hayır Karar Tarihi 20.08.2026 Konunun Gündemde Yer Aldığı Genel Kurul Tarihi 22.10.2026 Kar Payı Dağıtımı Konusu Görüşüldü mü? Görüşüldü Nakit Kar Payı Ödeme Şekli Ödenmeyecek Para Birimi TRY Pay Biçiminde Ödeme Ödenmeyecek Nakit Kar Payı Ödeme Tutar ve Oranları Pay Grup Bilgileri Ödeme 1 TL Nominal Değerli Paya Ödenecek Nakit Kar Payı - Brüt(TL) 1 TL Nominal Değerli Paya Ödenecek Nakit Kar Payı - Brüt(%) Stopaj Oranı(%) 1 TL Nominal Değerli Paya Ödenecek Nakit Kar Payı - Net(TL) 1 TL Nominal Değerli Paya Ödenecek Nakit Kar Payı - Net(%) A Grubu, İşlem Görmüyor, TREFBAH00027 0,0000000 0 0 0,0000000 0 B Grubu, FENER, TREFBAH00019 0,0000000 0 0 0,0000000 0 Pay Olarak Kar Payı Ödeme Tutar ve Oranları Pay Grup Bilgileri Pay Biçiminde Dağıtılacak Kar Payı Tutarı(TL) Pay Biçimin",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.lcw.com/",
+  "grup": "eticaret",
+  "kaynak_turu": "canli",
+  "title": "LCW.com: Trendler ve Yenilikçi Online Alışveriş Deneyimi Burada! | LCW",
+  "h1": [],
+  "site_adi": "LCW",
+  "text_sample": "Giriş Yap Favorilerim Sepetim KADIN YENİ GELENLER İndirim Triko Dış Giyim Pantolon | Jean Gömlek | Tunik Sweatshırt | Eşofman Altı Tişört | Body Elbise | Etek Pijama | İç Giyim | Çorap AYAKKABI AKSESUAR Tümünü Gör GİYİM Mont | Kaban Kazak Hırka SWEATSHIRT Eşofman Altı Trençkot | Yağmurluk Tesettür Giyim | Modest Gömlek Tişört | Body Tunik Bluz Pantolon Jean Elbise Etek Blazer | Yelek Spor Giyim Lisans Koleksiyonu Takımlar Hamile Giyim | Comfort Atlet Şort TÜMÜNÜ GÖR BÜYÜK BEDEN Kazak Hırka Tişört | Body Gömlek Tunik Sweatshırt Eşofman Altı Pantolon Jean Elbise Etek TÜMÜNÜ GÖR PİJAMA | İÇ GİYİM | ÇORAP Pijama | Gecelik Atlet Sütyen Külot Çorap TÜMÜNÜ GÖR AKSESUAR Atkı I Bere I Eldiven Çanta Cüzdan Kemer Parfüm Takı | Bijuteri Seyahat Şemsiye TÜMÜNÜ GÖR KOZMETİK | KİŞİSEL BAKIM Parfüm Makyaj",
+  "icerik_ozeti": "Ana Sayfa Kategoriler Sepetim Favorilerim Giriş Yap Destek Sipariş Takip Whatsapp Destek Whatsapp Destek İşaret Dili Hizmeti 444 4 529 İletişim Formu 444 4 529 Yardım Sıkça Sorulan Sorular İade Site Haritası Hediye Kartı Satın Al Tüm Markalar Kurumsal Hakkımızda LCW Blog Mağazalarımız Kariyer Fırsatları Kurumsal Destek Hediye Kart Politikalar Aydınlatma Metni Aydınlatma Metni / Pazaryeri Veri Gizliliği ve Güvenliği Politikası Kullanım Koşulları Uygulamamızı İndirin Bizi Takip Edin Ülke Değiştir TÃ¼rkiye âœ– AlÄ±ÅŸveriÅŸ deneyiminizi iyileÅŸtirmek ve hizmetlerimizi daha iyi hale getirmek iÃ§in yasal dÃ¼zenlemelere uygun Ã§erezler (cookies) kullanÄ±yoruz. Web sitemizi ziyaret etmeye ve alÄ±ÅŸveriÅŸ yapmaya devam etmeniz durumunda, Ã§erez kullanmaya devam edeceÄŸiz. Ã‡erez tercihlerinizi dÃ¼zenlemek veya Ã§erez politikamÄ±z hakkÄ±nda detaylÄ± bilgi almak iÃ§in buraya tÄ±klayÄ±nÄ±z AnladÄ±m",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.lcw.com/kiz-bebek-tayt-t-335",
+  "grup": "eticaret",
+  "kaynak_turu": "canli",
+  "title": "Kız Bebek Tayt Fiyatları ve Modelleri | LCW",
+  "h1": [
+   "Kız Bebek Tayt"
+  ],
+  "site_adi": "LCW",
+  "text_sample": "Giriş Yap Favorilerim Sepetim KADIN YENİ GELENLER İndirim Triko Dış Giyim Pantolon | Jean Gömlek | Tunik Sweatshırt | Eşofman Altı Tişört | Body Elbise | Etek Pijama | İç Giyim | Çorap AYAKKABI AKSESUAR Tümünü Gör GİYİM Mont | Kaban Kazak Hırka SWEATSHIRT Eşofman Altı Trençkot | Yağmurluk Tesettür Giyim | Modest Gömlek Tişört | Body Tunik Bluz Pantolon Jean Elbise Etek Blazer | Yelek Spor Giyim Lisans Koleksiyonu Takımlar Hamile Giyim | Comfort Atlet Şort TÜMÜNÜ GÖR BÜYÜK BEDEN Kazak Hırka Tişört | Body Gömlek Tunik Sweatshırt Eşofman Altı Pantolon Jean Elbise Etek TÜMÜNÜ GÖR PİJAMA | İÇ GİYİM | ÇORAP Pijama | Gecelik Atlet Sütyen Külot Çorap TÜMÜNÜ GÖR AKSESUAR Atkı I Bere I Eldiven Çanta Cüzdan Kemer Parfüm Takı | Bijuteri Seyahat Şemsiye TÜMÜNÜ GÖR KOZMETİK | KİŞİSEL BAKIM Parfüm Makyaj",
+  "icerik_ozeti": "Kız Bebek Tayt Ana Sayfa Kategoriler Sepetim Favorilerim Giriş Yap Tümü Diğer Markalar Tayt Eşofman Altı Basic İspanyol Paça Çoklu Paket Lisanslı Filtrele ve Sırala Önceki Ürünleri Gör (1/6) LCW Kids Kız Çocuk Simli İspanyol Paça Tayt 2'li 799,99 TL LCW Kids Kız Çocuk İspanyol Paça Tayt 359,99 TL LCW Kids Beli Lastikli Kız Çocuk Tayt 2'li 799,99 TL LCW baby Kız Bebek Tayt 2'li 599,99 TL LCW baby 3'lü Baskılı Kız Bebek Tayt 699,99 TL LCW baby Kız Bebek 2'li Çoraplı Tayt 699,99 TL LCW Kids Beli Lastikli İspanyol Paça Kız Çocuk Tayt 359,99 TL LCW Kids 2'li Paket Kız Çocuk Tayt 599,99 TL LCW Kids Hello Kitty Lisanslı Kız Çocuk Tayt 599,99 TL LCW Kids Hello Kitty Lisanslı Kız Çocuk İspanyol Paça Tayt 499,99 TL LCW Kids Kız Çocuk Baskılı Eşofman Altı 2'li Paket 699,99 TL LCW Kids Kız Çocuk İspanyol Paça Tayt 359,99 TL LCW Kids 2'li Kız Çocuk Jogger Eşofman Altı 799,99 TL LCW Kids Beli Lastikli Kız Çocuk Jogger Eşofman Altı 399,99 TL LCW Kids Kız Çocuk Jogger Eşofman Altı 359,99 TL LCW Kids Beli Lastikli Kız Çocuk Tayt 299,99 TL LCW Kids Kız Çocuk Kadife Tayt 449,99 TL LCW Kids Kız Çocuk İspanyol Paça Tayt 449,99 TL LCW Kids Beli Lastikli Kız Çocuk Kadife Tayt 449,99 TL LCW Kids Kız Çocuk",
+  "sorunlar": [
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.koton.com/",
+  "grup": "eticaret",
+  "kaynak_turu": "canli",
+  "title": "Koton: Türkiye'nin Öncü Moda ve Giyim Markası",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "{ \"type\": \"identify\", \"data\": { \"id\":\"None\", \"user\": { \"email\": \"d41d8cd98f00b204e9800998ecf8427e\", \"signupDate\": \"\", \"gender\": \"\", \"permission\": \"no\" } } } { \"type\": \"pageViewed\", \"data\": \"Homepage\" } { \"type\": \"gtmStart\" } TÜM ÜRÜNLERDE KARGO BEDAVA! Ara Türkçe TR Dil Seçimi Language Selection Dil Seçenekleri Language Options Türkçe Turkish İngilizce English Kaydet GİRİŞ YAP KAYIT OL 0 Kadın Haftanın Yenileri 29 EKİM YENİ! Yeni Sezon Giyim Koton Jeans Koleksiyonlar Parti & Davet İç Giyim ve Pijama Spor Giyim Aksesuar Tüm Ürünler Dış Giyim Kaban Mont Suni Deri Ceket Trençkot Pantolon Blazer Ceket Kazak & Süveter Sweatshirt Elbise Kot Pantolon Hırka Etek Gömlek Bluz Tişört Koton Jeans Mevsimlik Trikolar Mevsimlik Dış Giyim Yün & Yün Karışımlı YENİ! Tüvit Ürünler Ceket Yelek Korse Eşofman A",
+  "icerik_ozeti": "{ \"type\": \"identify\", \"data\": { \"id\":\"None\", \"user\": { \"email\": \"d41d8cd98f00b204e9800998ecf8427e\", \"signupDate\": \"\", \"gender\": \"\", \"permission\": \"no\" } } } { \"type\": \"pageViewed\", \"data\": \"Homepage\" } { \"type\": \"gtmStart\" } TÜM ÜRÜNLERDE KARGO BEDAVA! Mağazalarımız Aradığınız KOTON mağazasına ülke ve şehir bilgilerini seçerek ulaşabilirsiniz. Ülke Seçiniz Şehir Seçiniz Arama Ürün tekrar stoklarımıza geldiğinde, hesabındaki mail adresine talebin üzerine bilgilendirme yapacağız. Üstünde Dene Yükleyeceğim görselin yapay zeka destekli işleme,iyileştirme, analiz ve içerik oluşturma amaçlarıyla kullanılmasına açıkça izin verdiğimi beyan ederim. Açık rıza metnini okudum ve onaylıyorum. Onayla Ürün Barkodunu Okut Barkodu kameranıza yaklaştırın ve deneme kabini adımlarını takip edin. Sanal Kabine Devam Et ✓ Barkodu Okut Ürünler yükleniyor... Üstünde Dene Sanal Kabin’de denemeye uygun Ürünleriniz listeleniyor.Devam etmek için en fazla 3 ürünü seçiniz. Yeni Ürün Ekle Ürünleri Seç Sepetinizdeki ürünler listeleniyor. Devam etmek için lütfen en fazla 3 ürün seçin. Ürünleri Seç Bir dosya seçin veya buraya sürükleyip bırakın. JPEG veya PNG, maksimum 1MB. Uygulamaya uygun fotograf yüklemeniz çok ö",
+  "sorunlar": [
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.koton.com/erkek-spor-tisort/",
+  "grup": "eticaret",
+  "kaynak_turu": "canli",
+  "title": "Erkek Spor Tişört ve Uzun Kollu Spor Tişört Modelleri | Koton",
+  "h1": [
+   "Erkek Spor Tişört, Spor Tişört Uzun Kollu, Kolsuz Tişört Modelleri"
+  ],
+  "site_adi": "Koton",
+  "text_sample": "{ \"type\": \"identify\", \"data\": { \"id\":\"None\", \"user\": { \"email\": \"d41d8cd98f00b204e9800998ecf8427e\", \"signupDate\": \"\", \"gender\": \"\", \"permission\": \"no\" } } } { \"type\": \"pageViewed\", \"data\": \"ProductListing\" } { \"type\": \"gtmStart\" } TÜM ÜRÜNLERDE KARGO BEDAVA! Ara Türkçe TR Dil Seçimi Language Selection Dil Seçenekleri Language Options Türkçe Turkish İngilizce English Kaydet GİRİŞ YAP KAYIT OL 0 Kadın Haftanın Yenileri 29 EKİM YENİ! Yeni Sezon Giyim Koton Jeans Koleksiyonlar Parti & Davet İç Giyim ve Pijama Spor Giyim Aksesuar Tüm Ürünler Dış Giyim Kaban Mont Suni Deri Ceket Trençkot Pantolon Blazer Ceket Kazak & Süveter Sweatshirt Elbise Kot Pantolon Hırka Etek Gömlek Bluz Tişört Koton Jeans Mevsimlik Trikolar Mevsimlik Dış Giyim Yün & Yün Karışımlı YENİ! Tüvit Ürünler Ceket Yelek Korse Eşo",
+  "icerik_ozeti": "{ \"type\": \"identify\", \"data\": { \"id\":\"None\", \"user\": { \"email\": \"d41d8cd98f00b204e9800998ecf8427e\", \"signupDate\": \"\", \"gender\": \"\", \"permission\": \"no\" } } } { \"type\": \"pageViewed\", \"data\": \"ProductListing\" } { \"type\": \"gtmStart\" } TÜM ÜRÜNLERDE KARGO BEDAVA! FİLTRELERİ GÖSTER 270 Ürün Sırala Erkek Spor Tişört, Spor Tişört Uzun Kollu, Kolsuz Tişört Modelleri Anasayfa / Erkek / Spor Giyim / Spor Tişört FİLTRELERİ GÖSTER FİLTRELERİ GÖSTER 270 Ürün GÖRÜNTÜLE 270 Ürün Önerilen Fiyat Artan Fiyat Azalan Yeni Gelenler Sırala FİLTRELE erkek (270) spor atlet (2) spor tişört (268) 0₺ - 300₺ (9) 300₺ - 600₺ (138) 600₺ - 900₺ (61) 900₺ - 1100₺ (3) +1100₺ (2) XS S M L XL XXL Daha Fazla Göster Siyah (91) Beyaz (61) Ekru (18) Lacivert (27) Gri (21) Yeşil (22) Mavi (9) Kahve (8) Mor (2) Bordo (5) Pembe (1) Sarı (1) süprem (31) pike (3) interlock (17) vizkon karışımlı (1) modal (3) pamuk karışımlı (5) polivizkon (5) pamuk (1) Daha Fazla Göster standart (196) uzun (74) basic (246) boxy (1) balon kol (20) düşük omuz (246) standart (4) bisiklet yaka (223) dik yaka (3) fermuarlı yaka (1) gömlek yaka (4) kapüşonlu (14) polo yaka (9) v yaka (16) Daha Fazla Göster bol kalıp (1) oversize (29) regular (85) r",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "meta_description_uzun"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.vatanbilgisayar.com/",
+  "grup": "eticaret",
+  "kaynak_turu": "canli",
+  "title": "VATAN BİLGİSAYAR - Teknoloji & Bilgisayar Hiperstore'u",
+  "h1": [],
+  "site_adi": "VATAN BİLGİSAYAR",
+  "text_sample": "Vatan Bilgisayar Vatan Bilgisayar uygulamasında aç AÇ Web'e Özel Fırsat Online Hediye Kartı Yeni Ürünler İkon Ürünler OEM Paketler OEM Uyumluluk Outlet Stokları Eritiyoruz Sipariş Takibi İade Servis Takip Formu Mağazalar İşe Alım Bize Ulaşın Toggle navigation Üyeliğim Siparişlerim Favori Ürünlerim Adres Bilgilerim Mesajlarım Çıkış Yap Giriş Yap Üye Ol Sepetim 0 Giriş Yap Üye Ol Profilim Favorilerim Üyeliksiz Alışveriş Sipariş Takibi Üyelik Bilgilerim Adres Bilgilerim Siparişlerim Favorilerim Mesajlarım Şifre Değiştirme Çıkış Mobil uygulamamızı deneyimlemek istermisiniz ? Uygulamada Aç Gizle Öne Çıkan Ürünler MTP03TU/A iPhone 15 128 Gb Akıllı Telefon Siyah 59.999 TL 83K2000ETR Lenovo Ideapad Slim 3 13.Nesil Core i5 13420H-8Gb-512Gb Ssd-16inc-W11 34.999 TL 65C6KGTV TCL 65C6K 65inc 165 cm QD ",
+  "icerik_ozeti": "Gizle Öne Çıkan Ürünler MTP03TU/A iPhone 15 128 Gb Akıllı Telefon Siyah 59.999 TL 83K2000ETR Lenovo Ideapad Slim 3 13.Nesil Core i5 13420H-8Gb-512Gb Ssd-16inc-W11 34.999 TL 65C6KGTV TCL 65C6K 65inc 165 cm QD Miniled 4K UHD Google TV,Uydu Alıcılı 69.999 TL SM-X400NZSRTUR Samsung Galaxy Tab S10 Lite 2Ghz 128Gb 6Gb 10.9''Android Tablet Gümüş 17.999 TL Peşin Fiyatına 6 Taksit MFYN4TU/A iPhone 17 Pro Max 256 GB Akıllı Telefon Kozmik Turuncu 118.999 TL E1504FA-BQ5681W Asus Vivobook Go 15 Ryzen 5 40-8Gb-256Gb Ssd-15.6inc-W11 24.999 TL UE55M70HAUXTK SAMSUNG UE 55M70H 55inc 138cm 4K UHD MiniLED Smart TV,Uydu Alıcılı 49.399 TL MT40X-3NLCTR1 TCL Alcatel MT40X Movetime Çocuk Akıllı Saati Pembe 6.999 TL SM-A085FDBGTUR Samsung Galaxy A08 4/128 GB Akıllı Telefon Lacivert 12.499 TL 100-000000597 AMD Ryzen™ 5 7500F Soket AM5 5.0GHZ 32MB 65W 5nm Tray Kutusuz İşlemci 10.049 TL Dyson Cinetic Big Ball Multifloor 2 Dyson Cinetic Big Ball Multifloor 2 Kablolu Elektrik Süpürgesi 21.996 TL HD9318/20 Philips HD9318/20 3000 Serisi Su Isıtıcı & Kettle 1.299 TL DST8030/70 Philips DST8030/70 Azur Serisi Buharlı Ütü Web'e Özel 5.599 TL Son 17 Ürün 7.499 TL ECAM290.83.TB Delonghi Magnifica Evo ECAM290.83.TB Tam O",
+  "sorunlar": [
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.vatanbilgisayar.com/sitemap.aspx",
+  "grup": "eticaret",
+  "kaynak_turu": "canli",
+  "title": "Site Haritası - Vatan Bilgisayar",
+  "h1": [
+   "Site Haritası"
+  ],
+  "site_adi": "Vatan Bilgisayar",
+  "text_sample": "Vatan Bilgisayar Vatan Bilgisayar uygulamasında aç AÇ Web'e Özel Fırsat Online Hediye Kartı Yeni Ürünler İkon Ürünler OEM Paketler OEM Uyumluluk Outlet Stokları Eritiyoruz Sipariş Takibi İade Servis Takip Formu Mağazalar İşe Alım Bize Ulaşın Toggle navigation Üyeliğim Siparişlerim Favori Ürünlerim Adres Bilgilerim Mesajlarım Çıkış Yap Giriş Yap Üye Ol Sepetim 0 Giriş Yap Üye Ol Profilim Favorilerim Üyeliksiz Alışveriş Sipariş Takibi Üyelik Bilgilerim Adres Bilgilerim Siparişlerim Favorilerim Mesajlarım Şifre Değiştirme Çıkış Mobil uygulamamızı deneyimlemek istermisiniz ? Uygulamada Aç Site Haritası Aksesuar Ürünleri Aydınlatma Ürünleri Led Lamba Ampul El Feneri Hue Led Işıldaklar Bağlantı Cihazları ve Çeviriciler Bağlantı Cihazları Çeviriciler Çoklayıcılar Hub Ses Kabloları Splitter Verici",
+  "icerik_ozeti": "Site Haritası Aksesuar Ürünleri Bilgisayar Çevre Birimleri Elektrikli Ev Aletleri Kişisel Bakım Ürünleri Kitaplar Mutfak Ürünleri Network Ürünleri OEM Ürünleri Tüketici Elektroniği Tüketim Malzemeleri Yazılım Bone China Cafe Malzemeleri Dayanıklı Tüketim Malları Diğer Garanti Hizmet İNİNAL KART Kırtasiye Küçük Ev Aletleri Masraf Kalemleri Mobilya Online Hediye Kartı Sarf Malzemeleri Servis Spor Aletleri Yazıcı Yenilenmiş Ürün ;",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_kisa"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.n11.com/",
+  "grup": "eticaret",
+  "kaynak_turu": "canli",
+  "title": "n11 - Aradığın Her Şey n11'de Seni Bekliyor!",
+  "h1": [
+   "Online Alışverişin Adresi n11",
+   "Online Alışverişin Adresi n11"
+  ],
+  "site_adi": "n11",
+  "text_sample": "Giriş Yap / Üye Ol fırsatları kaçırma! Moda Moda Ayakkabı & Çanta Kadın Giyim & Aksesuar Erkek Giyim & Aksesuar Çocuk Giyim & Aksesuar Elektronik Elektronik Telefon & Aksesuarları Bilgisayar Televizyon & Ses Sistemleri Elektrikli Ev Aletleri Beyaz Eşya Fotoğraf & Kamera Video Oyun & Konsol Ev & Yaşam Ev & Yaşam Mobilya Ev Tekstili Dekorasyon & Aydınlatma Mutfak Gereçleri Banyo & Ev Gereçleri Yapı Market & Bahçe Evcil Hayvan Ürünleri Kırtasiye & Ofis Süpermarket Anne & Bebek Anne & Bebek Bebek Bezi & Islak Mendil Bebek Giyim Hamile Giyim Bebek Arabaları Oto Koltuğu & Ana Kucağı Beslenme & Mama Sandalyesi Biberon ve Aksesuarları Emzirme Ürünleri Yürüteç & Yürüme Yardımcıları Bebek Odası & Park Yatak Bebek Bakım & Sağlık Bebek Güvenlik Bebek Oyuncakları Banyo & Tuvalet Çocuk Oyuncakları & Par",
+  "icerik_ozeti": "Giriş Yap / Üye Ol fırsatları kaçırma! %60'a Varan İndirime Ek 1.000 TL Kupon Alışverişe Başla Bella Maison Ürünlerinde 1.000 TL'ye 500 TL Kupon Şimdi Yakala Tüm Ürünlerde %20'ye Varan İndirim Ürünleri Keşfet Tüm İndirimlere Ek 500 TL'ye Varan Kupon Alışverişe Başla %5 Sepette İndirim Seçili Bankalarda Vade Farksız 3 Taksit Şimdi Yakala %10 Sepette İndirime Ek 400 TL'ye Varan Kupon Şimdi Yakala DeFacto Ürünlerinde 900 TL'ye 250 TL Kupon Alışverişe Başla %15 Sepette İndirime Ek 750 TL'ye Varan Kupon Sakın Kaçırma Evinde Pratik Çözümler İçin Simfer Ürünlerini Keşfet Alışverişe Başla Performansıyla Öne Çıkan Monitör ve Notebooklar Şimdi Keşfet Avantajlı Ürünler Tümünü Gör Ücretsiz Kargo Homend Pottoman 1842H Türk Kahvesi Makinesi (19) 10 günün en düşük fiyatı! Ücretsiz Kargo Madame Coco Leonce Micro Çift Kişilik Yorgan - Beyaz Beyaz (53) 10 günün en düşük fiyatı! Ücretsiz Kargo Proforce Db-zen Ayarlanabilir Dambıl - 24 KG (44) 10 günün en düşük fiyatı! Ücretsiz Kargo Cata CT-4058 9W RGB Işık E27 Duy Kumandalı Led Ampül (579) 4. Ürüne 15 TL İndirim Ücretsiz Kargo Oral-B Vitality Pro Şarjlı Koruma ve Temizlik Elektrikli Diş Fırçası Siyah (680) 2. Ürüne 65 TL İndirim Ücretsiz Kargo Evdem",
+  "sorunlar": [
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.n11.com/lastik-ve-jant",
+  "grup": "eticaret",
+  "kaynak_turu": "canli",
+  "title": "Lastik ve Jant Fiyatları | Oto Lastik, Çelik & Alaşım Jant",
+  "h1": [
+   "Lastik & Jant"
+  ],
+  "site_adi": "Oto Lastik, Çelik & Alaşım Jant",
+  "text_sample": "Kuponlarım n11 Asistan'a Sor n11'de Mağaza Aç n11 Influencer Programı Giriş Yap / Üye Ol fırsatları kaçırma! Ana Sayfa Kategoriler Hesabım Tüm işlemlerinizi görmek ve alışveriş yapmak için lütfen üye girişi yapın Giriş Yap Mağaza Mesajlarım POPÜLER SAYFALAR pet11 Kaçmaz Teklifler Çok Satanlar Hediye Rehberi DİĞER Hakkımızda Gizlilik Politikası Moda Moda Ayakkabı & Çanta Kadın Giyim & Aksesuar Erkek Giyim & Aksesuar Çocuk Giyim & Aksesuar Elektronik Elektronik Telefon & Aksesuarları Bilgisayar Televizyon & Ses Sistemleri Elektrikli Ev Aletleri Beyaz Eşya Fotoğraf & Kamera Video Oyun & Konsol Ev & Yaşam Ev & Yaşam Mobilya Ev Tekstili Dekorasyon & Aydınlatma Mutfak Gereçleri Banyo & Ev Gereçleri Yapı Market & Bahçe Evcil Hayvan Ürünleri Kırtasiye & Ofis Süpermarket Anne & Bebek Anne & Bebek B",
+  "icerik_ozeti": "Giriş Yap / Üye Ol fırsatları kaçırma! Ana Sayfa Kategoriler Hesabım Tüm işlemlerinizi görmek ve alışveriş yapmak için lütfen üye girişi yapın Giriş Yap Mağaza Mesajlarım POPÜLER SAYFALAR DİĞER Ana Sayfa li-OtomMoto>LastJant Lastik & Jant için sonuçları listeledik. Oto Lastik Motosiklet Lastik Jant Traktör Lastik Kamyon & Kamyonet Lastik Atv & UTV Lastik İç Lastik Forklift Lastik Lastik & Jant Ekipmanları Lastik & Jant Bakım Ürünleri Stepne ÜCRETSİZ KARGO Lassa 205/55R16 91H Snoways 5 Kış Lastiği 2026 (13) SÜPER 5.000 TL SEPETTE 4.344,87 TL ÜCRETSİZ KARGO Bridgestone 205/55 R16 91V Turanza 6 Yaz Lastiği 2026 (118) SÜPER 5.462 TL SEPETTE 3.910,20 TL ÜCRETSİZ KARGO Milestone Carmile Winter 205/55R16 91H M+S 3Pmsf Oto Kış Lastiği 2026 (10) SÜPER 3.100 TL SEPETTE 2.841,92 TL ÜCRETSİZ KARGO Mılestone 175/70R13 82T Carmıle Wınter Kış Lastiği 2026 (7) SÜPER 2.365 TL SEPETTE 2.168,12 TL İyi Fiyatlı Ürünler Tümünü Gör Lassa 205/55 R16 91V Revola Yaz Lastiği 2026 5.100 TL SEPETTE 3.662 TL Laufenn 205/55R16 91T Lw31 İ Fit+ Kış Lastiği 2026 4.000 TL SEPETTE 3.421 TL Pro Seri Çelik Gövde Çift Pistonlu 12 V 150 Psi Dakikada 85 Lt Araç Araba Lastik Bot Şişirme 10 günün en düşük fiyatı! 2.949 TL 1",
+  "sorunlar": [
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.boyner.com.tr/gunes-gozlugu-x-c20040737",
+  "grup": "eticaret",
+  "kaynak_turu": "canli",
+  "title": "Güneş Gözlüğü",
+  "h1": [
+   "Güneş Gözlüğü Modelleri"
+  ],
+  "site_adi": "Boyner",
+  "text_sample": "Kadın Erkek Ayakkabı & Çanta Kozmetik Saat & Aksesuar Spor & Outdoor Çocuk Ev & Yaşam & Elektronik Kampanyalar Outlet Markalar Yeni Sezon Giyim Elbise Abiye Elbise T-Shirt Gömlek Bluz Pantolon Denim Pantolon Sweatshirt Etek Blazer Ceket Polo T-shirt Şort Tayt Eşofman Takımı Kazak Hırka Büyük Beden Hamile Giyim Dış Giyim Trençkot Ceket Mont Kaban Şişme Mont Yelek Deri Ceket Ev Giyim Pijama Gecelik Sabahlık Ev Terliği Çorap İç Giyim Sütyen Külot Çamaşır Takımı Atlet Korse Ayakkabı Sneakers Topuklu Ayakkabı Loafer Babet Sandalet Terlik Çanta Omuz Çantası Çapraz Çanta El Çantası Sırt Çantası Bel Çantası Cüzdan Aksesuar Takı Gözlük Saat Şapka Şal Atkı Bere Eldiven Sadece Boyner'de Hediye Hediye Kartı Popüler Markalar Guess Tommy Hilfiger Lauren Ralph Lauren İpekyol Levis Twist Gizia adL Manuka ",
+  "icerik_ozeti": "Kadın Erkek Ayakkabı & Çanta Kozmetik Saat & Aksesuar Spor & Outdoor Çocuk Ev & Yaşam & Elektronik Kampanyalar Outlet Markalar Yeni Sezon Giyim Elbise Abiye Elbise T-Shirt Gömlek Bluz Pantolon Denim Pantolon Sweatshirt Etek Blazer Ceket Polo T-shirt Şort Tayt Eşofman Takımı Kazak Hırka Büyük Beden Hamile Giyim Dış Giyim Trençkot Ceket Mont Kaban Şişme Mont Yelek Deri Ceket Ev Giyim Pijama Gecelik Sabahlık Ev Terliği Çorap İç Giyim Sütyen Külot Çamaşır Takımı Atlet Korse Ayakkabı Sneakers Topuklu Ayakkabı Loafer Babet Sandalet Terlik Çanta Omuz Çantası Çapraz Çanta El Çantası Sırt Çantası Bel Çantası Cüzdan Aksesuar Takı Gözlük Saat Şapka Şal Atkı Bere Eldiven Sadece Boyner'de Hediye Hediye Kartı Popüler Markalar Guess Tommy Hilfiger Lauren Ralph Lauren İpekyol Levis Twist Gizia adL Manuka Rivus LUFIAN Yeni Markalar Mudo Exquise Grimelange Liu Jo In The Mood For Love Ba&Sh Boboist Amarelle Kom Hizmetler GEN-Z Hot Stuff Yeni Sezon Yeni Sezon Giyim T-Shirt Gömlek Polo T-shirt Takım Elbise Denim Gömlek Pantolon Chino Pantolon Denim Pantolon Sweatshirt Polar Sweatshirt Eşofman Kazak Hırka Şort Denim Şort Dış Giyim Trençkot Ceket Mont Kaban Şişme Mont Yelek Deri Ceket Ev Giyim Pijama Pij",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.acibadem.com.tr/",
+  "grup": "saglik",
+  "kaynak_turu": "canli",
+  "title": "Acıbadem Sağlık Grubu",
+  "h1": [
+   "Daha sağlıklıbir yarın için...",
+   "Check Up",
+   "Doğum",
+   "Check Up",
+   "Doğum",
+   "Doktorunuz ile Görüntülü Görüşün"
+  ],
+  "site_adi": "Acıbadem Sağlık Grubu",
+  "text_sample": "TR Tetkik Sonuçlarım Doktor Bul Hastane Bul Hastaneler Doktorlar Tıbbi Birimler Medikal Teknolojiler Sağlık Rehberi Giriş Yap/Üye Ol Randevu Al TR International Patients Acıbadem Kariyer Kurumsal Yardım İletişim Fiyat Sor Tıbbi İkinci Görüş Tetkik Sonuçlarım Randevu Al Kariyer Kurumsal İletişim Yardım TR Giriş Yap/Üye Ol Hastaneler Doktorlar Tıbbi Birimler Medikal Teknolojiler Sağlık Rehberi Giriş Yap/Üye Ol Randevu Al Daha sağlıklı bir yarın için... Randevu Al SEVEN FARK EDER Tetkik Sonuçlarım Doktor Bul Hastane Bul Anlaşmalı Kurumlar Bilgi Talebi Tıbbi İkinci Görüş İstanbul Hastanelerimiz Mevcut konumu kullan Tüm Lokasyonlarımız Acıbadem Maslak Hastanesi Detaylı Bilgi Fiyat Bilgi Talebi Acıbadem Altunizade Hastanesi Detaylı Bilgi Fiyat Bilgi Talebi Acıbadem Ataşehir Hastanesi Detaylı Bil",
+  "icerik_ozeti": "TR Tetkik Sonuçlarım Doktor Bul Hastane Bul Hastaneler Doktorlar Tıbbi Birimler Medikal Teknolojiler Sağlık Rehberi Giriş Yap/Üye Ol Randevu Al TR International Patients Acıbadem Kariyer Kurumsal Yardım İletişim Fiyat Sor Tıbbi İkinci Görüş Tetkik Sonuçlarım Randevu Al Kariyer Kurumsal İletişim Yardım TR Giriş Yap/Üye Ol Hastaneler Doktorlar Tıbbi Birimler Medikal Teknolojiler Sağlık Rehberi Giriş Yap/Üye Ol Randevu Al Daha sağlıklı bir yarın için... Randevu Al SEVEN FARK EDER Tetkik Sonuçlarım Doktor Bul Hastane Bul Anlaşmalı Kurumlar Bilgi Talebi Tıbbi İkinci Görüş İstanbul Hastanelerimiz Mevcut konumu kullan Tüm Lokasyonlarımız Acıbadem Maslak Hastanesi Detaylı Bilgi Fiyat Bilgi Talebi Acıbadem Altunizade Hastanesi Detaylı Bilgi Fiyat Bilgi Talebi Acıbadem Ataşehir Hastanesi Detaylı Bilgi Fiyat Bilgi Talebi Acıbadem Atakent Hastanesi Detaylı Bilgi Fiyat Bilgi Talebi Acıbadem Bakırköy Hastanesi Detaylı Bilgi Fiyat Bilgi Talebi Acıbadem Fulya Hastanesi Detaylı Bilgi Fiyat Bilgi Talebi Acıbadem International Hastanesi Detaylı Bilgi Fiyat Bilgi Talebi Acıbadem Kadıköy (Dr. Şinasi Can) Hastanesi Detaylı Bilgi Fiyat Bilgi Talebi Acıbadem Kartal Hastanesi Detaylı Bilgi Fiyat Bilgi Tale",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.medicalpark.com.tr/",
+  "grup": "saglik",
+  "kaynak_turu": "canli",
+  "title": "Medical Park Hastaneler Grubu",
+  "h1": [],
+  "site_adi": "Medical Park",
+  "text_sample": "E-Sonuç Giriş Yap / Üye Ol Hızlı Randevu Hızlı Randevu Hastaneler Tıbbi Birimler Hekimler Sağlık Rehberi Hasta Rehberi TR Tıbbi Birimler Geniş branş yelpazemizle her ihtiyacınıza yönelik sağlık hizmetleri sunuyoruz. Tüm Birimler → Çocuk Sağlığı ve Hastalıkları Cerrahi Onkoloji Check Up Bütüncül Tıp Uygulamaları Endokrinoloji ve Metabolizma Hastalıkları İmmünoloji ve Alerji Hastalıkları Acil Servis Anestezi ve Reanimasyon Ağız ve Diş Sağlığı Algoloji Sağlık Rehberi Hastalıklar, tedavi yöntemleri ve sağlıklı yaşam hakkında merak ettiğiniz tüm bilgiler burada. Hastalıklar Önleyici Sağlık İpuçları Tanı & Testler Tedaviler TR Hastaneler Tıbbi Birimler Hekimler Sağlık Rehberi Hasta Rehberi TR EN RU AR FR E-Sonuç Giriş Yap / Üye Ol Hızlı Randevu Medical Park'ta Ara Ara Gençlerin 1 numarası Medica",
+  "icerik_ozeti": "Gençlerin 1 numarası Medical Park! Detaylı Bilgi Medical Park Onkoloji Hastanesi Maltepe'de Hizmetinizde! Randevu Alın Kök Hücre Kök hücre tedavilerinde öne çıkan güncel uygulamalar hakkında bilgi alın. Detaylı Bilgi Skolyoz Erken tanı ve kişiye özel tedavi seçenekleri ile omurga sağlığınızı koruyun. Detaylı Bilgi Varis Varis tedavisinde modern uygulamalar ve tedavi seçenekleri hakkında bilgi alın. Detaylı Bilgi Sağlıklı Bir Gebelik Yolculuğu Gebelikten doğuma uzanan bu özel yolculukta, güvenli ve konforlu bir deneyim için yanınızdayız. Detaylı Bilgi Check Up Sağlığınızı ertelemeyin, size özel check-up programlarını inceleyin. Detaylı Bilgi Tüp Bebek (IVF) Tedavisi Nedir? Tüp bebek (IVF) tedavisi ile aile olma hayalinize bir adım daha yakınsınız. Detaylı Bilgi Dünyanın En İyi Hastaneleri Listesindeyiz Medical Park Ankara, Medical Park Bahçelievler, Medical Park Göztepe, İstinye Üniversitesi Medical Park Gaziosmanpaşa ❮ ❯ Nitelikli Branşlar Medical Park olarak, her biri kendi alanında uzman hekimlerimizle geniş bir branş yelpazesinde sağlık hizmeti sunuyoruz. İleri teknoloji ve multidisipliner yaklaşımla, tanı ve tedavi süreçlerinizi güvenle yönlendiriyoruz. Tüm Branşlarımız Beyin v",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.webtekno.com/",
+  "grup": "blog_medya",
+  "kaynak_turu": "canli",
+  "title": "Webtekno – Güncel Teknoloji Haberleri ve Video İncelemeleri",
+  "h1": [],
+  "site_adi": "Webtekno",
+  "text_sample": "Yapay Zekâ Mobil Ürün Oyun Otomobil Uygulama / Yazılım Donanım Sinema-Dizi Tümü Senin İçin ÜYE GİRİŞİ Popüler İçerikler #iPhone18 #GTA6 #iOS #Apple #Samsung #ElektrikliOtomobiller #ÜcretsizOyun #Oyunİndirimleri Giriş Yap / Üye Ol Anasayfa Haber Video Favorilerim En Çok Okunanlar Yüksek Kilometreler Boyunca Sorunsuz Giden Otomatik Vitesler Güncel Ekim ÖTV Muafiyetli En İyi Araba Modelleri ve Fiyatları (2026) ChatGPT’ye Kullanıcıların Çok İşine Yarayacak Harika Bir Özellik Geldi Güçlü İşlemci, Dev Batarya: POCO X8s Duyuruldu PHP Nedir? Güvenlik Açığı Neden Tüm İnternet İçin Büyük Risk Taşıyor? Tümünü Gör En Çok Paylaşılanlar Artemis II’den Gelen Veriler, Ay’ın Bilinmeyen Özelliklerini Ortaya Çıkardı \"Keşke Daha Önceden Kullansaydım\" Diyeceğiniz 15 Harika Google Chrome Eklentisi Oyun Bilgisay",
+  "icerik_ozeti": "Tümü Senin İçin ÜYE GİRİŞİ Popüler İçerikler Giriş Yap / Üye Ol Kategoriler Hakkımızda Yazarlar Ödüllerimiz Künye Gizlilik İletişim Bir markasıdır. Sıcak Fırsatlar & Gerçek İndirimler Tıkla ve ihtiyacın olan ürünü uygun fiyata al! #işbirliği Apple’ın Katlanabilir Telefonu iPhone Duo Yok Sattı, Üretim Hedefi Uçtu! “Bu Apple Watch Ultra Olmuş.” Dedirten Akıllı Saat HONOR Watch Fit 6 Duyuruldu Meta'ya Tarihi Tokat: Cambridge Analytica Davasında 25 Milyar Dolarlık Ceza Yapay Zekâ 64 Saatte Akrep Zehrine Karşı Protein Tasarladı: Peki, Bu Gerçekten Bir İlaç mı? Apple, Mesajlar Uygulamasındaki Sinir Bozucu Sorunu Sonunda Çözüyor! Apple’ın Katlanabilir Telefonu iPhone Duo Yok Sattı, Üretim Hedefi Uçtu! Apple’ın ilk katlanabilir telefonu iPhone Duo’ya gösterilen yoğun ilgi, şirketin üretim hedefini 9,7 milyondan 14 milyona çıkardı. “Bu Apple Watch Ultra Olmuş.” Dedirten Akıllı Saat HONOR Watch Fit 6 Duyuruldu Meta'ya Tarihi Tokat: Cambridge Analytica Davasında 25 Milyar Dolarlık Ceza Yapay Zekâ 64 Saatte Akrep Zehrine Karşı Protein Tasarladı: Peki, Bu Gerçekten Bir İlaç mı? Apple, Mesajlar Uygulamasındaki Sinir Bozucu Sorunu Sonunda Çözüyor! Popüler Videolar PAHALI VS UYGUN FİYATLI KULAKLIĞ",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_uzun"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.webtekno.com/gta-6-cikis-fragmani-h227251.html",
+  "grup": "blog_medya",
+  "kaynak_turu": "canli",
+  "title": "GTA 6 Çıkış Fragmanı Yayımlandı [Video] - Webtekno – Güncel Teknoloji Haberleri ve Video İncelemeleri",
+  "h1": [
+   "GTA 6 Çıkış Fragmanı Yayımlandı [Video]"
+  ],
+  "site_adi": "Webtekno",
+  "text_sample": "Yapay Zekâ Mobil Ürün Oyun Otomobil Uygulama / Yazılım Donanım Sinema-Dizi Tümü Senin İçin ÜYE GİRİŞİ Popüler İçerikler #iPhone18 #GTA6 #iOS #Apple #Samsung #ElektrikliOtomobiller #ÜcretsizOyun #Oyunİndirimleri Giriş Yap / Üye Ol Anasayfa Haber Video Favorilerim En Çok Okunanlar Yüksek Kilometreler Boyunca Sorunsuz Giden Otomatik Vitesler Güncel Ekim ÖTV Muafiyetli En İyi Araba Modelleri ve Fiyatları (2026) ChatGPT’ye Kullanıcıların Çok İşine Yarayacak Harika Bir Özellik Geldi Güçlü İşlemci, Dev Batarya: POCO X8s Duyuruldu PHP Nedir? Güvenlik Açığı Neden Tüm İnternet İçin Büyük Risk Taşıyor? Tümünü Gör En Çok Paylaşılanlar Artemis II’den Gelen Veriler, Ay’ın Bilinmeyen Özelliklerini Ortaya Çıkardı \"Keşke Daha Önceden Kullansaydım\" Diyeceğiniz 15 Harika Google Chrome Eklentisi Oyun Bilgisay",
+  "icerik_ozeti": "Tümü Senin İçin ÜYE GİRİŞİ Popüler İçerikler Giriş Yap / Üye Ol Kategoriler Hakkımızda Yazarlar Ödüllerimiz Künye Gizlilik İletişim Bir markasıdır. Haberler Webtekno Oyun GTA 6 Çıkış Fragmanı Yayımlandı [Video] GTA 6 Çıkış Fragmanı Yayımlandı [Video] × Webtekno'yu Google'a ekleyin Webtekno'yu Google'da tercih edilen kaynak olarak ekleyin GTA 6'nın çıkışına bir ay kadar bir süre kalmışken Rockstar Games, oyunun çıkış fragmanını yayımladı. Barış Bulut / Editor 15.10.2026 16:15 Paylaş 0 Rockstar Games, geçtiğimiz dakikalarda GTA 6 'nın merakla beklenen yeni fragmanını yayımladı. Bunlar da İlginizi Çekebilir Yayımlanan yeni fragman, oyunun çıkış fragmanı niteliği taşıyor. Normalde oyunun çıkış haftasında alışık olduğumuz bu fragman türü bu sefer bir ay erken gelmiş durumda. GTA 6 çıkış fragmanı Yayımlanan fragmanda oyundaki pek çok yeni ara sahneyi görüyoruz. Oynanış olarak bir sekans yer almasa da Jason ve Lucia arasındaki ilişkiyi ve oyunda yer alacak bazı görevleri görebiliyoruz. Peki siz yeni GTA 6 fragmanı hakkında ne düşünüyorsunuz? Düşüncelerinizi aşağıdaki yorumlar kısmından bizimle paylaşabilirsiniz. Hepsi 500 TL Altı! Amazon'da Bu Haftanın En Avantajlı Ürünleri Amazon'da fiya",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://yemek.com/hakkimizda/",
+  "grup": "blog_medya",
+  "kaynak_turu": "canli",
+  "title": "Hakkımızda - Yemek.com",
+  "h1": [],
+  "site_adi": "Yemek.com",
+  "text_sample": "Yemek Tarifleri Çorba Balık Kahvaltılık Poğaça Kurabiye Kek Börek Tatlı Tavuk Et Sebze Meze Salata Makarna Pilav Tüm Tarif Kategorileri Video Günün Menüsü Ye Öğren Keşfet Tüm Kategoriler Sizden Gelenler Nasıl Saklanır? Ne İyi Gider? Diyet Kaç Kalori? Beslenme Faydaları İç Nasıl Yetiştirilir? Egzersiz Çiçek Bakımı Anne Çocuk Şaşır Sözlük Pratik Tarifler Lahana Sarması Tarifi Bal Kabağı Çorbası Tarifi Yemek.com, sevdiklerini mutlu etmek için mutfağa girenlerin, tek başına olsa bile yaptığı yemeğin lezzetli olduğunu görünce kendiyle gurur duyanların, mutfağı daha fazla keşfetmesini sağlayan bir bilgiyi dört bir yana paylaşmak isteyenlerin, yeri geldiğinde kendine daha fazla vakit ayırmak için pratik tarif peşinde koşanların, herkesin bütçesine göre bir tarif olduğunu bilenlerin, yemek yaparke",
+  "icerik_ozeti": "Yemek.com, sevdiklerini mutlu etmek için mutfağa girenlerin, tek başına olsa bile yaptığı yemeğin lezzetli olduğunu görünce kendiyle gurur duyanların, mutfağı daha fazla keşfetmesini sağlayan bir bilgiyi dört bir yana paylaşmak isteyenlerin, yeri geldiğinde kendine daha fazla vakit ayırmak için pratik tarif peşinde koşanların, herkesin bütçesine göre bir tarif olduğunu bilenlerin, yemek yaparken günlük hayatın zorluklarını bir çırpıda unutanların ve bunların hepsinden mutlak keyif alanların sitesi... Her gün milyonlarca kişiye dokunan Yemek.com, web sitesi, mobil uygulaması ve sosyal medya hesaplarıyla \"Bugün ne pişirsem?\" diye düşünenlerin de hafta sonu kahvaltıya nereye gitsek diyenlerin de \"Pilav lapa olursa ne yapılır?\" diye çözüm arayanların da hayatını kolaylaştırıyor. Hepsi denenmiş, adım adım fotoğraflı ve stüdyoda şeflerimiz tarafından üretilmiş videolu tarifleriyle mutfakta kötü sürprizlere yer bırakmıyor. Siz de Yemek.com'a üye olarak beğendiğiniz, \"Ben bunu yaparım\" dediğiniz tarifleri, tarif defterinize ekleyebilir, dilediğinizde onlara tek dokunuşla ulaşabilir, dahası şahane tariflerinizi bizimle paylaşıp adınızla Yemek.com'da yayınlanmasını sağlayabilir, en güzeli de",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://arkeofili.com/2026-agustos-ayinda-one-cikan-10-arkeoloji-haberi/",
+  "grup": "blog_medya",
+  "kaynak_turu": "canli",
+  "title": "2026 Ağustos Ayında Öne Çıkan 10 Arkeoloji Haberi - Arkeofili",
+  "h1": [
+   "2026 Ağustos Ayında Öne Çıkan 10 Arkeoloji Haberi"
+  ],
+  "site_adi": "Arkeofili",
+  "text_sample": "Arkeoloji Türkiye Avrupa Amerikalar Asya Orta Doğu Afrika Okyanusya Antropoloji Paleontoloji Evrim Özel Dosya Liste Soru & Cevap Röportaj Hakkımızda Yazar Katılım İletişim Destek Gizlilik Arkeoloji Türkiye Avrupa Amerikalar Asya Orta Doğu Afrika Okyanusya Antropoloji Paleontoloji Evrim Özel Dosya Liste Soru & Cevap Röportaj Home / Arkeoloji / 2026 Ağustos Ayında Öne Çıkan 10 Arkeoloji Haberi 2026 Ağustos Ayında Öne Çıkan 10 Arkeoloji Haberi Yazar: Arkeofili on 18 Eylül 2026 Kaçırmış olanlar için 2026 yılının Ağustos ayında Türkiye’de ve dünyada dikkat çeken arkeolojik keşifleri bu listede derledik. 10- İber Yarımadasının En Eski Kütüphanesi Bir Roma Villasında Çıktı İspanya’daki Fuente Álamo Roma villasında bulunan bir oda, İber Yarımadası’nın belgelenmiş en eski kütüphanesi olarak doğrula",
+  "icerik_ozeti": "Home / Arkeoloji / 2026 Ağustos Ayında Öne Çıkan 10 Arkeoloji Haberi 2026 Ağustos Ayında Öne Çıkan 10 Arkeoloji Haberi Yazar: Arkeofili on 18 Eylül 2026 Kaçırmış olanlar için 2026 yılının Ağustos ayında Türkiye’de ve dünyada dikkat çeken arkeolojik keşifleri bu listede derledik. 10- İber Yarımadasının En Eski Kütüphanesi Bir Roma Villasında Çıktı İspanya’daki Fuente Álamo Roma villasında bulunan bir oda, İber Yarımadası’nın belgelenmiş en eski kütüphanesi olarak doğrulandı. Fuente Álamo Kütüphanesi’nin (Puente Genil) apsisi, dikdörtgen ve yarım daire biçimli nişleri ve bitişik giriş hollerini gösteren fotogrametrik modeli. C: Antonio López García Araştırmacılar, Puente Genil belediyesindeki Fuente Álamo Roma villasında yer alan bir odanın kütüphane işlevi gördüğünü doğruladı. Bu da odayı, İber Yarımadası’nda belgelenmiş en eski, tüm İmparatorluk genelinde ise en iyi korunmuş kütüphanelerden biri yapıyor. Yeni yayımlanan çalışma, bu mekanı bir mithraeum olarak tanımlayan önceki hipotezi çürütüyor ve özgün mobilyaları kaybolmuş yapıların arkeolojik analizi için yeni bir yöntem sunuyor. Fuente Álamo’da incelenen oda, Roma kütüphanelerinin karakteristik yapı diliyle uyumlu bir düzen se",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.donanimhaber.com/",
+  "grup": "blog_medya",
+  "kaynak_turu": "canli",
+  "title": "DonanımHaber - Türkiye'nin Lider Teknoloji Sitesi",
+  "h1": [
+   "DonanımHaber - Teknoloji Haber Sitesi"
+  ],
+  "site_adi": "DonanımHaber",
+  "text_sample": "Anasayfa Teknoloji Haberleri Videolar Sessiz Videolar Galeriler Forumlar Testler (Quiz) Sistem Tavsiyeleri Hakkımızda Reklam İletişim İçerik Bildir V2 Tanıtım Mobil Uygulamamız RSS Beslemesi DH Arşiv Giriş Haber Bilgisayar Ekran Kartı Anakart İşlemci Ram Kasa Güç Kaynağı Monitör Yazıcı Ağ Ürünleri Soğutucular / Fanlar Optik Sürücüler HDD / SSD Çevre Birimleri Diğer Donanım Ürünleri Donanım Bilgisayar Ekran Kartı Anakart İşlemci Ram Kasa Güç Kaynağı Monitör Yazıcı Ağ Ürünleri Soğutucular / Fanlar Optik Sürücüler HDD / SSD Çevre Birimleri Diğer Donanım Ürünleri Anti Virus Sürücüler Tarayıcılar Oyunlar Diğer Yazılım Windows Linux Yapay Zeka Blockchain Yazılım Anti Virus Sürücüler Tarayıcılar Oyunlar Diğer Yazılım Windows Linux Yapay Zeka Blockchain iPad iPhone Mac / iMac / Macbook / Mac Mini ",
+  "icerik_ozeti": "kişi okuyor Nvidia, yeni Game Ready sürücüsünü yayınladı: İşte yenilikler İlkcan Girgin 20 sn. Nvidia, RTX ekran kartları için yeni Game Ready sürücüsünü yayınladı. Güncelleme Cyberpunk 2077'ye DLSS 4.5 getirirken iki yeni oyunda shader derleme süresini azaltıyor. Oyunlar 0 Oy Ver",
+  "sorunlar": [
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.donanimhaber.com/bildirim-tercihleri",
+  "grup": "blog_medya",
+  "kaynak_turu": "canli",
+  "title": "Tarayıcı Bildirimleri",
+  "h1": [
+   "Bildirim Tercihleri"
+  ],
+  "site_adi": null,
+  "text_sample": "Anasayfa Teknoloji Haberleri Videolar Sessiz Videolar Galeriler Forumlar Testler (Quiz) Sistem Tavsiyeleri Hakkımızda Reklam İletişim İçerik Bildir V2 Tanıtım Mobil Uygulamamız RSS Beslemesi DH Arşiv Giriş Haber Bilgisayar Ekran Kartı Anakart İşlemci Ram Kasa Güç Kaynağı Monitör Yazıcı Ağ Ürünleri Soğutucular / Fanlar Optik Sürücüler HDD / SSD Çevre Birimleri Diğer Donanım Ürünleri Donanım Bilgisayar Ekran Kartı Anakart İşlemci Ram Kasa Güç Kaynağı Monitör Yazıcı Ağ Ürünleri Soğutucular / Fanlar Optik Sürücüler HDD / SSD Çevre Birimleri Diğer Donanım Ürünleri Anti Virus Sürücüler Tarayıcılar Oyunlar Diğer Yazılım Windows Linux Yapay Zeka Blockchain Yazılım Anti Virus Sürücüler Tarayıcılar Oyunlar Diğer Yazılım Windows Linux Yapay Zeka Blockchain iPad iPhone Mac / iMac / Macbook / Mac Mini ",
+  "icerik_ozeti": "Bildirim Tercihleri Anasayfa Bildirimler Bildirim Tercihleri Almak istediğiniz bildirim türlerini ve nasıl almak istediğinizi bu sayfadan belirleyebilirsiniz. İnternet tarayıcınız ve DH uygulaması üzerinden alacağınız bildirimlerle ilgili ayarları da bu sayfadan yapabilirsiniz. (Düğmeleri açıp kapattığınızda tercihiniz otomatik olarak kaydedilir.) Kullandığınız tarayıcı, tarayıcı bildirimlerini desteklememektedir. Bildirim almak istiyorsanız Chrome , Opera veya Firefox (macOS için yerleşik tarayıcı olan Safari de desteklenmektedir) tarayıcılarının en güncel versiyonlarını kullanmanız gerekiyor. Firefox İndir Opera İndir Chrome İndir Uyarıyı Gizle DH anlık haber bildirim tercihlerini görebilmek için bu özelliği aktifleştirmeniz gerekmektedir. Tarayıcınız için bildirim sıklığı belirleyiniz. Hangisi sizi en iyi tanımlar? (Daha sonra değiştirebilirsiniz.) Az Meraklı (1-2 Bildirim) Meraklı (3-7 Bildirim) Teknoloji Delisi (7+ Bildirim) Bildirimleri Aç Tarayıcı izni gerekiyor. Daha önce DH sizden izin istediğinde reddettiyseniz, DH bildirimlerini alabilmek için aşağıdaki yöntemle izin verebilirsiniz. Adres çubuğunun solundaki (i) ya da \"Güvenli\" butonuna tıklayın. Bildirimler satırında \"İ",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.tema.org.tr/",
+  "grup": "stk_kultur",
+  "kaynak_turu": "canli",
+  "title": "TEMA, Türkiye Erozyonla Mücadele, Ağaçlandırma ve Doğal Varlıkları Koruma Vakfı",
+  "h1": [],
+  "site_adi": null,
+  "text_sample": "TEMA, Türkiye Erozyonla Mücadele, Ağaçlandırma ve Doğal Varlıkları Koruma Vakfı TR EN GÖNÜLLÜ OL BAĞIŞ YAP Hakkımızda Kurumsal Kuruluş Öykümüz Kurucu Onursal Başkanlarımız Varoluş Nedenimiz Vakıf Senedimiz TEMA Logosu 30 Yılda TEMA Vakfı Organizasyon Kurucularımız Mütevelli Heyetimiz Yönetim Kurulumuz Bilim Kurulumuz Genel Merkez Ekibimiz Saha Örgütlenmemiz İnsan Kaynakları İktisadi İşletme Raporlar ve Şeffaflık Mali Raporlar Bağışçı Hakları Bildirgesi Faaliyet Raporları Saygıyla Anıyoruz Toprak Dedemiz Hayrettin Karaca'yı Anıyoruz Yaprak Dedemiz Ali Nihat Gökyiğit'i Anıyoruz Hayrettin Karaca ve A. Nihat Gökyiğit Gönüllülük Ödülleri Çevre Kütüphanesi Çalışmalarımız Orman Ağaçlandırma Çalışmaları Ağaçlandırma Projeleri Orman Projeleri Ağaçlandırma Sahaları Söndür, Daha Yanmadan Yanan Orman ",
+  "icerik_ozeti": "UMUT YEŞERTİYORUZ TEMA Vakfı, erozyonla mücadele ve doğal varlıkları koruma amacıyla kurulan ve bugün yaklaşık 1 milyon 300 bin gönüllüsü bulunan bir halk hareketidir. TEMA Vakfı’nı yakından tanı 1 Milyon+ Gönüllü TEMA Gönüllüsü Ol 45 Milyon+ Fidan Siz de Destekçimiz Olun 8 Milyon+ Çocuk Çalışma Alanlarımız 344 + Dava/Kampanya Davalarımız Hakkında Çalışma Alanlarımız Bu topraklarda umut yeşertiyoruz. Orman Çalışmaları İnceleyin Savunuculuk ve Çevre Politikaları Çalışmaları İnceleyin Eğitim Çalışmaları İnceleyin Örgütlenme ve Gönüllülük Çalışmaları İnceleyin Kırsal Kalkınma Çalışmaları İnceleyin İklim Çalışmaları İnceleyin Biyolojik Çeşitlilik Çalışmaları İnceleyin TEMA’ dan Gelişmeler BASIN BÜLTENLERİ TEMA Vakfı Gönüllüleri Özgürlüklerine Kavuştu 28.07.2026 Salı BİZDEN HABERLER Gönüllülerimizle Ilgaz’da Bir Araya Geldik 17.08.2026 Pazartesi İŞ BİRLİKLERİMİZ Kurumsal iş birliklerimizi görmek için tıklayınız 16.01.2026 Cuma Ağaçlandırma Sahaları Temsilcilikler AYLIK DÜZENLİ BAĞIŞÇIMIZ OLUN Başta toprak olmak üzere tüm doğal varlıklarımızı korumak için yürüttüğümüz çalışmalara destek olun. Minimum bağış tutarı 100 TL'dir. 300 ₺ 500 ₺ 700 ₺ veya HEMEN BAĞIŞ YAP Tamam Kişisel Verilerin ",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "h1_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.tema.org.tr/gonulluluk/gonullulerimiz-ne-yapar",
+  "grup": "stk_kultur",
+  "kaynak_turu": "canli",
+  "title": "TEMA, Türkiye Erozyonla Mücadele, Ağaçlandırma ve Doğal Varlıkları Koruma Vakfı",
+  "h1": [
+   "TEMA Gönüllüsü Ne Yapar?"
+  ],
+  "site_adi": null,
+  "text_sample": "TEMA, Türkiye Erozyonla Mücadele, Ağaçlandırma ve Doğal Varlıkları Koruma Vakfı TR EN GÖNÜLLÜ OL BAĞIŞ YAP Hakkımızda Kurumsal Kuruluş Öykümüz Kurucu Onursal Başkanlarımız Varoluş Nedenimiz Vakıf Senedimiz TEMA Logosu 30 Yılda TEMA Vakfı Organizasyon Kurucularımız Mütevelli Heyetimiz Yönetim Kurulumuz Bilim Kurulumuz Genel Merkez Ekibimiz Saha Örgütlenmemiz İnsan Kaynakları İktisadi İşletme Raporlar ve Şeffaflık Mali Raporlar Bağışçı Hakları Bildirgesi Faaliyet Raporları Saygıyla Anıyoruz Toprak Dedemiz Hayrettin Karaca'yı Anıyoruz Yaprak Dedemiz Ali Nihat Gökyiğit'i Anıyoruz Hayrettin Karaca ve A. Nihat Gökyiğit Gönüllülük Ödülleri Çevre Kütüphanesi Çalışmalarımız Orman Ağaçlandırma Çalışmaları Ağaçlandırma Projeleri Orman Projeleri Ağaçlandırma Sahaları Söndür, Daha Yanmadan Yanan Orman ",
+  "icerik_ozeti": "Ana Sayfa Gönüllülük TEMA Gönüllüsü Ne Yapar? TEMA Gönüllüsü Ne Yapar? Örgütlenme Gönüllüleri Saha Gönüllüleri Destek Gönüllüleri Tamam Kişisel Verilerin Korunması Hakkında Bilgilendirme, Aydınlatma ve Taahhüt Metni Değerli TEMA Dostu, Bu bilgilendirme formu, TEMA Vakfı'na destek veren bağışçıların, gönüllülerin ve tüm paydaşların Vakıf ile paylaşmış oldukları kişisel verilerin TEMA Vakfı tarafından alınmasına, saklanmasına, paylaşılmasına, işlenmesine ve silinmesine ilişkin süreç hakkında, 6698 Sayılı Kişisel Verilerin Korunması Hakkındaki Kanun kapsamında kişisel veri sahibini bilgilendirmek için hazırlanmıştır. 07.04.2016 tarihinde resmi gazetede yayınlanarak yürürlüğe giren 6698 sayılı Kişisel Verilerin Korunması Kanunu (\"Kanun\") kapsamında, TEMA Vakfı 'Veri Sorumlusu' sıfatına sahip olup bu sıfatın gerektirdiği yükümlülükleri yerine getirmek için gerekli uyum çalışmalarını gerçekleştirmektedir. Siz değerli bağışçılarımız, gönüllülerimiz ve paydaşlarımız kişisel verilerinizi Vakıf Merkezi, Temsilcilikler, internet sitesi, banka ve SMS gibi kanallardan; sözlü, yazılı ya da elektronik ortam üzerinden TEMA Vakfı ile paylaşabiliyorsunuz. Paylaşmış olduğunuz kişisel verileriniz işbu",
+  "sorunlar": [
+   {
+    "sorun": "title_uzun"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.kizilay.org.tr/",
+  "grup": "stk_kultur",
+  "kaynak_turu": "canli",
+  "title": "Türk Kızılay | Ana Sayfa",
+  "h1": [],
+  "site_adi": "Türk Kızılay Kurumsal Sitesi",
+  "text_sample": "ANA SAYFA KURUMSAL NELER YAPIYORUZ? ŞUBELER S.S.S. İLETİŞİM BAĞIŞ SAYFASI BAĞIŞÇI GİRİŞİ BAĞIŞÇI GİRİŞİ BAĞIŞ TR EN العربية Ara Web sitemizde en iyi deneyimi yaşamanızı sağlamak için çerezleri kullanıyoruz. Detaylı Bilgi Anladım Bağış Yap Bağış Yap Gönüllü Ol Gönüllü Ol İzle İzle İndir İndir x Kan Bağışıyla Birbirimize Candan Bağlıyız Kampanya Videoumuzu İndirmek İçin Tıklayınız x Hızlı Düzenli Bağış 25 TL 50 TL 100 TL Diğer Aylık düzenli olarak bağış yapmak istiyorum. Bağış Kategorileri Afet Müdahale Bağışları Kurban Bağışları Kızılay Zekat Fidye Genel Nakdi Bağış Sağlık Yardımları Eğitim Bağışları Sosyal Hizmet Bağışları Yurt Dışı Yardımları Proje Bağışları Ayni Bağışlar G.Menkul Bağışları G.Menkul ve Ayni Bağışlar Bağış Asistanı Bağış Asistanı Bağış Yöntemleri Banka Yolu İle Bağış Kript",
+  "icerik_ozeti": "Web sitemizde en iyi deneyimi yaşamanızı sağlamak için çerezleri kullanıyoruz. Detaylı Bilgi Anladım x Kan Bağışıyla Birbirimize Candan Bağlıyız Kampanya Videoumuzu İndirmek İçin Tıklayınız x 25 TL 50 TL 100 TL Diğer Aylık düzenli olarak bağış yapmak istiyorum. Afet Müdahale Bağışları Kurban Bağışları Kızılay Zekat Fidye Genel Nakdi Bağış Sağlık Yardımları Eğitim Bağışları Sosyal Hizmet Bağışları Yurt Dışı Yardımları Proje Bağışları Ayni Bağışlar G.Menkul Bağışları G.Menkul ve Ayni Bağışlar Bağış Asistanı Bağış Asistanı Banka Yolu İle Bağış Kripto Bağışı SMS ve Düzenli SMS 168 Çağrı Merkezi Online ve Düzenli Bağış Mobil Uygulama ile Bağış PTT Yolu İle Bağış Kızılay Şubeleri İle Bağış Yurt Dışından Bağış Kızılay Maden Suyu 100 Yıllık Mirasını Geleceğe Taşıyor Kızılay Maden Suyu 100 Yıllık Mirasını Geleceğe Taşıyor Dünya İlk Yardım Günü’nde Türk Kızılay’dan 11 Yeni Kamu Spotu Dünya İlk Yardım Günü’nde Türk Kızılay’dan 11 Yeni Kamu Spotu Türk Kızılay, Kars ve Bitlis'te Yeni Aşevlerini Hizmete Açtı Türk Kızılay, Kars ve Bitlis'te Yeni Aşevlerini Hizmete Açtı Türkiye'den Venezuela'ya Yardım Eli Türkiye'den Venezuela'ya Yardım Eli Türk Kızılay 158 Yaşında: Kızılay Ödülleri Sahiplerini Bu",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_uzun"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.kizilay.org.tr/EtkinlikTakvimi",
+  "grup": "stk_kultur",
+  "kaynak_turu": "canli",
+  "title": "Türk Kızılay | Etkinlik Takivimi",
+  "h1": [],
+  "site_adi": "Türk Kızılay Kurumsal Sitesi",
+  "text_sample": "ANA SAYFA KURUMSAL NELER YAPIYORUZ? ŞUBELER S.S.S. İLETİŞİM BAĞIŞ SAYFASI BAĞIŞÇI GİRİŞİ BAĞIŞÇI GİRİŞİ BAĞIŞ TR EN العربية Ara Web sitemizde en iyi deneyimi yaşamanızı sağlamak için çerezleri kullanıyoruz. Detaylı Bilgi Anladım Kızılay Medya Etkinlik Takvimi 1-7 MART- DEPREM HAFTASI Detaylı Bilgi × 1-7 MART- DEPREM HAFTASI Deprem Haftası’nda dünyanın en etkin deprem kuşaklarından birinin üzerinde bulunan ülkemizde vatandaşlarımızın depreme karşı hazırlıklı olmasının sağlanması, depremden korunma yollarının anlatılması ve toplumda afete hazırlık bilincinin yaygınlaştırılması amaçlanmaktadır. Türk Kızılayı tarafından olası afet zararlarını azaltmak için Kızılay şubeleri aracılığıyla yerelde kurumlar arası işbirliğinin geliştirilmesinin sağlanması, toplum liderleri aracılığıyla toplumda afet",
+  "icerik_ozeti": "Web sitemizde en iyi deneyimi yaşamanızı sağlamak için çerezleri kullanıyoruz. Detaylı Bilgi Anladım Kızılay Medya Etkinlik Takvimi 1-7 MART- DEPREM HAFTASI Detaylı Bilgi × 1-7 MART- DEPREM HAFTASI Deprem Haftası’nda dünyanın en etkin deprem kuşaklarından birinin üzerinde bulunan ülkemizde vatandaşlarımızın depreme karşı hazırlıklı olmasının sağlanması, depremden korunma yollarının anlatılması ve toplumda afete hazırlık bilincinin yaygınlaştırılması amaçlanmaktadır. Türk Kızılayı tarafından olası afet zararlarını azaltmak için Kızılay şubeleri aracılığıyla yerelde kurumlar arası işbirliğinin geliştirilmesinin sağlanması, toplum liderleri aracılığıyla toplumda afetlere karşı hazırlıklı olma ve sosyal sorumluluk bilincini oluşturması için “toplum liderlerini teşkilatlandırma projesi afet zararlarının azaltılma programı” hayata geçirilmiştir. Ayrıca “Kızılay” ile de özellikle ilköğretim öğrencilerinin ve öğretmenlerin afet öncesi sırası ve sonrasında yapılması gerekenler konusunda çalışmalar yürütülmektedir. Güvenli yaşam için edinilmesi gereken temel bilgiler, korunma yöntemleri, afetler ve Kızılay’ın hizmetleri konusunda farkındalık yaratılmakta ve bilinçlendirme çalışmaları kapsamı",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.iksv.org/",
+  "grup": "stk_kultur",
+  "kaynak_turu": "canli",
+  "title": "İstanbul Kültür Sanat Vakfı | İKSV",
+  "h1": [],
+  "site_adi": "İKSV",
+  "text_sample": "İçeriğe atla EN İKSV TAKVİMİ BİLET ALIN LALE KART ÜYESİ OLUN E-BÜLTEN KAYIT EN NELER YAPIYORUZ? İSTANBUL FİLM FESTİVALİ İSTANBUL MÜZİK FESTİVALİ İSTANBUL CAZ FESTİVALİ İSTANBUL BİENALİ İSTANBUL TİYATRO FESTİVALİ İSTANBUL TASARIM BİENALİ FİLMEKİMİ FİBA SALON İKSV VENEDİK BİENALİ TÜRKİYE PAVYONU LEYLA GENCER ŞAN YARIŞMASI LEYLA GENCER ANI EVİ ÖZEL ETKİNLİKLER İKSV GALALARI KÜLTÜR POLİTİKALARI ÇALIŞMALARI ÖDÜL VE TEŞVİKLER FESTİVAL ÖDÜLLERİ AYDIN GÜN TEŞVİK ÖDÜLÜ GÜLRİZ SURURİ-ENGİN CEZZAR TİYATRO TEŞVİK ÖDÜLÜ TALÂT SAİT HALMAN ÇEVİRİ ÖDÜLÜ YARININ KADIN YILDIZLARI DESTEK FONU SaDe: SANATÇI DESTEK FONU İKSV GENÇ SANATÇI FONU ULUSLARARASI DOLAŞIM DESTEK PROGRAMI DEPREM BÖLGESİ ENSTRÜMAN DESTEK FONU ÖĞRENME, GELİŞİM VE SANATÇI PROGRAMLARI İKSV ALT KAT CITÉ DES ARTS MİSAFİR SANATÇI PROGRAMI GENÇ",
+  "icerik_ozeti": "19. İstanbul Bienali 18 Eylül–14 Kasım 2027 tarihleri arasında düzenlenecek 19. İstanbul Bienali’nin ana mekânı açıklandı ve sanatçılar için açık çağrı duyuruldu. Ayrıntılı Bilgi “Musk”, İKSV Galaları’nda Oscar ödüllü yönetmen Alex Gibney’nin Elon Musk’ı mercek altına aldığı belgeselin biletleri satışta. Ayrıntılı Bilgi Bilet Al İKSV Genç Sanatçı Fonu için Londra’da gala Genç sanatçıların üretimlerini ve uluslararası çalışmalarını desteklemek amacıyla düzenlenen Istanbul Calling Gala Gecesi, 10 Ekim’de Londra Doğa Tarihi Müzesi’nde gerçekleştirildi. Ayrıntılı Bilgi Filmekimi Filmekimi, 22–25 Ekim tarihlerinde İzmir ve Mersin’de sinemaseverlerle buluşuyor. Program Bilet Al 30. İstanbul Tiyatro Festivali 22 Ekim–3 Aralık tarihleri arasında tiyatroseverlerle buluşacak festivalin biletleri satışta. Program Bilet Al Fiba Salon İKSV The Notwist, Büyük Ev Ablukada, Didem Bayındır, Mirgün Cabas ve daha fazlası yeni sezonda Salon’da. Program Bilet Al Ortaklaşa’da başvurular için son tarih 18 Aralık Türkiye ve Avrupa’dan kültür-sanat kurumları ile belediyelerin işbirliği içinde geliştireceği projelere toplam 890 bin avro hibe desteği sağlanacak. Ayrıntılı Bilgi Venedik Bienali Venedik Bienal",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "h1_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.iksv.org/tr/ilkeler-ve-politikalar/kapsayicilik-ve-erisebilirlik-manifestosu",
+  "grup": "stk_kultur",
+  "kaynak_turu": "canli",
+  "title": "Kapsayıcılık ve Erişilebilirlik Manifestosu",
+  "h1": [
+   "Kapsayıcılık ve Erişilebilirlik Manifestosu"
+  ],
+  "site_adi": null,
+  "text_sample": "EN İKSV TAKVİMİ BİLET ALIN LALE KART ÜYESİ OLUN E-BÜLTEN KAYIT EN NELER YAPIYORUZ? İSTANBUL FİLM FESTİVALİ İSTANBUL MÜZİK FESTİVALİ İSTANBUL CAZ FESTİVALİ İSTANBUL BİENALİ İSTANBUL TİYATRO FESTİVALİ İSTANBUL TASARIM BİENALİ FİLMEKİMİ SALON İKSV VENEDİK BİENALİ TÜRKİYE PAVYONU LEYLA GENCER ŞAN YARIŞMASI LEYLA GENCER ANI EVİ ÖZEL ETKİNLİKLER İKSV GALALARI KÜLTÜR POLİTİKALARI ÇALIŞMALARI ÖDÜL VE TEŞVİKLER FESTİVAL ÖDÜLLERİ AYDIN GÜN TEŞVİK ÖDÜLÜ GÜLRİZ SURURİ-ENGİN CEZZAR TİYATRO TEŞVİK ÖDÜLÜ TALÂT SAİT HALMAN ÇEVİRİ ÖDÜLÜ YARININ KADIN YILDIZLARI DESTEK FONU SADE: SANATÇI DESTEK FONU İKSV GENÇ SANATÇI FONU ULUSLARARASI DOLAŞIM DESTEK PROGRAMI DEPREM BÖLGESİ ENSTRÜMAN DESTEK FONU ÖĞRENME, GELİŞİM VE SANATÇI PROGRAMLARI İKSV ALT KAT CITÉ DES ARTS MİSAFİR SANATÇI PROGRAMI GENÇ CAZ+ KÖPRÜDE BULU",
+  "icerik_ozeti": "Kapsayıcılık ve Erişilebilirlik Manifestosu İstanbul Kültür Sanat Vakfı (İKSV), kültür politikalarının geliştirilmesine katkıda bulunmayı, yaratıcılığı desteklemeyi, hiçbir ayrım gözetmeksizin herkesin kültürel yaşama eşit ve aktif katılımını sağlamayı temel sorumlulukları arasında görür. Kültür-sanat alanının, herkes için eşit fırsatlar sunması gerekir. Sanat, insanlığın ortak değeridir ve hiçbir zümreye ya da ayrıcalıklı gruba ait değildir. Kültür birikimi, sanatsal üretim ve bu üretimin uygulama alanları, herkes için ve herkesle birlikte geliştirilmelidir. Yalnızca iyi niyet yeterli değildir. Bu nedenle kapsayıcılık ve erişilebilirlik kurumsal politikalarımıza yön vermelidir. Kapılarımızdan geçen herkesin eşit fırsatlarla programlarımızdan yararlandığı, kendini güvende, rahat ve ait hissettiği bir kültür-sanat ortamı yaratmak temel hedeflerimizden biridir. Temel İlkelerimiz İKSV olarak; Toplumun çeşitliliğini bir zenginlik olarak görüyor, Bugüne kadar gerçekleştirdiğimiz tüm programları, etkinlikleri ve kurumsal yapılanmamızı kapsayıcılık ve erişilebilirlik perspektifiyle değerlendiriyor, Tüm etkinliklerimizi, ayrım gözetmeksizin herkes için erişilebilir kılmayı hedefliyoruz. Me",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_yok"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.muze.gov.tr/",
+  "grup": "stk_kultur",
+  "kaynak_turu": "canli",
+  "title": "T.C. Kültür ve Turizm Bakanlığı - Anasayfa",
+  "h1": [
+   "GECE MÜZECİLİĞİ DEVAM EDİYOR!",
+   "Hediye Mobil MüzeKart",
+   "TÜRKİYE'NİN MÜZELERİNİ MOBİL MÜZEKART İLE KEŞFET",
+   "TAŞIN HAYAT VERDİĞİ BAŞKENT, HASANKEYF",
+   "Efes Örenyeri",
+   "Hierapolis (Pamukkale) Örenyeri"
+  ],
+  "site_adi": "T.C. Kültür ve Turizm Bakanlığı",
+  "text_sample": "TR TR EN Ara Ana Sayfa HAKKIMIZDA MüzeKart Gece Müzeciliği E-BİLET Müzeler Giriş Yap Kayıt Ol Giriş Yap Kayıt Ol GECE MÜZECİLİĞİ DEVAM EDİYOR! Göreme Örenyeri Gece Müzeciliği 1 Kasım'a Kadar Devam Ediyor! Hediye Mobil MüzeKart En Güzel Hediye Mobil MüzeKart Türkiye’nin müzelerini keşfetmenin en kolay yolu olan Mobil MüzeKart, artık sevdikleriniz, çalışma arkadaşlarınız ve müşterileriniz için anlamlı bir hediye seçeneğine dönüşüyor. TÜRKİYE'NİN MÜZELERİNİ MOBİL MÜZEKART İLE KEŞFET TAŞIN HAYAT VERDİĞİ BAŞKENT, HASANKEYF Hasankeyf Müzesi'ni MüzeKart'ınla ziyaret edebilir, tarihte keyifli bir yolculuğa çıkabilirsin. Hasankeyf Müzesi e - Devlet MüzeKart Hizmet Klavuzu Previous Next Müzeler ACENTE GİRİŞ Duyurular AYIN MÜZESİ En Çok İlgi Çeken Müzeler Hepsini Gör İzmir Efes Örenyeri Antikçağ’ın A",
+  "icerik_ozeti": "En Çok İlgi Çeken Müzeler Hepsini Gör İzmir Efes Örenyeri Antikçağ’ın Anadolu başkenti Efes son derece görkemli bir metropolis. Eşsiz mimari eserler... Daha Fazla Detay... Bilet Al Denizli Hierapolis (Pamukkale) Örenyeri Denizli İlinin 18 km kuzeyinde yer alan Hierapolis Antik Kenti Bergama Krallarından II. Eu... Daha Fazla Detay... Bilet Al",
+  "sorunlar": [
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
+ },
+ {
+  "ad": "https://www.muze.gov.tr/muze-detay?SectionId=EFS01&DistId=EFS",
+  "grup": "stk_kultur",
+  "kaynak_turu": "canli",
+  "title": "Efes Örenyeri",
+  "h1": [
+   "DÜNYANIN YEDİ HARİKASINDAN BİRİ İZMİR EFES ÖRENYERİ'NDE",
+   "MÜZE BROŞÜRÜNÜ İNDİR",
+   "YAKININDAKİ MÜZELER"
+  ],
+  "site_adi": "T.C. Kültür ve Turizm Bakanlığı",
+  "text_sample": "TR TR EN Ara Ana Sayfa HAKKIMIZDA MüzeKart Gece Müzeciliği E-BİLET Müzeler Giriş Yap Kayıt Ol Giriş Yap Kayıt Ol Efes Örenyeri Bilgilendirme Açılış/Kapanış Saatleri Açılış Saati: 08:00 Kapanış Saati: 18:00 Gişe Kapanış Saati: 17:30 Kapalı Günler Her gün açık Adres: Efes Harabeleri, 35920 Selçuk/İzmir E-mail: efesmuzesi@kultur.gov.tr Tel 1: 02328926010 Tel 2: 02328926011 T.C. Vatandaşları için MüzeKart Geçerlidir. Açık Sesli Rehberlik Hizmeti Vardır Efes Deneyim Müzesi Efes Deneyim Müzesi ziyaret saatleri Efes Örenyeri ile aynıdır. Açıklama DÜNYANIN YEDİ HARİKASINDAN BİRİ İZMİR EFES ÖRENYERİ'NDE Antikçağ’ın Anadolu başkenti Efes son derece görkemli bir metropolis. Eşsiz mimari eserleri binlerce yıldır ayakta olan bu mega antik şehir, Dünya Miras Listesi'ne de girdi. Anadolu'nun ana tanrıça ",
+  "icerik_ozeti": "Bilgilendirme Açılış/Kapanış Saatleri Açılış Saati: 08:00 Kapanış Saati: 18:00 Gişe Kapanış Saati: 17:30 Kapalı Günler Her gün açık Adres: Efes Harabeleri, 35920 Selçuk/İzmir E-mail: efesmuzesi@kultur.gov.tr Tel 1: 02328926010 Tel 2: 02328926011 T.C. Vatandaşları için MüzeKart Geçerlidir. Açık Sesli Rehberlik Hizmeti Vardır Efes Deneyim Müzesi Efes Deneyim Müzesi ziyaret saatleri Efes Örenyeri ile aynıdır. Açıklama DÜNYANIN YEDİ HARİKASINDAN BİRİ İZMİR EFES ÖRENYERİ'NDE Antikçağ’ın Anadolu başkenti Efes son derece görkemli bir metropolis. Eşsiz mimari eserleri binlerce yıldır ayakta olan bu mega antik şehir, Dünya Miras Listesi'ne de girdi. Anadolu'nun ana tanrıça (Kybele) geleneğine dayalı, antik dünyanın yedi harikasından Artemis Tapınağı'nın da Efes'te olması önemini artırıyor. Efes Örenyeri'nde başta Hellenistik ve Roma olmak üzere; farklı uygarlıklara ait üst düzey kentleşme, mimarlık ve din tarihinin simgeleri bulunuyor. HEM POLİTİK HEM DE TİCARİ BİR MERKEZ Efes, tarih öncesinden başlayarak Hellenistik, Roma, Bizans (Doğu Roma), Beylikler ve Osmanlı Dönemleri boyunca kesintisiz yerleşim gördü ve her zaman politik ve ticari bir merkez oldu. M.Ö. 7000 yıla kadar uzanan tarihi b",
+  "sorunlar": [
+   {
+    "sorun": "title_kisa"
+   },
+   {
+    "sorun": "meta_description_yok"
+   },
+   {
+    "sorun": "img_alt_eksik"
+   }
+  ],
+  "tarih": "2026-10-22"
  }
 ]

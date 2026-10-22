@@ -1,0 +1,79 @@
+{
+ "k": 5,
+ "siralama": "bm25,vektor",
+ "modeller": {
+  "text-embedding-qwen3-embedding-0.6b": {
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.969,
+   "parca_sayisi": 5.0,
+   "sorun_isabeti": 0.815,
+   "sure_ms": 84.901,
+   "gruplar": {
+    "belediye": {
+     "sayfa": 10,
+     "kapsama": 1.0,
+     "isabet": 1.0,
+     "mrr": 1.0,
+     "sorun_isabeti": 0.833
+    },
+    "blog_medya": {
+     "sayfa": 6,
+     "kapsama": 1.0,
+     "isabet": 1.0,
+     "mrr": 0.889,
+     "sorun_isabeti": 0.945
+    },
+    "duzce_birim": {
+     "sayfa": 58,
+     "kapsama": 1.0,
+     "isabet": 1.0,
+     "mrr": 1.0,
+     "sorun_isabeti": 0.759
+    },
+    "eticaret": {
+     "sayfa": 9,
+     "kapsama": 1.0,
+     "isabet": 1.0,
+     "mrr": 0.778,
+     "sorun_isabeti": 0.815
+    },
+    "haber": {
+     "sayfa": 10,
+     "kapsama": 1.0,
+     "isabet": 1.0,
+     "mrr": 0.933,
+     "sorun_isabeti": 0.917
+    },
+    "kamu": {
+     "sayfa": 13,
+     "kapsama": 1.0,
+     "isabet": 1.0,
+     "mrr": 0.942,
+     "sorun_isabeti": 0.801
+    },
+    "saglik": {
+     "sayfa": 2,
+     "kapsama": 1.0,
+     "isabet": 1.0,
+     "mrr": 1.0,
+     "sorun_isabeti": 1.0
+    },
+    "stk_kultur": {
+     "sayfa": 8,
+     "kapsama": 1.0,
+     "isabet": 1.0,
+     "mrr": 1.0,
+     "sorun_isabeti": 0.854
+    },
+    "universite": {
+     "sayfa": 17,
+     "kapsama": 1.0,
+     "isabet": 1.0,
+     "mrr": 1.0,
+     "sorun_isabeti": 0.863
+    }
+   }
+  }
+ }
+}

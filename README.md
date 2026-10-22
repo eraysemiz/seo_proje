@@ -138,8 +138,14 @@ py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-
 ## Bilgi getirme (RAG) ölçümü
 
 `rag_degerlendir.py` dil modeli çalıştırmadan, yalnızca gömme modeliyle getirme kalitesini ölçer.
-Ölçüm seti `tests/veri/rag_degerlendirme.json` (60 sayfa; kayıtlı HTML'lerden `--veri-olustur` ile
-üretilir). Altın etiketler sorun kodlarından türetilir:
+Ölçüm seti `tests/veri/rag_degerlendirme.json`, 133 sayfa ve 9 gruptan oluşur:
+
+- 60 sayfa kayıtlı HTML'lerden (`--veri-olustur`; 58 Düzce Üniversitesi birim sitesi, 2 üniversite anasayfası)
+- 73 sayfa `test_setleri/rag_ek_siteler.txt` listesindeki 43 siteden canlı indirildi (`--veri-ekle`):
+  üniversite, kamu, belediye, haber, e-ticaret, sağlık, blog/medya, STK/kültür. Her sitenin anasayfası ve
+  bir iç sayfası alınır, robots.txt'ye uyulur. Depoya HTML değil, yalnızca çıkarılmış alanlar yazılır.
+
+Altın etiketler sorun kodlarından türetilir:
 
 - **kapsama:** sayfanın sorunlu alanlarından en az bir parçayla kapsananların oranı
 - **isabet:** getirilen parçalardan ilgili olanların oranı (sorunlu alan ya da genel yönerge)
@@ -150,21 +156,27 @@ py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-
 ```
 py rag_degerlendir.py --embed-model text-embedding-qwen3-embedding-0.6b
 py rag_degerlendir.py --embed-model a,b,c --siralama vektor      # modelleri / sıralamaları karşılaştır
+py rag_degerlendir.py --veri-ekle test_setleri/rag_ek_siteler.txt
 ```
 
-Sonuçlar `sonuclar/rag_degerlendirme/` altına yazılır. 22 Ekim 2026 ölçümü (qwen3-embedding-0.6b):
+Sonuçlar grup kırılımıyla birlikte `sonuclar/rag_degerlendirme/` altına yazılır.
+22 Ekim 2026 ölçümü, 133 sayfa, qwen3-embedding-0.6b:
 
 | | Kapsama | İsabet | MRR | Sorun isabeti | Getirme |
 |---|---|---|---|---|---|
-| Eski hat (k=3) | 0,457 | 0,594 | 0,786 | – | 2 257 ms |
-| Yeni hat, yalnız BM25 (k=5) | 1,000 | 1,000 | 0,964 | 0,765 | <1 ms |
-| Yeni hat, yalnız vektör (k=5) | 1,000 | 1,000 | 1,000 | 0,931 | 36 ms |
-| Yeni hat, eşit ağırlıklı hibrit (k=5) | 1,000 | 1,000 | 1,000 | 0,707 | 40 ms |
-| **Yeni hat, ağırlıklı hibrit (k=5, varsayılan)** | 1,000 | 1,000 | 1,000 | **0,939** | 39 ms |
+| Eski hat (k=3) | 0,487 | 0,514 | – | – | 44 ms* |
+| Yeni hat, yalnız BM25 (k=5) | 1,000 | 1,000 | 0,937 | 0,796 | <1 ms |
+| Yeni hat, yalnız vektör (k=5) | 1,000 | 1,000 | 0,969 | 0,905 | 38 ms |
+| Yeni hat, ağırlıklı hibrit (k=5) | 1,000 | 1,000 | 0,969 | 0,909 | 39 ms |
+| **+ t02 parçası tamamlandı (varsayılan)** | 1,000 | 1,000 | 0,969 | **0,935** | 36 ms |
 
-Kapsama ve isabet yeni hatta tasarım gereği (metadata filtresi ve kapsayarak seçim) tavandadır;
-sıralama kalitesini sorun isabeti ayırt eder. Set ağırlıklı olarak Düzce Üniversitesi sayfalarından
-oluşur; farklı sitelerle genişletilmesi önerilir.
+\* Eski hat `localhost` ile sayfa başına 2 257 ms sürüyordu; tablodaki değer 127.0.0.1 ile ölçüldü.
+
+Eski hattın isabeti Düzce dışındaki sitelerde çok daha düşüktür (haber 0,30, e-ticaret 0,30,
+blog/medya 0,11). Kapsama ve isabet yeni hatta tasarım gereği tavandadır; sıralama kalitesini sorun
+isabeti ayırt eder. En zayıf sorun `title_kisa`'dır (29/45). Her sorun için ayrı alt sorgu denendi
+ancak sorun isabetini 0,815'e düşürdüğü için alınmadı. t02 düzeltmesi aynı setteki sonuçlar görülerek
+yapıldı; kazanç biraz iyimser olabilir, yeni sitelerle doğrulanması önerilir.
 
 ## Bağımsız ölçüm (isteğe bağlı)
 

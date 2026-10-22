@@ -13,7 +13,7 @@
     "id": "t02",
     "alan": "title",
     "baslik": "Title uzunluğu",
-    "icerik": "Google title için sabit bir karakter sınırı koymaz; arama sonucunda yer yetmezse başlık kesilir. Bu yüzden en önemli kavram başa yakın yazılmalıdır. Bu araç, okunaklı ve kesilmeye dayanıklı olması için 30 ile 60 karakter arasını hedefler.",
+    "icerik": "Google title için sabit bir karakter sınırı koymaz; arama sonucunda yer yetmezse başlık kesilir. Çok kısa bir başlık sayfanın konusunu anlatmaya yetmez, çok uzun olanın sonu ise görünmez; bu yüzden en önemli kavram başa yakın yazılmalıdır. Bu araç 30 ile 60 karakter arasını hedefler.",
     "etiketler": ["uzunluk", "kisa", "uzun"],
     "kaynak": "https://developers.google.com/search/docs/appearance/title-link",
     "kaynak_basligi": "Google Arama Merkezi: Influencing your title links in search results",

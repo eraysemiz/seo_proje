@@ -84,6 +84,8 @@ Ayrıntı README'nin "Modele verilen ek bağlam" ve "Bilgi getirme (RAG) ölçü
 - `localhost` → `127.0.0.1`: Windows'ta her LM Studio isteğine eklenen ~2 sn gecikme kalktı.
 - `deney.py --kosullar` geri geldi (yalnızca deneyde; arayüzde koşul sabit).
 - Getirme ölçümü (60 sayfa): kapsama 0,457 → 1,000; sorun isabeti 0,939; getirme 2 257 → 39 ms.
+  Set 43 farklı siteden 73 canlı sayfayla 133 sayfaya genişletildi (9 grup): eski hat kapsama 0,487 /
+  isabet 0,514, yeni hat 1,000 / 1,000, sorun isabeti 0,935. En zayıf sorun `title_kisa` (29/45).
   Eşit ağırlıklı hibrit (0,707) yalnız vektörden (0,931) kötüydü; BM25 bu yüzden 0,1 ağırlıkta.
   qwen3-embedding-0.6b (0,939) nomic-embed-text-v1.5'ten (0,889) iyi.
 - Uçtan uca (4 sayfa, qwen3.5-9b, tek çalıştırma; küçük örnek): kabul edilen öneri eski 9 / yeni 9,
