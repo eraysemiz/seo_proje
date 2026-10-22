@@ -357,6 +357,25 @@ tr.ayrinti-satiri > td { padding: 0; background: var(--yukseltilmis); }
 .model-satiri { margin: 0; font-size: 13px; color: var(--soluk); }
 .model-satiri strong { color: var(--metin); font-weight: 500; }
 
+/* ------------------------------------------------------------- bilgi balonlari */
+.ipucu-tetik {
+  cursor: help; border-radius: 3px;
+  text-decoration: underline dotted; text-decoration-color: currentColor; text-underline-offset: 3px;
+}
+.ipucu-tetik:focus { outline: none; }
+.ipucu-tetik:focus-visible { outline: 2px solid var(--veri); outline-offset: 2px; }
+.ipucu-balon {
+  position: fixed; z-index: 50; display: none;
+  width: max-content; max-width: min(280px, calc(100vw - 16px));
+  padding: 8px 10px; border-radius: var(--r-kontrol);
+  background: var(--birincil); color: var(--birincil-metin);
+  font-size: 12px; line-height: 17px; font-weight: 400; text-align: left; white-space: normal;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .18);   /* yuzen oge: golge yalnizca burada */
+  pointer-events: none;
+}
+.ipucu-tetik:hover > .ipucu-balon, .ipucu-tetik:focus > .ipucu-balon, .ipucu-tetik.acik > .ipucu-balon { display: block; }
+.ipucu-tetik.kapali > .ipucu-balon { display: none; }
+
 /* ------------------------------------------------------------- gunluk */
 .gunluk-kutusu summary { cursor: pointer; font-size: 13px; color: var(--soluk); width: max-content; }
 .gunluk-kutusu summary:hover { color: var(--metin); }

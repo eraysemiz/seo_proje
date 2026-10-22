@@ -26,6 +26,30 @@ const CIDDIYET_SINIF = { yuksek: "kotu", orta: "dikkat", dusuk: "" };
 const CIDDIYET_SIRA = { yuksek: 0, orta: 1, dusuk: 2 };
 const COZUM_ADI = { model: "model çözer", kural: "kural çözer", elle: "elle düzeltilir" };
 
+// Rapordaki puan ve etiket aciklamalari (bilgi balonlari). Metinler kodun gercek hesabina dayanir:
+// puanlar -> kurallar.py: puanlar / _normal_puan / _azami_ceza / SORUN_TANIMI / CIDDIYET_AGIRLIK
+// cozum yollari -> kurallar.py: cozum_yolu, KURAL_SORUNLARI, ALAN_SORUN; uygula.py: kural_duzelt, apply_fixes
+const IPUCU = {
+  puanlar: "Sorunlar ciddiyete göre ceza alır: yüksek 15, orta 8, düşük 3. Toplam ceza olası en kötü cezaya bölünür; puan 100 × (1 − oran).",
+  sayfa: "Yalnız sayfanın HTML kodunda görülen sorunları ölçer. Toplam ceza, HTML'de görülebilecek en kötü durumun cezasına oranlanıp 100'den düşülür.",
+  site: "Canlı erişimle ölçülen sorunları ölçer: robots.txt, sitemap, HTTPS, sertifika, hız. Toplam ceza, bu alandaki en kötü duruma oranlanıp 100'den düşülür.",
+  icerik: "Başlık, meta açıklama, H1, alt metin, başlık sırası, metin miktarı ve terim uyumunu ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
+  teknik: "Canonical, dil, viewport, yapısal veri, paylaşım etiketleri, noindex, robots.txt, sitemap ve erişimi ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
+  guvenlik: "HTTPS kullanımı, https yönlendirmesi, SSL sertifikası, HSTS ve karışık içeriği ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
+  performans: "Sunucu yanıt süresi (TTFB), sıkıştırma, HTML boyutu ve dış kaynak sayısını ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
+  cozum_model: "Dil modeli yeni metin önerir (title, meta açıklama, H1, görsel alt metni); doğrulamadan geçen öneriler düzeltilmiş HTML'e yazılır.",
+  cozum_kural: "Araç bunu dil modeli olmadan, sabit bir kuralla düzeltilmiş HTML'de giderir: canonical, lang, viewport, Open Graph eklenir; fazla H1'ler H2 yapılır.",
+  cozum_elle: "Araç bunu düzeltmez; site sahibinin sunucuda veya sayfa kodunda kendisinin değiştirmesi gerekir (ör. robots.txt, sitemap, HTTPS, sertifika, yapısal veri)."
+};
+let ipucuSayaci = 0;
+// klavyeyle odaklanabilen, ekran okuyucuya aria-describedby ile baglanan bilgi balonu
+function ipucuHtml(etiket, anahtar) {
+  if (!IPUCU[anahtar]) return kacis(etiket);
+  const id = "ipucu-" + (++ipucuSayaci);
+  return '<span class="ipucu-tetik" tabindex="0" aria-describedby="' + id + '">' + kacis(etiket) +
+    '<span class="ipucu-balon" role="tooltip" id="' + id + '">' + kacis(IPUCU[anahtar]) + "</span></span>";
+}
+
 const IMGE = {
   tamam: '<svg class="imge" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor"/><path d="M5.5 9.2l2.3 2.3 4.7-4.8" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   eksik: '<svg class="imge" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor"/><path d="M6.2 6.2l5.6 5.6M11.8 6.2l-5.6 5.6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>',
@@ -483,7 +507,9 @@ function tabloyuCiz(sonuclar, toplam, suruyor) {
 /* ------------------------------------------------------------------- ayrinti */
 function sorunMaddesi(kod, sorunlar) {
   const s = sorunlar[kod] || { sorun: kod };
-  const meta = [s.katman, COZUM_ADI[s.cozum_yolu] || s.cozum_yolu, s.ayrinti].filter(Boolean).map(kacis).join(" · ");
+  const meta = [s.katman && kacis(s.katman),
+    s.cozum_yolu && ipucuHtml(COZUM_ADI[s.cozum_yolu] || s.cozum_yolu, "cozum_" + s.cozum_yolu),
+    s.ayrinti && kacis(s.ayrinti)].filter(Boolean).join(" · ");
   const cip = s.ciddiyet ? '<span class="cip ' + (CIDDIYET_SINIF[s.ciddiyet] || "") + '">' +
     (CIDDIYET_ADI[s.ciddiyet] || s.ciddiyet) + "</span>" : "<span></span>";
   return "<li>" + cip + "<span>" + kacis(aciklamalar[kod] || kod) +
@@ -534,10 +560,10 @@ function ayrintiHtml(k) {
   if (k.once_puanlar) {
     const etiketler = { sayfa: "Sayfa", site: "Site", icerik: "İçerik", teknik: "Teknik",
                         guvenlik: "Güvenlik", performans: "Performans" };
-    h += '<div class="bolum"><h4>Puanlar <span class="sayac">önce → sonra</span></h4><div class="kategoriler">' +
+    h += '<div class="bolum"><h4>' + ipucuHtml("Puanlar", "puanlar") + ' <span class="sayac">önce → sonra</span></h4><div class="kategoriler">' +
       Object.keys(etiketler).map((kap) => {
         const o = k.once_puanlar[kap], s = (k.sonra_puanlar || {})[kap];
-        return '<div class="kategori"><span class="ad">' + etiketler[kap] + "</span>" +
+        return '<div class="kategori"><span class="ad">' + ipucuHtml(etiketler[kap], kap) + "</span>" +
           (var_mi(o) ? olcekHtml(o, var_mi(s) ? s : o) + '<span class="puan-metin">' + onceSonra(o, s, 1) + "</span>"
             : '<span></span><span class="olculmedi">ölçülmedi</span>') + "</div>";
       }).join("") + "</div></div>";
@@ -597,3 +623,36 @@ function ayrintiHtml(k) {
   if (parcalar.length) h += '<p class="model-satiri">' + parcalar.join(" · ") + "</p>";
   return h + "</div>";
 }
+
+/* ------------------------------------------------------------- bilgi balonlari
+   Fare ile uzerine gelince, klavyeyle odaklaninca ve dokununca acilir. Balon ekrana gore
+   (position: fixed) konumlanir ve kenarlara 8 px kala durdurulur; Esc ile kapanir. */
+function ipucuKonumla(tetik) {
+  const balon = tetik.querySelector(".ipucu-balon");
+  if (!balon) return;
+  const r = tetik.getBoundingClientRect();
+  const w = balon.offsetWidth, h = balon.offsetHeight;
+  const x = Math.min(Math.max(8, r.left), innerWidth - w - 8);
+  let y = r.bottom + 6;
+  if (y + h > innerHeight - 8) y = Math.max(8, r.top - h - 6);
+  balon.style.left = x + "px";
+  balon.style.top = y + "px";
+}
+const acikIpuclari = () => document.querySelectorAll(".ipucu-tetik.acik, .ipucu-tetik:hover, .ipucu-tetik:focus");
+document.addEventListener("mouseover", (e) => { const t = e.target.closest(".ipucu-tetik"); if (t) ipucuKonumla(t); });
+document.addEventListener("focusin", (e) => { const t = e.target.closest(".ipucu-tetik"); if (t) ipucuKonumla(t); });
+document.addEventListener("focusout", (e) => { const t = e.target.closest(".ipucu-tetik"); if (t) t.classList.remove("acik", "kapali"); });
+document.addEventListener("mouseout", (e) => {
+  const t = e.target.closest(".ipucu-tetik");
+  if (t && !t.contains(e.relatedTarget)) t.classList.remove("kapali");
+});
+document.addEventListener("click", (e) => {
+  const t = e.target.closest(".ipucu-tetik");
+  document.querySelectorAll(".ipucu-tetik.acik").forEach((x) => { if (x !== t) x.classList.remove("acik"); });
+  if (t) { t.classList.remove("kapali"); t.classList.toggle("acik"); ipucuKonumla(t); }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  acikIpuclari().forEach((t) => { t.classList.remove("acik"); t.classList.add("kapali"); });
+});
+["scroll", "resize"].forEach((olay) => window.addEventListener(olay, () => acikIpuclari().forEach(ipucuKonumla), true));
