@@ -232,6 +232,7 @@ function hazirligiGuncelle() {
 function kesfet() {
   const kutu = $("#kesif-sonucu");
   kutu.classList.remove("gizli");
+  if (!$("#kesif-adresi").value.trim()) { kutu.textContent = "Alt sitelerini keşfetmek istediğiniz sitenin adresini yazın."; return; }
   kutu.textContent = "Alt siteler aranıyor…";
   fetch("/api/kesif", {
     method: "POST", headers: { "Content-Type": "application/json" },
