@@ -360,6 +360,23 @@ a.kaynak-cip:hover { background: var(--kontrol); color: var(--metin); }
 .olcumler div:nth-child(-n+4) { border-top: 0; }
 .olcumler .etiket { display: block; font-size: 12px; color: var(--soluk); }
 .olcumler .kotu-deger { color: var(--kotu); font-weight: 600; }
+
+/* sorun basina "nasil duzeltilir" onerisi */
+.duzeltme { display: block; color: var(--soluk); font-size: 12px; line-height: 17px; margin-top: 3px; }
+.duzeltme::before { content: "Düzeltme: "; font-weight: 600; color: var(--metin); }
+p.duzeltme { margin: 8px 0 0; }
+
+/* site ozeti tablosu */
+.ozet-tablosu td { padding-top: 10px; padding-bottom: 10px; border-top: 1px solid var(--cizgi); vertical-align: top; font-size: 14px; line-height: 20px; }
+.ozet-tablosu td:first-child { width: 78px; }
+.adres-listesi li { overflow-wrap: anywhere; }
+#site-ozeti .reddedilen summary { width: auto; }
+#site-ozeti .reddedilen .ayr { color: var(--soluk); }
+
+/* tarama kapsami secimi */
+.secim-grubu { border: 0; margin: 12px 0 0; padding: 0; min-width: 0; }
+.secim-grubu legend { font-size: 13px; font-weight: 500; padding: 0; }
+.secim-grubu label.kutu { margin-top: 6px; }
 .model-satiri { margin: 0; font-size: 13px; color: var(--soluk); }
 .model-satiri strong { color: var(--metin); font-weight: 500; }
 

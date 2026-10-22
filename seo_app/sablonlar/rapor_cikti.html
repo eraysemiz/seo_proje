@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEO raporu: {{ baslik }}</title>
+<style>
+:root { color-scheme: light dark; --zemin:#f7f7f5; --kart:#fff; --metin:#1c1c1c; --soluk:#5f5f5f; --cizgi:#e2e2de;
+  --mavi:#1d5fbf; --kotu:#b3261e; --dikkat:#8a5a00; --iyi:#1e7a3c; }
+@media (prefers-color-scheme: dark) { :root { --zemin:#141414; --kart:#1d1d1d; --metin:#ececec; --soluk:#a6a6a6;
+  --cizgi:#333; --mavi:#7aa7ef; --kotu:#f08a83; --dikkat:#e3b45b; --iyi:#6fcf8f; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--zemin); color:var(--metin); font:15px/1.5 system-ui, "Segoe UI", sans-serif; }
+main { max-width:1100px; margin:0 auto; padding:24px 16px 48px; }
+h1 { font-size:26px; margin:0 0 4px; } h2 { font-size:19px; margin:32px 0 10px; } h3 { font-size:16px; margin:0; }
+.soluk { color:var(--soluk); }
+.kpi { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-top:18px; }
+.kpi div { background:var(--kart); border:1px solid var(--cizgi); border-radius:8px; padding:12px; }
+.kpi b { display:block; font-size:24px; }
+table { width:100%; border-collapse:collapse; background:var(--kart); border:1px solid var(--cizgi); }
+th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--cizgi); vertical-align:top; }
+th { font-size:13px; color:var(--soluk); font-weight:600; }
+td.sayi, th.sayi { text-align:right; white-space:nowrap; }
+.cip { display:inline-block; font-size:12px; padding:1px 7px; border-radius:10px; border:1px solid currentColor; white-space:nowrap; }
+.yuksek { color:var(--kotu); } .orta { color:var(--dikkat); } .dusuk, .bilgi { color:var(--soluk); }
+.duzelt { display:block; color:var(--soluk); font-size:13px; }
+details { background:var(--kart); border:1px solid var(--cizgi); border-radius:8px; margin:8px 0; padding:10px 12px; }
+summary { cursor:pointer; font-weight:600; overflow-wrap:anywhere; }
+ul { margin:8px 0 0; padding-left:18px; } li { margin:4px 0; }
+.tablo-kap { overflow-x:auto; }
+.url { overflow-wrap:anywhere; }
+@media print { details { break-inside:avoid; } details:not([open]) > *:not(summary) { display:block; } }
+</style>
+</head>
+<body>
+<main>
+<h1>SEO denetim raporu: {{ baslik }}</h1>
+<p class="soluk">{{ tarih }} · {{ kayitlar|length }} adres · puanlar bu aracın kendi ölçeğidir (0-100)</p>
+
+<div class="kpi">
+  <div><span class="soluk">Ortalama sayfa puanı</span><b>{{ ort_once if ort_once is not none else "—" }} → {{ ort_sonra if ort_sonra is not none else "—" }}</b><span class="soluk">düzeltmeden önce → sonra</span></div>
+  <div><span class="soluk">Ortalama site puanı</span><b>{{ ort_site if ort_site is not none else "—" }}</b><span class="soluk">canlı ölçümler</span></div>
+  <div><span class="soluk">Analiz edilen sayfa</span><b>{{ gecerli|length }}</b><span class="soluk">{{ kayitlar|length - gecerli|length }} adres taranamadı/atlandı</span></div>
+  <div><span class="soluk">Sorun görülme sayısı</span><b class="yuksek">{{ sayac.yuksek }}</b><span class="soluk">yüksek · {{ sayac.orta }} orta · {{ sayac.dusuk }} düşük</span></div>
+</div>
+
+<h2>Site özeti: sorunlar ve düzeltmeler</h2>
+<div class="tablo-kap"><table>
+<thead><tr><th>Önem</th><th>Sorun ve nasıl düzeltilir</th><th class="sayi">Sayfa</th><th>Çözüm</th></tr></thead>
+<tbody>
+{% for s in ozet %}
+<tr><td><span class="cip {{ s.ciddiyet }}">{{ CIDDIYET_ADI.get(s.ciddiyet, s.ciddiyet) }}</span></td>
+<td>{{ s.aciklama }}<span class="duzelt">{{ s.duzeltme }}</span></td>
+<td class="sayi">{{ s.sayfa_sayisi }}</td><td>{{ COZUM_ADI.get(s.cozum_yolu, s.cozum_yolu or "") }}</td></tr>
+{% else %}<tr><td colspan="4">Sorun bulunamadı.</td></tr>{% endfor %}
+</tbody></table></div>
+
+{% if bulgular %}
+<h2>Tarama geneli bulgular</h2>
+{% for g in bulgular %}
+<details><summary>{{ ACIKLAMA.get(g.sorun, g.sorun) }} <span class="soluk">({{ g.deger }})</span></summary>
+<span class="duzelt">{{ DUZELTME.get(g.sorun, "") }}</span>
+<ul>{% for a in g.sayfalar[:50] %}<li class="url">{{ a }}</li>{% endfor %}{% if g.sayfalar|length > 50 %}<li>… {{ g.sayfalar|length - 50 }} adres daha</li>{% endif %}</ul>
+</details>
+{% endfor %}
+{% endif %}
+
+<h2>Sayfalar</h2>
+<div class="tablo-kap"><table>
+<thead><tr><th>Adres</th><th class="sayi">Durum</th><th class="sayi">Sayfa puanı</th><th class="sayi">Site</th><th class="sayi">Sorun</th><th class="sayi">Derinlik</th><th class="sayi">Gelen bağlantı</th></tr></thead>
+<tbody>
+{% for p in sayfalar %}{% set k = p.k %}
+<tr><td class="url">{{ k.ad }}{% if k.title %}<span class="duzelt">{{ k.title }}</span>{% endif %}</td>
+<td class="sayi">{% if k.hata %}<span class="yuksek">hata</span>{% elif k.atlandi %}atlandı{% else %}{{ k.durum_kodu }}{% endif %}</td>
+<td class="sayi">{% if k.once_puanlar and k.once_puanlar.sayfa is not none %}{{ k.once_puanlar.sayfa }} → {{ k.sonra_puanlar.sayfa }}{% else %}—{% endif %}</td>
+<td class="sayi">{{ k.once_puanlar.site if k.once_puanlar else "—" }}</td>
+<td class="sayi">{{ k.once_sorun_sayisi if k.once_sorun_sayisi is not none else "—" }}</td>
+<td class="sayi">{{ k.derinlik if k.derinlik is not none else "—" }}</td>
+<td class="sayi">{{ k.gelen_baglanti if k.gelen_baglanti is not none else "—" }}</td></tr>
+{% endfor %}
+</tbody></table></div>
+
+<h2>Sayfa ayrıntıları</h2>
+{% for p in sayfalar %}{% set k = p.k %}
+<details><summary>{{ k.ad }}{% if k.once_sorun_sayisi %} <span class="soluk">· {{ k.once_sorun_sayisi }} sorun</span>{% endif %}</summary>
+{% if k.hata %}<p class="yuksek">{{ k.hata }}</p>{% endif %}
+{% if k.atlandi %}<p>{{ k.atlandi }}</p>{% endif %}
+{% if p.sorunlar %}<ul>
+{% for s in p.sorunlar %}<li><span class="cip {{ s.ciddiyet }}">{{ CIDDIYET_ADI.get(s.ciddiyet, s.ciddiyet) }}</span>
+{{ ACIKLAMA.get(s.sorun, s.sorun) }}{% if s.ayrinti %} <span class="soluk">· {{ s.ayrinti }}</span>{% endif %}
+<span class="duzelt">{{ DUZELTME.get(s.sorun, "") }}</span></li>{% endfor %}
+</ul>{% endif %}
+{% if k.fixes %}<p><strong>Dil modelinin kabul edilen önerileri</strong></p><ul>
+{% for f in k.fixes %}<li>{{ f.alan }}{% if f.hedef %} / {{ f.hedef }}{% endif %}: {{ f.yeni_deger }}</li>{% endfor %}</ul>{% endif %}
+{% if k.kural_duzeltmeleri %}<p><strong>Kural tabanlı düzeltmeler</strong></p><ul>
+{% for x in k.kural_duzeltmeleri %}<li>{{ x }}</li>{% endfor %}</ul>{% endif %}
+{% set cwv = ((k.lighthouse or {}).once or {}).cwv %}
+{% if cwv %}<p class="soluk">Core Web Vitals ({{ cwv.kaynak }}): LCP {{ cwv.lcp_ms|round|int if cwv.lcp_ms is not none else "—" }} ms ·
+INP {{ cwv.inp_ms if cwv.inp_ms is not none else "—" }} ms · CLS {{ cwv.cls if cwv.cls is not none else "—" }}{% if cwv.tbt_ms is not none %} · TBT {{ cwv.tbt_ms|round|int }} ms{% endif %}</p>{% endif %}
+</details>
+{% endfor %}
+<p class="soluk">YBS317 SEO Denetim Aracı ile üretildi.</p>
+</main>
+</body>
+</html>

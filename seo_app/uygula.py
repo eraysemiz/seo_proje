@@ -1,7 +1,21 @@
 """Onerilerin HTML'e islenmesi ve model gerektirmeyen (deterministik) duzeltmeler."""
+import re
+from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
+
 from bs4 import BeautifulSoup
 
-from .cikarma import gorseller
+from .cikarma import gercek_src, gorseller, meta_aciklama_etiketi, sayfa_basligi
+
+
+# kampanya/oturum izleme parametreleri sayfanin asil adresine ait degildir; self-canonical'a yazilmaz
+IZLEME_PARAMETRESI = re.compile(r"^(utm_\w+|gclid|fbclid|msclkid|yclid|mc_cid|mc_eid|_ga|_gl|ref|sessionid|"
+                                r"phpsessid|jsessionid|sid)$", re.I)
+
+
+def izleme_parametresiz(url):
+    p = urlparse(url)
+    kalan = [(k, v) for k, v in parse_qsl(p.query, keep_blank_values=True) if not IZLEME_PARAMETRESI.match(k)]
+    return urlunparse(p._replace(query=urlencode(kalan), fragment=""))
 
 
 def apply_fixes(html, fixes):
@@ -12,14 +26,15 @@ def apply_fixes(html, fixes):
         if not v:
             continue
         if f["alan"] == "title":
-            if soup.title:
-                soup.title.string = v
+            baslik = sayfa_basligi(soup)          # <svg> icindeki <title> sayfa basligi degildir
+            if baslik:
+                baslik.string = v
             elif soup.head:
                 tag = soup.new_tag("title")
                 tag.string = v
                 soup.head.append(tag)
         elif f["alan"] == "meta_description":
-            tag = soup.find("meta", attrs={"name": "description"})
+            tag = meta_aciklama_etiketi(soup)     # name="Description" gibi yazimlar da bulunur
             if tag:
                 tag["content"] = v
             elif soup.head:
@@ -48,8 +63,9 @@ def kural_duzelt(html, kodlar, site_url, dil):
     soup = BeautifulSoup(html, "lxml")
     uygulanan = []
     if "canonical_yok" in kodlar and site_url and soup.head:
-        soup.head.append(soup.new_tag("link", rel="canonical", href=site_url))
-        uygulanan.append("Canonical etiketi eklendi: " + site_url)
+        asil = izleme_parametresiz(site_url)
+        soup.head.append(soup.new_tag("link", rel="canonical", href=asil))
+        uygulanan.append("Canonical etiketi eklendi: " + asil)
     if "html_lang_yok" in kodlar and soup.html:
         soup.html["lang"] = dil
         uygulanan.append("html lang bilgisi eklendi: " + dil)
@@ -65,8 +81,9 @@ def kural_duzelt(html, kodlar, site_url, dil):
         uygulanan.append("Viewport meta etiketi eklendi")
     if "og_etiketleri_yok" in kodlar and soup.head:
         # Open Graph etiketleri duzeltilmis title/meta degerlerinden turetilir; yeni bilgi uretilmez
-        baslik = soup.title.get_text(strip=True) if soup.title else None
-        md = soup.find("meta", attrs={"name": "description"})
+        baslik_etiketi = sayfa_basligi(soup)
+        baslik = baslik_etiketi.get_text(strip=True) if baslik_etiketi else None
+        md = meta_aciklama_etiketi(soup)
         aciklama = md.get("content") if md else None
         eklenen = []
         if baslik:
@@ -78,6 +95,14 @@ def kural_duzelt(html, kodlar, site_url, dil):
         if site_url:
             soup.head.append(soup.new_tag("meta", attrs={"property": "og:url", "content": site_url}))
             eklenen.append("og:url")
+            # paylasim gorseli sayfanin kendi ilk icerik gorselinden alinir (veri URI'si ve simgeler degil)
+            gorsel = next((gercek_src(i) for i in gorseller(soup)
+                           if gercek_src(i) and not gercek_src(i).startswith("data:") and
+                           not gercek_src(i).lower().endswith((".svg", ".ico", ".gif"))), None)
+            if gorsel:
+                soup.head.append(soup.new_tag("meta", attrs={"property": "og:image",
+                                                             "content": urljoin(site_url, gorsel)}))
+                eklenen.append("og:image")
         if eklenen:
             soup.head.append(soup.new_tag("meta", attrs={"property": "og:type", "content": "website"}))
             uygulanan.append("Open Graph etiketleri eklendi: " + ", ".join(eklenen + ["og:type"]))

@@ -13,6 +13,8 @@ const var_mi = (x) => x !== null && x !== undefined;
 
 let sorguZamanlayici = null;
 let aciklamalar = {};
+let duzeltmeler = {};
+let ozetImzasi = "";
 let acikSatirlar = new Set();
 let calisiyor = false;
 let tabloImzasi = "";
@@ -34,9 +36,9 @@ const IPUCU = {
   sayfa: "Yalnız sayfanın HTML kodunda görülen sorunları ölçer. Toplam ceza, HTML'de görülebilecek en kötü durumun cezasına oranlanıp 100'den düşülür.",
   site: "Canlı erişimle ölçülen sorunları ölçer: robots.txt, sitemap, HTTPS, sertifika, hız. Toplam ceza, bu alandaki en kötü duruma oranlanıp 100'den düşülür.",
   icerik: "Başlık, meta açıklama, H1, alt metin, başlık sırası, metin miktarı ve terim uyumunu ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
-  teknik: "Canonical, dil, viewport, yapısal veri, paylaşım etiketleri, noindex, robots.txt, sitemap ve erişimi ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
+  teknik: "Canonical, dil, viewport, yapısal veri, noindex/nofollow, yönlendirme, robots.txt, sitemap ve bağlantıları ölçer. Toplam ceza en kötü duruma oranlanıp 100'den düşülür.",
   guvenlik: "HTTPS kullanımı, https yönlendirmesi, SSL sertifikası, HSTS ve karışık içeriği ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
-  performans: "Sunucu yanıt süresi (TTFB), sıkıştırma, HTML boyutu ve dış kaynak sayısını ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
+  performans: "Yanıt süresi, sıkıştırma, HTML boyutu, görseller ve (PageSpeed açıksa) Core Web Vitals ölçülür. Toplam ceza en kötü duruma oranlanıp 100'den düşülür.",
   cozum_model: "Dil modeli yeni metin önerir (title, meta açıklama, H1, görsel alt metni); doğrulamadan geçen öneriler düzeltilmiş HTML'e yazılır.",
   cozum_kural: "Araç bunu dil modeli olmadan, sabit bir kuralla düzeltilmiş HTML'de giderir: canonical, lang, viewport, Open Graph eklenir; fazla H1'ler H2 yapılır.",
   cozum_elle: "Araç bunu düzeltmez; site sahibinin sunucuda veya sayfa kodunda kendisinin değiştirmesi gerekir (ör. robots.txt, sitemap, HTTPS, sertifika, yapısal veri)."
@@ -98,6 +100,8 @@ function adresParcala(adres) {
 function adresSayisi() {
   return $("#adresler").value.split("\n").map((s) => s.trim()).filter((s) => s && !s.startsWith("#")).length;
 }
+const yalnizcaDenetim = () => $("#yalnizca-denetim").checked;
+const siteModu = () => $("#mod-site").checked;
 
 /* ------------------------------------------------------------------ baslangic */
 document.addEventListener("DOMContentLoaded", () => {
@@ -109,8 +113,19 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#model").addEventListener("change", hazirligiGuncelle);
   $("#embed-model").addEventListener("change", hazirligiGuncelle);
   $("#llm-url").addEventListener("change", modelleriGetir);
+  $("#yalnizca-denetim").addEventListener("change", () => {
+    $("#model-alanlari").classList.toggle("gizli", yalnizcaDenetim());
+    hazirligiGuncelle();
+  });
+  document.querySelectorAll('input[name="tarama-modu"]').forEach((r) => r.addEventListener("change", () => {
+    $("#site-ayarlari").classList.toggle("gizli", !siteModu());
+    hazirligiGuncelle();
+  }));
+  $("#en-fazla-sayfa").addEventListener("input", hazirligiGuncelle);
+  $("#en-fazla-derinlik").addEventListener("input", hazirligiGuncelle);
 
   fetch("/api/aciklamalar").then((r) => r.json()).then((d) => { aciklamalar = d; tabloImzasi = ""; });
+  fetch("/api/duzeltmeler").then((r) => r.json()).then((d) => { duzeltmeler = d; tabloImzasi = ""; ozetImzasi = ""; });
   modelleriGetir();
   durumuSor();           // sayfa yenilense bile suren tarama varsa yakala
 });
@@ -180,12 +195,17 @@ const modelBul = (id) => lm.modeller.find((m) => m.id === id);
 function hazirligiGuncelle() {
   const maddeler = [];
   const adet = adresSayisi();
-  maddeler.push(adet
-    ? { d: "tamam", bas: adet + " adres taranacak" }
-    : { d: "eksik", bas: "Taranacak adres yok", ac: "Her satıra bir adres yazın ya da alt siteleri keşfedin." });
+  maddeler.push(!adet
+    ? { d: "eksik", bas: "Taranacak adres yok", ac: "Her satıra bir adres yazın ya da alt siteleri keşfedin." }
+    : siteModu()
+      ? { d: "tamam", bas: "Site taraması: en fazla " + ($("#en-fazla-sayfa").value || "?") + " sayfa",
+          ac: adet + " başlangıç adresi; bağlantılar " + ($("#en-fazla-derinlik").value || "?") + " tıklama derinliğine kadar izlenir." }
+      : { d: "tamam", bas: adet + " adres taranacak" });
 
   let uyari = null;
-  if (lm.durum === "bekle") {
+  if (yalnizcaDenetim()) {
+    maddeler.push({ d: "tamam", bas: "Yalnızca denetim", ac: "Dil modeli kullanılmayacak; LM Studio gerekmez." });
+  } else if (lm.durum === "bekle") {
     maddeler.push({ d: "bekle", bas: "LM Studio sorgulanıyor", ac: lm.url });
   } else if (lm.durum === "kopuk") {
     maddeler.push({ d: "eksik", bas: "LM Studio'ya ulaşılamadı", ac: lm.url });
@@ -198,7 +218,9 @@ function hazirligiGuncelle() {
     maddeler.push({ d: "tamam", bas: "LM Studio bağlı", ac: lm.url });
   }
 
-  if (lm.durum === "bagli") {
+  if (yalnizcaDenetim()) {
+    // model secimi gerekmez
+  } else if (lm.durum === "bagli") {
     const secili = $("#model").value;
     const m = modelBul(secili);
     if (!secili) {
@@ -230,6 +252,7 @@ function hazirligiGuncelle() {
     '<li data-d="' + x.d + '">' + IMGE[x.d] + '<span><span class="bas">' + kacis(x.bas) + "</span>" +
     (x.ac ? '<span class="ac">' + kacis(x.ac) + "</span>" : "") + "</span></li>").join("");
 
+  if (yalnizcaDenetim()) uyari = null;
   const kutu = $("#model-uyarisi");
   kutu.classList.toggle("gizli", !uyari);
   kutu.classList.toggle("hata-tonu", !!(uyari && uyari.hata));
@@ -240,12 +263,12 @@ function hazirligiGuncelle() {
 
   // adimlar sirasiyla tamamlandikca numarasi koyulasir
   const adimlar = document.querySelectorAll(".adim");
-  const modelTamam = lm.durum === "bagli" && !maddeler.slice(1).some((x) => x.d === "eksik");
+  const modelTamam = yalnizcaDenetim() || (lm.durum === "bagli" && !maddeler.slice(1).some((x) => x.d === "eksik"));
   adimlar[0].classList.toggle("tamam", adet > 0);
   adimlar[1].classList.toggle("tamam", modelTamam);
   adimlar[2].classList.toggle("tamam", adet > 0 && modelTamam);
 
-  const engel = maddeler.find((x) => x.d === "eksik") || (lm.durum === "bekle" ? maddeler[1] : null);
+  const engel = maddeler.find((x) => x.d === "eksik") || (lm.durum === "bekle" && !yalnizcaDenetim() ? maddeler[1] : null);
   const dugme = $("#basla");
   dugme.disabled = calisiyor || !!engel;
   dugme.textContent = calisiyor ? "Tarama sürüyor…" : "Taramayı başlat";
@@ -303,8 +326,17 @@ function taramayiBaslat() {
   const govde = {
     adresler: $("#adresler").value,
     url: $("#llm-url").value,
-    model: $("#model").value,
-    embed_model: $("#embed-model").value,
+    model: yalnizcaDenetim() ? "" : $("#model").value,
+    embed_model: yalnizcaDenetim() ? "" : $("#embed-model").value,
+    yalnizca_denetim: yalnizcaDenetim(),
+    tarama_modu: siteModu() ? "site" : "liste",
+    en_fazla_sayfa: $("#en-fazla-sayfa").value,
+    en_fazla_derinlik: $("#en-fazla-derinlik").value,
+    link_denetimi: $("#link-denetimi").checked,
+    link_siniri: $("#link-siniri").value,
+    js_render: $("#js-render").checked,
+    sitemap_tohum: $("#sitemap-tohum").checked,
+    ssl_zorunlu: $("#ssl-zorunlu").checked,
     retry: $("#retry").value,
     max_tokens: $("#max-tokens").value,
     uy_robots: $("#uy-robots").checked,
@@ -327,6 +359,7 @@ function taramayiBaslat() {
       }
       acikSatirlar = new Set();
       tabloImzasi = "";
+      ozetImzasi = "";
       durumuSor();
     })
     .catch((e) => { formHatasi("Sunucuya ulaşılamadı", String(e)); hazirligiGuncelle(); });
@@ -361,7 +394,54 @@ function ekraniCiz(d) {
   if ($("#gunluk-kutusu").open) gunluk.scrollTop = gunluk.scrollHeight;
 
   ozetiCiz(sonuclar);
+  siteOzetiniGetir(sonuclar, d.calisiyor);
   tabloyuCiz(sonuclar, d.toplam || 0, d.calisiyor);
+}
+
+/* Site ozeti: en cok sayfayi etkileyen sorunlar ve nasil duzeltilecegi; tarama geneli bulgular.
+   Sunucuda hesaplanir (kurallar.site_ozeti); her yeni sayfa ve tarama sonunda bir kez istenir. */
+function siteOzetiniGetir(sonuclar, suruyor) {
+  const imza = sonuclar.length + "|" + suruyor;
+  if (imza === ozetImzasi) return;
+  ozetImzasi = imza;
+  const panel = $("#site-ozeti-paneli");
+  if (!gecerliKayitlar(sonuclar).length) { panel.classList.add("gizli"); return; }
+  fetch("/api/ozet").then((r) => r.json()).then((d) => siteOzetiniCiz(d, suruyor)).catch(() => {});
+}
+
+function ciddiyetCipi(c) {
+  if (c === "bilgi") return '<span class="cip">bilgi</span>';
+  return '<span class="cip ' + (CIDDIYET_SINIF[c] || "") + '">' + (CIDDIYET_ADI[c] || c) + "</span>";
+}
+
+function siteOzetiniCiz(d, suruyor) {
+  const panel = $("#site-ozeti-paneli");
+  const ozet = d.ozet || [];
+  panel.classList.toggle("gizli", !ozet.length);
+  if (!ozet.length) return;
+  const ilk = ozet.slice(0, 12);
+  $("#site-ozeti-notu").textContent = ozet.length + " farklı sorun" + (suruyor ? " · tarama sürüyor" : "") +
+    (ozet.length > ilk.length ? " · en etkili " + ilk.length + " tanesi" : "");
+  let h = '<table class="ozet-tablosu"><thead><tr><th>Önem</th><th>Sorun ve nasıl düzeltilir</th>' +
+    '<th class="sayi">Sayfa</th><th class="gizle-dar">Çözüm</th></tr></thead><tbody>' +
+    ilk.map((s) => "<tr><td>" + ciddiyetCipi(s.ciddiyet) + "</td><td>" + kacis(s.aciklama) +
+      (s.duzeltme ? '<span class="duzeltme">' + kacis(s.duzeltme) + "</span>" : "") + "</td>" +
+      '<td class="sayi">' + s.sayfa_sayisi + '</td><td class="gizle-dar">' +
+      (s.cozum_yolu ? ipucuHtml(COZUM_ADI[s.cozum_yolu] || s.cozum_yolu, "cozum_" + s.cozum_yolu) : "") +
+      "</td></tr>").join("") + "</tbody></table>";
+  if (ozet.length > ilk.length) {
+    h += '<details class="reddedilen"><summary>Diğer sorunlar (' + (ozet.length - ilk.length) + ")</summary><ul>" +
+      ozet.slice(ilk.length).map((s) => "<li>" + ciddiyetCipi(s.ciddiyet) + " " + kacis(s.aciklama) +
+        ' <span class="ayr">' + s.sayfa_sayisi + " sayfa</span></li>").join("") + "</ul></details>";
+  }
+  (d.bulgular || []).forEach((g) => {
+    h += '<details class="reddedilen"><summary>' + kacis(aciklamalar[g.sorun] || g.sorun) +
+      ' <span class="ayr">(' + kacis(g.deger) + ")</span></summary>" +
+      (duzeltmeler[g.sorun] ? '<p class="duzeltme">' + kacis(duzeltmeler[g.sorun]) + "</p>" : "") +
+      '<ul class="adres-listesi">' + g.sayfalar.slice(0, 30).map((a) => "<li>" + kacis(a) + "</li>").join("") +
+      (g.sayfalar.length > 30 ? "<li>… " + (g.sayfalar.length - 30) + " adres daha</li>" : "") + "</ul></details>";
+  });
+  $("#site-ozeti").innerHTML = h;
 }
 
 function ilerlemeyiCiz(d) {
@@ -513,7 +593,8 @@ function sorunMaddesi(kod, sorunlar) {
   const cip = s.ciddiyet ? '<span class="cip ' + (CIDDIYET_SINIF[s.ciddiyet] || "") + '">' +
     (CIDDIYET_ADI[s.ciddiyet] || s.ciddiyet) + "</span>" : "<span></span>";
   return "<li>" + cip + "<span>" + kacis(aciklamalar[kod] || kod) +
-    (meta ? '<span class="ayr">' + meta + "</span>" : "") + "</span></li>";
+    (meta ? '<span class="ayr">' + meta + "</span>" : "") +
+    (duzeltmeler[kod] ? '<span class="duzeltme">' + kacis(duzeltmeler[kod]) + "</span>" : "") + "</span></li>";
 }
 
 function defterSutunu(sinif, baslik, kodlar, sorunlar, bosMetin) {
@@ -552,8 +633,8 @@ function ayrintiHtml(k) {
       '</span></h4><div class="defter">' + defterSutunu("kaldi", "sorun", Object.keys(sorunlar), sorunlar, "Sorun bulunamadı.") + "</div>";
   }
   if (k.tekrar_bulgulari && k.tekrar_bulgulari.length) {
-    h += '<p class="not">Tarama genelinde başka sayfalarla aynı: ' +
-      k.tekrar_bulgulari.map((x) => kacis(aciklamalar[x] || x)).join(", ") + ". Puana katılmaz.</p>";
+    h += '<p class="not">Tarama geneli bulgular: ' +
+      k.tekrar_bulgulari.map((x) => kacis(aciklamalar[x] || x)).join(", ") + ". Puana katılmaz; ayrıntı site özetinde.</p>";
   }
   h += "</div>";
 
@@ -627,10 +708,51 @@ function ayrintiHtml(k) {
       alan("Sertifika", s.veren ? (s.kalan_gun + " gün kaldı" + (s.zincir_eksik ? ", zincir eksik" : "")) : "—", sertKotu) +
       alan("robots.txt", r.var ? (r.satir_sayisi + " satır, " + (r.sitemapler || []).length + " sitemap") : "yok", !r.var) +
       alan("sitemap", sm.var ? (sm.tur + ", " + sayi(sm.url_sayisi) + " adres") : "yok", !sm.var) +
+      (var_mi(sb.sitemapte) ? alan("Sayfa sitemap'te", sb.sitemapte ? "evet" : "hayır") : "") +
+      ((sb.yonlendirme_zinciri || []).length ? alan("Yönlendirme", sb.yonlendirme_zinciri.length + " adım") : "") +
       "</div></div>";
+  }
+  const zincir = (k.site_bilgi || {}).yonlendirme_zinciri || [];
+  if (zincir.length) {
+    h += '<div class="bolum"><h4>Yönlendirme zinciri</h4><ul class="basit-liste">' +
+      zincir.map((z) => "<li>" + kacis(z) + "</li>").join("") +
+      (k.site_url ? "<li>200 " + kacis(k.site_url) + "</li>" : "") + "</ul></div>";
+  }
+
+  // baglantilar, tarama konumu ve Core Web Vitals
+  const bo = k.baglanti_ozeti, bd = k.baglanti_denetimi;
+  const lhO = (k.lighthouse || {}).once || {};
+  const cwv = lhO.cwv;
+  if (bo || var_mi(k.derinlik) || cwv || k.render) {
+    const olc = (etiket, deger, kotu) => '<div><span class="etiket">' + etiket + "</span>" +
+      (kotu ? '<span class="kotu-deger">' + kacis(deger) + "</span>" : kacis(deger)) + "</div>";
+    let ic = "";
+    if (bo) ic += olc("Bağlantılar", bo.ic + " site içi · " + bo.dis + " dış" + (bo.nofollow ? " · " + bo.nofollow + " nofollow" : ""));
+    if (bd) ic += olc("Kırık bağlantı", (bd.kirik_ic.length + bd.kirik_dis.length) + " (" + bd.denetlenen + " adres denetlendi)",
+                      bd.kirik_ic.length + bd.kirik_dis.length > 0);
+    if (var_mi(k.derinlik)) ic += olc("Tıklama derinliği", k.derinlik);
+    if (var_mi(k.gelen_baglanti)) ic += olc("Gelen site içi bağlantı", k.gelen_baglanti, k.gelen_baglanti === 0 && k.derinlik !== 0);
+    if (k.kesif_kaynagi && k.kesif_kaynagi !== "başlangıç") ic += olc("Bulunduğu yer", k.kesif_kaynagi);
+    if (k.render) ic += olc("Render", k.render.hata ? "yapılamadı" : sayi(k.render.ham_kelime) + " → " + sayi(k.render.render_kelime) + " kelime", !!k.render.hata);
+    if (cwv) {
+      const ms = (x) => (var_mi(x) ? sayi(Math.round(x)) + " ms" : "—");
+      ic += olc("LCP", var_mi(cwv.lcp_ms) ? sayi(cwv.lcp_ms / 1000, 1) + " sn" : "—", cwv.lcp_ms > 2500) +
+        olc(var_mi(cwv.inp_ms) ? "INP" : "TBT (INP yerine)", var_mi(cwv.inp_ms) ? ms(cwv.inp_ms) : ms(cwv.tbt_ms),
+            var_mi(cwv.inp_ms) ? cwv.inp_ms > 200 : cwv.tbt_ms > 200) +
+        olc("CLS", var_mi(cwv.cls) ? sayi(cwv.cls, 2) : "—", cwv.cls > 0.1) +
+        (var_mi(lhO.performans_puani) ? olc("Performans puanı", lhO.performans_puani, lhO.performans_puani < 50) : "");
+    }
+    h += '<div class="bolum"><h4>Bağlantılar ve performans' + (cwv ? ' <span class="sayac">' + kacis(cwv.kaynak) + "</span>" : "") +
+      '</h4><div class="olcumler">' + ic + "</div>";
+    if (bd && (bd.kirik_ic.length || bd.kirik_dis.length || bd.kirik_gorsel.length)) {
+      h += '<details class="reddedilen"><summary>Kırık adresler</summary><ul class="adres-listesi">' +
+        bd.kirik_ic.concat(bd.kirik_dis, bd.kirik_gorsel).map((a) => "<li>" + kacis(a) + "</li>").join("") + "</ul></details>";
+    }
+    h += "</div>";
   }
 
   const parcalar = [];
+  if (k.yalnizca_denetim) parcalar.push("<strong>Yalnızca denetim</strong> (dil modeli kullanılmadı)");
   if (k.model) parcalar.push("Model <strong>" + kacis(k.model) + "</strong>");
   if (k.kosul) parcalar.push("koşul <strong>" + kacis(k.kosul) + (k.ogretme_yontemi ? " / " + kacis(k.ogretme_yontemi) : "") + "</strong>");
   if (var_mi(k.sure_sn)) parcalar.push("model süresi <strong>" + sureYaz(k.sure_sn) + "</strong>");

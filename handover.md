@@ -93,6 +93,41 @@ Ayrıntı README'nin "Modele verilen ek bağlam" ve "Bilgi getirme (RAG) ölçü
   sadakat reddi 0, yeni önerilerin hepsi geçerli kaynak kimliğine dayanıyor. Title'ın 60 karakteri
   aşması (62-65) eski ve yeni hatta sürüyor.
 
+## 4c. 22 Ekim 2026: denetim kapsamı genişletildi (`denetim-gelistirme` dalı)
+
+Profesyonel denetim araçlarıyla (Screaming Frog, Sitebulb) karşılaştırmalı bir incelemenin
+ardından eksikler kapatıldı. Ayrıntılı liste README'de "Denetim katmanları" bölümünde.
+
+- **Site taraması:** "Siteyi tara" modu bağlantıları BFS ile izler (sayfa ve derinlik sınırı),
+  sitemap adreslerini ikincil kuyruğa alır; yetim sayfa, tıklama derinliği ve gelen bağlantı sayısı
+  ölçülür (`seo_app/tarama.py`).
+- **Bağlantı ve görsel denetimi:** kırık site içi/dış bağlantı, yönlendirilen bağlantı, kırık ve
+  büyük görsel; boş/anlamsız anchor, site içi nofollow, çıkmaz sayfa.
+- **İndekslenebilirlik:** meta robots'un tüm biçimleri (`none`, `googlebot`, `nofollow`),
+  X-Robots-Tag ayrıştırma, canonical hedefi ve yapısı, noindex+canonical ve noindex+sitemap
+  çelişkileri. Aynı bulgu iki kaynaktan gelirse bir kez sayılır.
+- **Yönlendirme:** zincir tek tek izlenir; her ara adres robots.txt'ye sorulur (önceden yasaklı bir
+  ara adres de isteniyordu), döngü ve aşırı zincir ayrı bulgu, meta refresh / Refresh başlığı /
+  JS yönlendirmesi, geçici yönlendirme.
+- **İçerik ve yapısal veri:** title piksel genişliği, `<svg><title>` hatası, meta açıklamada
+  büyük/küçük harf, ince içerik ana içerik bölümünden, kopya/benzer içerik, boş başlıklar,
+  JSON-LD `@graph` ve zorunlu alanlar, kuruluş türü yalnızca ana sayfada, hreflang dil kodu ve
+  kendine referans.
+- **Performans:** PageSpeed isteği Core Web Vitals'ı da alır; görsel biçimi, boyutu, tembel yükleme.
+- **İsteğe bağlı JavaScript render:** kurulu Chrome/Edge ile (`seo_app/render.py`).
+- **Raporlama:** her sorun için somut düzeltme önerisi (`kurallar.DUZELTME`), site özeti
+  (`site_ozeti.json` ve arayüzde panel), tek dosyalık `rapor.html`, CSV'ye derinlik/bağlantı/CWV
+  sütunları.
+- **"Yalnızca denetim" seçeneği:** 21 Ekim kararındaki "her tarama dil modeliyle" kuralı, kullanıcının
+  açıkça işaretlediği bir seçenekle esnetildi. Sessiz geçiş hâlâ yok: model seçilmemiş ve seçenek
+  kapalıysa tarama hata verir. İstenmezse arayüzden ve `boru.VARSAYILAN_AYARLAR`'dan kaldırılabilir.
+- **Doğrulama:** 190 test geçiyor. crawler-test.com'da aynı 20 sayfayla önce/sonra: önceki
+  incelemede kaçırılan robots `none`, googlebot noindex/nofollow, meta refresh, yönlendirme döngüsü,
+  çapraz canonical, kırık iç bağlantılar ve açılmayan sitemap adresleri artık yakalanıyor; yasaklı
+  ara adrese istek gitmiyor.
+- **Puanlar değişti:** yeni bulgular sayfa/site puanlarını etkiler; bu daldan önceki taramalarla
+  puanlar doğrudan karşılaştırılamaz.
+
 ## 5. Test seti ve ilk gerçek sonuçlar
 
 **Test seti:** `test_setleri/duzce_birimleri.txt` — 58 Düzce Üniversitesi birim sitesi, aracın keşif özelliğiyle anasayfadan otomatik çıkarıldı.

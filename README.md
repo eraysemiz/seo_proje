@@ -19,28 +19,71 @@ py calistir.py
 
 Tarayıcıda `http://127.0.0.1:5000` açılır. Sunucu yalnızca bu bilgisayardan erişilebilir.
 
-Her tarama dil modeliyle yapılır; bunun için LM Studio'nun açık ve sunucusunun çalışır durumda
+Dil modeliyle tarama için LM Studio'nun açık ve sunucusunun çalışır durumda
 olması gerekir (Developer sekmesi → Running). Arayüzdeki **Modelleri getir** düğmesi bağlantıyı
 sınar ve yüklü modelleri listeler. Tarama başlamadan önce LM Studio'ya ulaşılıp ulaşılamadığı ve
 seçilen sohbet/gömme modellerinin yüklü olup olmadığı denetlenir; sorun varsa tarama başlamaz ve
 hangi modelin eksik olduğunu ve LM Studio adresini yazan bir hata gösterilir.
 
-Araç, verilen adresleri canlı olarak tarar.
+Dil modeli olmadan çalışmak için **Dil modeli kullanma, yalnızca denetle** seçeneği açıkça
+işaretlenmelidir. Bu durumda LM Studio gerekmez, tüm denetimler ve kural tabanlı düzeltmeler
+çalışır, yalnızca title/meta/H1/alt metni önerisi üretilmez. Model seçilmemişse ve bu seçenek
+kapalıysa tarama sessizce modelsiz devam etmez, hata verir.
+
+**Tarama kapsamı:**
+
+- *Yalnızca listedeki adresler* — her satırdaki adres ayrı ayrı denetlenir.
+- *Siteyi tara* — adresler başlangıç kabul edilir; site içi bağlantılar genişlik öncelikli (BFS)
+  izlenir (varsayılan en fazla 50 sayfa, 3 tıklama derinliği). Sitemap adresleri ikincil kuyruğa
+  girer ve yalnızca bağlantıyla ulaşılacak sayfa kalmayınca taranır; böylece hiçbir sayfadan
+  bağlantı almayan (yetim) sayfalar ayırt edilir. nofollow bağlantılar ve nofollow sayfaların
+  bağlantıları izlenmez; PDF, görsel gibi HTML olmayan adresler kuyruğa alınmaz.
 
 ## Denetim katmanları
 
 **Sayfa katmanı** (sayfanın HTML'inden görülebilir)
 
-- title, meta description, H1 varlığı ve uzunlukları
-- görsellerde alt metni, canonical, `html lang`, içerik uzunluğu
-- viewport (mobil uyum), JSON-LD/mikroveri, Open Graph, Twitter Card, favicon, meta robots
+- title (eksik, kısa, uzun, **piksel genişliği**), meta description (`name` büyük/küçük harf
+  duyarsız), H1 varlığı ve uzunlukları, boş H2-H6, başlık sırası
+- görsellerde alt metni, width/height, eski biçim (JPEG/PNG/GIF), tembel yükleme (ilk görsel
+  tembel mi, alttakiler değil mi)
+- `html lang`, ince içerik (menü/alt bilgi dışındaki ana içerik bölümünün kelime sayısı)
+- **indekslenebilirlik:** tüm `robots` ve `googlebot` meta etiketleri birlikte (`noindex`, `none`,
+  `nofollow`); **canonical** çoklu, boş, `<head>` dışı, göreli, başka adrese işaret eden (çapraz),
+  noindex ile çelişen, HTTP `Link` başlığıyla çelişen
+- **yönlendirme:** meta refresh, JavaScript yönlendirmesi
+- viewport (yakınlaştırmayı engelliyor mu, sabit genişlik mi), JSON-LD/mikroveri (`@graph` dahil,
+  türe göre zorunlu alanlar), kuruluş türü (yalnızca ana sayfada), Open Graph (`og:image` dahil),
+  Twitter Card, favicon, hreflang (ISO 639-1 dil kodu, `en-UK` gibi hatalı bölge, x-default,
+  kendine referans), karışık içerik (`srcset` ve CSS `url()` dahil)
+- **bağlantılar:** boş ve anlamsız bağlantı metni ("tıklayın", "devamı"), site içi nofollow,
+  çıkmaz sayfa; içeriği JavaScript'e bağlı sayfa iskeleti (tahmin)
 
-**Site katmanı**
+**Site katmanı** (canlı erişimle)
 
 - robots.txt: var mı, geçerli mi, sitemap bildiriyor mu, sayfayı engelliyor mu
-- sitemap.xml: erişilebilir mi, geçerli XML mi, kaç adres içeriyor, sayfa listede mi
+- sitemap.xml: erişilebilir mi, geçerli XML mi, kaç adres içeriyor, sayfa listede mi, açılmayan
+  sitemap adresleri, 50 MB / 50.000 adres sınırı, noindex sayfa sitemap'te mi
 - HTTPS: şema, http→https yönlendirmesi, sertifika süresi ve **zincir bütünlüğü**, HSTS
-- Hız/boyut: TTFB, indirme süresi, HTML boyutu, sıkıştırma (gzip/br), dış kaynak sayısı
+- durum kodu, yönlendirme zinciri, **yönlendirme döngüsü**, 10'dan uzun zincir, Location'sız
+  3xx, geçici (302/303/307) yönlendirme, `Refresh` başlığı, `X-Robots-Tag` (bota özel satırlar dahil)
+- **bağlantı ve görsel denetimi:** kırık site içi ve dış bağlantılar, yönlendirilen site içi
+  bağlantılar, kırık ve 200 KB'tan büyük görseller (HEAD, gerekirse GET; farklı host'lar paralel,
+  aynı host'a sırayla ve beklemeli)
+- Hız/boyut: TTFB, indirme süresi, HTML boyutu, sıkıştırma (gzip/br), dış kaynak sayısı;
+  PageSpeed açıksa **Core Web Vitals** (LCP, INP, CLS) ve toplam sayfa ağırlığı
+
+**Tarama geneli** (puana katılmaz; site özetinde gösterilir)
+
+- tekrar eden title / meta açıklama / H1
+- birebir aynı ve %90 üstü benzer ana içerik (5 kelimelik parçaların MinHash imzası)
+- yetim sayfa, 3'ten fazla tıklama derinliği, karşılıklı olmayan hreflang
+- her sayfa için tıklama derinliği ve kaç taranan sayfadan site içi bağlantı aldığı
+
+**JavaScript render (isteğe bağlı):** bilgisayarda kurulu Chrome/Edge başlıksız çalıştırılır
+(yeni bağımlılık yoktur; yol `CHROME_YOLU` ortam değişkeniyle de verilebilir). Sayfa render
+sonrası DOM üzerinden denetlenir; ham HTML'e göre metin belirgin artıyorsa içerik JavaScript'e
+bağlı sayılır.
 
 ## Her sorunun bir çözüm yolu vardır
 
@@ -115,9 +158,16 @@ Bir taramada birden fazla site varsa her site kendi klasörüne, aynı zaman dam
 
 - `rapor.json` — sayfa başına tüm bulgular, öneriler, reddedilenler, ölçümler
 - `ozet.csv` — karşılaştırma tablosu (tarama bitince kendiliğinden yazılır)
-- `site_geneli.json` — sayfalar arasında tekrar eden title / meta açıklama / H1 grupları
-  (tekrarlar tüm tarama üzerinden bulunur; farklı sitelerde aynı meta açıklama da yakalanır)
+- `site_geneli.json` — tarama geneli bulgu grupları: tekrar eden title / meta / H1, kopya ve
+  benzer içerik, yetim ve derin sayfalar, karşılıklı olmayan hreflang
+- `site_ozeti.json` — site bazlı özet: her sorun için önem, etkilenen sayfa sayısı, örnek sayfalar
+  ve düzeltme önerisi (en çok puan kaybettiren üstte)
+- `rapor.html` — tek dosyalık, internetsiz açılan, yazdırılabilir rapor (site özeti, sayfa tablosu,
+  sorun başına açıklama ve "nasıl düzeltilir")
 - `duzeltilmis_*.html` — düzeltmelerin uygulandığı sayfalar
+
+Arayüzden `rapor.html`, `rapor.json` ve `ozet.csv` indirilebilir. Her sorunun yanında somut bir
+düzeltme önerisi gösterilir (`kurallar.DUZELTME`).
 
 ## Deney matrisi
 
@@ -180,8 +230,11 @@ yapıldı; kazanç biraz iyimser olabilir, yeni sitelerle doğrulanması öneril
 
 ## Bağımsız ölçüm (isteğe bağlı)
 
-Arayüzdeki "Lighthouse SEO puanını da al" seçeneği, Google PageSpeed Insights
-üzerinden Lighthouse SEO puanını rapora ve CSV'ye ekler. Anahtarsız kullanımın günlük kotası
+Arayüzdeki "PageSpeed: Lighthouse SEO ve Core Web Vitals" seçeneği, Google PageSpeed Insights
+üzerinden Lighthouse SEO ve performans puanını, Core Web Vitals değerlerini rapora ve CSV'ye ekler.
+Gerçek kullanıcı (CrUX saha) verisi varsa LCP, INP ve CLS ondan (75. yüzdelik), yoksa laboratuvar
+ölçümünden alınır; laboratuvarda INP olmadığı için yerine Total Blocking Time kullanılır ve bu
+raporda belirtilir. Eşikler web.dev'deki iyi/kötü sınırlarıdır. Anahtarsız kullanımın günlük kotası
 çabuk dolar; ücretsiz bir API anahtarı `PSI_API_ANAHTARI` ortam değişkenine yazılabilir.
 Düzeltilmiş sayfa yerel bir dosya olduğu için "sonra" puanı bu yöntemle ölçülemez.
 
@@ -213,9 +266,14 @@ yapılmalıdır.
 ## Etik ve sınırlar
 
 - Araç varsayılan olarak **robots.txt kurallarına uyar**; izin verilmeyen adresi taramaz.
-- İstekler arasında bekleme uygular ve kendini tanıtan bir User-Agent kullanır.
-- Sertifika doğrulaması başarısız olursa tarama durmaz: sayfa doğrulamasız indirilir ve
-  durum yüksek önemli bir bulgu olarak raporlanır.
+  Yönlendirmeler tek tek izlenir ve her ara adres de robots.txt'ye sorulur; yasaklı bir ara adres
+  istenmez. Bağlantı denetimi de yasaklı adresleri istemez.
+- İstekler arasında bekleme uygular ve kendini tanıtan bir User-Agent kullanır. Bağlantı
+  denetiminde aynı host'a istekler sırayla ve beklemeyle gider; sayfa başına denetlenen adres
+  sayısı sınırlıdır (varsayılan 60 site içi bağlantı, 20 dış bağlantı, 15 görsel).
+- Sertifika doğrulaması başarısız olursa varsayılan olarak tarama durmaz: sayfa doğrulamasız
+  indirilir ve durum yüksek önemli bir bulgu olarak raporlanır. "Sertifika doğrulanamazsa sayfayı
+  indirme" seçeneğiyle bu kapatılabilir.
 
 ## Dosya düzeni
 
@@ -225,7 +283,7 @@ deney.py                 deney matrisi koşucusu (komut satırı)
 rag_degerlendir.py       bilgi getirme (RAG) ölçümü
 tests/                   pytest testleri (tests/veri/: RAG ölçüm seti)
 seo_app/
-  bagimsiz.py            PageSpeed (Lighthouse) SEO puanı
+  bagimsiz.py            PageSpeed (Lighthouse) SEO puanı ve Core Web Vitals
   cikarma.py             HTML'den veri çıkarma
   kurallar.py            kural denetimi, çözüm yolu sınıflandırması, puanlama
   canli.py               canlı erişim denetimleri (robots, sitemap, HTTPS, hız)
@@ -233,7 +291,10 @@ seo_app/
   rag_olcum.py           getirme ölçütleri (kapsama, isabet, MRR, sorun isabeti)
   llm.py                 LM Studio istemcisi, öneri doğrulama
   uygula.py              önerilerin HTML'e işlenmesi, kural tabanlı düzeltmeler
-  boru.py                tek sayfa analiz akışı, toplu tarama, alt site keşfi
+  boru.py                tek sayfa analiz akışı, toplu/site taraması, bağlantı denetimi, alt site keşfi
+  tarama.py              site taraması kuyruğu (BFS + sitemap), bağlantı grafiği bulguları
+  render.py              Chrome/Edge ile JavaScript render
+  rapor.py               tek dosyalık HTML rapor (sablonlar/rapor_cikti.html)
   web.py                 Flask arayüzü
   sablonlar/ statik/     arayüz dosyaları
 ogretme/                 örnekler, bilgi tabanı, gömme önbelleği

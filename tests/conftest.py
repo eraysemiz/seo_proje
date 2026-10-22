@@ -39,6 +39,7 @@ def sahte_canli(monkeypatch, html_haritasi, site_sorunlari=()):
     monkeypatch.setattr(canli, "robots_bilgisi", lambda *a, **k: {"_parser": None})
     monkeypatch.setattr(canli, "sayfa_getir", sayfa_getir)
     monkeypatch.setattr(canli, "canli_denetim", lambda *a, **k: (list(site_sorunlari), {}))
+    monkeypatch.setattr(canli, "baglantilari_denetle", lambda *a, **k: {})   # testte ag istegi yok
 
 
 def sahte_model(monkeypatch, fixes=()):

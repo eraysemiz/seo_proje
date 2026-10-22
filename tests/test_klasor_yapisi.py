@@ -38,8 +38,8 @@ def test_tarama_site_klasorune_yazilir_ve_klasor_yoksa_olusturulur(monkeypatch, 
     assert len(klasorler) == 1 and DESEN.match(klasorler[0].name)
     hedef = klasorler[0]
     assert rapor[0]["cikti_klasoru"] == str(hedef)
-    assert {p.name for p in hedef.iterdir()} == {"rapor.json", "ozet.csv", "site_geneli.json",
-                                                 "duzeltilmis_https_www.ornek.com.tr_x.html"}
+    assert {p.name for p in hedef.iterdir()} == {"rapor.json", "ozet.csv", "site_geneli.json", "site_ozeti.json",
+                                                 "rapor.html", "duzeltilmis_https_www.ornek.com.tr_x.html"}
 
 
 def test_cok_siteli_taramada_her_site_ayri_klasorde_ayni_zamanla(monkeypatch, tmp_path):

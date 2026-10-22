@@ -23,13 +23,16 @@ from xml.etree import ElementTree
 
 import requests
 
+from .cikarma import url_anahtari  # noqa: F401  (canli.url_anahtari olarak da kullanilir)
 from .kurallar import cozum_yolu
 
 AJAN_BELIRTECI = "DU-SEO-Denetim"     # robots.txt'de bu araca ozel kural yazilabilir
 KULLANICI_AJANI = ("Mozilla/5.0 (compatible; " + AJAN_BELIRTECI + "/1.0; akademik arastirma; "
                    "+https://www.duzce.edu.tr/)")
 VARSAYILAN_ZAMAN_ASIMI = 15
-EN_FAZLA_SITEMAP = 3           # sitemap dizininde en fazla kac alt dosya acilsin
+EN_FAZLA_SITEMAP = 10          # robots.txt adaylari ve dizin alt dosyalari dahil en fazla kac sitemap acilsin
+SITEMAP_BOYUT_SINIRI = 50 * 1024 * 1024   # sitemaps.org siniri: 50 MB (sikistirilmamis)
+TOHUM_SINIRI = 2000            # taramaya tohum olarak saklanan en fazla sitemap adresi
 EN_FAZLA_SITEMAP_URL = 50000   # sayim siniri
 
 def _kodlamalar():
@@ -81,6 +84,7 @@ def _al(adres, zaman_asimi, stream=False, yonlendir=True, olcum=None):
 
 def onbellek_temizle():
     _onbellek.clear()
+    _baglanti_onbellegi.clear()
 
 
 # --------------------------------------------------------------------- adres
@@ -112,28 +116,75 @@ def _metne_cevir(yanit):
         return yanit.content.decode("utf-8", errors="replace")
 
 
-def sayfa_getir(url, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
-    """Sayfayi indirir ve hiz/boyut olcumlerini toplar.
-    ttfb_ms yalnizca son (yonlendirme sonrasi) yanitin istek gonderiminden basliklarin
-    gelisine kadar gecen suredir; yonlendirmeler yonlendirme_ms olarak ayri raporlanir."""
-    olcum = {}
+YONLENDIRME_KODLARI = (301, 302, 303, 307, 308)
+GECICI_YONLENDIRME = (302, 303, 307)
+EN_FAZLA_YONLENDIRME = 10
+
+
+def _link_basligi(deger):
+    """HTTP Link basligi -> [{"url", "rel", "hreflang"}] (canonical ve hreflang icin)."""
     try:
-        yanit, ssl_hatasi = _al(url, zaman_asimi, stream=True, olcum=olcum)
+        return [{k: v for k, v in b.items() if k in ("url", "rel", "hreflang")}
+                for b in requests.utils.parse_header_links(deger)] if deger else []
+    except (ValueError, AttributeError):
+        return []
+
+
+def sayfa_getir(url, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI, izin=None, ssl_zorunlu=False):
+    """Sayfayi indirir ve hiz/boyut olcumlerini toplar.
+    Yonlendirmeler tek tek izlenir: izin(adres) verilirse her ara adres icin sorulur (robots.txt'nin
+    yasakladigi bir ara adres istenmez), dongu ve EN_FAZLA_YONLENDIRME asimi ayri hata turu olarak
+    doner. ttfb_ms yalnizca son yanitin basliklarinin gelis suresidir; yonlendirmeler yonlendirme_ms.
+    ssl_zorunlu: sertifika dogrulanamazsa dogrulamasiz yeniden denenmez, hata dondurulur."""
+    olcum, zincir, gorulen = {}, [], {url}
+    adres, ssl_hatasi, yonlendirme, ilk_basla = url, None, 0.0, None
+
+    def _hata(tur, mesaj):
+        return {"basarili": False, "hata": mesaj, "hata_turu": tur, "url": url, "son_url": adres,
+                "yonlendirme_zinciri": zincir}
+    try:
+        while True:
+            if ssl_zorunlu:
+                olcum["basla"] = time.time()
+                yanit, ssl_h = _oturum.get(adres, timeout=zaman_asimi, stream=True, allow_redirects=False), None
+            else:
+                yanit, ssl_h = _al(adres, zaman_asimi, stream=True, yonlendir=False, olcum=olcum)
+            ilk_basla = ilk_basla or olcum["basla"]
+            ssl_hatasi = ssl_hatasi or ssl_h
+            hedef = yanit.headers.get("Location") if yanit.status_code in YONLENDIRME_KODLARI else None
+            if not hedef:
+                break
+            yanit.close()
+            yonlendirme += yanit.elapsed.total_seconds()
+            zincir.append(str(yanit.status_code) + " " + adres)
+            sonraki = urldefrag(urljoin(adres, hedef.strip()))[0]
+            if sonraki in gorulen:
+                return _hata("yonlendirme_dongusu", "Yönlendirme döngüsü: " + " → ".join(
+                    [z.split(" ", 1)[1] for z in zincir] + [sonraki])[:400])
+            if len(zincir) >= EN_FAZLA_YONLENDIRME:
+                return _hata("cok_fazla_yonlendirme", str(len(zincir)) + " yönlendirmeden sonra durduruldu")
+            if izin and not izin(sonraki):
+                r = _hata("robots_engeli", "robots.txt bu ara adresin taranmasına izin vermiyor: " + sonraki)
+                r["robots_engeli"] = sonraki
+                return r
+            gorulen.add(sonraki)
+            adres = sonraki
         govde = yanit.content              # tam indirme
-        toplam = time.time() - olcum["basla"]
+        toplam = time.time() - ilk_basla
+    except requests.exceptions.SSLError as e:
+        return _hata("ssl", "Sertifika doğrulanamadı: " + str(e)[:300])
     except requests.RequestException as e:
         return {"basarili": False, "hata": type(e).__name__ + ": " + str(e), "url": url}
     ttfb = yanit.elapsed.total_seconds()
-    yonlendirme = sum(h.elapsed.total_seconds() for h in yanit.history)
     html = _metne_cevir(yanit)
     return {
         "basarili": True,
         "url": url,
         "ssl_hatasi": ssl_hatasi,
-        "son_url": yanit.url,
+        "son_url": adres,
         "durum_kodu": yanit.status_code,
-        "yonlendirme_sayisi": len(yanit.history),
-        "yonlendirme_zinciri": [str(h.status_code) + " " + h.url for h in yanit.history],
+        "yonlendirme_sayisi": len(zincir),
+        "yonlendirme_zinciri": zincir,
         "ttfb_ms": round(ttfb * 1000),
         "yonlendirme_ms": round(yonlendirme * 1000),
         "toplam_ms": round(toplam * 1000),
@@ -142,6 +193,8 @@ def sayfa_getir(url, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
         "icerik_turu": yanit.headers.get("Content-Type"),
         "hsts": yanit.headers.get("Strict-Transport-Security"),
         "x_robots_tag": yanit.headers.get("X-Robots-Tag"),
+        "refresh": yanit.headers.get("Refresh"),
+        "link_basligi": _link_basligi(yanit.headers.get("Link")),
         "html": html,
     }
 
@@ -187,14 +240,6 @@ def sayfa_engelli_mi(robots, url, ajan="*"):
     return bool(p) and not p.can_fetch(ajan, url)
 
 
-def url_anahtari(u):
-    """Karsilastirma icin adres: sema, 'www.' oneki ve sondaki '/' farklari yok sayilir."""
-    p = urlparse(urldefrag(u)[0])
-    host = (p.hostname or "").lower()
-    host = host[4:] if host.startswith("www.") else host
-    return host + (p.path.rstrip("/") or "") + ("?" + p.query if p.query else "")
-
-
 # ------------------------------------------------------------------ sitemap
 def _xml_coz(ham):
     if ham[:2] == b"\x1f\x8b":                    # gzip ile sikistirilmis sitemap
@@ -206,30 +251,56 @@ def _etiket(e):
     return e.tag.split("}")[-1]
 
 
+def _sinirli_oku(yanit, sinir):
+    """Yanit govdesini en fazla 'sinir' bayt okur; asarsa None (dev sitemap bellegi doldurmasin)."""
+    if not hasattr(yanit, "iter_content"):
+        return yanit.content
+    parcalar, toplam = [], 0
+    for p in yanit.iter_content(1 << 16):
+        toplam += len(p)
+        if toplam > sinir:
+            yanit.close()
+            return None
+        parcalar.append(p)
+    return b"".join(parcalar)
+
+
 def sitemap_bilgisi(site_koku, robots, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
     """robots.txt'de bildirilen sitemapleri, yoksa /sitemap.xml adresini dener."""
     anahtar = ("sitemap", site_koku)
     if anahtar in _onbellek:
         return _onbellek[anahtar]
-    adaylar = list(robots.get("sitemapler") or []) or [site_koku + "/sitemap.xml"]
+    # robots.txt'de goreli yazilmis sitemap adresi site kokune gore cozulur
+    adaylar = [urljoin(site_koku + "/", a) for a in (robots.get("sitemapler") or [])] or [site_koku + "/sitemap.xml"]
     bilgi = {"adaylar": adaylar, "var": False, "gecerli": False, "tur": None,
              "url_sayisi": 0, "alt_sitemap_sayisi": 0, "lastmod_var": False,
-             "acilan": [], "adresler": set(), "hata": None}
+             "acilan": [], "adresler": set(), "tohumlar": [], "hatali_adresler": [], "cok_buyuk": [],
+             "hata": None}
     acilacak, acilan_sayi = list(adaylar), 0
+
+    def _hatali(adres, neden):
+        bilgi["hata"] = bilgi["hata"] or (adres + " -> " + neden)
+        bilgi["hatali_adresler"].append(adres + " (" + neden + ")")
     while acilacak and acilan_sayi < EN_FAZLA_SITEMAP:
         adres = acilacak.pop(0)
         acilan_sayi += 1
         try:
-            y, _ = _al(adres, zaman_asimi)
+            y, _ = _al(adres, zaman_asimi, stream=True)
             if y.status_code != 200:
-                bilgi["hata"] = bilgi["hata"] or (adres + " -> " + str(y.status_code))
+                _hatali(adres, str(y.status_code))
                 continue
+            ham = _sinirli_oku(y, SITEMAP_BOYUT_SINIRI)
+            if ham is None:
+                bilgi["var"] = True
+                bilgi["cok_buyuk"].append(adres + " (50 MB üstü)")
+                continue
+            kok_e = _xml_coz(ham)
             bilgi["var"] = True
             bilgi["acilan"].append(adres)
-            kok_e = _xml_coz(y.content)
             bilgi["gecerli"] = True
             etiket = _etiket(kok_e)
             bilgi["tur"] = "dizin" if etiket == "sitemapindex" else "urlset"
+            dosya_url = 0
             for cocuk in kok_e:
                 loc = cocuk.find("{*}loc")
                 if loc is None or not (loc.text or "").strip():
@@ -241,13 +312,18 @@ def sitemap_bilgisi(site_koku, robots, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
                 else:
                     if len(bilgi["adresler"]) < EN_FAZLA_SITEMAP_URL:
                         bilgi["adresler"].add(url_anahtari(adres_c))
+                    if len(bilgi["tohumlar"]) < TOHUM_SINIRI:
+                        bilgi["tohumlar"].append(adres_c)
                     bilgi["url_sayisi"] += 1
+                    dosya_url += 1
                     if cocuk.find("{*}lastmod") is not None:
                         bilgi["lastmod_var"] = True
+            if dosya_url > 50000:
+                bilgi["cok_buyuk"].append(adres + " (" + str(dosya_url) + " adres)")
         except ElementTree.ParseError as e:
-            bilgi["hata"] = "XML çözülemedi: " + str(e)
-        except (requests.RequestException, OSError, gzip.BadGzipFile) as e:
-            bilgi["hata"] = type(e).__name__ + ": " + str(e)
+            _hatali(adres, "XML çözülemedi: " + str(e)[:80])
+        except (requests.RequestException, OSError, gzip.BadGzipFile, EOFError) as e:
+            _hatali(adres, type(e).__name__)
     # acilma sinirina takilan alt sitemap kaldiysa adres listesi eksiktir; "sayfa listede yok"
     # sonucu bu durumda guvenilir degildir
     bilgi["tam_okundu"] = not acilacak and bilgi["url_sayisi"] <= EN_FAZLA_SITEMAP_URL
@@ -356,8 +432,12 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
 
     # sayfa hic indirilemediyse icerik tabanli denetimler anlamsizdir; yanlis bulgu uretme
     if not getirme.get("basarili"):
-        add("erisilemedi", "yuksek", getirme.get("hata", ""))
-        return sorunlar, {"son_url": getirme.get("url"), "hata": getirme.get("hata")}
+        # yonlendirme dongusu ve asiri uzun zincir "erisilemedi" yerine kendi koduyla raporlanir
+        kod = getirme.get("hata_turu") if getirme.get("hata_turu") in ("yonlendirme_dongusu",
+                                                                       "cok_fazla_yonlendirme") else "erisilemedi"
+        add(kod, "yuksek", getirme.get("hata", ""))
+        return sorunlar, {"son_url": getirme.get("url"), "hata": getirme.get("hata"),
+                          "yonlendirme_zinciri": getirme.get("yonlendirme_zinciri")}
 
     son_url = getirme.get("son_url") or getirme["url"]
     site_koku = kok(son_url)
@@ -367,8 +447,15 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
     durum = getirme.get("durum_kodu")
     if durum and durum >= 400:
         add("hata_durum_kodu", "yuksek", str(durum))
+    elif durum and 300 <= durum < 400:
+        add("gecersiz_yonlendirme", "yuksek", str(durum) + ", Location başlığı yok")
     if getirme.get("yonlendirme_sayisi", 0) > 1:
         add("uzun_yonlendirme_zinciri", "dusuk", str(getirme["yonlendirme_sayisi"]) + " yönlendirme")
+    gecici = [z for z in getirme.get("yonlendirme_zinciri") or [] if z.split(" ", 1)[0] in map(str, GECICI_YONLENDIRME)]
+    if gecici:
+        add("gecici_yonlendirme", "dusuk", gecici[0][:160])
+    if getirme.get("refresh"):
+        add("meta_refresh", "orta", "Refresh başlığı: " + str(getirme["refresh"])[:120])
 
     # --- HTTPS ve sertifika
     sertifika = None
@@ -422,6 +509,11 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
     elif sitemap["adresler"] and sitemap["tam_okundu"]:
         if url_anahtari(son_url) not in sitemap["adresler"]:
             add("sayfa_sitemapte_yok", "dusuk")
+    if sitemap["var"] and sitemap.get("hatali_adresler"):
+        add("sitemap_hatali_adres", "dusuk", ", ".join(sitemap["hatali_adresler"][:3])[:200])
+    if sitemap.get("cok_buyuk"):
+        add("sitemap_cok_buyuk", "orta", ", ".join(sitemap["cok_buyuk"][:2])[:200])
+    sitemapte = (url_anahtari(son_url) in sitemap["adresler"]) if sitemap.get("adresler") else None
 
     # --- hiz ve boyut
     ttfb = getirme.get("ttfb_ms") or 0
@@ -437,9 +529,12 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
 
     # yapisal veri, viewport ve paylasim etiketleri HTML'den gorulebildigi icin
     # sayfa katmaninda (kurallar.ek_html_denetimi) denetlenir; burada tekrarlanmaz.
-    # Yalnizca yanit basligindan gelen noindex burada ele alinir.
-    if "noindex" in (getirme.get("x_robots_tag") or "").lower():
+    # Yalnizca yanit basligindan gelen robots yonergeleri burada ele alinir.
+    xrt = x_robots_yonergeleri(getirme.get("x_robots_tag"))
+    if xrt & {"noindex", "none"}:
         add("noindex", "yuksek", "X-Robots-Tag: " + str(getirme.get("x_robots_tag")))
+    if xrt & {"nofollow", "none"}:
+        add("sayfa_nofollow", "orta", "X-Robots-Tag: " + str(getirme.get("x_robots_tag")))
 
     bilgi = {"site_koku": site_koku, "son_url": son_url,
              "durum_kodu": durum, "yonlendirme_zinciri": getirme.get("yonlendirme_zinciri"),
@@ -450,6 +545,82 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
              "sertifika": sertifika,
              "http_yonlendirme": yonlendirme,
              "robots": {k: v for k, v in robots.items() if k != "_parser"},
-             "sitemap": {**{k: v for k, v in sitemap.items() if k != "adresler"},
-                         "adres_ornegi": sorted(sitemap["adresler"])[:3]}}
+             "sitemap": {**{k: v for k, v in sitemap.items() if k not in ("adresler", "tohumlar")},
+                         "adres_ornegi": sorted(sitemap["adresler"])[:3]},
+             "sitemapte": sitemapte,
+             "x_robots_yonergeleri": sorted(xrt)}
     return sorunlar, bilgi
+
+
+def x_robots_yonergeleri(deger):
+    """X-Robots-Tag degerindeki genel ve googlebot'a ozel yonergeler.
+    'googlebot: noindex' gibi bota ozel satirlar ve 'unavailable_after: tarih' ayrilir."""
+    sonuc = set()
+    for satir in re.split(r",(?=\s*[a-z_-]+\s*:)|\n", (deger or "").lower()):
+        ajan, _, yonergeler = satir.rpartition(":") if re.match(r"^\s*[a-z_-]+\s*:", satir) else ("", "", satir)
+        ajan = ajan.strip()
+        if ajan in ("", "googlebot", "robots", "*"):
+            sonuc |= {y.strip() for y in yonergeler.split(",") if y.strip()}
+        elif ajan.startswith("unavailable_after"):
+            continue
+    return sonuc
+
+
+# ------------------------------------------------------------ baglanti denetimi
+_baglanti_onbellegi = {}
+
+
+def baglanti_durumu(adres, zaman_asimi=10):
+    """Bir baglanti/gorsel adresinin durumu: once HEAD, sunucu desteklemezse GET (govde okunmaz).
+    Sonuc taramanin tamaminda onbellekte tutulur; ayni adres iki kez istenmez.
+    Is parcaciklarindan cagrildigi icin ortak oturum yerine her istek kendi baglantisini acar."""
+    if adres in _baglanti_onbellegi:
+        return _baglanti_onbellegi[adres]
+    basliklar = {"User-Agent": KULLANICI_AJANI, "Accept-Language": "tr,en;q=0.8"}
+    sonuc = {"durum": None, "son_url": adres, "yonlendirme": 0, "boyut": None, "hata": None}
+    try:
+        try:
+            y = requests.head(adres, headers=basliklar, timeout=zaman_asimi, allow_redirects=True)
+        except requests.exceptions.SSLError:
+            y = requests.head(adres, headers=basliklar, timeout=zaman_asimi, allow_redirects=True, verify=False)
+        if y.status_code in (403, 405, 501) or y.status_code >= 500:
+            # HEAD'i desteklemeyen ya da yanlis yanitlayan sunucular icin GET ile dogrula
+            with requests.get(adres, headers=basliklar, timeout=zaman_asimi, allow_redirects=True,
+                              stream=True, verify=False) as g:
+                y = g
+        sonuc.update({"durum": y.status_code, "son_url": y.url, "yonlendirme": len(y.history),
+                      "boyut": int(y.headers["Content-Length"]) if (y.headers.get("Content-Length") or "").isdigit()
+                      else None})
+    except requests.RequestException as e:
+        sonuc["hata"] = type(e).__name__
+    _baglanti_onbellegi[adres] = sonuc
+    return sonuc
+
+
+def baglantilari_denetle(adresler, zaman_asimi=10, bekleme=0.25, izin=None, es_zamanli=4):
+    """Adresleri host'a gore gruplayip denetler: farkli host'lar paralel, ayni host'a istekler sirayla
+    ve aralarinda 'bekleme' saniye ile gider (sunucuyu yormamak icin). izin(adres) False donerse
+    (robots.txt) adres istenmez, durumu None kalir. {adres: durum} dondurur."""
+    from concurrent.futures import ThreadPoolExecutor
+    gruplar = {}
+    for a in dict.fromkeys(adresler):
+        gruplar.setdefault(urlparse(a).netloc, []).append(a)
+
+    def _host_isle(liste):
+        sonuc = {}
+        for i, a in enumerate(liste):
+            if izin and not izin(a):
+                sonuc[a] = {"durum": None, "son_url": a, "yonlendirme": 0, "boyut": None, "hata": "robots.txt"}
+                continue
+            onbellekte = a in _baglanti_onbellegi
+            sonuc[a] = baglanti_durumu(a, zaman_asimi)
+            if not onbellekte and bekleme and i < len(liste) - 1:
+                time.sleep(bekleme)
+        return sonuc
+    sonuclar = {}
+    if not gruplar:
+        return sonuclar
+    with ThreadPoolExecutor(max_workers=min(es_zamanli, len(gruplar))) as havuz:
+        for parca in havuz.map(_host_isle, gruplar.values()):
+            sonuclar.update(parca)
+    return sonuclar

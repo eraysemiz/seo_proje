@@ -90,14 +90,15 @@ def test_www_ve_sema_farki_yanlis_pozitif_uretmez(monkeypatch):
 
 
 def test_tam_okunmayan_sitemap_dizini_sayfa_yok_bulgusu_uretmez(monkeypatch):
+    n = canli.EN_FAZLA_SITEMAP + 2           # acma sinirindan fazla alt dosya
     dizin = ('<?xml version="1.0"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
-             "".join(f"<sitemap><loc>https://ornek.edu.tr/s{i}.xml</loc></sitemap>" for i in range(5)) +
+             "".join(f"<sitemap><loc>https://ornek.edu.tr/s{i}.xml</loc></sitemap>" for i in range(n)) +
              "</sitemapindex>")
     dosyalar = {"https://ornek.edu.tr/sitemap.xml": _Yanit(dizin)}
-    dosyalar.update({f"https://ornek.edu.tr/s{i}.xml": _Yanit(URLSET.format(f"https://ornek.edu.tr/s{i}")) for i in range(5)})
+    dosyalar.update({f"https://ornek.edu.tr/s{i}.xml": _Yanit(URLSET.format(f"https://ornek.edu.tr/s{i}")) for i in range(n)})
     _sitemap_kur(monkeypatch, dosyalar)
     s = canli.sitemap_bilgisi("https://ornek.edu.tr", {"sitemapler": []})
-    assert s["tam_okundu"] is False          # 1 dizin + 2 alt dosya acildi, 3 alt dosya kaldi
+    assert s["tam_okundu"] is False          # dizin + sinir kadar alt dosya acildi, kalanlar okunmadi
 
 
 # ------------------------------------------------------------------ A9

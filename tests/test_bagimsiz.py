@@ -25,7 +25,8 @@ def test_puan_ve_basarisiz_denetimler_okunur(monkeypatch):
     istek = {}
 
     def sahte_get(adres, params=None, timeout=None):
-        istek.update(params)
+        istek.update(dict(params))
+        istek["kategoriler"] = [v for k, v in params if k == "category"]
         return _Yanit(ORNEK_YANIT)
 
     monkeypatch.setattr(bagimsiz.requests, "get", sahte_get)
@@ -33,13 +34,13 @@ def test_puan_ve_basarisiz_denetimler_okunur(monkeypatch):
     s = bagimsiz.pagespeed_seo("https://ornek.edu.tr/")
     assert s["seo_puani"] == 83 and s["hata"] is None
     assert s["basarisiz_denetimler"] == ["meta-description"]       # SEO disi denetim sayilmaz
-    assert istek["category"] == "SEO" and istek["key"] == "gizli-anahtar"
+    assert istek["kategoriler"] == ["SEO", "PERFORMANCE"] and istek["key"] == "gizli-anahtar"
     assert "gizli-anahtar" not in str(s)                             # anahtar sonuca/rapora sizmaz
 
 
 def test_baglanti_hatasi_mesajinda_anahtar_gizlenir(monkeypatch):
     def hatali_get(adres, params=None, timeout=None):
-        raise bagimsiz.requests.ConnectionError(f"{adres}?url=x&key={params['key']} adresine baglanilamadi")
+        raise bagimsiz.requests.ConnectionError(f"{adres}?url=x&key={dict(params)['key']} adresine baglanilamadi")
 
     monkeypatch.setattr(bagimsiz.requests, "get", hatali_get)
     s = bagimsiz.pagespeed_seo("https://ornek.edu.tr/", anahtar="GIZLI-ANAHTAR-123")

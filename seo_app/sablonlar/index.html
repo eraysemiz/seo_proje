@@ -45,10 +45,24 @@
             <button class="dugme ikincil" id="kesif-dugmesi" type="button">Keşfet</button>
           </div>
           <div id="kesif-sonucu" class="kesif-sonucu gizli" aria-live="polite"></div>
+          <fieldset class="secim-grubu">
+            <legend>Tarama kapsamı</legend>
+            <label class="kutu"><input type="radio" name="tarama-modu" id="mod-liste" value="liste" checked>
+              <span>Yalnızca listedeki adresler</span></label>
+            <label class="kutu"><input type="radio" name="tarama-modu" id="mod-site" value="site">
+              <span>Siteyi tara <span class="ipucu">adreslerden başlayıp site içi bağlantıları ve sitemap'i izler</span></span></label>
+          </fieldset>
+          <div class="ikili gizli" id="site-ayarlari">
+            <div><label for="en-fazla-sayfa">En fazla sayfa</label><input type="number" id="en-fazla-sayfa" value="{{ varsayilan.en_fazla_sayfa }}" min="1" max="500"></div>
+            <div><label for="en-fazla-derinlik">En fazla derinlik</label><input type="number" id="en-fazla-derinlik" value="{{ varsayilan.en_fazla_derinlik }}" min="0" max="10"></div>
+          </div>
         </li>
 
         <li class="adim">
           <h3>Dil modeli</h3>
+          <label class="kutu"><input type="checkbox" id="yalnizca-denetim">
+            <span>Dil modeli kullanma, yalnızca denetle <span class="ipucu">LM Studio gerekmez; title, meta, H1 ve alt metin önerisi üretilmez</span></span></label>
+          <div id="model-alanlari">
           <label for="llm-url">LM Studio adresi</label>
           <div class="satir">
             <input type="text" id="llm-url" value="{{ varsayilan.url }}">
@@ -71,19 +85,29 @@
               <div><label for="max-tokens">max_tokens</label><input type="number" id="max-tokens" value="{{ varsayilan.max_tokens }}" step="500" min="500"></div>
             </div>
           </details>
+          </div>
         </li>
 
         <li class="adim">
           <h3>Seçenekler</h3>
           <label class="kutu"><input type="checkbox" id="uy-robots" checked> robots.txt kurallarına uy</label>
+          <label class="kutu"><input type="checkbox" id="link-denetimi" checked>
+            <span>Bağlantıları ve görselleri denetle <span class="ipucu">kırık bağlantı, yönlendirme ve büyük görsel</span></span></label>
           <label class="kutu"><input type="checkbox" id="bagimsiz-olcum">
-            <span>Lighthouse SEO puanını da al <span class="ipucu">internet ve PageSpeed kotası gerekir</span></span></label>
+            <span>PageSpeed: Lighthouse SEO ve Core Web Vitals <span class="ipucu">LCP, INP, CLS; internet ve PageSpeed kotası gerekir</span></span></label>
+          <label class="kutu"><input type="checkbox" id="js-render">
+            <span>JavaScript ile oluşan içeriği işle <span class="ipucu">kurulu Chrome veya Edge ile render eder; yavaştır</span></span></label>
           <details class="gelismis">
             <summary>İstek ayarları</summary>
             <div class="ikili">
               <div><label for="bekleme">İstekler arası bekleme (sn)</label><input type="number" id="bekleme" value="1" step="0.5" min="0"></div>
               <div><label for="zaman-asimi">Zaman aşımı (sn)</label><input type="number" id="zaman-asimi" value="15" min="5"></div>
+              <div><label for="link-siniri">Sayfa başına bağlantı</label><input type="number" id="link-siniri" value="{{ varsayilan.link_siniri }}" min="0" max="300"></div>
             </div>
+            <label class="kutu"><input type="checkbox" id="sitemap-tohum" checked>
+              <span>Site taramasında sitemap adreslerini de tara</span></label>
+            <label class="kutu"><input type="checkbox" id="ssl-zorunlu">
+              <span>Sertifika doğrulanamazsa sayfayı indirme</span></label>
           </details>
         </li>
       </ol>
@@ -112,6 +136,7 @@
           <p class="bulgu" id="bulgu">Henüz tarama yapılmadı. Yukarıdaki formu doldurup taramayı başlatın.</p>
         </div>
         <div class="indirmeler gizli" id="indirmeler">
+          <a class="dugme ikincil" href="/api/html">rapor.html indir</a>
           <a class="dugme ikincil" href="/api/rapor">rapor.json indir</a>
           <a class="dugme ikincil" href="/api/csv">ozet.csv indir</a>
         </div>
@@ -128,6 +153,14 @@
 
       <div id="ozet" class="ozet gizli"></div>
 
+      <div class="panel gizli" id="site-ozeti-paneli">
+        <div class="panel-ust">
+          <h2>Site özeti</h2>
+          <p class="panel-not" id="site-ozeti-notu"></p>
+        </div>
+        <div id="site-ozeti"></div>
+      </div>
+
       <div id="bos-durum" class="panel bos-durum">
         <h3>Rapor burada görünecek</h3>
         <p>Tarama bitince her sayfa için şunları göreceksiniz:</p>
@@ -135,7 +168,8 @@
           <li><strong>Sayfa puanı:</strong> düzeltmelerden önce ve sonra, aynı ölçekte.</li>
           <li><strong>Sorunlar:</strong> çözülen, kalan ve düzeltme sırasında yeni çıkanlar ayrı ayrı.</li>
           <li><strong>Modelin önerileri:</strong> kabul edilenler, reddedilenler ve gerekçeleri.</li>
-          <li><strong>Canlı ölçümler:</strong> yanıt süresi, sertifika, robots.txt ve sitemap.</li>
+          <li><strong>Canlı ölçümler:</strong> yanıt süresi, sertifika, robots.txt, sitemap, bağlantılar ve Core Web Vitals.</li>
+          <li><strong>Site özeti:</strong> en çok sayfayı etkileyen sorunlar ve nasıl düzeltileceği.</li>
         </ul>
       </div>
 

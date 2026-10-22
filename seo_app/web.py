@@ -16,7 +16,9 @@ from flask import Flask, abort, jsonify, render_template, request, send_file
 from . import canli
 from .boru import (VARSAYILAN_AYARLAR, alt_siteleri_kesfet, hedefleri_hazirla, site_adi, topluca_analiz,
                    zaman_damgasi, csv_uret as _csv_uret)
-from .kurallar import ACIKLAMA
+from .kurallar import ACIKLAMA, DUZELTME, site_geneli, site_ozeti
+from .rapor import html_rapor
+from .tarama import baglanti_bulgulari
 from .llm import ModelHatasi, model_durumlari, modelleri_dogrula
 
 KOK = Path(__file__).resolve().parent.parent
@@ -37,6 +39,7 @@ DURUM = {
     "baslangic": None,
     "bitis": None,
     "hata": None,
+    "bulgular": None,      # tarama sonunda hesaplanan tarama geneli bulgular (yetim sayfa vb.)
 }
 
 
@@ -70,7 +73,7 @@ def _sifirla(toplam, cikti):
     with _kilit:
         DURUM.update({"calisiyor": True, "iptal": False, "toplam": toplam, "biten": 0,
                       "gunluk": [], "sonuclar": [], "cikti_klasoru": str(cikti),
-                      "baslangic": time.time(), "bitis": None, "hata": None})
+                      "baslangic": time.time(), "bitis": None, "hata": None, "bulgular": None})
 
 
 def _cikti_ozeti(hedefler, zaman):
@@ -96,9 +99,19 @@ def _tarama_isi(hedefler, ayarlar, ogretme_klasoru, sonuc_koku, zaman):
             DURUM["biten"] = sira
             DURUM["sonuclar"] = list(rapor)
 
+    def bulgular_hazir(bulgular):
+        with _kilit:
+            DURUM["bulgular"] = bulgular
+
+    def toplam_degisti(n):
+        # site taramasinda toplam sayfa sayisi kesfedildikce degisir
+        with _kilit:
+            DURUM["toplam"] = max(n, DURUM["biten"])
+
     try:
         topluca_analiz(hedefler, ayarlar, ogretme_klasoru, sonuc_koku, zaman, gunluk=gunluk, iptal=iptal,
-                       her_kayitta=her_kayitta)
+                       her_kayitta=her_kayitta, toplam_degisti=toplam_degisti,
+                       bulgular_hazir=bulgular_hazir)
         gunluk("Tarama tamamlandı. Çıktı klasörü: " + cikti)
     except Exception as e:
         with _kilit:
@@ -111,7 +124,11 @@ def _tarama_isi(hedefler, ayarlar, ogretme_klasoru, sonuc_koku, zaman):
 
 
 SAYI_ALANLARI = {"retry": (0, 5), "max_tokens": (100, 64000), "timeout": (10, 3600),
-                 "ornek_sayisi": (0, 10), "bilgi_sayisi": (1, 10), "zaman_asimi": (1, 120)}
+                 "ornek_sayisi": (0, 10), "bilgi_sayisi": (1, 10), "zaman_asimi": (1, 120),
+                 "en_fazla_sayfa": (1, 500), "en_fazla_derinlik": (0, 10), "link_siniri": (0, 300)}
+MANTIKSAL_ALANLAR = ("bagimsiz_olcum", "yalnizca_denetim", "link_denetimi", "js_render", "sitemap_tohum",
+                     "ssl_zorunlu", "uy_robots", "json_schema")
+TARAMA_MODLARI = ("liste", "site")
 
 
 def ayarlari_dogrula(veri):
@@ -121,7 +138,9 @@ def ayarlari_dogrula(veri):
     for k in ("url", "model", "embed_model", "embed_url", "retry",
               "max_tokens", "timeout", "ornek_sayisi", "bilgi_sayisi", "rerank_url", "rerank_model",
               "json_schema", "dil", "uy_robots",
-              "bekleme_sn", "zaman_asimi", "bagimsiz_olcum"):
+              "bekleme_sn", "zaman_asimi", "bagimsiz_olcum", "yalnizca_denetim", "tarama_modu",
+              "en_fazla_sayfa", "en_fazla_derinlik", "link_denetimi", "link_siniri", "js_render",
+              "sitemap_tohum", "ssl_zorunlu"):
         if k in veri and veri[k] not in ("", None):
             ayarlar[k] = veri[k]
     for alan, (en_az, en_cok) in SAYI_ALANLARI.items():
@@ -137,7 +156,12 @@ def ayarlari_dogrula(veri):
         return None, "bekleme_sn bir sayı olmalı."
     if ayarlar["bekleme_sn"] < 0:
         return None, "bekleme_sn negatif olamaz."
-    ayarlar["bagimsiz_olcum"] = bool(ayarlar["bagimsiz_olcum"])
+    for alan in MANTIKSAL_ALANLAR:
+        ayarlar[alan] = bool(ayarlar[alan])
+    if ayarlar["tarama_modu"] not in TARAMA_MODLARI:
+        return None, "tarama_modu 'liste' ya da 'site' olmalı."
+    if ayarlar["yalnizca_denetim"]:
+        ayarlar["model"] = None              # acik secim: dil modeli bu taramada hic cagrilmaz
     return ayarlar, None
 
 
@@ -176,11 +200,13 @@ def api_tara():
     ayarlar, hata = ayarlari_dogrula(veri)
     if hata:
         return jsonify({"hata": hata}), 400
-    # tarama baslamadan once LM Studio ve secilen modeller denetlenir; sorun varsa tarama baslamaz
-    try:
-        modelleri_dogrula(ayarlar["url"], [ayarlar.get("model"), ayarlar.get("embed_model")])
-    except ModelHatasi as e:
-        return jsonify({"hata": str(e)}), 503
+    # tarama baslamadan once LM Studio ve secilen modeller denetlenir; sorun varsa tarama baslamaz.
+    # "yalnizca denetim" acikca secildiyse dil modeli kullanilmaz ve LM Studio gerekmez.
+    if not ayarlar["yalnizca_denetim"]:
+        try:
+            modelleri_dogrula(ayarlar["url"], [ayarlar.get("model"), ayarlar.get("embed_model")])
+        except ModelHatasi as e:
+            return jsonify({"hata": str(e)}), 503
 
     ogretme_klasoru = _proje_ici(veri.get("ogretme_klasoru") or "ogretme", KOK)
     if ogretme_klasoru is None:
@@ -190,9 +216,11 @@ def api_tara():
     zaman = zaman_damgasi()
     cikti = _cikti_ozeti(hedefler, zaman)
     canli.onbellek_temizle()
-    _sifirla(len(hedefler), cikti)
-    _gunluk_yaz("Tarama başladı: " + str(len(hedefler)) + " hedef, model=" + str(ayarlar["model"]) +
-                ", koşul=" + ayarlar["kosul"])
+    _sifirla(ayarlar["en_fazla_sayfa"] if ayarlar["tarama_modu"] == "site" else len(hedefler), cikti)
+    _gunluk_yaz("Tarama başladı: " + str(len(hedefler)) + " hedef" +
+                (", site modu (en fazla " + str(ayarlar["en_fazla_sayfa"]) + " sayfa)" if ayarlar["tarama_modu"] == "site" else "") +
+                (", yalnızca denetim (dil modeli yok)" if ayarlar["yalnizca_denetim"] else
+                 ", model=" + str(ayarlar["model"]) + ", koşul=" + ayarlar["kosul"]))
     is_parcacigi = threading.Thread(target=_tarama_isi,
                                     args=(hedefler, ayarlar, ogretme_klasoru, SONUC_KOK, zaman), daemon=True)
     is_parcacigi.start()
@@ -219,6 +247,41 @@ def api_durdur():
 @uygulama.route("/api/aciklamalar")
 def api_aciklamalar():
     return jsonify(ACIKLAMA)
+
+
+@uygulama.route("/api/duzeltmeler")
+def api_duzeltmeler():
+    """Sorun kodu -> somut duzeltme onerisi (raporda "Nasil duzeltilir")."""
+    return jsonify(DUZELTME)
+
+
+def _tarama_bulgulari(sonuclar, hazir=None):
+    """Arayuz icin site ozeti ve tarama geneli bulgular. Tarama bittiyse hesaplanmis bulgular
+    (sitemap'e dayali yetim sayfalar dahil) kullanilir; surerken elde olan kayitlardan hesaplanir."""
+    if hazir is None:
+        site_modu = any(k.get("kesif_kaynagi") in ("bağlantı", "sitemap") for k in sonuclar)
+        hazir = site_geneli(sonuclar) + baglanti_bulgulari([dict(k) for k in sonuclar], (), site_modu)
+    return site_ozeti(sonuclar, hazir), hazir
+
+
+@uygulama.route("/api/ozet")
+def api_ozet():
+    with _kilit:
+        sonuclar, hazir = list(DURUM["sonuclar"]), DURUM["bulgular"]
+    ozet, bulgular = _tarama_bulgulari(sonuclar, hazir)
+    return jsonify({"ozet": ozet, "bulgular": bulgular})
+
+
+@uygulama.route("/api/html")
+def api_html():
+    """Tum taramanin tek dosyalik HTML raporu."""
+    with _kilit:
+        sonuclar, hazir = list(DURUM["sonuclar"]), DURUM["bulgular"]
+    ozet, bulgular = _tarama_bulgulari(sonuclar, hazir)
+    baslik = ", ".join(sorted({site_adi(k["ad"]) for k in sonuclar if k.get("ad")})[:3]) or "SEO denetimi"
+    metin = html_rapor(sonuclar, ozet, bulgular, baslik=baslik)
+    return send_file(io.BytesIO(metin.encode("utf-8")), mimetype="text/html",
+                     as_attachment=True, download_name="rapor.html")
 
 
 @uygulama.route("/api/csv")
