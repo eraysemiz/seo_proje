@@ -1,0 +1,14 @@
+{
+ "k": 5,
+ "siralama": "bm25",
+ "modeller": {
+  "text-embedding-qwen3-embedding-0.6b": {
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 0.964,
+   "parca_sayisi": 5.0,
+   "sorun_isabeti": 0.765,
+   "sure_ms": 0.244
+  }
+ }
+}

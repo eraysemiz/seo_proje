@@ -1,0 +1,14 @@
+{
+ "k": 5,
+ "siralama": "vektor",
+ "modeller": {
+  "text-embedding-nomic-embed-text-v1.5": {
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5.0,
+   "sorun_isabeti": 0.889,
+   "sure_ms": 24.176
+  }
+ }
+}

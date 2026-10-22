@@ -1,0 +1,1292 @@
+{
+ "ortalama": {
+  "kapsama": 1.0,
+  "isabet": 1.0,
+  "mrr": 1.0,
+  "parca_sayisi": 5.0,
+  "sorun_isabeti": 0.931,
+  "sure_ms": 35.849
+ },
+ "sayfalar": [
+  {
+   "ad": "http_diploma.ogrenciisleri.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "t05",
+    "m02",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 53.932
+  },
+  {
+   "ad": "http_radyoduet.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 34.859
+  },
+  {
+   "ad": "http_sosyalsorumluluk.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 33.323
+  },
+  {
+   "ad": "https_aadek.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 47.544
+  },
+  {
+   "ad": "https_adayogrenci.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h03",
+    "m02",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 30.457
+  },
+  {
+   "ad": "https_akademik.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h03",
+    "m05",
+    "m01",
+    "n04",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 29.82
+  },
+  {
+   "ad": "https_ardek.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "h01",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 33.018
+  },
+  {
+   "ad": "https_bap.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 34.556
+  },
+  {
+   "ad": "https_bidek.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 55.188
+  },
+  {
+   "ad": "https_bilgiislem.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 31.598
+  },
+  {
+   "ad": "https_bilgiizleme.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 33.001
+  },
+  {
+   "ad": "https_biltek.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 33.732
+  },
+  {
+   "ad": "https_botanikbahce.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 32.752
+  },
+  {
+   "ad": "https_cdn.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "n04",
+    "m05",
+    "t03",
+    "t05"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 35.621
+  },
+  {
+   "ad": "https_cevresaglik.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 36.202
+  },
+  {
+   "ad": "https_donersermaye.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 34.061
+  },
+  {
+   "ad": "https_dubam.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 34.491
+  },
+  {
+   "ad": "https_dugetam.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 32.057
+  },
+  {
+   "ad": "https_dukart.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "t05",
+    "h03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 31.16
+  },
+  {
+   "ad": "https_dumeyok.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 32.197
+  },
+  {
+   "ad": "https_dusem.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h03",
+    "h01",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 34.389
+  },
+  {
+   "ad": "https_dutok.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 32.011
+  },
+  {
+   "ad": "https_duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 31.85
+  },
+  {
+   "ad": "https_ebs.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "n04",
+    "m04",
+    "g04"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 28.366
+  },
+  {
+   "ad": "https_ebys.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 30.498
+  },
+  {
+   "ad": "https_egitimkoordinatorlugu.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 34.177
+  },
+  {
+   "ad": "https_engelsiz.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 30.18
+  },
+  {
+   "ad": "https_gensek.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 33.531
+  },
+  {
+   "ad": "https_haber.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "h01",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 32.997
+  },
+  {
+   "ad": "https_hastane.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "t03",
+    "m02",
+    "m05"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 32.897
+  },
+  {
+   "ad": "https_hukuk.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 32.576
+  },
+  {
+   "ad": "https_icdenetim.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 46.562
+  },
+  {
+   "ad": "https_idarimali.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 34.513
+  },
+  {
+   "ad": "https_isg.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "h03",
+    "m01",
+    "h01",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.5,
+   "sure_ms": 34.815
+  },
+  {
+   "ad": "https_itk.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 55.174
+  },
+  {
+   "ad": "https_kaliteyonetim.duzce.edu.tr",
+   "beklenen": [
+    "h1"
+   ],
+   "getirilen": [
+    "h03",
+    "h01",
+    "h02",
+    "n04",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 24.363
+  },
+  {
+   "ad": "https_kariyer.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 34.596
+  },
+  {
+   "ad": "https_kurulkararlari.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "h03",
+    "t05",
+    "t03"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 25.626
+  },
+  {
+   "ad": "https_kutuphane.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t05",
+    "g05"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 39.609
+  },
+  {
+   "ad": "https_mbs.duzce.edu.tr",
+   "beklenen": [
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "n04",
+    "m02",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 29.286
+  },
+  {
+   "ad": "https_obs.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "m02",
+    "t05",
+    "t03"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 29.127
+  },
+  {
+   "ad": "https_ogrencidekanligi.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "h01",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 33.367
+  },
+  {
+   "ad": "https_ogrenciisleri.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "t05",
+    "m02",
+    "h03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 34.212
+  },
+  {
+   "ad": "https_personel.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "m05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 32.138
+  },
+  {
+   "ad": "https_rehber.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "h03",
+    "t02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 43.345
+  },
+  {
+   "ad": "https_rimer.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "t05",
+    "h03",
+    "m02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.667,
+   "sure_ms": 23.603
+  },
+  {
+   "ad": "https_sanalsergi.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 32.251
+  },
+  {
+   "ad": "https_sks.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 35.299
+  },
+  {
+   "ad": "https_strateji.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 41.688
+  },
+  {
+   "ad": "https_surdurulebilirlik.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "h03",
+    "t05",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 55.655
+  },
+  {
+   "ad": "https_uabs.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description"
+   ],
+   "getirilen": [
+    "m01",
+    "m05",
+    "t05",
+    "t03",
+    "m02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 24.086
+  },
+  {
+   "ad": "https_uluslararasiofis.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "h01",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 58.756
+  },
+  {
+   "ad": "https_uluslararasiogrenci.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 31.721
+  },
+  {
+   "ad": "https_uzem.duzce.edu.tr",
+   "beklenen": [
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m05",
+    "m02",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 31.583
+  },
+  {
+   "ad": "https_w3.api.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1"
+   ],
+   "getirilen": [
+    "m05",
+    "m01",
+    "h03",
+    "t03",
+    "t05"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 36.531
+  },
+  {
+   "ad": "https_www.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 55.673
+  },
+  {
+   "ad": "https_yapiisleri.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "h03",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 0.75,
+   "sure_ms": 30.672
+  },
+  {
+   "ad": "https_yzdd.duzce.edu.tr",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "m02",
+    "t05",
+    "h03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 33.128
+  },
+  {
+   "ad": "Düzce Üniversitesi _ Anasayfa",
+   "beklenen": [
+    "title",
+    "meta_description",
+    "h1",
+    "img_alt"
+   ],
+   "getirilen": [
+    "m01",
+    "h03",
+    "m02",
+    "t03",
+    "g02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 44.346
+  },
+  {
+   "ad": "Marmara Üniversitesi _ Resmi Web Sitesi",
+   "beklenen": [
+    "meta_description"
+   ],
+   "getirilen": [
+    "m02",
+    "m01",
+    "m05",
+    "n04",
+    "n02"
+   ],
+   "kapsama": 1.0,
+   "isabet": 1.0,
+   "mrr": 1.0,
+   "parca_sayisi": 5,
+   "sorun_isabeti": 1.0,
+   "sure_ms": 46.185
+  }
+ ]
+}
