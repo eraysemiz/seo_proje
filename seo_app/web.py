@@ -111,7 +111,7 @@ def _tarama_isi(hedefler, ayarlar, ogretme_klasoru, sonuc_koku, zaman):
 
 
 SAYI_ALANLARI = {"retry": (0, 5), "max_tokens": (100, 64000), "timeout": (10, 3600),
-                 "ornek_sayisi": (0, 10), "zaman_asimi": (1, 120)}
+                 "ornek_sayisi": (0, 10), "bilgi_sayisi": (1, 10), "zaman_asimi": (1, 120)}
 
 
 def ayarlari_dogrula(veri):
@@ -119,7 +119,8 @@ def ayarlari_dogrula(veri):
     Deney kosulu arayuzden alinmaz; her zaman varsayilan (ornek+bilgi) kullanilir."""
     ayarlar = {**VARSAYILAN_AYARLAR}
     for k in ("url", "model", "embed_model", "embed_url", "retry",
-              "max_tokens", "timeout", "ornek_sayisi", "json_schema", "dil", "uy_robots",
+              "max_tokens", "timeout", "ornek_sayisi", "bilgi_sayisi", "rerank_url", "rerank_model",
+              "json_schema", "dil", "uy_robots",
               "bekleme_sn", "zaman_asimi", "bagimsiz_olcum"):
         if k in veri and veri[k] not in ("", None):
             ayarlar[k] = veri[k]

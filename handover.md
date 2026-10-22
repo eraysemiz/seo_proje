@@ -72,6 +72,25 @@ Kök dizindeki `seo_pipeline.py`, `seo_pipelineg.py`, `seo_pipeline_ogretmeli.py
 
 Önceki handover'ın "doğrulanması gerekiyor" maddesi kapandı. `sonuclar/sonuc_rag/rapor.json` içinde (21 Ekim'de silindi; `git checkout 7b527d1 -- sonuclar/sonuc_rag` ile geri getirilebilir) her iki sayfada da `ogretme_yontemi: "anlamsal"` — yani gömme modeline gerçekten ulaşılmış, anahtar kelime yöntemine düşülmemiş. Anlamsal RAG çalışıyor.
 
+## 4b. 22 Ekim 2026: RAG iyileştirmesi (`rag-iyilestirme` dalı)
+
+Ayrıntı README'nin "Modele verilen ek bağlam" ve "Bilgi getirme (RAG) ölçümü" bölümlerinde.
+
+- Hibrit getirme: metadata filtresi → Türkçe sorgu (+ Qwen3 talimat öneki) → kosinüs ve BM25'in
+  ağırlıklı RRF'si → her sorunlu alanı kapsayan seçim (k=5) → 1 600 karakter bütçe.
+  İsteğe bağlı rerank istemcisi (`/rerank`, llama.cpp) var; gerçek bir rerank sunucusuyla denenmedi.
+- Kaynak atfı: parçalar `[t02]` kimlikleriyle isteme girer, öneride `kaynaklar` alanı, arayüzde bağlantı.
+- Sayfa verisi: site adı, H3, menü ve bağlantı listeleri ayıklanmış içerik özeti.
+- `localhost` → `127.0.0.1`: Windows'ta her LM Studio isteğine eklenen ~2 sn gecikme kalktı.
+- `deney.py --kosullar` geri geldi (yalnızca deneyde; arayüzde koşul sabit).
+- Getirme ölçümü (60 sayfa): kapsama 0,457 → 1,000; sorun isabeti 0,939; getirme 2 257 → 39 ms.
+  Eşit ağırlıklı hibrit (0,707) yalnız vektörden (0,931) kötüydü; BM25 bu yüzden 0,1 ağırlıkta.
+  qwen3-embedding-0.6b (0,939) nomic-embed-text-v1.5'ten (0,889) iyi.
+- Uçtan uca (4 sayfa, qwen3.5-9b, tek çalıştırma; küçük örnek): kabul edilen öneri eski 9 / yeni 9,
+  istem ortalaması 7 294 → 6 722 karakter (%8 kısa; hedef %25'ti, tutmadı), son çalıştırmada
+  sadakat reddi 0, yeni önerilerin hepsi geçerli kaynak kimliğine dayanıyor. Title'ın 60 karakteri
+  aşması (62-65) eski ve yeni hatta sürüyor.
+
 ## 5. Test seti ve ilk gerçek sonuçlar
 
 **Test seti:** `test_setleri/duzce_birimleri.txt` — 58 Düzce Üniversitesi birim sitesi, aracın keşif özelliğiyle anasayfadan otomatik çıkarıldı.
@@ -122,7 +141,7 @@ Kök dizindeki `seo_pipeline.py`, `seo_pipelineg.py`, `seo_pipeline_ogretmeli.py
 | Elle değerlendirme | Sadakat/Türkçe kalitesi için en az 2 kişilik kör puanlama tablosu | Yüksek |
 | Literatür | Başlanmadı; kişi başı 10-12 kaynak, %50 yabancı | Yüksek, zaman alıcı |
 | Metin yazımı | Başlanmadı | Yüksek |
-| Bilgi tabanı kaynakları | `bilgi_tabani.json` ve `seo_kurallari.json` YZ tarafından yazılmış, atıfsız taslaklar. Gerçek kaynaklarla (Google SEO Başlangıç Kılavuzu vb.) karşılaştırılıp öğrenciler tarafından yeniden yazılmalı | Yüksek (Turnitin + akademik dürüstlük) |
+| Bilgi tabanı kaynakları | 22 Ekim 2026'da `bilgi_tabani.json` Google Arama Merkezi ve W3C WAI belgelerine atıflı, Türkçe 28 parça olarak yeniden yazıldı (yine YZ yazımı; 17 kaynak bağlantısı açılıyor, temel iddialar kaynak metinle karşılaştırıldı). Ödevde kullanılacaksa öğrencilerin kaynakları okuyup kendi cümleleriyle gözden geçirmesi gerekir. `seo_kurallari.json` (gömme modeli seçilmediğinde kullanılır) hâlâ atıfsız | Yüksek (Turnitin + akademik dürüstlük) |
 
 ## 7. Önerilen sıradaki adımlar
 

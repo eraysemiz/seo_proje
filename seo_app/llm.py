@@ -21,7 +21,8 @@ SCHEMA = {
             "alan": {"type": "string", "enum": list(IZINLI_ALANLAR)},
             "hedef": {"type": "string"},
             "yeni_deger": {"type": "string"},
-            "gerekce": {"type": "string"}},
+            "gerekce": {"type": "string"},
+            "kaynaklar": {"type": "array", "items": {"type": "string"}}},
         "required": ["alan", "hedef", "yeni_deger", "gerekce"]}}},
     "required": ["fixes"],
 }
@@ -41,9 +42,20 @@ SYSTEM = (
     "iddia ekleme: title, meta_description ve h1 icinde yalnizca sayfa verisinde (title, meta, h1, h2, metin_ozeti) "
     "gecen kavramlari kullan; 'uzmanlasmis', 'basarili', 'lider' gibi dogrulanamayan nitelemeler yazma, "
     "'bizim/universitemiz' gibi birinci kisi anlatim kullanma. Metin Turkce olsun. title, meta_description ve h1 icin 'hedef' bos birakilir. "
+    "Sayfa verisi kisa gorunse bile oneriyi her zaman sayfanin kendi verisinden kur: site_adi, title, h1, h2, h3, "
+    "metin_ozeti ve gorsel baglamlarindaki kavramlari birlestir; bunlar listedeki her sorun icin dogru bir oneriye yeter. "
+    "SEO BILGI TABANI parcalari yazim yonergesidir, sayfa bilgisi degildir: oradaki ornek ifadeleri sayfaya ait bilgi gibi yazma. "
+    "Her oneride dayandigin bilgi tabani parcalarinin kimliklerini (ornek t02) 'kaynaklar' listesine yaz. "
     "Cevabin SADECE su bicimde tek bir JSON nesnesi olsun, baska hicbir sey yazma: "
-    '{"fixes":[{"alan":"title|meta_description|h1|img_alt","hedef":"","yeni_deger":"...","gerekce":"..."}]}'
+    '{"fixes":[{"alan":"title|meta_description|h1|img_alt","hedef":"","yeni_deger":"...","gerekce":"...","kaynaklar":["t02"]}]}'
 )
+
+
+def istek_adresi(url):
+    """Windows'ta 'localhost' once IPv6 (::1) adresine cozulur; LM Studio yalnizca IPv4'te
+    dinlediginde her istek ~2 sn bekleyip IPv4'e duser. Istekler dogrudan 127.0.0.1'e gider;
+    kullaniciya gosterilen adres degismez."""
+    return re.sub(r"//localhost(?=[:/]|$)", "//127.0.0.1", url or "")
 
 
 # Sistem isteminde yasaklanan, dogrulanamayan ovgu/nitelemelerin kelime basi bicimleri.
@@ -66,7 +78,7 @@ def _yasakli_ifadeler(v, d):
 
 
 def modelleri_listele(url, timeout=10):
-    r = requests.get(url + "/models", timeout=timeout)
+    r = requests.get(istek_adresi(url) + "/models", timeout=timeout)
     r.raise_for_status()
     return [m["id"] for m in r.json().get("data", [])]
 
@@ -76,7 +88,7 @@ def model_durumlari(url, timeout=10):
     /v1/models, LM Studio'da 'anında yukleme' acikken indirilmis TUM modelleri listeler;
     gercek durum LM Studio'ya ozgu /api/v0/models ucundan okunur. Bu uc yoksa
     (baska bir sunucu) durum bilinmiyor (None) olarak isaretlenir."""
-    kok = url.rstrip("/")
+    kok = istek_adresi(url).rstrip("/")
     kok = kok[:-3] if kok.endswith("/v1") else kok
     try:
         r = requests.get(kok + "/api/v0/models", timeout=timeout)
@@ -170,7 +182,8 @@ def _cagri(url, payload, timeout, ilerleme=None):
     t0 = time.time()
     icerik, dusunme, bitis, n = [], [], None, 0
     ilk, son_t, parca = None, None, 0        # ilk token zamani, son token zamani, token parcasi sayisi
-    with requests.post(url + "/chat/completions", json=payload, stream=True, timeout=(10, timeout)) as r:
+    with requests.post(istek_adresi(url) + "/chat/completions", json=payload, stream=True,
+                       timeout=(10, timeout)) as r:
         r.raise_for_status()
         r.encoding = "utf-8"
         for satir in r.iter_lines(decode_unicode=True):
@@ -210,8 +223,10 @@ def _eksik_alanlar(kodlar, gecerli):
 
 
 def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
-              retry=1, few_shot="", ilerleme=None):
-    """Modelden oneri ister, dogrular ve eksik kalan alanlar icin bir kez daha sorar."""
+              retry=1, few_shot="", ilerleme=None, kaynak_kimlikleri=()):
+    """Modelden oneri ister, dogrular ve eksik kalan alanlar icin bir kez daha sorar.
+    kaynak_kimlikleri: isteme eklenen bilgi tabani parcalarinin kimlikleri; onerideki
+    'kaynaklar' bunlarla sinirlanir (verilmemis bir kimlige atif kayda gecmez, sayilir)."""
     kodlar = [i["sorun"] for i in issues]
     # model uzun src yollarini bozabildigi icin gorselleri kisa kimliklerle (g1, g2...) adlandiriyoruz
     # gorsel kimligi belge icindeki sira numarasina baglidir; ayni src'yi paylasan
@@ -219,15 +234,18 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
     gorsel_id = {"g" + str(i + 1): g for i, g in enumerate(d["img_no_alt"][:ALT_LIMIT])}
     gorseller = [{"id": k, "dosya_adi": dosya_adi(g["src"]), "baglam": d["img_baglam"].get(g["sira"], "")}
                  for k, g in gorsel_id.items()]
-    veri = {"dosya": filename, "title": d["title"], "meta_description": d["meta_description"],
-            "h1": d["h1"], "h2": d["h2"], "alt_metni_eksik_gorseller": gorseller,
-            "metin_ozeti": d["text_sample"], "tespit_edilen_sorunlar": issues}
+    # metin_ozeti: menu ve baglanti listeleri ayiklanmis icerik bolgesi (cikarma.extract)
+    veri = {"dosya": filename, "site_adi": d.get("site_adi"), "title": d["title"],
+            "meta_description": d["meta_description"], "h1": d["h1"], "h2": d["h2"], "h3": d.get("h3", []),
+            "alt_metni_eksik_gorseller": gorseller,
+            "metin_ozeti": d.get("icerik_ozeti") or d["text_sample"], "tespit_edilen_sorunlar": issues}
     sistem = {"role": "system", "content": SYSTEM + few_shot}
     mesajlar = [sistem, {"role": "user", "content": json.dumps(veri, ensure_ascii=False)}]
 
     # yok_sayilan: yeniden denemede modelin zaten kabul edilmis alanlari tekrar gondermesi.
     # Bunlar kalite reddi degildir; ret sayisini sisirmemeleri icin ayri tutulur.
     gecerli, reddedilen, yok_sayilan, kabul = [], [], [], set()
+    izinli_kaynak, gecersiz_kaynak = set(kaynak_kimlikleri), 0
     denemeler, toplam_sure, ilk_json, son = [], 0.0, None, None
     for deneme in range(retry + 1):
         payload = {"model": model, "temperature": 0, "max_tokens": max_tokens,
@@ -251,6 +269,9 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
                 elif ok_f:
                     f["yeni_deger"] = f["yeni_deger"].strip()
                     f.setdefault("gerekce", "")
+                    ham = f.get("kaynaklar") if isinstance(f.get("kaynaklar"), list) else []
+                    f["kaynaklar"] = [x for x in ham if isinstance(x, str) and x in izinli_kaynak]
+                    gecersiz_kaynak += len(ham) - len(f["kaynaklar"])
                     h = (f.get("hedef") or "").strip()
                     f["hedef"] = h
                     if f["alan"] == "img_alt":
@@ -281,6 +302,7 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
 
     return {
         "fixes": gecerli, "reddedilen": reddedilen, "yok_sayilan": yok_sayilan, "json_gecerli": bool(ilk_json),
+        "gecersiz_kaynak": gecersiz_kaynak,
         "sure_sn": round(toplam_sure, 2), "bitis_nedeni": son["bitis"],
         "dusunme_karakter": sum(x["dusunme_karakter"] for x in denemeler),
         "cevap_karakter": sum(x["cevap_karakter"] for x in denemeler),

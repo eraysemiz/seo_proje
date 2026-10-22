@@ -30,7 +30,7 @@ from .ogretme import ogretme_metni
 from .uygula import apply_fixes, kural_duzelt
 
 VARSAYILAN_AYARLAR = {
-    "url": "http://localhost:1234/v1",
+    "url": "http://127.0.0.1:1234/v1",   # localhost Windows'ta once IPv6'ya cozulur, her istege ~2 sn ekler
     "model": None,
     "kosul": "ornek+bilgi",      # sabit: few-shot ornekler + bilgi tabani; kullaniciya sorulmaz
     "embed_model": None,
@@ -38,7 +38,10 @@ VARSAYILAN_AYARLAR = {
     "retry": 1,
     "max_tokens": 3000,
     "timeout": 600,
-    "ornek_sayisi": 3,
+    "ornek_sayisi": 2,            # few-shot ornek; yazim kurallari bilgi tabanindan geldigi icin 2 ornek bicim/ton icin yeter
+    "bilgi_sayisi": 5,            # getirilecek bilgi parcasi; olcumde k=3 -> 5 sorun isabetini 0,56'dan 0,94'e cikardi
+    "rerank_url": None,           # istege bagli yeniden siralama sunucusu (/rerank); yoksa LM Studio adresi
+    "rerank_model": None,
     "json_schema": False,
     "dil": "tr",
     "uy_robots": True,
@@ -147,17 +150,23 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
     yeni_html = html
     if model_sorunlari:
         ogr, ogr_bilgi = ogretme_metni(a["kosul"], d, model_sorunlari, ogretme_klasoru, a["ornek_sayisi"],
-                                       a["embed_url"] or a["url"], a["embed_model"])
+                                       a["embed_url"] or a["url"], a["embed_model"], bilgi_k=a["bilgi_sayisi"],
+                                       rerank_url=a["rerank_url"] or a["url"], rerank_model=a["rerank_model"])
         ilerleme = lambda sn, dus, cev: yaz("   model çalışıyor: " + str(sn) + " sn, " +
                                             str(cev) + " karakter cevap")
         res = llm_fixes(d, model_sorunlari, a["model"], kayit["ad"], a["url"], a["max_tokens"],
-                        a["timeout"], a["json_schema"], a["retry"], few_shot=ogr, ilerleme=ilerleme)
+                        a["timeout"], a["json_schema"], a["retry"], few_shot=ogr, ilerleme=ilerleme,
+                        kaynak_kimlikleri=ogr_bilgi.get("kimlikler", ()))
         kayit.update(res)
         kayit["model"] = a["model"]
         kayit["kosul"] = a["kosul"]
         kayit["ogretme_ornek_sayisi"] = ogr_bilgi["ornek"]
         kayit["ogretme_kural_sayisi"] = ogr_bilgi["kural"]
         kayit["ogretme_yontemi"] = ogr_bilgi["yontem"]
+        # hangi bilgi parcalarinin getirildigi ve hangi bilgi tabani surumuyle calisildigi (degerlendirme icin)
+        kayit["ogretme_parcalar"] = ogr_bilgi.get("parcalar", [])
+        kayit["getirme_ms"] = ogr_bilgi.get("getirme_ms")
+        kayit["kb_surum"] = ogr_bilgi.get("kb_surum")
         yeni_html = apply_fixes(html, res["fixes"])
         if res["bitis_nedeni"] == "length" and not res["cevap_karakter"]:
             yaz("UYARI: token sınırı düşünmeye harcandı, cevap boş. max_tokens değerini artırın.")

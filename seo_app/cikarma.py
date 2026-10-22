@@ -56,6 +56,41 @@ def _baglam(img):
     return "; ".join(parca)[:220]
 
 
+# title icinde site adini sayfa adindan ayiran yaygin isaretler ("Sayfa | Site", "Site - Sayfa")
+BASLIK_AYRACI = re.compile(r"\s+[|\-–—:·]\s+")
+
+
+def site_adi_bul(soup, title, govde=""):
+    """Sitenin adini sayfanin kendi verisinden bulur: og:site_name, application-name ya da
+    title'in ayracla ayrilmis ilk/son parcasi. Bulunamazsa None (uydurulmaz)."""
+    for ad in ("og:site_name", "application-name"):
+        m = soup.find("meta", attrs={"property": ad}) or soup.find("meta", attrs={"name": ad})
+        if m and m.get("content", "").strip():
+            return m["content"].strip()[:80]
+    # "Anasayfa", "Home" gibi genel sayfa adlari site adi olamaz. Kalan adaylardan sayfa metninde
+    # (logo, alt bilgi, telif satiri) daha sik gecen secilir; esitlikte son parca, cunku marka
+    # genellikle sonda yazilir ("Erkek Giyim Modelleri | AVVA")
+    parcalar = [p.strip() for p in BASLIK_AYRACI.split(title or "") if p.strip()]
+    if len(parcalar) >= 2:
+        adaylar = [p for p in (parcalar[-1], parcalar[0]) if tr_lower(p) not in GENEL_SAYFA_ADLARI]
+        if adaylar:
+            return max(adaylar, key=lambda p: govde.count(tr_lower(p)))[:80]
+    return None
+
+
+GENEL_SAYFA_ADLARI = {"anasayfa", "ana sayfa", "home", "homepage", "hoş geldiniz", "hos geldiniz", "giriş", "index"}
+
+
+def _baglanti_listelerini_ayikla(kok):
+    """Metni neredeyse tamamen baglantilardan olusan listeleri (menu, kisayol, alt bilgi) cikarir.
+    Yalnizca modele ve getirme sorgusuna giden ozet icin kullanilir; sadakat kokleri etkilenmez."""
+    for liste in kok.find_all(["ul", "ol"]):
+        metin = liste.get_text(" ", strip=True)
+        bag = " ".join(a.get_text(" ", strip=True) for a in liste.find_all("a"))
+        if metin and len(bag) >= 0.7 * len(metin):
+            liste.decompose()
+
+
 def dosya_adi(src):
     return os.path.basename(unquote(src.split("?")[0]))[:60]
 
@@ -69,17 +104,20 @@ def extract(html: str) -> dict:
         t.decompose()
     text = re.sub(r"\s+", " ", body.get_text(" ", strip=True))
     h1_metinleri = [h.get_text(strip=True) for h in soup.find_all("h1")]
+    baslik = soup.title.get_text(strip=True) if soup.title else None
     # alt niteligi hic olmayan gorsel eksiktir; alt="" ise dekoratif gorsel icin bilincli
     # ve gecerli bir tercihtir (WCAG), eksik sayilmaz
     eksik = [(n, i) for n, i in enumerate(imgs) if i.get("alt") is None]
     sonuc = {
         "lang": (soup.html.get("lang") if soup.html else None),
-        "title": soup.title.get_text(strip=True) if soup.title else None,
+        "title": baslik,
+        "site_adi": site_adi_bul(soup, baslik, tr_lower(text)),
         "meta_description": meta.get("content", "").strip() if meta else None,
         "canonical": bool(soup.find("link", rel="canonical")),
         "h1": [t for t in h1_metinleri if t],          # yalnizca metni olan H1'ler sayilir
         "h1_bos_sayisi": sum(1 for t in h1_metinleri if not t),
         "h2": [h.get_text(strip=True) for h in soup.find_all("h2")][:5],
+        "h3": [t for t in (h.get_text(strip=True) for h in soup.find_all("h3")) if t][:5],
         "img_total": len(imgs),
         "img_no_alt": [{"sira": n, "src": gercek_src(i)} for n, i in eksik],
         "img_bos_alt": sum(1 for i in imgs if i.get("alt") is not None and not i["alt"].strip()),
@@ -96,12 +134,19 @@ def extract(html: str) -> dict:
         for t in body.find_all(["nav", "header", "footer", "aside"]):
             t.decompose()
         icerik = body
-    icerik_metni = icerik.get_text(" ", strip=True)
+    icerik_metni = re.sub(r"\s+", " ", icerik.get_text(" ", strip=True))
+    # icerik_ozeti: modele ve bilgi getirme sorgusuna giden ozet (menu/alt bilgi ve baglanti
+    # listeleri ayiklanmis icerik bolgesi); bos kalirsa daha genis metne donulur
     sonuc["icerik_kokleri"] = kokler(icerik_metni)          # odak terim denetimi icin (title haric)
     sonuc["kelime_kokleri"] = kokler(" ".join([
-        icerik_metni, sonuc["title"] or "", sonuc["meta_description"] or "", " ".join(sonuc["h1"])]))
+        icerik_metni, sonuc["title"] or "", sonuc["meta_description"] or "", " ".join(sonuc["h1"]),
+        sonuc["site_adi"] or ""]))
     sonuc["sayfa_kelimeleri"] = set(kelimeler(" ".join([
-        sonuc["title"] or "", sonuc["meta_description"] or "", " ".join(sonuc["h1"])])))
+        sonuc["title"] or "", sonuc["meta_description"] or "", " ".join(sonuc["h1"]), sonuc["site_adi"] or ""])))
+    # kokler hesaplandiktan sonra baglanti listeleri ayiklanir; ozet sayfanin asil metnine odaklanir
+    _baglanti_listelerini_ayikla(icerik)
+    ozet = re.sub(r"\s+", " ", icerik.get_text(" ", strip=True))
+    sonuc["icerik_ozeti"] = (ozet if len(ozet) >= 200 else icerik_metni if len(icerik_metni) >= 200 else text)[:1200]
     return sonuc
 
 

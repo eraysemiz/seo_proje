@@ -59,11 +59,38 @@ Deney koşulu sabittir: **`ornek+bilgi`**. Modele her taramada few-shot örnekle
 (`ogretme/ornekler.json`) ve SEO bilgi tabanından ilgili parçalar (`ogretme/bilgi_tabani.json`)
 verilir; arayüzde koşul seçeneği yoktur.
 
-Bir **gömme (embedding) modeli** seçilirse bilgi parçaları anlamsal getirmeyle (RAG) seçilir:
-sorgu ve parçalar vektöre çevrilip kosinüs benzerliğiyle en alakalı olanlar alınır. Gömme modeli
-seçilmezse anahtar kelime eşleştirmesi kullanılır. Gömme modeli seçildiği hâlde ulaşılamazsa
-anahtar kelimeye sessizce geçilmez, hata verilir. Kullanılan yöntem raporda `ogretme_yontemi`
-alanında yazar (`anlamsal` / `anahtar_kelime`).
+Bilgi tabanı (`ogretme/bilgi_tabani.json`) Google Arama Merkezi ve W3C WAI belgelerine dayanan,
+Türkçe yazılmış 28 parçadır. Her parçada `alan` (title, meta_description, h1, img_alt, genel…),
+`baslik`, `etiketler`, `kaynak` (bağlantı), `kaynak_basligi` ve `erisim_tarihi` bulunur.
+
+Bir **gömme (embedding) modeli** seçilirse parçalar hibrit getirmeyle (RAG) seçilir
+(`seo_app/ogretme.py: bilgi_getir`):
+
+1. **Metadata filtresi:** yalnızca sayfanın sorunlu alanlarına ve genel yönergelere ait parçalar aday olur.
+2. **Sorgu:** sorun kodları yerine Türkçe açıklamaları, sayfa başlığı, site adı ve menüden ayıklanmış
+   içerik özeti; gömme modeline uygun sorgu öneki (Qwen3 `Instruct:`, e5 `query:`, nomic `search_query:`).
+3. **Sıralama:** kosinüs (anlamsal) ve BM25 (sözcüksel) sıralamaları ağırlıklı RRF ile birleştirilir
+   (vektör 1,0, BM25 0,1). İsteğe bağlı bir yeniden sıralama (rerank) modeli son sırayı belirler.
+4. **Seçim:** her sorunlu alandan en az bir parça, kalan yer en yüksek puanlılarla (`bilgi_sayisi`, varsayılan 5);
+   toplam 1 600 karakteri aşarsa önce dolgu parçaları çıkarılır.
+
+Parçalar isteme kimlikleriyle (`[t02] …`) eklenir; model her önerinin dayandığı parçaları `kaynaklar`
+alanına yazar, verilmemiş kimlikler ayıklanır (`gecersiz_kaynak`). Raporda `ogretme_parcalar`
+(kimlik, kaynak, puan), `getirme_ms` ve `kb_surum` (bilgi tabanı özeti) yer alır; arayüz her
+önerinin yanında dayandığı yönergeyi kaynağına bağlantıyla gösterir. Parça vektörleri
+`bilgi_tabani_gomme_cache.json` dosyasında model başına saklanır; bilgi tabanı değişince yalnızca
+değişen parçalar yeniden gömülür ve artık olmayanlar önbellekten silinir.
+
+Gömme modeli seçilmezse `seo_kurallari.json` içinden sorunlu alanlara ait kurallar eklenir
+(`anahtar_kelime`). Gömme ya da yeniden sıralama modeli seçildiği hâlde ulaşılamazsa sessizce başka
+yönteme geçilmez, hata verilir.
+
+**Yeniden sıralama (isteğe bağlı):** LM Studio bir `/rerank` ucu sunmaz; `bge-reranker-v2-m3` gibi
+bir model llama.cpp sunucusunda (`llama-server --reranking`) çalıştırılıp `deney.py --rerank-url
+http://127.0.0.1:8012/v1 --rerank-model bge-reranker-v2-m3` ile kullanılabilir.
+
+**Not (Windows):** `localhost` önce IPv6 adresine çözüldüğü için LM Studio'ya giden her istek
+yaklaşık 2 saniye gecikiyordu; istekler artık doğrudan `127.0.0.1` adresine gider.
 
 ## Önerilerin doğrulanması
 
@@ -94,15 +121,50 @@ Bir taramada birden fazla site varsa her site kendi klasörüne, aynı zaman dam
 
 ## Deney matrisi
 
-Model × retry kombinasyonlarını tek komutla çalıştırır (koşul sabit: `ornek+bilgi`). Her
-kombinasyon `sonuclar/<site>/sonuc_<tarih_saat>/<model>__ornek_bilgi__r<retry>/` klasörüne,
+Model × koşul × retry kombinasyonlarını tek komutla çalıştırır. Arayüzde koşul sabittir
+(`ornek+bilgi`); burada `--kosullar sifir,ornek,bilgi,ornek+bilgi` ile bilgi tabanının ve örneklerin
+katkısı ölçülebilir (varsayılan `ornek+bilgi`). Her
+kombinasyon `sonuclar/<site>/sonuc_<tarih_saat>/<model>__<kosul>__r<retry>/` klasörüne,
 her sitenin karşılaştırması `sonuclar/<site>/sonuc_<tarih_saat>/karsilastirma.csv` dosyasına yazılır.
 Başlamadan önce tüm modeller denetlenir; biri eksikse deney hiç başlamaz.
 
 ```
 py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-9b ^
             --retry 0,1 --embed-model text-embedding-qwen3-embedding-0.6b
+py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-9b --retry 1 ^
+            --kosullar sifir,bilgi,ornek+bilgi --embed-model text-embedding-qwen3-embedding-0.6b
 ```
+
+## Bilgi getirme (RAG) ölçümü
+
+`rag_degerlendir.py` dil modeli çalıştırmadan, yalnızca gömme modeliyle getirme kalitesini ölçer.
+Ölçüm seti `tests/veri/rag_degerlendirme.json` (60 sayfa; kayıtlı HTML'lerden `--veri-olustur` ile
+üretilir). Altın etiketler sorun kodlarından türetilir:
+
+- **kapsama:** sayfanın sorunlu alanlarından en az bir parçayla kapsananların oranı
+- **isabet:** getirilen parçalardan ilgili olanların oranı (sorunlu alan ya da genel yönerge)
+- **MRR:** sorunlu alana ait ilk parçanın sırasının tersi
+- **sorun isabeti:** her sorun için tanımlı altın parçalardan (örneğin `title_uzun` → t02/t04/t05)
+  en az biri seçilmiş mi
+
+```
+py rag_degerlendir.py --embed-model text-embedding-qwen3-embedding-0.6b
+py rag_degerlendir.py --embed-model a,b,c --siralama vektor      # modelleri / sıralamaları karşılaştır
+```
+
+Sonuçlar `sonuclar/rag_degerlendirme/` altına yazılır. 22 Ekim 2026 ölçümü (qwen3-embedding-0.6b):
+
+| | Kapsama | İsabet | MRR | Sorun isabeti | Getirme |
+|---|---|---|---|---|---|
+| Eski hat (k=3) | 0,457 | 0,594 | 0,786 | – | 2 257 ms |
+| Yeni hat, yalnız BM25 (k=5) | 1,000 | 1,000 | 0,964 | 0,765 | <1 ms |
+| Yeni hat, yalnız vektör (k=5) | 1,000 | 1,000 | 1,000 | 0,931 | 36 ms |
+| Yeni hat, eşit ağırlıklı hibrit (k=5) | 1,000 | 1,000 | 1,000 | 0,707 | 40 ms |
+| **Yeni hat, ağırlıklı hibrit (k=5, varsayılan)** | 1,000 | 1,000 | 1,000 | **0,939** | 39 ms |
+
+Kapsama ve isabet yeni hatta tasarım gereği (metadata filtresi ve kapsayarak seçim) tavandadır;
+sıralama kalitesini sorun isabeti ayırt eder. Set ağırlıklı olarak Düzce Üniversitesi sayfalarından
+oluşur; farklı sitelerle genişletilmesi önerilir.
 
 ## Bağımsız ölçüm (isteğe bağlı)
 
@@ -148,13 +210,15 @@ yapılmalıdır.
 ```
 calistir.py              uygulamayı başlatır
 deney.py                 deney matrisi koşucusu (komut satırı)
-tests/                   pytest testleri
+rag_degerlendir.py       bilgi getirme (RAG) ölçümü
+tests/                   pytest testleri (tests/veri/: RAG ölçüm seti)
 seo_app/
   bagimsiz.py            PageSpeed (Lighthouse) SEO puanı
   cikarma.py             HTML'den veri çıkarma
   kurallar.py            kural denetimi, çözüm yolu sınıflandırması, puanlama
   canli.py               canlı erişim denetimleri (robots, sitemap, HTTPS, hız)
-  ogretme.py             few-shot ve bilgi tabanı (RAG)
+  ogretme.py             few-shot ve bilgi tabanı (hibrit RAG)
+  rag_olcum.py           getirme ölçütleri (kapsama, isabet, MRR, sorun isabeti)
   llm.py                 LM Studio istemcisi, öneri doğrulama
   uygula.py              önerilerin HTML'e işlenmesi, kural tabanlı düzeltmeler
   boru.py                tek sayfa analiz akışı, toplu tarama, alt site keşfi

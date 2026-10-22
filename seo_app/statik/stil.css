@@ -343,6 +343,12 @@ tr.ayrinti-satiri > td { padding: 0; background: var(--yukseltilmis); }
 .oneri-tablosu td:first-child { width: 120px; font-weight: 500; white-space: nowrap; padding-left: 0; }
 .oneri-tablosu .gerekce { display: block; color: var(--soluk); font-size: 12px; line-height: 17px; }
 .reddedilen { margin-top: 10px; }
+.kaynak-satiri { display: block; margin-top: 4px; font-size: 12px; line-height: 17px; color: var(--soluk); }
+.kaynak-cip {
+  display: inline-block; padding: 0 6px; border-radius: var(--r-cip); background: var(--notr-zemin);
+  color: var(--notr-metin); font-size: 12px; font-weight: 500; text-decoration: none; font-variant-numeric: tabular-nums;
+}
+a.kaynak-cip:hover { background: var(--kontrol); color: var(--metin); }
 .reddedilen summary { cursor: pointer; font-size: 13px; color: var(--soluk); width: max-content; }
 .reddedilen ul { margin: 8px 0 0; padding: 0; list-style: none; }
 .reddedilen li { padding: 6px 0; border-top: 1px solid var(--cizgi); font-size: 13px; line-height: 18px; }

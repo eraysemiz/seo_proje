@@ -51,10 +51,28 @@ def test_iki_model_iki_retry_tek_komutla_kosul_sabit(monkeypatch, tmp_path, sayf
     assert (tmp_path / "sonuclar" / "s0.edu.tr").iterdir().__next__().name ==         (tmp_path / "sonuclar" / "s1.edu.tr").iterdir().__next__().name     # ayni deney zamani
 
 
-def test_kosul_secenegi_kaldirildi(tmp_path, monkeypatch, sayfalar):
+def test_gecersiz_kosul_reddedilir(tmp_path, monkeypatch, sayfalar, capsys):
     monkeypatch.setattr(deney, "KOK", tmp_path)
-    with pytest.raises(SystemExit):                     # argparse: taninmayan secenek
-        deney.main(["--adresler", sayfalar, "--modeller", "m", "--kosullar", "sifir"])
+    monkeypatch.setattr(deney, "modelleri_dogrula", lambda *a, **k: None)
+    with pytest.raises(SystemExit) as h:
+        deney.main(["--adresler", sayfalar, "--modeller", "m", "--kosullar", "sifir,uydurma"])
+    assert h.value.code == 2 and "geçersiz koşul: uydurma" in capsys.readouterr().err
+
+
+def test_kosullar_yalnizca_deneyde_karsilastirilir(monkeypatch, tmp_path, sayfalar):
+    """Arayuzde kosul sabit; deney.py'de bilgi tabaninin katkisini olcmek icin kosullar secilebilir."""
+    monkeypatch.setattr(boru, "llm_fixes", _sahte_llm_fixes)
+    monkeypatch.setattr(deney, "KOK", tmp_path)
+    monkeypatch.setattr(deney, "modelleri_dogrula", lambda *a, **k: None)
+    shutil.copytree(KOK / "ogretme", tmp_path / "ogretme",
+                    ignore=shutil.ignore_patterns("bilgi_tabani_gomme_cache.json"))
+    deney.main(["--adresler", sayfalar, "--modeller", "m", "--bekleme", "0", "--retry", "0",
+                "--kosullar", "sifir,ornek+bilgi"])
+    deney_kl = next((tmp_path / "sonuclar" / "s0.edu.tr").iterdir())
+    assert sorted(p.name for p in deney_kl.iterdir() if p.is_dir()) == ["m__ornek_bilgi__r0", "m__sifir__r0"]
+    satirlar = list(csv.DictReader(io.StringIO((deney_kl / "karsilastirma.csv").read_text(encoding="utf-8-sig")),
+                                   delimiter=";"))
+    assert {r["kosul"] for r in satirlar} == {"sifir", "ornek+bilgi"}
 
 
 def test_web_ve_cli_ayni_donguyu_kullanir(monkeypatch, tmp_path, sayfalar):

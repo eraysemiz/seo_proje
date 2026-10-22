@@ -572,10 +572,22 @@ function ayrintiHtml(k) {
   if ((k.fixes && k.fixes.length) || (k.reddedilen && k.reddedilen.length)) {
     h += '<div class="bolum"><h4>Modelin önerileri <span class="sayac">' + (k.fixes || []).length + " kabul, " +
       (k.reddedilen || []).length + " ret</span></h4>";
+    // modelin dayandigi bilgi tabani parcalari; kimlik, kaynagina baglanti olarak gosterilir
+    const parcaBul = {};
+    (k.ogretme_parcalar || []).forEach((p) => { parcaBul[p.id] = p; });
+    const kaynakCipi = (id) => {
+      const p = parcaBul[id] || {};
+      const ipucu = [p.baslik, p.kaynak_basligi].filter(Boolean).join(" — ");
+      return p.kaynak
+        ? '<a class="kaynak-cip" href="' + kacis(p.kaynak) + '" target="_blank" rel="noopener" title="' + kacis(ipucu) + '">' + kacis(id) + "</a>"
+        : '<span class="kaynak-cip">' + kacis(id) + "</span>";
+    };
     if (k.fixes && k.fixes.length) {
       h += '<table class="oneri-tablosu"><tbody>' + k.fixes.map((f) =>
         "<tr><td>" + kacis(f.alan) + (f.hedef ? " / " + kacis(f.hedef) : "") + "</td>" +
-        "<td>" + kacis(f.yeni_deger) + (f.gerekce ? '<span class="gerekce">' + kacis(f.gerekce) + "</span>" : "") + "</td></tr>"
+        "<td>" + kacis(f.yeni_deger) + (f.gerekce ? '<span class="gerekce">' + kacis(f.gerekce) + "</span>" : "") +
+        ((f.kaynaklar || []).length ? '<span class="kaynak-satiri">Dayandığı yönerge: ' + f.kaynaklar.map(kaynakCipi).join(" ") + "</span>" : "") +
+        "</td></tr>"
       ).join("") + "</tbody></table>";
     }
     if (k.reddedilen && k.reddedilen.length) {
@@ -583,6 +595,12 @@ function ayrintiHtml(k) {
         k.reddedilen.map((r) => "<li><strong>" + kacis(retNedeni(r.neden)) + "</strong>" +
           '<span class="ayr">' + kacis(((r.oneri && (r.oneri.alan + ": " + r.oneri.yeni_deger)) || "").slice(0, 180)) +
           "</span></li>").join("") + "</ul></details>";
+    }
+    if ((k.ogretme_parcalar || []).length) {
+      h += '<details class="reddedilen"><summary>Modele verilen bilgi parçaları (' + k.ogretme_parcalar.length + ")</summary><ul>" +
+        k.ogretme_parcalar.map((p) => "<li>" + kaynakCipi(p.id) + " <strong>" + kacis(p.baslik || "") + "</strong>" +
+          '<span class="ayr">' + kacis([p.alan, p.kaynak_basligi].filter(Boolean).join(" · ")) + "</span></li>").join("") +
+        "</ul></details>";
     }
     h += "</div>";
   }
