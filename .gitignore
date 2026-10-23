@@ -10,3 +10,6 @@ venv/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# graphify bilgi grafigi ciktilari (yerel olarak yeniden uretilir)
+graphify-out/
