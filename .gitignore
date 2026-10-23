@@ -13,3 +13,6 @@ desktop.ini
 
 # graphify bilgi grafigi ciktilari (yerel olarak yeniden uretilir)
 graphify-out/
+
+# Tarama çıktıları (her çalıştırmada yeniden üretilir)
+sonuclar/
