@@ -1,2 +1,3 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Test sitesi hash manifestiyle doğrulanır; satır sonları dönüştürülmeden bayt bayt saklanır
+test_sitesi/site/** -text
+test_sitesi_degerlendirme/orijinal_site/** -text
