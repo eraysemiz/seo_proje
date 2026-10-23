@@ -1,247 +1,262 @@
-# Handover: Yerel YZ ile SEO Analizi Ödevi
+# HANDOVER: Yerel Dil Modeli ile SEO Denetimi ve İyileştirme
 
-Bu dosya, oturumlar arasında bağlamın kaybolmaması için tutulur. Son güncelleme: **20 Ekim 2026**.
+Son güncelleme: **23 Ekim 2026** · Aktif dal: `yonetici-modu` (son commit `14d2142`).
+Ayrıntılı kullanım: [README.md](README.md). Bu belgenin önceki sürümü (ödev bağlamı, Düzce birim
+siteleri bulguları, 20–23 Ekim notları) git geçmişinde: `git show 14d2142:handover.md`.
 
-## 1. Proje / ödev bağlamı
+## 1. Proje amacı
 
-- **Ders:** YBS317 SEO I (Düzce Üniversitesi, YBS Bölümü, Doç. Dr. Remzi Başar)
-- **Ödev türü:** Vize yerine geçen "Bilimsel Araştırma Ödevi", not ağırlığı %40
-- **Ekip:** 3 kişilik
-- **Konu başlığı:** *"Yerel Büyük Dil Modeli ile Web Sitelerinin Otomatik SEO Denetimi ve İyileştirilmesi: Düzce Üniversitesi Birim Siteleri Örneği"*
-- **Teslim:** 11. ders haftası, KLASÖR halinde, MS Word formatında (PDF kabul edilmiyor). 7. haftada yarı bitmiş hâli sunulacak.
-- **Kritik kurallar:**
-  - Anket kullanımı **yasak** (uzman mülakatı serbest).
-  - Kişi başı en az 5 sayfa (kapak/özet/kaynakça hariç), kişi başı 10-12 kaynak, en az %50'si yabancı.
-  - Turnitin benzerlik oranı %25'i geçerse ödev geçersiz.
-  - Metni öğrenciler kendisi yazmalı. **Kod/araç geliştirmede YZ kullanımı ayrı, metni YZ'ye yazdırmak ayrı** — bu ayrım hocaya açıkça belirtilmeli.
-  - Konu onayı 2. hafta sonuna kadar; haftalık görüşme Salı 14:10-16:10.
-  - **Hoca bu spesifik kapsamı henüz onaylamadı.** Hâlâ bir sonraki kritik adım.
+- YBS317 SEO I dersi için bilimsel araştırma ödevinin aracı: *"Yerel Büyük Dil Modeli ile Web
+  Sitelerinin Otomatik SEO Denetimi ve İyileştirilmesi"* (Düzce Üniversitesi birim siteleri örneği).
+- Araç canlı siteleri tarar, kural tabanlı SEO denetimi yapar, LM Studio'daki yerel model ve RAG ile
+  düzeltme önerileri üretir, önce/sonra raporlar.
+- Erişimimiz olan sitelerde (yönetici modu) onaylanan düzeltmeleri siteye yazar ve geri alınabilir tutar.
 
-## 2. Teknik durum: artık bir web uygulaması
+## 2. Hızlı başlangıç
 
-**Önceki durum:** tek dosyalık komut satırı betiği (`seo_pipeline_ogretmeli2.py`), yalnızca kaydedilmiş HTML dosyalarını tarıyordu.
-
-**Şimdiki durum:** `seo_app/` paketi + yerel web arayüzü. Çalıştırma:
+- **Python:** geliştirme `Python 3.15.0` ile yapıldı (`py` komutu). Daha eski sürümlerde çalışıp
+  çalışmadığı denenmedi `[doğrulanmalı]`.
+- **Bağımlılıklar:** `requirements.txt` (flask, requests, beautifulsoup4, lxml, brotlicffi);
+  testler için `requirements-dev.txt` (+pytest).
+- **LM Studio:** sunucu açık olmalı (Developer → Running), varsayılan adres `http://127.0.0.1:1234/v1`.
+  Kullanılan modeller: sohbet `qwen/qwen3.5-9b`, gömme `text-embedding-qwen3-embedding-0.6b`.
+- **İsteğe bağlı ortam değişkenleri:** `PSI_API_ANAHTARI` (PageSpeed), `CHROME_YOLU` (JS render).
+- **Model gerekmeyen kullanım:** arayüzde "yalnızca denetle" seçeneği; yönetici modunda `--model` vermeden.
 
 ```
-pip install -r requirements.txt
-py calistir.py          # http://127.0.0.1:5000 açılır
+pip install -r requirements-dev.txt
+py calistir.py                 # arayüz: http://127.0.0.1:5000  (--port, --host, --acma)
+py -m pytest -q                # testler
 ```
 
-Ayrıntılı kullanım, denetim listesi ve mimari için **`README.md`** dosyasına bakın.
+**Standart mod (salt okunur):** arayüzde "Standart mod" seçili tarama. Toplu deney için:
+```
+py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-9b --embed-model text-embedding-qwen3-embedding-0.6b
+```
 
-### 21 Ekim 2026 sadeleştirmesi (kullanıcı kararı)
+**Yönetici modu (siteye yazar):**
+```
+py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model qwen/qwen3.5-9b --embed-model text-embedding-qwen3-embedding-0.6b
+py yonet.py onizle sonuclar/127.0.0.1/sonuc_<tarih_saat> --diff
+py yonet.py onayla <klasör> --kural-hepsi --onay D020 D029 --riski-kabul D029 --ret D050
+py yonet.py uygula <klasör>
+py yonet.py geri-al sonuclar/127.0.0.1
+```
 
-- **Kaydedilmiş HTML analizi kaldırıldı;** araç yalnızca canlı adres tarıyor. `snapshots/` klasörü
-  yalnızca testlerde örnek sayfa olarak duruyor.
-- **Her tarama dil modeliyle yapılıyor;** "yalnızca kural denetimi" seçeneği yok. Tarama başlamadan
-  önce LM Studio'ya ulaşılabildiği ve seçilen sohbet/gömme modellerinin yüklü olduğu denetleniyor;
-  değilse tarama başlamıyor. Gömme modeli seçilip ulaşılamazsa anahtar kelimeye sessizce geçilmiyor.
-- **Deney koşulu sabit: `ornek+bilgi`.** Arayüzde ve `deney.py`'de koşul seçeneği yok; `deney.py`
-  artık model × retry matrisini çalıştırıyor. Koşul karşılaştırması (sıfır/örnek/bilgi) yapılacaksa
-  bu kararın geri alınması gerekir.
-- **Sonuç klasörü:** `sonuclar/<site adı>/sonuc_<YYYY-MM-DD_HH-MM-SS>/`.
-- **Arayüz ve mesaj metinleri** Türkçe karakterlerle yazıldı (önceden kaynakta ASCII'ydi).
+## 3. Mimari
 
-### Eklenen yetenekler
-
-1. **Canlı erişim** — siteleri Chrome'dan tek tek kaydetmeye gerek yok, adres listesi yeterli.
-2. **Site katmanı denetimleri:** robots.txt, sitemap.xml, HTTPS/sertifika/HSTS, http→https yönlendirmesi, durum kodu, yönlendirme zinciri, TTFB, indirme süresi, HTML boyutu, sıkıştırma.
-3. **Sayfa katmanına eklenenler:** viewport (mobil uyum), JSON-LD/mikroveri, Open Graph, Twitter Card, favicon, meta robots/noindex, dış kaynak sayısı.
-4. **Çözüm yolu sınıflandırması** — her sorun `model` / `kural` / `elle` olarak etiketlenir. Bu, "modelin başarısı" ile "aracın toplam başarısı" ölçümlerini ayırır (hocanın sorabileceği bir soruyu baştan kapatır).
-5. **Alt site keşfi** — bir adresteki bağlantılardan kurumun alt sitelerini otomatik çıkarır; test seti bununla oluşturuldu.
-6. **Kural tabanlı düzeltmelere eklenenler:** viewport meta etiketi, Open Graph etiketleri (mevcut title/meta'dan türetilir, yeni bilgi uydurulmaz).
-7. **robots.txt'ye uyum** — araç varsayılan olarak izin verilmeyen adresi taramaz, istekler arasında bekler, kendini tanıtan User-Agent kullanır. Yöntem bölümünde etik gerekçe olarak yazılabilir.
-
-### Önemli tasarım kararı (yöntem bölümünde açıklanmalı)
-
-Dil modeline **yalnızca** çözüm yolu `model` olan sorunlar gönderilir: title, meta description, H1, alt metni. Canonical, lang, içerik azlığı, yapısal veri ve site katmanı sorunları modele hiç gitmez (21 Ekim 2026 kararı, "temiz ayrım"). Bu yüzden bu tarihten önceki LLM'li sonuçlar yeni çalıştırmalarla doğrudan karşılaştırılamaz; deneyler yeniden çalıştırılmalı. Yeniden denemede modelin zaten kabul edilmiş alanları tekrar göndermesi ret sayılmaz, raporda `yok_sayilan` listesine yazılır.
-
-### Dosya karmaşası uyarısı
-
-Kök dizindeki `seo_pipeline.py`, `seo_pipelineg.py`, `seo_pipeline_ogretmeli.py`, `seo_pipeline_ogretmeli2.py` dosyaları **eski sürümlerdir**. Güncel motor `seo_app/` paketidir. Bunları bir `eski/` klasörüne taşımak karışıklığı önler (yapılmadı, kullanıcının kararı).
-
-## 3. Ortam
-
-- Windows, PowerShell. Python `py` komutuyla çalışıyor (Python 3.15).
-- Kurulu paketler: flask, requests, beautifulsoup4, lxml.
-- **LM Studio şu an kapalı.** Port oturumdan oturuma değişti (1234/1235) — arayüzdeki "Modelleri getir" düğmesi bağlantıyı sınar.
-- Modeller: sohbet `qwen/qwen3.5-9b`, gömme `qwen3-embedding-0.6b`. GPU offload düzeltildi, ~30 token/sn.
-
-## 4. ÇÖZÜLDÜ: RAG/embedding doğrulandı
-
-Önceki handover'ın "doğrulanması gerekiyor" maddesi kapandı. `sonuclar/sonuc_rag/rapor.json` içinde (21 Ekim'de silindi; `git checkout 7b527d1 -- sonuclar/sonuc_rag` ile geri getirilebilir) her iki sayfada da `ogretme_yontemi: "anlamsal"` — yani gömme modeline gerçekten ulaşılmış, anahtar kelime yöntemine düşülmemiş. Anlamsal RAG çalışıyor.
-
-## 4b. 22 Ekim 2026: RAG iyileştirmesi (`rag-iyilestirme` dalı)
-
-Ayrıntı README'nin "Modele verilen ek bağlam" ve "Bilgi getirme (RAG) ölçümü" bölümlerinde.
-
-- Hibrit getirme: metadata filtresi → Türkçe sorgu (+ Qwen3 talimat öneki) → kosinüs ve BM25'in
-  ağırlıklı RRF'si → her sorunlu alanı kapsayan seçim (k=5) → 1 600 karakter bütçe.
-  İsteğe bağlı rerank istemcisi (`/rerank`, llama.cpp) var; gerçek bir rerank sunucusuyla denenmedi.
-- Kaynak atfı: parçalar `[t02]` kimlikleriyle isteme girer, öneride `kaynaklar` alanı, arayüzde bağlantı.
-- Sayfa verisi: site adı, H3, menü ve bağlantı listeleri ayıklanmış içerik özeti.
-- `localhost` → `127.0.0.1`: Windows'ta her LM Studio isteğine eklenen ~2 sn gecikme kalktı.
-- `deney.py --kosullar` geri geldi (yalnızca deneyde; arayüzde koşul sabit).
-- Getirme ölçümü (60 sayfa): kapsama 0,457 → 1,000; sorun isabeti 0,939; getirme 2 257 → 39 ms.
-  Set 43 farklı siteden 73 canlı sayfayla 133 sayfaya genişletildi (9 grup): eski hat kapsama 0,487 /
-  isabet 0,514, yeni hat 1,000 / 1,000, sorun isabeti 0,935. En zayıf sorun `title_kisa` (29/45).
-  Eşit ağırlıklı hibrit (0,707) yalnız vektörden (0,931) kötüydü; BM25 bu yüzden 0,1 ağırlıkta.
-  qwen3-embedding-0.6b (0,939) nomic-embed-text-v1.5'ten (0,889) iyi.
-- Uçtan uca (4 sayfa, qwen3.5-9b, tek çalıştırma; küçük örnek): kabul edilen öneri eski 9 / yeni 9,
-  istem ortalaması 7 294 → 6 722 karakter (%8 kısa; hedef %25'ti, tutmadı), son çalıştırmada
-  sadakat reddi 0, yeni önerilerin hepsi geçerli kaynak kimliğine dayanıyor. Title'ın 60 karakteri
-  aşması (62-65) eski ve yeni hatta sürüyor.
-
-## 4c. 22 Ekim 2026: denetim kapsamı genişletildi (`denetim-gelistirme` dalı)
-
-Profesyonel denetim araçlarıyla (Screaming Frog, Sitebulb) karşılaştırmalı bir incelemenin
-ardından eksikler kapatıldı. Ayrıntılı liste README'de "Denetim katmanları" bölümünde.
-
-- **Site taraması:** "Siteyi tara" modu bağlantıları BFS ile izler (sayfa ve derinlik sınırı),
-  sitemap adreslerini ikincil kuyruğa alır; yetim sayfa, tıklama derinliği ve gelen bağlantı sayısı
-  ölçülür (`seo_app/tarama.py`).
-- **Bağlantı ve görsel denetimi:** kırık site içi/dış bağlantı, yönlendirilen bağlantı, kırık ve
-  büyük görsel; boş/anlamsız anchor, site içi nofollow, çıkmaz sayfa.
-- **İndekslenebilirlik:** meta robots'un tüm biçimleri (`none`, `googlebot`, `nofollow`),
-  X-Robots-Tag ayrıştırma, canonical hedefi ve yapısı, noindex+canonical ve noindex+sitemap
-  çelişkileri. Aynı bulgu iki kaynaktan gelirse bir kez sayılır.
-- **Yönlendirme:** zincir tek tek izlenir; her ara adres robots.txt'ye sorulur (önceden yasaklı bir
-  ara adres de isteniyordu), döngü ve aşırı zincir ayrı bulgu, meta refresh / Refresh başlığı /
-  JS yönlendirmesi, geçici yönlendirme.
-- **İçerik ve yapısal veri:** title piksel genişliği, `<svg><title>` hatası, meta açıklamada
-  büyük/küçük harf, ince içerik ana içerik bölümünden, kopya/benzer içerik, boş başlıklar,
-  JSON-LD `@graph` ve zorunlu alanlar, kuruluş türü yalnızca ana sayfada, hreflang dil kodu ve
-  kendine referans.
-- **Performans:** PageSpeed isteği Core Web Vitals'ı da alır; görsel biçimi, boyutu, tembel yükleme.
-- **İsteğe bağlı JavaScript render:** kurulu Chrome/Edge ile (`seo_app/render.py`).
-- **Raporlama:** her sorun için somut düzeltme önerisi (`kurallar.DUZELTME`), site özeti
-  (`site_ozeti.json` ve arayüzde panel), tek dosyalık `rapor.html`, CSV'ye derinlik/bağlantı/CWV
-  sütunları.
-- **"Yalnızca denetim" seçeneği:** 21 Ekim kararındaki "her tarama dil modeliyle" kuralı, kullanıcının
-  açıkça işaretlediği bir seçenekle esnetildi. Sessiz geçiş hâlâ yok: model seçilmemiş ve seçenek
-  kapalıysa tarama hata verir. İstenmezse arayüzden ve `boru.VARSAYILAN_AYARLAR`'dan kaldırılabilir.
-- **Doğrulama:** 190 test geçiyor. crawler-test.com'da aynı 20 sayfayla önce/sonra: önceki
-  incelemede kaçırılan robots `none`, googlebot noindex/nofollow, meta refresh, yönlendirme döngüsü,
-  çapraz canonical, kırık iç bağlantılar ve açılmayan sitemap adresleri artık yakalanıyor; yasaklı
-  ara adrese istek gitmiyor.
-- **Puanlar değişti:** yeni bulgular sayfa/site puanlarını etkiler; bu daldan önceki taramalarla
-  puanlar doğrudan karşılaştırılamaz.
-
-## 4d. 23 Ekim 2026: yönetici modu ve test sitesi (`yonetici-modu` dalı)
-
-- **İki mod:**
-  - *Standart mod (Mod 2):* mevcut akış, salt okunur. Analiz, puan ve tüm JSON çıktıları `main`
-    ile birebir aynı. Bu, iki kod tabanıyla aynı site taranarak doğrulandı; değişen tek şey HTML
-    rapordaki kategori etiketleri.
-  - *Yönetici modu (Mod 1):* `yonetici.py`, `duzeltme.py`, `yazma.py`, `yz_oneri.py`; giriş
-    noktaları `yonet.py` ve arayüzdeki mod seçimi.
-- **Üç kategori:** `kategoriler.py` tek yapılandırmadır (Kural çözer / YZ önerir / Elle düzeltilir +
-  risk + olası etki). `kurallar.cozum_yolu` bilinçli olarak değiştirilmedi; o, modele hangi
-  sorunların gideceğini ve `cozum_orani`'nı belirliyor. Kategori yalnızca gösterim ve yönetici modu
-  içindir; kayıtlı veri şeması değişmedi.
-- **Yazma güvenliği:** yazma adaptör arayüzünden geçer, yalnızca doğrulanmış köke yapılır
-  (`..`, mutlak yol, symlink ve junction reddedilir; aracın klasörü ve `sonuclar/` hedef olamaz).
-  Değişiklikler karakter konumlu parça değişimleridir. Uygulama şu durumları reddeder:
-  - plandan sonra değişmiş dosya;
-  - çakışan öneriler;
-  - HTML/XML/JSON-LD'yi bozan değişiklik;
-  - doldurulmamış `[doğrulanmalı: …]` yer tutucusu.
-
-  Yazmadan önce tam yedek alınır, geri alma hash'le doğrulanır.
-- **Yönetici moduna özgü ek denetimler:** `charset_yok` (dosyada meta charset yok),
-  `sitemap_olu_adres` (sitemap'te 4xx dönen adres) ve robots nedeniyle atlanan sayfa için
-  `robots_sayfayi_engelliyor`. Bunlar standart modun analizine eklenmedi (Mod 2 sonuçları değişmesin
-  diye).
-- **Test sitesi:** `test_sitesi/` (Çaylıbahçe, 25 sayfa; `sunucu.py` yalnızca 127.0.0.1:8080, harf
-  duyarlı, gzip). Değerlendirme dosyaları `test_sitesi_degerlendirme/` içinde:
-  - `sorunlar.json`: 47 sorun, her biri otomatik kontrollü;
-  - `dogrula.py`, `degerlendir.py`;
-  - `sifirla.py` + `orijinal_site/` + hash manifesti;
-  - `site_uret.py`: orijinal kopyayı yeniden üretir.
-- **İlk tam döngü (qwen/qwen3.5-9b + qwen3-embedding):**
-  - Plan: 20 kural, 32 YZ önerisi (13 yüksek risk), 9 elle iş.
-  - 4 model önerisi doğrulamada elendi: "en iyi" ifadesi, iki uzunluk aşımı, sayfada olmayan
-    ifade. 1 öneri yer tutuculuydu (stok durumu).
-  - 47 değişiklik uygulandı. Sayfa puanı 95→99, içerik 92→97, teknik 95→99.
-  - `sorunlar.json`'a göre tespit 44/47, düzeldi 35/47. Kural 13/13, YZ 22/27, elle 0/7;
-    kolay 15/18, orta 10/16, zor 10/13.
-  - Geri alma sonrası 48 dosyanın hash'i eşleşti. Sonuç klasörü:
-    `sonuclar/127.0.0.1/sonuc_2026-10-23_12-48-02`.
-- **Testler:** 226 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi). Yeni testler
-  `tests/test_yonetici_modu.py` dosyasında.
-- **Bilinen sınırlar:**
-  - Araç dört sorunu hiç tespit etmez: yumuşak 404, render'ı engelleyen kaynak, URL'de büyük harf
-    ve (standart modda) charset eksikliği.
-  - Yönlendirme zinciri, 302 yönlendirme, büyük görsel ve JS'e bağımlı içerik sunucu ya da
-    geliştirici işidir (elle).
-  - Kopya içerik için öneri canonical'dır (yüksek risk); içeriği özgünleştirme önerisi üretilmez.
-
-## 5. Test seti ve ilk gerçek sonuçlar
-
-**Test seti:** `test_setleri/duzce_birimleri.txt` — 58 Düzce Üniversitesi birim sitesi, aracın keşif özelliğiyle anasayfadan otomatik çıkarıldı.
-
-**Temel (baseline) tarama:** `sonuclar/sonuc_taban_canli/` (`rapor.json` + `ozet.csv`), 20 Ekim 2026, LLM kullanılmadan, yalnızca kural + canlı denetim. Bu klasör 21 Ekim'de silindi (yerine v2 geldi); `git checkout 7b527d1 -- sonuclar/sonuc_taban_canli` ile geri getirilebilir.
-
-- 58/58 site başarıyla tarandı, hata yok, robots nedeniyle atlanan yok
-- Ortalama 13,5 sorun/site; ortalama puan 10,6/100 (yalnızca kural düzeltmeleriyle 16,9'a çıkıyor)
-
-**Kurumsal düzeyde bulgular (ödevin en güçlü verisi):**
-
-| Bulgu | Kaç sitede |
+| Dosya | Sorumluluk |
 |---|---|
-| Canonical etiketi yok | 58/58 |
-| Yapısal veri (schema.org) yok | 58/58 |
-| Open Graph etiketleri yok | 58/58 |
-| sitemap.xml yok | 56/58 (yalnızca kaliteyonetim ve rimer'de var) |
-| robots.txt yok | 55/58 (yalnızca hastane'de var) |
-| Sertifika 30 günden az kaldı | 54/58 |
-| H1 başlığı yok | 51/58 |
-| Görsellerde alt metni eksik | 49/58 |
-| **Sunucu eksik/yanlış ara sertifika gönderiyor** | 41/58 |
+| `calistir.py` | Flask arayüzünü başlatır |
+| `yonet.py` | Yönetici modu komut satırı (tara, onizle, onayla, uygula, geri-al) |
+| `deney.py`, `rag_degerlendir.py` | Deney matrisi (model × koşul × retry); RAG getirme ölçümü |
+| `seo_app/canli.py` | HTTP getirme, yönlendirme zinciri, robots.txt, sitemap, HTTPS, bağlantı denetimi |
+| `seo_app/tarama.py` | Site taraması (BFS + sitemap kuyruğu), yetim/derin sayfa, hreflang dönüşü |
+| `seo_app/cikarma.py` | HTML'den veri çıkarma (title, meta, H1, görseller, JSON-LD, içerik imzası) |
+| `seo_app/kurallar.py` | Kural denetimi, `cozum_yolu`, puanlama, `DUZELTME` önerileri |
+| `seo_app/ogretme.py`, `llm.py` | RAG (hibrit getirme) ve LM Studio istemcisi + öneri doğrulama |
+| `seo_app/uygula.py` | Standart modda önerileri ve kural düzeltmelerini düzeltilmiş HTML kopyasına işler |
+| `seo_app/boru.py` | Sayfa analiz akışı ve toplu/site taraması (`topluca_analiz`) |
+| `seo_app/kategoriler.py` | Kural çözer / YZ önerir / Elle düzeltilir + risk + olası etki |
+| `seo_app/yonetici.py`, `duzeltme.py`, `yz_oneri.py`, `yazma.py`, `html_konum.py` | Yönetici modu: akış, değişiklik planı, YZ önerisi doğrulama, yazma adaptörü, HTML konumları |
+| `seo_app/rapor.py`, `web.py`, `sablonlar/`, `statik/` | HTML raporlar ve arayüz |
 
-**Tek kök neden tespitleri** (yazımda bunları ayrı ayrı 54 sorun gibi saymayın):
+**Veri akışı:**
+1. **Tarama:** `boru.topluca_analiz` → `canli.sayfa_getir` (+ site modunda `tarama.Kuyruk`).
+2. **Analiz:** `cikarma.extract` + `kurallar.rule_checks`/`ek_html_denetimi` + canlı denetimler → bulgular.
+3. **RAG:** yalnızca `cozum_yolu == "model"` bulgular için `ogretme.ogretme_metni` → `llm.llm_fixes`.
+4. **Sınıflandırma:** `kategoriler.kategori()` yalnızca gösterim ve yönetici modunda kullanılır.
+5. **Rapor:** `sonuclar/<site>/sonuc_<tarih_saat>/` altına `rapor.json`, `site_ozeti.json`, `rapor.html`, `ozet.csv`.
+6. **Yazma (yalnızca yönetici modu):** `duzeltme.plan_uret` → onay → `duzeltme.uygula` (adaptör) → tekrar tarama.
 
-- 54 site aynı `*.duzce.edu.tr` joker sertifikasını kullanıyor, **18 Kasım 2026**'da doluyor.
-- Sertifika zinciri hatası: sunucular yaprak sertifikanın vereni olan *"Sectigo Public Server Authentication CA DV R36"* ara sertifikasını göndermiyor, onun yerine farklı bir ara sertifika (*"Sectigo RSA Domain Validation Secure Server CA"*) gönderiyor. Tarayıcılar eksik halkayı kendileri tamamladığı için kullanıcılar fark etmiyor; **katı doğrulama yapan istemciler (Python `requests`/certifi, bazı tarayıcı botları) bağlanamıyor.** Bu, SEO açısından gerçek bir risk ve ödevin özgün bulgusu olabilir.
-- En yavaş siteler: hukuk (2132 ms TTFB), uabs (2051 ms), kurulkararlari (2045 ms).
+## 4. Temel kavramlar
 
-### Güncel temel tarama (21 Ekim 2026, Aşama 1-2 sonrası)
+- **Standart mod (Mod 2):** salt okunur. Düzeltilmiş HTML yalnızca sonuç klasörüne
+  (`duzeltilmis_*.html`) yazılır, siteye dokunulmaz.
+- **Yönetici modu (Mod 1):**
+  - Site kök klasörü ve temel adres açıkça verilir.
+  - Taramada model çağrılmaz; YZ önerileri plan aşamasında üretilir.
+  - Plan sırasında siteye yazılmaz.
+- **Kategoriler** (`seo_app/kategoriler.py`):
+  - **Kural çözer:** toplu onaylanabilir.
+  - **YZ önerir:** tek tek onaylanır, düzenlenebilir. Canonical, noindex, hreflang ve robots
+    kararları *yüksek risk*tir ve ayrıca risk onayı ister.
+  - **Elle düzeltilir:** yalnızca raporda kalır.
+- **`cozum_yolu` ≠ kategori:** `kurallar.cozum_yolu` (model/kural/elle) analiz akışını yönetir ve
+  değiştirilmedi. Kategori ayrı bir gösterim katmanıdır.
+- **Yazma adaptörü** (`seo_app/yazma.py`):
+  - `SiteAdaptoru` arayüzü: oku, yaz, listele, yedekle, geri_al.
+  - Tek uygulama `YerelDosyaAdaptoru`. FTP/SFTP/CMS adaptörleri henüz uygulanmadı.
+  - `..`, mutlak yol, symlink ve junction reddedilir. Aracın klasörü ve `sonuclar/` hedef olamaz.
+- **Onay → yedek → uygulama:**
+  - Yazmadan önce tam yedek alınır (`yedek/`).
+  - Plandan sonra değişmiş dosyaya, çakışan değişikliğe, HTML/XML/JSON-LD'yi bozan değişikliğe ve
+    doldurulmamış `[doğrulanmalı: …]` yer tutucusuna yazılmaz.
+  - Model önerileri uygulama anında yeniden doğrulanır.
+- **Rollback:** `py yonet.py geri-al sonuclar/<site>`. `sonuclar/<site>/son_uygulama.json`
+  üzerinden çalışır ve dosya hash'leriyle doğrular.
+- **Yönetici modu sonuç klasörü** (`sonuclar/<site>/sonuc_<tarih_saat>/`): standart çıktılar +
+  `degisiklikler.json`, `onizleme.diff`, `onaylar.json`, `yedek/`, `uygulama_gunlugu.jsonl`,
+  `uygulanan.diff`, `uygulama.json`, `sonra/`, `yonetici_raporu.json/.html`.
 
-**Bundan sonra başvurulacak temel tarama:** `sonuclar/sonuc_taban_canli_v2/`. Yukarıdaki ilk tarama (`sonuc_taban_canli`) tarihsel kayıt olarak duruyor. v2 güncel kurallarla alındı; farklar açıklanabilir:
-- `cdn.duzce.edu.tr` 404 dönüyor; hata sayfasının HTML'i artık denetlenmiyor (16 → 7 bulgu).
-- `hastane` sitesinin "15/15 alt metni eksik" bulgusu yanlış pozitifmiş (görsellerin hepsi dekoratif, `alt=""`); kalktı.
-- Yeni puan ölçeği (sayfa/site ayrı, 0-100 normalleştirilmiş): sayfa medyan 60, site medyan 67. Eski tek puanın medyanı 7 idi ve siteleri ayırt edemiyordu.
-- **Yeni bulgu:** 58 sitenin **38'inde meta açıklama birebir aynı** ("Düzce Üniversitesi"), `site_geneli.json`.
+## 5. Test ortamı
 
-**Bağımsız ölçüm (Lighthouse, PageSpeed Insights):** `sonuclar/adim9_lighthouse/`, 10 site. 8 site 75, `adayogrenci` 91, `hastane` 92. Aracın bulgularıyla karşılaştırma: alt metni 10/10 uyumlu (hastane'de Lighthouse da sorun görmüyor; dekoratif görsel düzeltmesinin bağımsız teyidi), robots.txt 9/10 uyumlu (`adayogrenci`'de ayrışma, nedeni belirsiz). Lighthouse puanı kaba bir ölçek (10 sitenin 8'i aynı puan); aracın sayfa/site puanları siteleri daha ince ayırıyor. Düzeltilmiş sayfa yerel olduğu için "sonra" puanı bu yöntemle ölçülemiyor. API anahtarı `PSI_API_ANAHTARI` ortam değişkeninden okunur, depoya yazılmaz.
+- **Test sitesi:** `test_sitesi/` — kurgusal "Çaylıbahçe" çay mağazası, 25 sayfa.
+  - Belge kökü `test_sitesi/site/`.
+  - Sunucu ayarları (yönlendirmeler, yumuşak 404) `test_sitesi/sunucu_ayarlari.json` içinde.
+  - Sunucu yalnızca 127.0.0.1'de çalışır, harf duyarlıdır.
+- **`sorunlar.json`** (`test_sitesi_degerlendirme/`): 47 kasıtlı sorun (18 kolay, 16 orta, 13 zor),
+  analiz aracının erişemediği yerde. Her kayıtta kategori, zorluk, URL/dosya, doğru düzeltme, beklenen
+  çözüm, aracın tespit kodları (`tespit`/`yan`) ve sorunun hâlâ var olup olmadığını denetleyen
+  `kontrol` listesi bulunur.
+- **Kontrol motoru:** `test_sitesi_degerlendirme/kontroller.py`. Hem `dogrula.py` (sorunlar var mı)
+  hem `degerlendir.py` (düzeldi mi) kullanır.
+- **Sıfırlama:** `sifirla.py`, `orijinal_site/` kopyasını geri yükler ve `orijinal_hashler.json`
+  ile doğrular. Yalnızca `test_sitesi/site/` değişir.
+- **Orijinal kopyayı yeniden üretme:** `site_uret.py`. Sayfa içeriği bu betikte yazılıdır.
 
-## 6. Hâlâ eksik olanlar
+```
+py test_sitesi/sunucu.py                                    # 1. ayrı terminalde açık kalsın
+py test_sitesi_degerlendirme/sifirla.py                     # 2. sıfırla (+ --kontrol: yalnızca karşılaştır)
+py test_sitesi_degerlendirme/dogrula.py                     #    47/47 sorun sitede mi
+py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model qwen/qwen3.5-9b
+py yonet.py onayla <klasör> --kural-hepsi --onay ... ; py yonet.py uygula <klasör>   # 3-4. uygula + tekrar tara
+py test_sitesi_degerlendirme/degerlendir.py --sonuc <klasör> # 5. değerlendir → <klasör>/degerlendirme.md
+py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da sifirla.py)
+```
 
-| Eksik | Durum | Öncelik |
-|---|---|---|
-| Konu onayı | **Alınmadı** | Kritik |
-| Deney matrisi | Koşucu hazır (`deney.py`), henüz tam çalıştırılmadı. İkinci sohbet modeli (4B) yalnızca model karşılaştırması yapılacaksa gerekir | Yüksek |
-| LLM'li tam tarama | 58 sitede henüz model çalıştırılmadı | Yüksek |
-| Bağımsız ölçüm | "Önce" Lighthouse puanı 10 sitede alındı; "sonra" puanı yerel dosya için ölçülemiyor | Orta |
-| Elle değerlendirme | Sadakat/Türkçe kalitesi için en az 2 kişilik kör puanlama tablosu | Yüksek |
-| Literatür | Başlanmadı; kişi başı 10-12 kaynak, %50 yabancı | Yüksek, zaman alıcı |
-| Metin yazımı | Başlanmadı | Yüksek |
-| Bilgi tabanı kaynakları | 22 Ekim 2026'da `bilgi_tabani.json` Google Arama Merkezi ve W3C WAI belgelerine atıflı, Türkçe 28 parça olarak yeniden yazıldı (yine YZ yazımı; 17 kaynak bağlantısı açılıyor, temel iddialar kaynak metinle karşılaştırıldı). Ödevde kullanılacaksa öğrencilerin kaynakları okuyup kendi cümleleriyle gözden geçirmesi gerekir. `seo_kurallari.json` (gömme modeli seçilmediğinde kullanılır) hâlâ atıfsız | Yüksek (Turnitin + akademik dürüstlük) |
+## 6. RAG ve bilgi tabanı
 
-## 7. Önerilen sıradaki adımlar
+- **Kaynaklar** (`ogretme/`):
+  - `bilgi_tabani.json`: 28 Türkçe parça. 23'ü Google Arama Merkezi (developers.google.com/search),
+    4'ü W3C WAI, 1'i Google blog kaynaklı. Her parçada `kaynak`, `kaynak_basligi`, `erisim_tarihi` var.
+  - `ornekler.json`: few-shot örnekler.
+  - `seo_kurallari.json`: gömme modeli yokken kullanılır ve atıfsızdır.
+- **Getirme** (`seo_app/ogretme.py`): sırasıyla alan filtresi, BM25 + kosinüs (ağırlıklı RRF),
+  her sorunlu alanı kapsayan seçim (`bilgi_sayisi` = 5), bağlam bütçesi. İsteğe bağlı `/rerank`
+  istemcisi var; gerçek bir rerank sunucusuyla denenmedi.
+- **Embedding önbelleği:** `ogretme/bilgi_tabani_gomme_cache.json`. Ayrı bir indeks dosyası yok.
+- **Güncelleme komutu yok:** `bilgi_tabani.json` düzenlenince bir sonraki kullanımda yalnızca
+  değişen parçaların gömmesi hesaplanır (içerik hash'i ile). Bilgi tabanı sürümü rapora yazılır
+  (`kb_surum`).
+- **Getirme ölçümü:** `py rag_degerlendir.py --embed-model text-embedding-qwen3-embedding-0.6b`.
+  Ölçüm seti `tests/veri/rag_degerlendirme.json` (133 sayfa), sonuçlar `sonuclar/rag_degerlendirme/`.
+- **Yönetici modunda YZ önerileri:** `yz_oneri.YZIstemcisi` aynı `bilgi_getir`'i kullanır. Modelin
+  yazdığı kaynak kimlikleri verilen parçalarla sınırlanır.
 
-1. Hocadan konu ve kapsam onayı al (tek sayfalık özet: konu, yöntem, veri seti, beklenen sonuç).
-2. LM Studio'yu aç, arayüzden küçük bir alt küme (5-10 site) üzerinde LLM'li tarama yap, çıktıyı gözle doğrula.
-3. Deney matrisini çalıştır: en az 2 model × `sifir`/`ornek`/`bilgi`/`ornek+bilgi` × `retry 0/1`. Bunun için `seo_app` motorunu döngüye sokan küçük bir betik yazılmalı.
-4. Lighthouse ile bağımsız önce/sonra SEO skoru ölç.
-5. Elle değerlendirme tablosu: site / alan / öneri / sadakat (E-H) / Türkçe kalitesi (1-5), en az 2 kişi, model adı gizli.
-6. Literatür taraması + yazım, paralel yürüt.
-7. Bilgi tabanı metinlerini kaynak göstererek yeniden yaz.
+## 7. Son değişiklikler (tarih sırasıyla)
 
-## 8. Önemli uyarılar
+- **20 Ekim:** komut satırı betiklerinden `seo_app/` paketine ve web arayüzüne geçiş. Eski betikler
+  `outdated/` içinde.
+- **21 Ekim (Adım 1–10, `asama-1-2`):**
+  - pytest iskeleti;
+  - yerel sunucuyu siteler arası istekten (CSRF) koruma;
+  - modele yalnızca `model` sınıfı sorunlar;
+  - sadakat denetimi;
+  - TTFB, deney koşucusu;
+  - PageSpeed;
+  - normalleştirilmiş kategori puanları;
+  - Türkçe karakterli arayüz.
+- **22 Ekim (arayüz):** form üstte / rapor altta tasarım, puan ve etiketlere bilgi balonu.
+- **22 Ekim (`rag-iyilestirme`):** RAG ölçüm altyapısı, bilgi tabanının kaynaklı Türkçe yeniden
+  yazımı, hibrit getirme + kaynak atfı, ölçüm seti 133 sayfa. Amaç RAG'ın gerçekten doğru parçayı
+  getirdiğini ölçmekti.
+- **22 Ekim (`denetim-gelistirme`, `5ed04c4`):** Screaming Frog/Sitebulb karşılaştırmasıyla site
+  taraması, bağlantı/görsel, indekslenebilirlik, yönlendirme, CWV, JS render ve `rapor.html` eklendi.
+- **23 Ekim (`9ba6301`):** `graphify-out/` `.gitignore`'a eklendi. `main` bu commit'e kadar
+  güncellendi.
+- **23 Ekim (`yonetici-modu`, `c677d96`):** iki modlu yapı, üç kategori, yazma adaptörü,
+  onay/yedek/geri alma, test sitesi ve değerlendirme betikleri.
+- **23 Ekim (`14d2142`):** `.gitattributes` ile test sitesi dosyaları bayt bayt saklanıyor; hash
+  manifesti başka makinelerde de eşleşsin diye.
 
-- Kodun geliştirilmesinde YZ yardımı alındı — **Yöntem bölümünde açıkça belirtilmeli**. Ödev metninin kendisi öğrenciler tarafından yazılmalı.
-- Arayüzdeki 0-100 puan aracın kendi ölçeğidir (yüksek 15 / orta 8 / düşük 3 ceza puanı). Bağımsız bir ölçüm değildir; ödevde bu sınır açıkça yazılmalı.
-- Kapsam dışı kalan SEO konuları yöntem bölümünde belirtilmeli: içerik kalitesi/anahtar kelime stratejisi, backlink profili, Core Web Vitals (gerçek tarayıcı ölçümü), JavaScript ile oluşturulan içerik (araç yalnızca sunucudan gelen HTML'i görür), çok dilli yapı.
-- Kaynakça klasörüne kullanılan makale/web sayfalarının PDF'leri konulmalı.
+## 8. Mevcut durum
+
+- **Testler:** `py -m pytest -q` → 226 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
+- **Mod 2 eşdeğerliği:** `main` ile `yonetici-modu` aynı test sitesini taradığında `rapor.json`,
+  `site_geneli.json`, `site_ozeti.json` ve puanlar aynı çıktı. Fark yalnızca HTML rapordaki
+  kategori etiketlerinde.
+- **Yönetici modu tam döngüsü (23 Ekim, qwen3.5-9b):**
+  - Plan: 20 kural, 32 YZ önerisi (13 yüksek risk), 9 elle iş.
+  - 47 değişiklik uygulandı, 4 öneri doğrulamada elendi.
+  - Sorunlar: tespit 44/47, düzeldi 35/47 (kural 13/13, YZ 22/27, elle 0/7).
+  - Geri alma sonrası 48 dosyanın hash'i eşleşti.
+  - Çıktılar `sonuclar/127.0.0.1/sonuc_2026-10-23_12-48-02/` (git'te değil, yerel).
+- **Araçta denetimi olmayan sorunlar:** yumuşak 404, render'ı engelleyen kaynak, URL'de büyük harf;
+  standart modda charset eksikliği.
+- **Kısmen çalışan:**
+  - İnce içerik genişletme: ıhlamur sayfasında eklenen paragraf yeterli olmadı (`O11`).
+  - Kopya içerik için yalnızca canonical öneriliyor; özgünleştirme önerisi üretilmiyor.
+  - Kısa alanlardaki "sayfada olmayan kelime" kuralı bazı geçerli önerileri eliyor (örnek: bitki
+    çayları meta açıklaması).
+- **Henüz uygulanmadı:**
+  - FTP/SFTP/CMS adaptörleri.
+  - Rerank sunucusuyla gerçek deneme.
+  - 58 Düzce sitesinde modelli tam tarama (önceki notlara göre) `[doğrulanmalı]`.
+- **Merge edilmemiş dal:** `yonetici-modu` henüz `main`'e birleştirilmedi ve push edilmedi.
+- **Git dışındaki tarama çıktıları:** `sonuclar/127.0.0.1/`, `books.toscrape.com/`,
+  `crawler-test.com/`, `ogrenciportali9.wordpress.com/`, `pierrecardin.com.tr/`.
+
+## 9. Alınan kararlar
+
+- **Fine-tuning yerine RAG + few-shot:** kodda ve belgelerde açık bir gerekçe kaydı bulunamadı
+  `[doğrulanmalı]`. Uygulamada model değiştirilmeden bilgi tabanı ve örneklerle yönlendiriliyor.
+- **Deney koşulu sabit `ornek+bilgi`** (`boru.VARSAYILAN_AYARLAR["kosul"]`): arayüzde seçilmez.
+  Koşul karşılaştırması yalnızca `deney.py --kosullar` ile yapılır.
+- **Kaydedilmiş HTML analizi kaldırıldı (21 Ekim):** yalnızca canlı adres taranır. `snapshots/`
+  yalnızca testlerde örnek sayfa olarak duruyor.
+- **Modele yalnızca `model` sorunları gider** (title, meta, H1, alt metni): "model başarısı" ile
+  "araç başarısı" ölçümleri karışmasın diye.
+- **Sessiz geri dönüş yok:** LM Studio ya da model yoksa tarama hata verir. Modelsiz çalışmak için
+  "yalnızca denetle" açıkça seçilmelidir.
+- **Kategori ayrı katman:** `cozum_yolu` değiştirilmedi ki Mod 2 analizi ve puanları değişmesin.
+  Yönetici moduna özgü denetimler (`charset_yok`, `sitemap_olu_adres`) Mod 2'ye eklenmedi.
+- **Parça değişimi:** dosyalar BeautifulSoup ile yeniden yazılmaz; diff okunur kalır ve dosyanın
+  plan sonrası değiştiği algılanabilir.
+- **Uydurmaya karşı yer tutucu:** model sitede olmayan bilgiyi `[doğrulanmalı: …]` ile yazar;
+  doldurulmadan uygulanamaz.
+- **Puan aracın kendi ölçeğidir** (yüksek 15 / orta 8 / düşük 3 ceza), bağımsız bir ölçüm değildir.
+
+## 10. Bilinen tuzaklar
+
+- **LM Studio kapalı:** tarama başlamaz ("LM Studio sunucusuna ulaşılamadı"). Arayüzdeki
+  "Modelleri getir" ile sınayın. Port daha önce 1234/1235 arasında değişti.
+- **`localhost` gecikmesi:** Windows'ta `localhost` önce IPv6'ya çözülür ve her isteğe ~2 sn ekler.
+  Kod `127.0.0.1` kullanır (`llm.istek_adresi`).
+- **Türkçe karakter:**
+  - Dosyalar UTF-8 okunur/yazılır; JSON yanıtlarında `ensure_ascii=False`.
+  - Konsolda bozuk görünürse `PYTHONIOENCODING=utf-8` kullanılabilir.
+  - Bash heredoc'larında Türkçe/JSON kaçışları sorun çıkardı; betikleri dosyaya yazıp çalıştırmak
+    daha güvenli.
+- **Satır sonları:** Python Windows'ta CRLF yazar, `core.autocrlf=true`. Test sitesi bu yüzden
+  `.gitattributes` ile `-text`. Yeni test dosyası eklerken manifesti `site_uret.py` ile yeniden üretin.
+- **Harf duyarlılığı:** Windows'ta `HANDOVER.md` ile `handover.md` aynı dosyadır. Test sunucusu
+  Linux gibi harf duyarlı davranacak şekilde yazıldı.
+- **PATH:** Python için `py` kullanın. Node PATH'te değil; gerekirse fnm altındaki
+  `node.exe` tam yoluyla çalıştırılır `[doğrulanmalı: makineye özgü]`.
+- **Python 3.15:** proje bağımlılıkları kurulu ve çalışıyor (lxml 6.1.3, brotlicffi 1.2.0.2,
+  Flask 3.1.3). Yardımcı araç graphify'ın `tree-sitter` bağımlılığının 3.15 tekerleği yoktu; uv ile
+  ayrı Python 3.13 ortamına kuruldu.
+- **Git worktree:** bu yolda (`Düzce Üniversitesi`, uzun geçici yol) `git worktree add`
+  başarısız oldu. Karşılaştırma için `git archive main | tar -x` kullanıldı.
+- **PageSpeed localhost'u ölçemez:** düzeltilmiş ya da yerel sayfa için "sonra" Lighthouse puanı alınamaz.
+
+## 11. Sonraki adımlar (öncelik sırasıyla)
+
+1. `yonetici-modu` dalını gözden geçirip `main`'e birleştirmek ve push etmek (kullanıcı kararı).
+2. Hocadan konu ve kapsam onayı. Önceki notlarda "alınmadı" olarak duruyordu `[doğrulanmalı]`.
+3. 58 Düzce sitesinde (`test_setleri/duzce_birimleri.txt`) modelli tarama ve `deney.py` ile deney
+   matrisi (model × `sifir`/`ornek`/`bilgi`/`ornek+bilgi` × retry).
+4. Elle değerlendirme tablosu: sadakat ve Türkçe kalitesi, en az 2 kişi, model adı gizli.
+5. Literatür taraması ve ödev metni. Metin öğrencilerce yazılmalı; kodda YZ yardımı yöntem
+   bölümünde belirtilmeli.
+6. Açık sorular (yönetici modu):
+   - `canonical_yok` Kural çözer mi kalmalı, YZ önerir · yüksek risk mi?
+   - Kısa alanlardaki "sayfada olmayan kelime" kuralı gevşetilsin mi?
+   - Kopya içerik için özgünleştirme görevi eklensin mi?
+7. Araçta denetimi olmayan sorunları (yumuşak 404, render'ı engelleyen kaynak, URL büyük harf,
+   charset) eklemek. Mod 2 sonuçlarını değiştirir, ayrı karar ister.
+8. Diğer kararlar:
+   - `test_sitesi/site/` git'te kalsın mı, `.gitignore`'a alınıp `sifirla.py` ile mi üretilsin?
+   - `sonuclar/` altındaki deneme çıktıları ne olacak?
+9. `seo_kurallari.json` atıfsız. Ödevde kullanılacaksa kaynaklandırılmalı.
