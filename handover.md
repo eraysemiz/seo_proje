@@ -194,8 +194,9 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - Rerank sunucusuyla gerçek deneme.
   - 58 Düzce sitesinde modelli tam tarama (önceki notlara göre) `[doğrulanmalı]`.
 - **Merge edilmemiş dal:** `yonetici-modu` henüz `main`'e birleştirilmedi ve push edilmedi.
-- **Git dışındaki tarama çıktıları:** `sonuclar/127.0.0.1/`, `books.toscrape.com/`,
-  `crawler-test.com/`, `ogrenciportali9.wordpress.com/`, `pierrecardin.com.tr/`.
+- **Tarama çıktıları git dışında:** `sonuclar/` tamamen `.gitignore`'da (`98e0922`). Önceden
+  izlenen 114 dosya (örn. `adim9_lighthouse/`) depodan çıkarıldı, diskte duruyor; eski sürümleri
+  git geçmişinde (`git show 0261537:sonuclar/...`).
 
 ## 9. Alınan kararlar
 
@@ -258,5 +259,4 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
    charset) eklemek. Mod 2 sonuçlarını değiştirir, ayrı karar ister.
 8. Diğer kararlar:
    - `test_sitesi/site/` git'te kalsın mı, `.gitignore`'a alınıp `sifirla.py` ile mi üretilsin?
-   - `sonuclar/` altındaki deneme çıktıları ne olacak?
 9. `seo_kurallari.json` atıfsız. Ödevde kullanılacaksa kaynaklandırılmalı.
