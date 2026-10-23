@@ -38,8 +38,9 @@ py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-
 ```
 py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model qwen/qwen3.5-9b --embed-model text-embedding-qwen3-embedding-0.6b
 py yonet.py onizle sonuclar/127.0.0.1/sonuc_<tarih_saat> --diff
+py yonet.py tara ... --esik 0.8 --oto-uygula      # eşiği geçenleri onaysız uygula + tekrar tara
 py yonet.py onayla <klasör> --kural-hepsi --onay D020 D029 --riski-kabul D029 --ret D050
-py yonet.py uygula <klasör>
+py yonet.py uygula <klasör>                    # onaylar.json yoksa yalnızca otomatik onaylılar
 py yonet.py geri-al sonuclar/127.0.0.1
 ```
 
@@ -61,7 +62,9 @@ dist/SEO_Denetim/SEO_Denetim.exe --oto-test rapor.json   # tam döngüyü arayü
 | `seo_app/canli.py` | HTTP getirme, yönlendirme zinciri, robots.txt, sitemap, HTTPS, bağlantı denetimi |
 | `seo_app/tarama.py` | Site taraması (BFS + sitemap kuyruğu), yetim/derin sayfa, hreflang dönüşü |
 | `seo_app/cikarma.py` | HTML'den veri çıkarma (title, meta, H1, görseller, JSON-LD, içerik imzası) |
-| `seo_app/kurallar.py` | Kural denetimi, `cozum_yolu`, puanlama, `DUZELTME` önerileri |
+| `seo_app/kurallar.py` | Kural denetimi, `cozum_yolu`, `DUZELTME` önerileri, sayfa kimliği (yönlendirme/parametre/canonical birleştirme), yumuşak 404 şüphesi |
+| `seo_app/puanlama.py` | Puan ağırlıkları, kritik tavanlar, tarama geneli bulguların ciddiyeti: tek yapılandırma |
+| `seo_app/guven.py` | Değişiklik güven puanı (0–1), zorunlu onay kuralları, otomatik onay eşiği: tek yapılandırma |
 | `seo_app/ogretme.py`, `llm.py` | RAG (hibrit getirme) ve LM Studio istemcisi + öneri doğrulama |
 | `seo_app/uygula.py` | Standart modda önerileri ve kural düzeltmelerini düzeltilmiş HTML kopyasına işler |
 | `seo_app/boru.py` | Sayfa analiz akışı ve toplu/site taraması (`topluca_analiz`) |
@@ -104,11 +107,22 @@ dist/SEO_Denetim/SEO_Denetim.exe --oto-test rapor.json   # tam döngüyü arayü
   - Plandan sonra değişmiş dosyaya, çakışan değişikliğe, HTML/XML/JSON-LD'yi bozan değişikliğe ve
     doldurulmamış `[doğrulanmalı: …]` yer tutucusuna yazılmaz.
   - Model önerileri uygulama anında yeniden doğrulanır.
+- **Güven puanı ve otomatik onay** (`seo_app/guven.py`):
+  - Her değişikliğe 0–1 `guven` ve `guven_nedenleri` yazılır. Kural: kural başına sabit; sezgisel:
+    kanıta göre; model: alan tabanı − yeniden deneme cezası (0.12) − kaynakta geçmeyen kelime cezası.
+  - `guven ≥ oto_esik` (varsayılan 0.8; arayüz, `--esik`, masaüstü) olanlar otomatik onaylı gelir.
+  - Güvenden bağımsız hep onay: `[doğrulanmalı]` yer tutucusu, canonical ile başka sayfaya bağlama,
+    noindex/nofollow/Disallow ekleyen, 2000+ karakter silen değişiklikler (`zorunlu_onay`).
+  - `onaylar.json` / `uygulama.json` her değişikliğin onay kaynağını (kullanıcı/otomatik/toplu) tutar.
 - **Rollback:** `py yonet.py geri-al sonuclar/<site>`. `sonuclar/<site>/son_uygulama.json`
   üzerinden çalışır ve dosya hash'leriyle doğrular.
 - **Yönetici modu sonuç klasörü** (`sonuclar/<site>/sonuc_<tarih_saat>/`): standart çıktılar +
   `degisiklikler.json`, `onizleme.diff`, `onaylar.json`, `yedek/`, `uygulama_gunlugu.jsonl`,
   `uygulanan.diff`, `uygulama.json`, `sonra/`, `yonetici_raporu.json/.html`.
+- **Puanlama** (`seo_app/puanlama.py`): her grup için `100 × Π(1 − ağırlık)`, ağırlıklar yüksek 0.20 /
+  orta 0.09 / düşük 0.035; kritik bulgular tavan koyar (erişilemez 0, robots tüm site 20, 4xx/5xx 30,
+  yumuşak 404 40, noindex 60, kopya içerik 70…). Sayfaya özgü site bulguları ve tarama geneli bulgular
+  (title tekrarı, yetim, derin…) sayfa puanına girer. **İki modu da etkiler.**
 
 ## 5. Test ortamı
 
@@ -184,10 +198,22 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   bu oturumdan GitHub kimlik doğrulaması yapılamıyor.
 - **23 Ekim (`masaustu-uygulama`):** Tkinter masaüstü başlatıcı ve PyInstaller ile `.exe` derlemesi.
   Mevcut kod değişmedi; yeni olanlar `masaustu/`, `build_exe.py/.bat` ve `tests/test_masaustu.py`.
+  `fc80cf2`: PageSpeed yerel/özel ağ adreslerinde çağrılmaz.
+- **23 Ekim (`dogruluk-iyilestirme`, commit edilmedi):**
+  - Yeni denetimler: yumuşak 404 (başlık/H1 hata kalıbı + rastgele kardeş adres yoklaması),
+    render'ı engelleyen betik, URL'de büyük harf, charset (her iki mod), sitemap'te yönlendiren adres.
+  - Sayfa kimliği: yönlendirme takma adları, parametre canonical'ları ve %90+ benzer canonical
+    birleştirmeleri tek sayfa sayılır (sahte `canonical_capraz`/tekrar bulguları kalktı).
+  - Yeni düzelticiler: JSON-LD sözdizimi onarımı, fiyat/para birimi normalleştirme, isteğe bağlı yer
+    tutucu alanları atma, doğrulama geri bildirimiyle bir kez yeniden deneme, uzunluk kırpma,
+    `defer` ekleme, sitemap yönlendirme hedefini yazma.
+  - Güven puanı + otomatik onay eşiği (web, masaüstü, CLI, yönetici raporu).
+  - Yeni puanlama (`puanlama.py`); README güncellendi; `tests/test_dogruluk.py`.
+  - `sorunlar.json`'a yalnızca değerlendirme etiketi eklendi (O14/Z06/Z10 tespit kodları, O03/O04 `yan`).
 
 ## 8. Mevcut durum
 
-- **Testler:** `py -m pytest -q` → 238 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
+- **Testler:** `py -m pytest -q` → 261 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
   Python 3.13 derleme ortamında da aynı sonuç.
 - **.exe tam döngüsü (23 Ekim, `--oto-test`, qwen3.5-9b):**
   - .exe proje dışında, Türkçe karakterli bir klasörden çalıştırıldı; 13/13 adım başarılı.
@@ -206,13 +232,16 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - Sorunlar: tespit 44/47, düzeldi 35/47 (kural 13/13, YZ 22/27, elle 0/7).
   - Geri alma sonrası 48 dosyanın hash'i eşleşti.
   - Çıktılar `sonuclar/127.0.0.1/sonuc_2026-10-23_12-48-02/` (git'te değil, yerel).
-- **Araçta denetimi olmayan sorunlar:** yumuşak 404, render'ı engelleyen kaynak, URL'de büyük harf;
-  standart modda charset eksikliği.
+- **Güven eşikli tam döngü (`dogruluk-iyilestirme`, qwen3.5-9b, hiç elle onay yok):**
+  - Plan: 25 kural, 31 YZ, 11 elle; 50 değişiklik eşiği (0.80) geçti, 5 onay bekledi, 1 geçersiz.
+  - Tespit 47/47; düzeldi 36/47 (kolay 17/18, orta 10/16, zor 9/13; kural 13/13, YZ 23/27, elle 0/7).
+  - Yeni çıkan bulgu 0. Geri alma + `sifirla.py` sonrası 48 dosyanın hash'i eşleşti.
+  - Çıktılar `sonuclar/127.0.0.1/sonuc_2026-10-23_18-56-35/`.
 - **Kısmen çalışan:**
-  - İnce içerik genişletme: ıhlamur sayfasında eklenen paragraf yeterli olmadı (`O11`).
-  - Kopya içerik için yalnızca canonical öneriliyor; özgünleştirme önerisi üretilmiyor.
-  - Kısa alanlardaki "sayfada olmayan kelime" kuralı bazı geçerli önerileri eliyor (örnek: bitki
-    çayları meta açıklaması).
+  - İnce içerik (`O10`, `O11`): paragraf önerileri düşük güvenli (0.44/0.58), onay bekliyor.
+  - `K05`: model tek uzun cümle yazıyor (186 karakter); kırpma yalnızca son cümle/marka eki atar.
+  - Kopya içerik (`Z08`) canonical birleştirme olarak önerilir, her zaman onay ister.
+  - `defer` (`Z10`) güveni 0.6: satır içi betik bağımlılığı denetlenmiyor.
 - **Henüz uygulanmadı:**
   - FTP/SFTP/CMS adaptörleri.
   - Rerank sunucusuyla gerçek deneme.
@@ -241,7 +270,13 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   plan sonrası değiştiği algılanabilir.
 - **Uydurmaya karşı yer tutucu:** model sitede olmayan bilgiyi `[doğrulanmalı: …]` ile yazar;
   doldurulmadan uygulanamaz.
-- **Puan aracın kendi ölçeğidir** (yüksek 15 / orta 8 / düşük 3 ceza), bağımsız bir ölçüm değildir.
+- **Puan aracın kendi ölçeğidir**, bağımsız bir ölçüm değildir. Ağırlıklar test sitesinin gerçek
+  sorun listesine göre ayarlandı: ≥2 gerçek sorunlu 14 sayfadan 90+ alan 13 → 2; kritik sorunsuz
+  sayfalarda Spearman(puan, gerçek sorun) −0.41 → −0.57. Tüm sayfalarda Spearman −0.2 civarında kalır,
+  çünkü tek kritik sorun (noindex, 404) birçok küçük sorundan ağır basar; bu bilinçli.
+- **Otomatik onay sınırı:** yüksek riskli kararlar (canonical, hreflang, robots) güvene göre
+  otomatik onaylanabilir; indekslemeyi kapatan ve sayfayı dizinden düşüren değişiklikler hiçbir
+  eşikte otomatik değildir. Pillow eklenmedi; büyük görsel elle düzeltilir.
 - **Masaüstü uygulaması yalnızca arayüz katmanıdır:**
   - Her işlem mevcut betiği alt süreç olarak çalıştırır. Onaylar `yonet.py onayla` argümanlarına
     çevrilir; `onaylar.json` dosyasına doğrudan yazılmaz.
@@ -275,7 +310,10 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   ayrı Python 3.13 ortamına kuruldu.
 - **Git worktree:** bu yolda (`Düzce Üniversitesi`, uzun geçici yol) `git worktree add`
   başarısız oldu. Karşılaştırma için `git archive main | tar -x` kullanıldı.
-- **PageSpeed localhost'u ölçemez:** düzeltilmiş ya da yerel sayfa için "sonra" Lighthouse puanı alınamaz.
+- **PageSpeed localhost'u ölçemez:** yerel/özel ağ adreslerinde hiç çağrılmaz ("atlandı"); önceden
+  modelli döngüyü ~9 dk'ya uzatıyordu.
+- **Eski testler ve otomatik onay:** yönetici modu testleri `esik=1.01` ile (otomatik onay kapalı)
+  çalışır. Sahte YZ yeniden denemede son yanıtını tekrarlar.
 - **Masaüstü / .exe:**
   - .exe projenin kodunu gömülü **Python 3.13** ile çalıştırır. Kaynaktan çalışmada 3.15 kullanılır.
     Testler iki sürümde de geçiyor; yeni kod 3.13 ile uyumlu kalmalı.
@@ -299,10 +337,11 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
    bölümünde belirtilmeli.
 6. Açık sorular (yönetici modu):
    - `canonical_yok` Kural çözer mi kalmalı, YZ önerir · yüksek risk mi?
-   - Kısa alanlardaki "sayfada olmayan kelime" kuralı gevşetilsin mi?
    - Kopya içerik için özgünleştirme görevi eklensin mi?
-7. Araçta denetimi olmayan sorunları (yumuşak 404, render'ı engelleyen kaynak, URL büyük harf,
-   charset) eklemek. Mod 2 sonuçlarını değiştirir, ayrı karar ister.
-8. Diğer kararlar:
+7. `dogruluk-iyilestirme` dalını commit edip gözden geçirmek. Puanlama ve yeni denetimler Mod 2
+   puanlarını da değiştirir; Düzce sitelerindeki eski sonuçlarla karşılaştırma yeniden yapılmalı.
+8. Açık sorular (güven): K05 için kelime sınırında kırpma eklensin mi? `defer` güveni satır içi
+   betik bağımlılığı denetlenerek yükseltilsin mi? Eşik 0.8 başka sitelerde ölçülmeli.
+9. Diğer kararlar:
    - `test_sitesi/site/` git'te kalsın mı, `.gitignore`'a alınıp `sifirla.py` ile mi üretilsin?
-9. `seo_kurallari.json` atıfsız. Ödevde kullanılacaksa kaynaklandırılmalı.
+10. `seo_kurallari.json` atıfsız. Ödevde kullanılacaksa kaynaklandırılmalı.

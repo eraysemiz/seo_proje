@@ -20,16 +20,18 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 import requests
 
+from . import guven as gv
 from . import html_konum as hk
 from . import kategoriler as kat
-from .cikarma import extract, url_anahtari
+from .cikarma import extract, imza_benzerligi, url_anahtari
+from .kurallar import TARAMA_GENELI_KODLARI as TARAMA_GENELI
 from .kurallar import hreflang_gecerli_mi
 from .yazma import YolGuvenligiHatasi, ozet_hash
-from .yz_oneri import PARAGRAF_GOREVI, YZHatasi, dogrula_jsonld, dogrula_metin, jsonld_gorevi, metin_gorevi
+from .yz_oneri import (ALAN_SINIRI, PARAGRAF_GOREVI, YZHatasi, dogrula_jsonld, dogrula_metin,
+                       istege_bagli_yer_tutuculari_at, json_onar, jsonld_gorevi, metin_gorevi, teklif_normallestir,
+                       uzunluk_kirp, yeniden_deneme_gorevi)
 
 KULLANICI_AJANI = "SEO-Denetim-Yonetici/1.0"
-TARAMA_GENELI = ("title_tekrar", "meta_tekrar", "h1_tekrar", "icerik_tekrar", "icerik_benzer", "yetim_sayfa",
-                 "derin_sayfa", "hreflang_donus_yok")
 # ayni sayfada uretim sirasi: once karakter kodlamasi/viewport (head basina eklenir), sonra digerleri
 ONCELIK = ["charset_yok", "viewport_yok", "viewport_sorunlu", "html_lang_yok", "title", "meta", "h1"]
 
@@ -125,8 +127,9 @@ class Sayfa:
 
 
 class Plan:
-    def __init__(self, adaptor, temel_url, dil="tr", yz=None, gunluk=None, oturum=None):
+    def __init__(self, adaptor, temel_url, dil="tr", yz=None, gunluk=None, oturum=None, esik=None):
         self.adaptor, self.temel_url, self.dil, self.yz = adaptor, temel_url.rstrip("/") + "/", dil, yz
+        self.esik = gv.ESIK if esik is None else esik
         self.yaz = gunluk or (lambda m: None)
         self.dosyalar = set(adaptor.listele())
         self.metinler, self.sayfalar = {}, {}
@@ -162,7 +165,8 @@ class Plan:
 
     # --- degisiklik kaydi
     def ekle(self, bulgu, dosya, parcalar, eski, yeni, gerekce, uretici, url=None, kategori=None, risk=None,
-             duzenleme=None, kaynaklar=(), yer_tutucu=False, dogrulama=None, etki=None):
+             duzenleme=None, kaynaklar=(), yer_tutucu=False, dogrulama=None, etki=None, guven=None,
+             guven_nedenleri=None, deneme=1):
         metin = self.metin(dosya)
         parcalar = sorted(parcalar, key=lambda p: p[0])
         satir, sutun = hk.satir_sutun(metin, parcalar[0][0])
@@ -176,8 +180,12 @@ class Plan:
              "onay_turu": "toplu" if kategori == "kural" else "tekil",
              "parcalar": [{"bas": b, "son": s, "eski": metin[b:s], "yeni": y} for b, s, y in parcalar],
              "duzenleme": duzenleme, "yer_tutucu": bool(yer_tutucu),
-             "dogrulama": dogrulama or {"gecti": True, "neden": ""}}
+             "dogrulama": dogrulama or {"gecti": True, "neden": ""}, "deneme": deneme}
         d["durum"] = "oneriliyor" if d["dogrulama"]["gecti"] else "gecersiz"
+        kaynak = ((duzenleme or {}).get("dogrulama") or {}).get("kaynak")
+        gv.degerlendir(d, self.kaynak_metinleri.get(kaynak), guven, guven_nedenleri)
+        if gv.otomatik_mi(d, self.esik):
+            d["onay_turu"] = "otomatik"
         self.degisiklikler.append(d)
         return d
 
@@ -463,6 +471,49 @@ def kural_ic_nofollow(p, s, b):
                "Site içi bağlantıda nofollow sayfalar arası değer aktarımını keser.", "kural", url=s.url)
 
 
+def kural_defer(p, s, b):
+    """<head> icinde async/defer olmadan yuklenen dis betiklere defer eklenir: indirme ayristirmayi
+    durdurmaz, calisma sirasi korunur. Satir ici betikler bunlara bagliysa davranis degisebilir (dusuk guven)."""
+    h = s.head()
+    if h is None or h.kap_bas is None:
+        raise Atla("sayfada kapanan bir <head> yok")
+    betikler = [o for o in hk.bul(s.ogeler, "script", lambda o: o.nitelik("src"))
+                if h.bas < o.bas < h.kap_bas and o.nitelik("async") is None and o.nitelik("defer") is None
+                and (o.nitelik("type") or "text/javascript").strip().lower() in ("", "text/javascript", "application/javascript")]
+    if not betikler:
+        raise Atla("<head>'de engelleyen betik bulunamadı")
+    for o in betikler:
+        konum = hk.nitelik_ekleme_konumu(o)
+        p.ekle("render_engelleyen_kaynak", s.dosya, [(konum, konum, " defer")], o.ham,
+               o.ham[:konum - o.bas] + " defer" + o.ham[konum - o.bas:],
+               "Betik HTML ayrıştırmasını durdurmadan indirilir ve sayfa ayrıştırıldıktan sonra sırasıyla çalışır.",
+               "kural", url=s.url)
+
+
+def kural_sitemap_yonlendirme(p, url, son_url):
+    """Sitemap'te yonlendirilen adres: son adres zaten listeleniyorsa kayit cikarilir, degilse son adresle degistirilir."""
+    if "sitemap.xml" not in p.dosyalar:
+        raise Atla("sitede sitemap.xml yok")
+    metin = p.metin("sitemap.xml")
+    kayitlar = _sitemap_kayitlari(metin)
+    kayit = next(((a, z, loc) for a, z, loc in kayitlar if url_anahtari(loc) == url_anahtari(url)), None)
+    if kayit is None:
+        raise Atla("adres sitemap.xml'de bulunamadı")
+    if not p.url_dosya(son_url):
+        raise Atla("yönlendirmenin son adresi sitede bir dosyaya karşılık gelmiyor")
+    a, z, _ = kayit
+    if any(url_anahtari(loc) == url_anahtari(son_url) for _, _, loc in kayitlar):
+        sa, sz = _satir_araligi(metin, a, z)
+        p.ekle("sitemap_yonlendirme", "sitemap.xml", [(sa, sz, "")], metin[sa:sz].rstrip("\n"), "(kayıt kaldırıldı)",
+               f"{url} {son_url} adresine yönleniyor ve son adres sitemap'te zaten var; yinelenen kayıt kaldırıldı.",
+               "kural", url=url)
+        return
+    loc = re.search(r"<loc>(.*?)</loc>", metin[a:z], re.S)
+    la, lz = a + loc.start(1), a + loc.end(1)
+    p.ekle("sitemap_yonlendirme", "sitemap.xml", [(la, lz, _kacis(son_url))], metin[la:lz], son_url,
+           f"{url} {son_url} adresine yönleniyor; sitemap'te son adres listelendi.", "kural", url=url)
+
+
 def kural_bos_baslik(p, s, b):
     for o in [x for x in s.ogeler if x.etiket in ("h2", "h3", "h4", "h5", "h6")]:
         if o.kap_bas is not None and not re.sub(r"<[^>]+>", "", hk.ic_metin(s.metin, o)).strip():
@@ -564,12 +615,31 @@ def yz_canonical(p, s, b, hedef=None, gerekce=None):
         raise Atla("canonical etiketinde href yok")
     if url_anahtari(urljoin(s.url, n[4])) == url_anahtari(hedef):
         raise Atla("canonical zaten önerilen adresi gösteriyor")
+    guven, nedenler = None, None
     if gerekce is None:
-        kod, _ = p.durum_kodu(urljoin(s.url, n[4])) if n[4] else (None, None)
+        eski_hedef = urljoin(s.url, n[4]) if n[4] else None
+        kod, _ = p.durum_kodu(eski_hedef) if eski_hedef else (None, None)
         gerekce = (f"Canonical {n[4] or '(boş)'} adresini gösteriyor" +
                    (f" ve bu adres {kod} döndürüyor" if kod and kod >= 400 else "") +
                    "; sayfanın kendi özgün içeriği olduğu için canonical sayfanın kendi adresine çevrildi.")
-    p.ekle(b["sorun"], s.dosya, [(n[2], n[3], hedef)], n[4] or "(boş)", hedef, gerekce, "sezgisel", url=s.url)
+        guven, nedenler = _kendine_canonical_guveni(p, s, eski_hedef, kod)
+    p.ekle(b["sorun"], s.dosya, [(n[2], n[3], hedef)], n[4] or "(boş)", hedef, gerekce, "sezgisel", url=s.url,
+           guven=guven, guven_nedenleri=nedenler)
+
+
+def _kendine_canonical_guveni(p, s, eski_hedef, kod):
+    """Canonical'i sayfanin kendisine cevirmek ne kadar guvenli? Eski hedef calismiyorsa ya da icerigi bu
+    sayfadan acikca farkliysa sayfa asil sayfadir (yuksek guven); icerikler benzerse sayfa gercekten kopya
+    olabilir ve canonical bilincli verilmistir (dusuk guven)."""
+    if kod is None or kod >= 400 or not eski_hedef:
+        return 0.92, []
+    hedef_dosya = p.url_dosya(eski_hedef)
+    if not hedef_dosya:
+        return 0.7, ["canonical'ın gösterdiği sayfanın içeriği karşılaştırılamadı"]
+    benzerlik = imza_benzerligi(s.d.get("icerik_imzasi") or [], p.sayfa(hedef_dosya).d.get("icerik_imzasi") or [])
+    if benzerlik < 0.5:
+        return 0.88, [f"canonical'ın gösterdiği sayfayla içerik benzerliği %{round(100 * benzerlik)}: bu sayfa asıl sayfa"]
+    return 0.55, [f"canonical'ın gösterdiği sayfayla içerik benzerliği %{round(100 * benzerlik)}: sayfa kopya olabilir"]
 
 
 def _robots_meta(s):
@@ -731,21 +801,36 @@ def _kaynak_kaydet(p, anahtar, *metinler):
 
 
 def _model_metni(p, s, alan, kodlar, gorev, ek_veri=None, kaynak_ek=""):
+    """Modelden metin onerisi alir ve dogrular. Dogrulamadan gecmeyen oneri ret nedeniyle birlikte bir kez
+    daha sorulur. (deger, cevap, kaynak, dogrulama, yer_tutucu, deneme) dondurur."""
     _model_yok(p)
-    try:
-        cevap = p.yz.iste(gorev, s.d, kodlar, _sayfa_verisi(p, s, ek_veri), dil=s.dil or p.dil)
-    except YZHatasi as e:
-        raise Atla("model önerisi alınamadı: " + str(e))
-    deger = cevap["deger"] if isinstance(cevap["deger"], str) else json.dumps(cevap["deger"], ensure_ascii=False)
-    deger = deger.strip().strip('"').strip()
-    kaynak = _kaynak_kaydet(p, f"{s.dosya}#{alan}", _sayfa_metni(s, 4000), kaynak_ek, cevap["kaynak_metni"])
-    gecti, neden, yer = dogrula_metin(alan, deger, p.kaynak_metinleri[kaynak], s.dil or p.dil, s.d)
-    return deger, cevap, kaynak, {"gecti": gecti, "neden": neden}, yer
+    istek = gorev
+    for deneme in (1, 2):
+        try:
+            cevap = p.yz.iste(istek, s.d, kodlar, _sayfa_verisi(p, s, ek_veri), dil=s.dil or p.dil)
+        except YZHatasi as e:
+            raise Atla("model önerisi alınamadı: " + str(e))
+        deger = cevap["deger"] if isinstance(cevap["deger"], str) else json.dumps(cevap["deger"], ensure_ascii=False)
+        deger = deger.strip().strip('"').strip()
+        kaynak = _kaynak_kaydet(p, f"{s.dosya}#{alan}", _sayfa_metni(s, 4000), kaynak_ek, cevap["kaynak_metni"])
+        gecti, neden, yer = dogrula_metin(alan, deger, p.kaynak_metinleri[kaynak], s.dil or p.dil, s.d)
+        if gecti or deneme == 2:
+            break
+        p.yaz(f"   öneri doğrulamadan geçmedi ({neden}); model nedeniyle birlikte yeniden soruluyor")
+        istek = yeniden_deneme_gorevi(gorev, deger, neden)
+    dogrulama = {"gecti": gecti, "neden": neden}
+    kisa = uzunluk_kirp(alan, deger) if not gecti and "_uzunluk_" in neden and alan in ALAN_SINIRI else None
+    if kisa:
+        g2, n2, y2 = dogrula_metin(alan, kisa, p.kaynak_metinleri[kaynak], s.dil or p.dil, s.d)
+        if g2:
+            p.yaz(f"   öneri uzunluk sınırına kırpıldı: {kisa!r}")
+            deger, yer, dogrulama = kisa, y2, {"gecti": True, "neden": "", "kirpildi": True}
+    return deger, cevap, kaynak, dogrulama, yer, deneme
 
 
 def yz_title(p, s, kodlar, digerleri=()):
     ek = ("Başlık şu sayfaların başlıklarından açıkça farklı olmalı: " + "; ".join(digerleri)) if digerleri else ""
-    deger, cevap, kaynak, dog, yer = _model_metni(p, s, "title", kodlar, metin_gorevi("title", ek))
+    deger, cevap, kaynak, dog, yer, deneme = _model_metni(p, s, "title", kodlar, metin_gorevi("title", ek))
     t = hk.ilk(s.ogeler, "title")
     if t is not None and t.kap_bas is not None and (s.head() is None or t.bas < s.head().kap_bas):
         parca, eski = (t.bas_son, t.kap_bas, _kacis(deger)), hk.ic_metin(s.metin, t)
@@ -756,12 +841,13 @@ def yz_title(p, s, kodlar, digerleri=()):
         duz = {"parca": 0, "onek": "\n<title>", "sonek": "</title>", "kacis": "html"}
     duz.update({"alan": "title", "dogrulama": {"tur": "metin", "kaynak": kaynak, "dil": s.dil or p.dil}, "deger": deger})
     p.ekle(kodlar[0], s.dosya, [parca], eski, deger, cevap["gerekce"], "model", url=s.url, duzenleme=duz,
-           kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama=dog)
+           kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama=dog,
+           deneme=deneme)
 
 
 def yz_meta(p, s, kodlar, digerleri=()):
     ek = ("Açıklama şu sayfaların açıklamalarından açıkça farklı olmalı: " + "; ".join(digerleri)) if digerleri else ""
-    deger, cevap, kaynak, dog, yer = _model_metni(p, s, "meta_description", kodlar, metin_gorevi("meta_description", ek))
+    deger, cevap, kaynak, dog, yer, deneme = _model_metni(p, s, "meta_description", kodlar, metin_gorevi("meta_description", ek))
     m = hk.ilk(s.ogeler, "meta", lambda o: (o.nitelik("name") or "").lower() == "description")
     if m is not None and "content" in hk.nitelik_konumlari(m):
         n = hk.nitelik_konumlari(m)["content"]
@@ -775,7 +861,8 @@ def yz_meta(p, s, kodlar, digerleri=()):
     duz.update({"alan": "meta_description", "dogrulama": {"tur": "metin", "kaynak": kaynak, "dil": s.dil or p.dil},
                 "deger": deger})
     p.ekle(kodlar[0], s.dosya, [parca], eski, deger, cevap["gerekce"], "model", url=s.url, duzenleme=duz,
-           kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama=dog)
+           kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama=dog,
+           deneme=deneme)
 
 
 def yz_h1(p, s, kodlar, digerleri=()):
@@ -795,7 +882,7 @@ def yz_h1(p, s, kodlar, digerleri=()):
                 return
     ek = ("Başlık şu sayfanın H1'inden farklı olmalı ve bu sayfanın amacını (bilgi/ürün) yansıtmalı: " +
           "; ".join(digerleri)) if digerleri else ""
-    deger, cevap, kaynak, dog, yer = _model_metni(p, s, "h1", kodlar, metin_gorevi("h1", ek))
+    deger, cevap, kaynak, dog, yer, deneme = _model_metni(p, s, "h1", kodlar, metin_gorevi("h1", ek))
     h1 = next((o for o in hk.bul(s.ogeler, "h1") if o.kap_bas is not None), None)
     if h1 is not None:
         parca, eski = (h1.bas_son, h1.kap_bas, _kacis(deger)), hk.ic_metin(s.metin, h1)
@@ -808,7 +895,8 @@ def yz_h1(p, s, kodlar, digerleri=()):
         duz = {"parca": 0, "onek": "\n<h1>", "sonek": "</h1>", "kacis": "html"}
     duz.update({"alan": "h1", "dogrulama": {"tur": "metin", "kaynak": kaynak, "dil": s.dil or p.dil}, "deger": deger})
     p.ekle(kodlar[0], s.dosya, [parca], eski, deger, cevap["gerekce"], "model", url=s.url, duzenleme=duz,
-           kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama=dog)
+           kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama=dog,
+           deneme=deneme)
 
 
 def yz_alt(p, s, b):
@@ -822,7 +910,7 @@ def yz_alt(p, s, b):
         baglam = " ".join((oncesi.split()[-40:] + ["[GÖRSEL]"] + sonrasi.split()[:30]))
         ek = {"gorsel_dosya_adi": Path(urlsplit(o.nitelik("src")).path).name, "gorsel_cevresindeki_metin": baglam}
         try:
-            deger, cevap, kaynak, dog, yer = _model_metni(
+            deger, cevap, kaynak, dog, yer, deneme = _model_metni(
                 p, s, "img_alt", ["img_alt_eksik"],
                 metin_gorevi("img_alt", "Yalnızca dosya adından ve görselin çevresindeki metinden anlaşılanı yaz."),
                 ek_veri=ek, kaynak_ek=baglam + " " + ek["gorsel_dosya_adi"].replace("-", " "))
@@ -834,7 +922,7 @@ def yz_alt(p, s, b):
                "dogrulama": {"tur": "metin", "kaynak": kaynak, "dil": s.dil or p.dil}, "deger": deger}
         p.ekle("img_alt_eksik", s.dosya, [(konum, konum, f' alt="{_kacis(deger, True)}"')], o.ham, deger,
                cevap["gerekce"], "model", url=s.url, duzenleme=duz, kaynaklar=cevap["kaynaklar"], yer_tutucu=yer,
-               dogrulama=dog)
+               dogrulama=dog, deneme=deneme)
 
 
 def paragraf_html(deger):
@@ -845,13 +933,14 @@ def yz_paragraf(p, s, b):
     konum = _main_sonu(s)
     ilgili = _ilgili_sayfalar(p, s)
     ek = {"DIGER_SAYFALARDAN": ilgili}
-    deger, cevap, kaynak, dog, yer = _model_metni(
+    deger, cevap, kaynak, dog, yer, deneme = _model_metni(
         p, s, "paragraf", [b["sorun"]], PARAGRAF_GOREVI, ek_veri=ek,
         kaynak_ek=" ".join(x["ozet"] + " " + (x["baslik"] or "") for x in ilgili))
     duz = {"parca": 0, "onek": "", "sonek": "", "kacis": "paragraf", "alan": "paragraf",
            "dogrulama": {"tur": "metin", "kaynak": kaynak, "dil": s.dil or p.dil}, "deger": deger}
     p.ekle(b["sorun"], s.dosya, [(konum, konum, paragraf_html(deger))], "(yok)", deger, cevap["gerekce"], "model",
-           url=s.url, duzenleme=duz, kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama=dog)
+           url=s.url, duzenleme=duz, kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama=dog,
+           deneme=deneme)
 
 
 def _jsonld_bloklari(s):
@@ -866,8 +955,36 @@ def _jsonld_bloklari(s):
     return sonuc
 
 
+def kural_jsonld_onar(p, s, hedef):
+    """Okunamayan JSON-LD blogunun sozdizimini (fazla virgul, yorum, akilli tirnak) deterministik onarir.
+    Onarim gecerli bir schema.org nesnesi verirse kural degisikligi eklenir ve True doner."""
+    o, icerik, _ = hedef
+    nesne = json_onar(icerik)
+    if not isinstance(nesne, (dict, list)) or "schema.org" not in json.dumps(nesne):
+        return False
+    deger = json.dumps(nesne, ensure_ascii=False, indent=2)
+    p.ekle("yapisal_veri_gecersiz", s.dosya, [(o.bas_son, o.kap_bas, "\n" + deger + "\n")], icerik.strip(), deger,
+           "JSON-LD bloğundaki sözdizimi hataları (fazla virgül, yorum) onarıldı; değerler değişmedi.", "kural",
+           url=s.url, kategori="kural", risk="dusuk")
+    return True
+
+
+def _jsonld_hazirla(deger, tur):
+    """Model cevabini nesneye cevirir; fiyat/para birimi yazimini standartlastirir ve isteğe bagli alanlardaki
+    yer tutuculari cikarir. (nesne ya da ham deger, notlar)."""
+    if isinstance(deger, str):
+        try:
+            deger = json.loads(deger)
+        except json.JSONDecodeError:
+            deger = json_onar(deger) or deger
+    notlar = []
+    if isinstance(deger, (dict, list)):
+        notlar += teklif_normallestir(deger)
+        notlar += ["yer tutuculu isteğe bağlı alan çıkarıldı: " + a for a in istege_bagli_yer_tutuculari_at(deger, tur)]
+    return deger, notlar
+
+
 def yz_jsonld(p, s, b):
-    _model_yok(p)
     kod = b["sorun"]
     bloklar = _jsonld_bloklari(s)
     hedef, mevcut, tur = None, None, None
@@ -875,6 +992,8 @@ def yz_jsonld(p, s, b):
         hedef = next((x for x in bloklar if x[2] is None), None)
         if hedef is None:
             raise Atla("geçersiz JSON-LD bloğu bulunamadı")
+        if kural_jsonld_onar(p, s, hedef):
+            return
         mevcut = hedef[1]
         m = re.search(r'"@type"\s*:\s*"([A-Za-z]+)"', mevcut)
         tur = m.group(1) if m else "WebPage"
@@ -893,20 +1012,30 @@ def yz_jsonld(p, s, b):
         tur = "Organization"
     else:
         tur = "WebPage"
+    _model_yok(p)
     ek = {"MEVCUT_BLOK": mevcut} if mevcut else {}
     logo = next((urljoin(s.url, o.nitelik("src")) for o in _gorseller(s) if "logo" in (o.nitelik("src") or "").lower()), None)
     if logo:
         ek["logo_adresi"] = logo
-    try:
-        cevap = p.yz.iste(jsonld_gorevi(tur, mevcut), s.d, [kod], _sayfa_verisi(p, s, ek), dil=s.dil or p.dil)
-    except YZHatasi as e:
-        raise Atla("model önerisi alınamadı: " + str(e))
-    kaynak = _kaynak_kaydet(p, f"{s.dosya}#jsonld", _sayfa_metni(s, 4000), mevcut or "", logo or "",
-                            cevap["kaynak_metni"])
     turler = ["Organization", "OnlineStore", "Store", "LocalBusiness", "Corporation"] if tur == "Organization" else [tur]
-    gecti, neden, yer, nesne = dogrula_jsonld(cevap["deger"], turler, p.kaynak_metinleri[kaynak],
-                                             p.temel_url.rstrip("/"), s.dil or p.dil)
-    deger = json.dumps(nesne if nesne is not None else cevap["deger"], ensure_ascii=False, indent=2)
+    gorev = istek = jsonld_gorevi(tur, mevcut)
+    for deneme in (1, 2):
+        try:
+            cevap = p.yz.iste(istek, s.d, [kod], _sayfa_verisi(p, s, ek), dil=s.dil or p.dil)
+        except YZHatasi as e:
+            raise Atla("model önerisi alınamadı: " + str(e))
+        kaynak = _kaynak_kaydet(p, f"{s.dosya}#jsonld", _sayfa_metni(s, 4000), mevcut or "", logo or "",
+                                cevap["kaynak_metni"])
+        ham, notlar = _jsonld_hazirla(cevap["deger"], tur)
+        gecti, neden, yer, nesne = dogrula_jsonld(ham, turler, p.kaynak_metinleri[kaynak],
+                                                 p.temel_url.rstrip("/"), s.dil or p.dil)
+        if gecti or deneme == 2:
+            break
+        p.yaz(f"   JSON-LD önerisi doğrulamadan geçmedi ({neden}); model nedeniyle birlikte yeniden soruluyor")
+        istek = yeniden_deneme_gorevi(gorev, ham, neden)
+    if notlar:
+        cevap["gerekce"] = (cevap["gerekce"] + " Standartlaştırma: " + "; ".join(notlar) + ".").strip()
+    deger = json.dumps(nesne if nesne is not None else ham, ensure_ascii=False, indent=2)
     dogrulama = {"tur": "jsonld", "kaynak": kaynak, "turler": turler, "dil": s.dil or p.dil}
     if hedef is not None:
         o = hedef[0]
@@ -920,7 +1049,7 @@ def yz_jsonld(p, s, b):
         duz = {"parca": 0, "onek": onek, "sonek": "\n</script>\n", "kacis": "json", "alan": "jsonld",
                "dogrulama": dogrulama, "deger": deger}
     p.ekle(kod, s.dosya, [parca], eski, deger, cevap["gerekce"], "model", url=s.url, duzenleme=duz,
-           kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama={"gecti": gecti, "neden": neden})
+           kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama={"gecti": gecti, "neden": neden}, deneme=deneme)
 
 
 # ------------------------------------------------------------------ plan uretimi
@@ -930,7 +1059,7 @@ SAYFA_URETICI = {
     "ic_link_yonlendirme": kural_link_yonlendirme, "gorsel_boyut_yok": kural_gorsel_boyut,
     "gorsel_lazy_yok": kural_lazy, "ilk_gorsel_lazy": kural_lazy, "og_etiketleri_yok": kural_og,
     "og_gorsel_yok": kural_og, "twitter_card_yok": kural_og, "canonical_goreli": kural_canonical_goreli,
-    "ic_nofollow": kural_ic_nofollow, "bos_baslik": kural_bos_baslik,
+    "ic_nofollow": kural_ic_nofollow, "bos_baslik": kural_bos_baslik, "render_engelleyen_kaynak": kural_defer,
     "canonical_yok": yz_canonical, "canonical_capraz": yz_canonical, "canonical_bos": yz_canonical,
     "canonical_coklu": yz_canonical, "noindex": yz_robots_meta, "sayfa_nofollow": yz_robots_meta,
     "meta_refresh": yz_meta_refresh, "hreflang_gecersiz": yz_hreflang, "hreflang_x_default_yok": yz_hreflang,
@@ -949,9 +1078,10 @@ ATLAMA_NEDENI = {
 }
 
 
-def plan_uret(kayitlar, tarama_bulgulari, adaptor, temel_url, dil="tr", yz=None, gunluk=None, oturum=None):
-    """Bulgulardan degisiklik plani. Siteye yazmaz. Plan sozlugu dondurur."""
-    p = Plan(adaptor, temel_url, dil, yz, gunluk, oturum)
+def plan_uret(kayitlar, tarama_bulgulari, adaptor, temel_url, dil="tr", yz=None, gunluk=None, oturum=None, esik=None):
+    """Bulgulardan degisiklik plani. Siteye yazmaz. Plan sozlugu dondurur. Her degisiklige guven puani
+    yazilir; esigi (varsayilan guven.ESIK) gecenler otomatik onayli gelir (onay_turu="otomatik")."""
+    p = Plan(adaptor, temel_url, dil, yz, gunluk, oturum, esik)
     yaz = p.yaz
     kayitlar_url = {}
     for k in kayitlar:
@@ -1006,8 +1136,8 @@ def plan_uret(kayitlar, tarama_bulgulari, adaptor, temel_url, dil="tr", yz=None,
             continue
         yaz("Öneriler hazırlanıyor: " + url)
         kodlar = [b["sorun"] for b in sorunlar]
-        # yonetici modunun dosya duzeyindeki ek denetimi: charset bildirimi
-        if not re.search(r"<meta[^>]+charset=", s.metin, re.I):
+        # dosya duzeyindeki ek denetim: charset bildirimi (canli taramada da bulunduysa tekrar eklenmez)
+        if not re.search(r"<meta[^>]+charset=", s.metin, re.I) and "charset_yok" not in kodlar:
             p.ek_bulgular.append({"sorun": "charset_yok", "url": url})
             sorunlar.insert(0, {"sorun": "charset_yok", "katman": "sayfa"})
         sira = {kod: i for i, kod in enumerate(ONCELIK)}
@@ -1062,6 +1192,7 @@ def plan_uret(kayitlar, tarama_bulgulari, adaptor, temel_url, dil="tr", yz=None,
     return {
         "hedef": {"adaptor": adaptor.tanim(), "temel_url": p.temel_url, "dil": dil},
         "zaman": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "esik": p.esik,
         "model": getattr(yz, "model", None),
         "dosya_hashleri": {d: ozet_hash(adaptor.oku(d)) for d in sorted({x["dosya"] for x in p.degisiklikler})},
         "degisiklikler": p.degisiklikler, "elle": p.elle, "atlanan": p.atlanan, "ek_bulgular": p.ek_bulgular,
@@ -1144,6 +1275,16 @@ def _tarama_geneli(p, kayitlar, kayitlar_url, bulgular):
                     yz_hreflang_donus(p, k, kayitlar_url)
                 except Atla as e:
                     p.atla(kod, a, str(e))
+        elif kod == "sitemap_yonlendirme":
+            son_adresler = {url_anahtari(k.get("ad")): k.get("site_url") for k in kayitlar if k.get("site_url")}
+            for a in sayfalar:
+                try:
+                    son = son_adresler.get(url_anahtari(a))
+                    if not son:
+                        raise Atla("yönlendirmenin son adresi bilinmiyor")
+                    kural_sitemap_yonlendirme(p, a, son)
+                except Atla as e:
+                    p.atla(kod, a, str(e))
 
 
 # ------------------------------------------------------------------ onizleme
@@ -1174,8 +1315,11 @@ def onizleme_diff(plan, oku):
             uyari = " · YÜKSEK RİSK" if d["risk"] == "yuksek" else ""
             durum = "" if d["durum"] == "oneriliyor" else f" · UYGULANAMAZ ({d['dogrulama']['neden']})"
             yer = " · YER TUTUCU: değer doldurulmadan uygulanamaz" if d["yer_tutucu"] else ""
-            satirlar.append(f"\n# {d['id']} [{kat.KATEGORI_ADI[d['kategori']]}{uyari}{durum}{yer}] {d['bulgu']} — "
-                            f"{d['url']}\n# Gerekçe: {d['gerekce']}\n")
+            onay = " · OTOMATİK" if d.get("onay_turu") == "otomatik" else " · ONAY GEREKİR" if d["durum"] == "oneriliyor" else ""
+            satirlar.append(f"\n# {d['id']} [{kat.KATEGORI_ADI[d['kategori']]}{uyari}{durum}{yer} · güven "
+                            f"{d.get('guven', 0):.2f}{onay}] {d['bulgu']} — {d['url']}\n# Gerekçe: {d['gerekce']}\n")
+            for neden in ([d["zorunlu_onay"]] if d.get("zorunlu_onay") else []) + (d.get("guven_nedenleri") or []):
+                satirlar.append(f"# Güven notu: {neden}\n")
             if d.get("etki"):
                 satirlar.append(f"# Olası etki: {d['etki']}\n")
             if d.get("kaynaklar"):
@@ -1248,10 +1392,18 @@ def gecerlilik_bozuluyor_mu(dosya, once, sonra):
     return ""
 
 
+def onay_esigi(plan, kararlar=None):
+    """Gecerli otomatik onay esigi: onaylarda verildiyse o, yoksa planin esigi."""
+    e = (kararlar or {}).get("esik")
+    return float(e) if e is not None else float(plan.get("esik", gv.ESIK))
+
+
 def kararlari_coz(plan, kararlar):
-    """Her degisiklik icin uygulanacak mi? Durum ve neden yazar. Onaylananlarin listesini dondurur."""
+    """Her degisiklik icin uygulanacak mi? Durum ve neden yazar. Onaylananlarin listesini dondurur.
+    Guven puani esigi gecen degisiklikler (guven.otomatik_mi) kullanici reddetmedikce onayli sayilir."""
     kararlar = kararlar or {}
     tek = kararlar.get("kararlar") or {}
+    esik = onay_esigi(plan, kararlar)
     onaylanan = []
     for d in plan["degisiklikler"]:
         k = tek.get(d["id"]) or {}
@@ -1261,11 +1413,16 @@ def kararlari_coz(plan, kararlar):
         if k.get("karar") == "ret":
             d["durum"], d["durum_nedeni"] = "reddedildi", "kullanıcı reddetti"
             continue
-        onay = k.get("karar") == "onay" or (d["kategori"] == "kural" and kararlar.get("kural_hepsi"))
-        if not onay:
-            d["durum"], d["durum_nedeni"] = "onay_bekliyor", "onay verilmedi; uygulanmadı"
+        oto = "guven" in d and gv.otomatik_mi(d, esik)
+        d["onay_kaynagi"] = "kullanıcı" if k.get("karar") == "onay" else "otomatik" if oto else \
+            "toplu" if d["kategori"] == "kural" and kararlar.get("kural_hepsi") else None
+        if not d["onay_kaynagi"]:
+            d["durum"] = "onay_bekliyor"
+            d["durum_nedeni"] = (d.get("zorunlu_onay") or
+                                 (f"güven {d['guven']:.2f} eşiğin ({esik:.2f}) altında" if "guven" in d else "") or
+                                 "onay verilmedi") + "; onay verilmedi, uygulanmadı"
             continue
-        if d["risk"] == "yuksek" and not k.get("risk_onay"):
+        if d["risk"] == "yuksek" and not k.get("risk_onay") and not oto:
             d["durum"], d["durum_nedeni"] = "onay_bekliyor", "yüksek riskli öneri için ayrıca risk onayı verilmedi"
             continue
         if k.get("deger") is not None and k.get("deger") != d.get("yeni"):

@@ -402,6 +402,12 @@ def yapisal_veri(html, sayfa_url=None, link_basligi=None):
     uygulama_koku = bool(soup.find(id=re.compile(r"^(root|app|__next|__nuxt|svelte)$")) or soup.find(attrs={"ng-app": True}))
     js_iskelet = bool(soup.body) and len(govde_metni.split()) < 50 and \
         (uygulama_koku or len(soup.find_all("script", src=True)) >= 5)
+    # <head> icinde async/defer olmadan yuklenen dis betikler HTML ayristirmasini durdurur (render'i engeller)
+    engelleyen = [s["src"] for s in (soup.head.find_all("script", src=True) if soup.head else [])
+                  if not (s.has_attr("async") or s.has_attr("defer")) and
+                  (s.get("type") or "text/javascript").strip().lower() in ("", "text/javascript", "application/javascript")]
+    charset_meta = bool(soup.find("meta", charset=True) or soup.find(
+        "meta", attrs={"http-equiv": re.compile(r"^\s*content-type\s*$", re.I), "content": re.compile(r"charset=", re.I)}))
     return {
         "baslik_seviyeleri": [int(h.name[1]) for h in basliklar],
         "bos_baslik_sayisi": sum(1 for h in basliklar if h.name != "h1" and not h.get_text(strip=True)),
@@ -425,6 +431,8 @@ def yapisal_veri(html, sayfa_url=None, link_basligi=None):
                          if refresh and refresh_hedef else None),
         "js_yonlendirme": js_yonlendirme,
         "js_iskelet": js_iskelet,
+        "engelleyen_betikler": engelleyen[:20],
+        "charset_meta": charset_meta,
         "canonicallar": canonicallar,
         "baglantilar": baglantilari_cikar(soup, taban) if taban else [],
         "gorseller": _gorsel_ayrintilari(soup, taban),

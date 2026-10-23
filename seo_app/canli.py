@@ -85,6 +85,7 @@ def _al(adres, zaman_asimi, stream=False, yonlendir=True, olcum=None):
 def onbellek_temizle():
     _onbellek.clear()
     _baglanti_onbellegi.clear()
+    _yoklama_onbellegi.clear()
 
 
 # --------------------------------------------------------------------- adres
@@ -564,6 +565,30 @@ def x_robots_yonergeleri(deger):
         elif ajan.startswith("unavailable_after"):
             continue
     return sonuc
+
+
+# ------------------------------------------------------------ yumusak 404
+_yoklama_onbellegi = {}
+
+
+def yumusak_404_yoklama(url, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI, izin=None):
+    """Sayfanin bulundugu klasorde var olmasi neredeyse imkansiz rastgele bir adres ister. Sunucu 200
+    donerse bulunamayan adresler icin hata kodu vermiyor demektir. Klasor basina tek istek (onbellekli).
+    Durum kodunu (ya da istenemediyse None) dondurur; izin(adres) False ise (robots.txt) istek yapilmaz."""
+    from secrets import token_hex
+    p = urlparse(url)
+    klasor = p.path.rsplit("/", 1)[0] + "/"
+    anahtar = (p.scheme, p.netloc.lower(), klasor)
+    if anahtar not in _yoklama_onbellegi:
+        adres = p._replace(path=klasor + "yok-" + token_hex(6) + ".html", query="", fragment="").geturl()
+        kod = None
+        if izin is None or izin(adres):
+            try:
+                kod = _oturum.get(adres, timeout=zaman_asimi, allow_redirects=True).status_code
+            except requests.RequestException:
+                kod = None
+        _yoklama_onbellegi[anahtar] = kod
+    return _yoklama_onbellegi[anahtar]
 
 
 # ------------------------------------------------------------ baglanti denetimi

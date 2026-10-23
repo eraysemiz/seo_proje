@@ -157,9 +157,15 @@ def ayarlari_dogrula(veri):
               "json_schema", "dil", "uy_robots",
               "bekleme_sn", "zaman_asimi", "bagimsiz_olcum", "yalnizca_denetim", "tarama_modu",
               "en_fazla_sayfa", "en_fazla_derinlik", "link_denetimi", "link_siniri", "js_render",
-              "sitemap_tohum", "ssl_zorunlu"):
+              "sitemap_tohum", "ssl_zorunlu", "oto_esik"):
         if k in veri and veri[k] not in ("", None):
             ayarlar[k] = veri[k]
+    try:
+        ayarlar["oto_esik"] = float(ayarlar["oto_esik"])
+    except (TypeError, ValueError):
+        return None, "oto_esik bir sayı olmalı."
+    if not 0 <= ayarlar["oto_esik"] <= 1.01:
+        return None, "oto_esik 0-1 aralığında olmalı (1'in üstü otomatik onayı kapatır)."
     for alan, (en_az, en_cok) in SAYI_ALANLARI.items():
         try:
             ayarlar[alan] = int(ayarlar[alan])

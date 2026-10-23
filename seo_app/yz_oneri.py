@@ -8,14 +8,16 @@ Her oneri uygulanmadan once dogrulanir (dogrula_metin / dogrula_jsonld):
   - bicim: HTML etiketi yok, uzunluk alana uygun, JSON-LD gecerli JSON ve zorunlu alanlari tam
   - dil: sayfanin dilinde (Turkce sayfa icin Turkce), bozuk kodlanmis karakter (Ã, Ä±, �) yok,
     sayfada Turkce harfle gecen kelimeler harfleri dusurulerek (cay/çay) yazilmamis
-  - uydurma: sayfa ve kaynak metninde gecmeyen sayi/fiyat yok; dogrulanamayan nitelemeler
+  - uydurma: sayfa ve kaynak metninde gecmeyen sayi/fiyat ve ozel ad yok; dogrulanamayan nitelemeler
     (lider, en iyi...) yok; kisa alanlarda sayfada gecmeyen icerik kelimesi sinirli
-Dogrulamadan gecemeyen oneri uygulanmaz ve nedeniyle raporlanir.
+Dogrulamadan gecemeyen oneri, ret nedeniyle birlikte modele bir kez daha sorulur (yeniden_deneme_gorevi);
+yine gecemezse uygulanmaz ve nedeniyle raporlanir. JSON-LD'deki fiyat/para birimi yazimi ve sozdizimi
+hatalari modele gitmeden deterministik olarak duzeltilir (teklif_normallestir, json_onar).
 """
 import json
 import re
 
-from .cikarma import GENEL_KOKLER, SCHEMA_ZORUNLU, URUN_EN_AZ_BIRI, kokler, tr_lower
+from .cikarma import GENEL_KOKLER, SCHEMA_ZORUNLU, URUN_EN_AZ_BIRI, kokler, tr_lower  # noqa: F401
 from .kurallar import ACIKLAMA
 from .llm import _cagri, _yasakli_ifadeler, json_ayikla
 
@@ -92,18 +94,33 @@ def dil_denetimi(metin, dil, kaynak_metin):
     return ""
 
 
-def uydurma_denetimi(metin, kaynak_metin, d=None, kisa_alan=False):
-    """Kaynakta gecmeyen sayilar ve dogrulanamayan nitelemeler. Hata nedeni ya da '' dondurur."""
+OZEL_AD = re.compile(r"(?<![.!?:]\s)(?<!^)\b([A-ZÇĞİÖŞÜ][a-zçğıöşü]{2,})")
+
+
+def uydurma_denetimi(metin, kaynak_metin, d=None, kisa_alan=False, ozet_alani=False):
+    """Kaynakta gecmeyen sayilar, ozel adlar ve dogrulanamayan nitelemeler. Hata nedeni ya da '' dondurur.
+    kisa_alan (title, H1): sayfada gecmeyen iki icerik kelimesi yeter. ozet_alani (meta aciklama) sayfayi
+    kendi cumleleriyle ozetler; baglayici fiil ve adlar (sunar, anlatır, süre, yöntem) olagandir: sayfada
+    gecmeyen kelimeler icerik kelimelerinin ucte birini asarsa ya da sayfada gecmeyen bir ozel ad varsa
+    reddedilir (sayi ve ovgu denetimi her alanda ayrica yapilir)."""
     yeni = _sayilar(metin) - _sayilar(kaynak_metin)
     if yeni:
         return "kaynakta_olmayan_sayi: " + ", ".join(sorted(yeni)[:4])
     yasakli = _yasakli_ifadeler(YER_TUTUCU.sub(" ", metin), d or {})
     if yasakli:
         return "dogrulanamayan_niteleme: " + ", ".join(yasakli)
-    if kisa_alan and d is not None:
+    if (kisa_alan or ozet_alani) and d is not None:
+        temiz = YER_TUTUCU.sub(" ", metin)
         bilinen = kokler(kaynak_metin) | set(d.get("kelime_kokleri") or ())
-        bilinmeyen = sorted(k for k in kokler(YER_TUTUCU.sub(" ", metin)) if k not in bilinen and k not in GENEL_KOKLER)
-        if len(bilinmeyen) >= 2:
+        icerik = [k for k in kokler(temiz) if k not in GENEL_KOKLER]
+        bilinmeyen = sorted(k for k in icerik if k not in bilinen)
+        kaynak_kucuk = tr_lower(kaynak_metin or "")
+        # basliklar cogu zaman Baş Harfleri Büyük yazilir; ozel ad denetimi yalnizca cumle bicimindeki ozette
+        adlar = sorted({a for a in OZEL_AD.findall(temiz) if tr_lower(a) not in kaynak_kucuk}) if ozet_alani else []
+        if adlar:
+            return "sayfada_olmayan_ad: " + ", ".join(adlar[:4])
+        sinir = 2 if kisa_alan else max(3, -(-len(icerik) // 3))
+        if len(bilinmeyen) >= sinir:
             return "sayfada_olmayan_ifade: " + ", ".join(bilinmeyen[:4])
     return ""
 
@@ -129,7 +146,7 @@ def dogrula_metin(alan, deger, kaynak_metin, dil="tr", d=None):
     neden = dil_denetimi(v, dil, kaynak_metin)
     if neden:
         return False, neden, False
-    neden = uydurma_denetimi(v, kaynak_metin, d, kisa_alan=alan in ("title", "meta_description", "h1"))
+    neden = uydurma_denetimi(v, kaynak_metin, d, kisa_alan=alan in ("title", "h1"), ozet_alani=alan == "meta_description")
     if neden:
         return False, neden, False
     return True, "", yer_tutucu_var(v)
@@ -166,6 +183,112 @@ def _teklif_bicimi(x):
             not re.fullmatch(r"[A-Z]{3}", str(x["priceCurrency"]).strip()):
         return "para_birimi_bicimi: '" + str(x["priceCurrency"]) + "' (ISO 4217 kodu olmalı, ör. TRY)"
     return next((n for n in map(_teklif_bicimi, x.values()) if n), "")
+
+
+def json_onar(metin):
+    """JSON-LD'deki yaygin sozdizimi hatalarini deterministik onarir: nesne/dizi sonundaki fazla virgul,
+    // ve /* */ yorumlari, akilli tirnaklar. Degerler degismez. Onarilan nesneyi ya da None dondurur."""
+    if not isinstance(metin, str):
+        return None
+    m = metin.replace("“", '"').replace("”", '"')
+    m = re.sub(r"/\*.*?\*/", "", m, flags=re.S)
+    m = re.sub(r"(?m)^\s*//[^\n]*$", "", m)
+    m = re.sub(r",(\s*[}\]])", r"\1", m)
+    try:
+        return json.loads(m)
+    except json.JSONDecodeError:
+        return None
+
+
+PARA_BIRIMI = {"TL": "TRY", "₺": "TRY", "TRL": "TRY", "YTL": "TRY", "€": "EUR", "EURO": "EUR", "$": "USD",
+               "DOLAR": "USD", "£": "GBP"}
+
+
+def teklif_normallestir(x, notlar=None):
+    """schema.org Offer degerlerini standart bicime getirir (yerinde): '1.250' / '1.250,00' -> '1250' / '1250.00',
+    '185,5' -> '185.50', 'TL' -> 'TRY'. Sayi degismez, yalnizca yazimi. Yapilan degisiklik notlarini dondurur."""
+    notlar = [] if notlar is None else notlar
+    if isinstance(x, list):
+        for v in x:
+            teklif_normallestir(v, notlar)
+    elif isinstance(x, dict):
+        if "price" in x and isinstance(x["price"], (str, int, float)) and not yer_tutucu_var(str(x["price"])):
+            s = str(x["price"]).strip().replace(" ", "")
+            yeni = s
+            if re.fullmatch(r"\d{1,3}(\.\d{3})+(,\d{1,2})?", s):
+                yeni = s.replace(".", "").replace(",", ".")
+            elif re.fullmatch(r"\d+,\d{1,2}", s):
+                yeni = s.replace(",", ".")
+            if re.fullmatch(r"\d+\.\d", yeni):
+                yeni += "0"
+            if yeni != s:
+                notlar.append(f"fiyat {s} → {yeni}")
+                x["price"] = yeni
+        if isinstance(x.get("priceCurrency"), str):
+            c = x["priceCurrency"].strip()
+            if c.upper() in PARA_BIRIMI or c in PARA_BIRIMI:
+                yeni = PARA_BIRIMI.get(c.upper(), PARA_BIRIMI.get(c))
+                notlar.append(f"para birimi {c} → {yeni}")
+                x["priceCurrency"] = yeni
+        for v in x.values():
+            teklif_normallestir(v, notlar)
+    return notlar
+
+
+def istege_bagli_yer_tutuculari_at(x, tur=None, notlar=None):
+    """Zorunlu olmayan bir alan icin yazilmis [doğrulanmalı] yer tutucusunu alanla birlikte cikarir: eksik bir
+    istege bagli alan sorun degildir, uydurulmus ya da doldurulmamis bir deger ise uygulamayi engeller.
+    Zorunlu alanlardaki yer tutucular kalir (oneri onaya duser). Cikarilan alanlarin listesini dondurur."""
+    notlar = [] if notlar is None else notlar
+    if isinstance(x, list):
+        for v in x:
+            istege_bagli_yer_tutuculari_at(v, tur, notlar)
+    elif isinstance(x, dict):
+        t = str(x.get("@type") or tur or "")
+        zorunlu = set(SCHEMA_ZORUNLU.get(t, ())) | {"@context", "@type", "name", "price", "priceCurrency"}
+        for anahtar in list(x):
+            v = x[anahtar]
+            if isinstance(v, str) and yer_tutucu_var(v) and anahtar not in zorunlu:
+                notlar.append(anahtar)
+                del x[anahtar]
+            else:
+                istege_bagli_yer_tutuculari_at(v, t, notlar)
+    return notlar
+
+
+def uzunluk_kirp(alan, deger):
+    """Uzunluk sinirini asan title/meta aciklamayi anlami bozmadan kisaltir; yapilamazsa None.
+    title: marka metnin icinde zaten geciyorsa sondaki ' | marka' eki atilir, ya da 'Konu: ayrinti | marka'
+    bicimindeki ayrinti bolumu cikarilir. meta: sondaki cumleler atilir (cumle ortasindan kesilmez)."""
+    en_az, en_cok = ALAN_SINIRI[alan]
+    v = " ".join((deger or "").split())
+    if len(v) <= en_cok:
+        return None
+    if alan == "title" and " | " in v:
+        bas, marka = v.rsplit(" | ", 1)
+        if tr_lower(marka) in tr_lower(bas) and en_az <= len(bas) <= en_cok:
+            return bas
+        for ayrac in (": ", " – ", " - "):
+            if ayrac in bas:
+                aday = bas.split(ayrac)[0] + " | " + marka
+                if en_az <= len(aday) <= en_cok:
+                    return aday
+    if alan == "meta_description":
+        aday = ""
+        for cumle in re.split(r"(?<=[.!?])\s+", v):
+            if len((aday + " " + cumle).strip()) > en_cok:
+                break
+            aday = (aday + " " + cumle).strip()
+        if en_az <= len(aday) <= en_cok:
+            return aday
+    return None
+
+
+def yeniden_deneme_gorevi(gorev, onceki, neden):
+    """Dogrulamadan gecmeyen onerinin nedeniyle birlikte modele bir kez daha sorulmasi."""
+    onceki = onceki if isinstance(onceki, str) else json.dumps(onceki, ensure_ascii=False)
+    return (gorev + f" ÖNCEKİ ÖNERİN REDDEDİLDİ. Önerin: {onceki[:400]!r}. Ret nedeni: {neden}. "
+            "Bu kuralı sağlayan, yine yalnızca SAYFA_VERISI'ne dayanan yeni bir öneri yaz.")
 
 
 def dogrula_jsonld(deger, beklenen_tur, kaynak_metin, site_kok, dil="tr"):

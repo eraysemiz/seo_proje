@@ -39,10 +39,13 @@ function kategoriEtiketi(kod, cozumYolu) {
 }
 
 // Rapordaki puan ve etiket aciklamalari (bilgi balonlari). Metinler kodun gercek hesabina dayanir:
-// puanlar -> kurallar.py: puanlar / _normal_puan / _azami_ceza / SORUN_TANIMI / CIDDIYET_AGIRLIK
+// puanlar -> puanlama.py (AGIRLIK, TAVAN, SAYFAYA_OZGU, TARAMA_CIDDIYETI) ve kurallar.puanlar / SORUN_TANIMI
 // kategoriler -> kategoriler.py: KATEGORI, ETKI; yonetici modu: duzeltme.py, yonetici.py
 const IPUCU = {
-  puanlar: "Sorunlar ciddiyete göre ceza alır: yüksek 15, orta 8, düşük 3. Toplam ceza olası en kötü cezaya bölünür; puan 100 × (1 − oran).",
+  puanlar: "Her sorun puanı kendi ağırlığı oranında düşürür: yüksek %20, orta %9, düşük %3,5 (aynı gruptaki sorunlar bir kez). " +
+    "Puan = 100 × Π(1 − ağırlık). Kritik sorunlarda üst sınır vardır: noindex 60, robots engeli 50, yumuşak 404 40, kopya içerik 70, title yok 75. " +
+    "Sayfa puanına o sayfaya ait site bulguları (kırık bağlantı, yönlendirme…) ve tarama geneli bulgular (tekrar eden title, kopya içerik, yetim sayfa) da girer; " +
+    "HTTPS gibi site geneli sorunlar site puanında görünür. Yapılandırma: seo_app/puanlama.py.",
   sayfa: "Yalnız sayfanın HTML kodunda görülen sorunları ölçer. Toplam ceza, HTML'de görülebilecek en kötü durumun cezasına oranlanıp 100'den düşülür.",
   site: "Canlı erişimle ölçülen sorunları ölçer: robots.txt, sitemap, HTTPS, sertifika, hız. Toplam ceza, bu alandaki en kötü duruma oranlanıp 100'den düşülür.",
   icerik: "Başlık, meta açıklama, H1, alt metin, başlık sırası, metin miktarı ve terim uyumunu ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
@@ -50,7 +53,7 @@ const IPUCU = {
   guvenlik: "HTTPS kullanımı, https yönlendirmesi, SSL sertifikası, HSTS ve karışık içeriği ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
   performans: "Yanıt süresi, sıkıştırma, HTML boyutu, görseller ve (PageSpeed açıksa) Core Web Vitals ölçülür. Toplam ceza en kötü duruma oranlanıp 100'den düşülür.",
   cozum_kural: "Deterministik bir kuralla güvenle düzeltilir: eksik lang/charset/viewport, kırık iç bağlantı, görsellere width/height, robots.txt ve sitemap düzeltmeleri. Yönetici modunda grup olarak toplu onaylanabilir.",
-  cozum_yz: "Yerel model (ya da sezgisel bir yöntem) öneri üretir, insan onayı gerekir: title/meta/H1, alt metni, içerik genişletme, JSON-LD, iç bağlantı. Canonical, noindex, yönlendirme ve hreflang gibi yapısal kararlar yüksek risklidir ve olası etkisiyle gösterilir. Model sitede olmayan bilgi uydurmaz; gerekirse [doğrulanmalı: …] yer tutucusu yazar.",
+  cozum_yz: "Yerel model (ya da sezgisel bir yöntem) öneri üretir: title/meta/H1, alt metni, içerik genişletme, JSON-LD, iç bağlantı. Her önerinin güven puanı vardır; eşiği (varsayılan 0,80) geçenler otomatik onaylı gelir, diğerleri ve [doğrulanmalı] yer tutuculu ya da indekslemeyi daraltan öneriler insan onayı ister. Canonical, noindex, yönlendirme ve hreflang gibi yapısal kararlar yüksek risklidir ve olası etkisiyle gösterilir. Model sitede olmayan bilgi uydurmaz; gerekirse [doğrulanmalı: …] yer tutucusu yazar.",
   cozum_elle: "Yapay zekânın kapsamı dışında: sunucu/barındırma ayarı, HTTPS ve sertifika, önbellek, gerçek görsel üretimi, firmaya özgü doğrulanmış bilgi, site dışı SEO. Yalnızca raporda öneri olarak kalır."
 };
 let ipucuSayaci = 0;
@@ -379,7 +382,8 @@ function taramayiBaslat() {
     zaman_asimi: $("#zaman-asimi").value,
     mod: yoneticiModu() ? "yonetici" : "standart",
     kok: yoneticiModu() ? $("#yonetici-kok").value.trim() : "",
-    temel_url: yoneticiModu() ? $("#yonetici-url").value.trim() : ""
+    temel_url: yoneticiModu() ? $("#yonetici-url").value.trim() : "",
+    oto_esik: yoneticiModu() ? $("#oto-esik").value : ""
   };
   yoneticiImzasi = "";
   $("#basla").disabled = true;
@@ -471,10 +475,19 @@ function yoneticiDurumu(d) {
 const DURUM_ADI = { oneriliyor: "önerildi", uygulandi: "uygulandı", reddedildi: "reddedildi", basarisiz: "başarısız",
   onay_bekliyor: "onay verilmedi", gecersiz: "doğrulamadan geçmedi" };
 
+function guvenHtml(x) {
+  if (x.guven === undefined || x.guven === null) return "";
+  const oto = x.onay_turu === "otomatik";
+  return '<span class="cip ' + (oto ? "iyi" : "dikkat") + '">güven ' + Number(x.guven).toFixed(2) +
+    (oto ? " · otomatik onaylı" : " · onay gerekir") + "</span>" +
+    (x.zorunlu_onay ? ' <span class="cip kotu">her zaman onay: ' + kacis(x.zorunlu_onay) + "</span>" : "");
+}
+
 function degisiklikHtml(x, duzenlenebilir, kilitli) {
   const yuksek = x.risk === "yuksek";
   const gecersiz = x.durum === "gecersiz";
-  const isaretler = [yuksek ? '<span class="cip kotu">yüksek risk</span>' : "",
+  const oto = x.onay_turu === "otomatik";
+  const isaretler = [guvenHtml(x), yuksek ? '<span class="cip kotu">yüksek risk</span>' : "",
     x.yer_tutucu ? '<span class="cip dikkat">yer tutucu: değer doldurulmadan uygulanamaz</span>' : "",
     gecersiz ? '<span class="cip kotu">doğrulamadan geçmedi: ' + kacis(x.dogrulama && x.dogrulama.neden) + "</span>" : "",
     x.durum && !["oneriliyor", "gecersiz"].includes(x.durum) ? '<span class="cip">' + kacis(DURUM_ADI[x.durum] || x.durum) +
@@ -484,11 +497,12 @@ function degisiklikHtml(x, duzenlenebilir, kilitli) {
     if (x.kategori === "kural") {
       kontrol = '<label class="kutu"><input type="checkbox" class="kural-onay" data-id="' + x.id + '" checked><span>Onayla</span></label>';
     } else {
+      // guven esigini gecen oneri onayli gelir; kullanici reddedebilir
       kontrol = '<span class="karar"><label class="kutu"><input type="radio" name="k-' + x.id + '" value="onay" data-id="' + x.id +
-        '"><span>Onayla</span></label><label class="kutu"><input type="radio" name="k-' + x.id + '" value="ret" data-id="' + x.id +
-        '"><span>Reddet</span></label></span>' +
-        (yuksek ? '<label class="kutu risk-onay"><input type="checkbox" class="risk-onay-kutu" data-id="' + x.id +
-          '"><span>Olası etkiyi okudum, bu yüksek riskli değişikliği onaylıyorum</span></label>' : "");
+        '"' + (oto ? " checked" : "") + '><span>Onayla</span></label><label class="kutu"><input type="radio" name="k-' + x.id +
+        '" value="ret" data-id="' + x.id + '"><span>Reddet</span></label></span>' +
+        (yuksek ? '<label class="kutu risk-onay"><input type="checkbox" class="risk-onay-kutu" data-id="' + x.id + '"' +
+          (oto ? " checked" : "") + '><span>Olası etkiyi okudum, bu yüksek riskli değişikliği onaylıyorum</span></label>' : "");
     }
   }
   const duzen = duzenlenebilir && !kilitli && !gecersiz
@@ -498,6 +512,8 @@ function degisiklikHtml(x, duzenlenebilir, kilitli) {
   return '<li class="degisiklik' + (yuksek ? " yuksek-risk" : "") + '"><div class="degisiklik-ust"><strong>' + x.id + "</strong> " +
     kacis(x.bulgu_aciklamasi) + ' <span class="ayr">' + kacis(x.dosya) + " · " + kacis(x.uretici) + "</span> " + isaretler + "</div>" +
     '<p class="gerekce">' + kacis(x.gerekce) + "</p>" +
+    (!oto && x.guven_nedenleri && x.guven_nedenleri.length
+      ? '<p class="ayr">Düşük güven nedeni: ' + x.guven_nedenleri.map(kacis).join("; ") + "</p>" : "") +
     (yuksek && x.etki ? '<p class="etki"><strong>Olası etki:</strong> ' + kacis(x.etki) + "</p>" : "") +
     (x.kaynaklar && x.kaynaklar.length ? '<p class="ayr">Kaynak: ' + x.kaynaklar.map((k) => kacis(k.id + (k.baslik ? " " + k.baslik : ""))).join(", ") + "</p>" : "") +
     duzen + "<details><summary>Değişiklik (diff)</summary><pre class=\"diff\">" + kacis(x.diff || "") + "</pre></details>" +
@@ -508,7 +524,9 @@ function yoneticiPaneliniCiz(p, y) {
   const kilitli = p.asama !== "plan_hazir";
   const s = p.sayilar;
   $("#yonetici-notu").textContent = s.kural + " kural · " + s.yz + " YZ önerisi (" + s.yuksek_risk + " yüksek risk) · " +
-    p.elle.length + " elle yapılacak iş" + (p.model ? " · model " + p.model : " · model seçilmedi") + " · " + p.klasor;
+    p.elle.length + " elle yapılacak iş" + (p.model ? " · model " + p.model : " · model seçilmedi") +
+    (p.esik !== undefined && p.esik !== null ? " · güven eşiği " + Number(p.esik).toFixed(2) + ": " + s.otomatik +
+      " otomatik onaylı, " + s.onay_gerekli + " onay bekliyor" : "") + " · " + p.klasor;
   let h = "";
   if (y.asama === "tamam" && y.rapor) {
     const o = y.rapor.puanlar.once, so = y.rapor.puanlar.sonra || {};
@@ -525,7 +543,8 @@ function yoneticiPaneliniCiz(p, y) {
   h += '<ul class="degisiklik-listesi">' + kural.map((x) => degisiklikHtml(x, false, kilitli)).join("") + "</ul>";
   const yz = p.gruplar.yz;
   h += '<h3>' + ipucuHtml(KATEGORI_ADI.yz, "cozum_yz") + " (" + yz.length + ")</h3>" +
-    (kilitli ? "" : '<p class="not">Her öneriyi tek tek onaylayın, düzenleyin ya da reddedin. Karar verilmeyen öneri uygulanmaz.</p>') +
+    (kilitli ? "" : '<p class="not">Güven eşiğini geçen öneriler onaylı gelir; istemediğinizi reddedin. Diğerlerini tek tek ' +
+      "onaylayın, düzenleyin ya da reddedin. Karar verilmeyen öneri uygulanmaz.</p>") +
     '<ul class="degisiklik-listesi">' + yz.map((x) => degisiklikHtml(x, x.duzenlenebilir, kilitli)).join("") + "</ul>";
   h += '<h3>' + ipucuHtml(KATEGORI_ADI.elle, "cozum_elle") + " (" + p.elle.length + ")</h3><ul class=\"elle-listesi\">" +
     p.elle.map((e) => "<li>" + kacis(e.bulgu_aciklamasi) + ' <span class="ayr">' + e.sayfalar.length + " sayfa</span>" +
@@ -561,7 +580,8 @@ function yoneticiKararlari() {
 function yoneticiUygula() {
   const k = yoneticiKararlari();
   const onay = Object.values(k.kararlar).filter((x) => x.karar === "onay");
-  const riskEksik = yoneticiPlan.gruplar.yz.filter((x) => x.risk === "yuksek" && k.kararlar[x.id] &&
+  // otomatik onayli yuksek riskli oneride risk guven puaniyla karsilanmistir; ayrica risk onayi istenmez
+  const riskEksik = yoneticiPlan.gruplar.yz.filter((x) => x.risk === "yuksek" && x.onay_turu !== "otomatik" && k.kararlar[x.id] &&
     k.kararlar[x.id].karar === "onay" && !k.kararlar[x.id].risk_onay).map((x) => x.id);
   const uyari = $("#yonetici-uyari");
   if (riskEksik.length) {

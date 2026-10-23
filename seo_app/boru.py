@@ -24,8 +24,8 @@ from urllib.parse import urljoin, urlparse
 from . import canli, rapor as rapor_modulu, tarama
 from .bagimsiz import cwv_sorunlari, pagespeed_seo
 from .cikarma import extract, yapisal_veri
-from .kurallar import (cozum_yolu, ek_html_denetimi, odak_terim_denetimi, puan, puanlar, rule_checks, site_geneli,
-                       site_ozeti, tekillestir)
+from .kurallar import (cozum_yolu, ek_html_denetimi, kanonik_birlestirmeleri, odak_terim_denetimi, puan, puanlar,
+                       rule_checks, site_geneli, site_ozeti, tekillestir, yumusak_404_supheli)
 from .llm import llm_fixes
 from .ogretme import ogretme_metni
 from .render import render_et
@@ -61,6 +61,7 @@ VARSAYILAN_AYARLAR = {
     "link_siniri": 60,            # sayfa basina denetlenecek en fazla site ici baglanti
     "js_render": False,           # sayfa kurulu Chrome/Edge ile render edilip oyle denetlensin
     "ssl_zorunlu": False,         # sertifika dogrulanamazsa dogrulamasiz yeniden denenmesin
+    "oto_esik": 0.8,              # yonetici modu: guven puani bu degeri gecen duzeltmeler onaysiz uygulanir (guven.py)
 }
 GORSEL_DENETIM_SINIRI = 15        # sayfa basina boyutu/durumu denetlenen en fazla gorsel
 BUYUK_GORSEL_BAYT = 200 * 1024
@@ -230,6 +231,14 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
         temel, ek, yv = [], [], {}
     else:
         temel, ek, yv = _sayfa_denetimi(html, d, sayfa_url, link_basligi)
+        kayit["kanonik"] = next((urljoin(sayfa_url, c["href"]) for c in yv.get("canonicallar") or [] if c["href"]), None)
+        supheli = yumusak_404_supheli(d)
+        if supheli:
+            kod = canli.yumusak_404_yoklama(sayfa_url, a["zaman_asimi"], izin=lambda adr: not _robots_engelli(adr))
+            site_sorunlari.append(_site_sorunu(
+                "yumusak_404", "yuksek" if kod == 200 else "orta",
+                supheli + ("; aynı klasördeki var olmayan bir adres de 200 döndü" if kod == 200 else
+                           f"; var olmayan adres {kod} döndü (sayfa içeriği hata bildiriyor)" if kod else "")))
         if a["link_denetimi"]:
             yaz("Bağlantılar ve görseller denetleniyor")
             bag_sorunlari, kayit["baglanti_denetimi"] = baglanti_ve_gorsel_denetimi(yv, a, _robots_engelli)
@@ -322,6 +331,7 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
     sonra_tum = tekillestir(sonra_sayfa + site_sorunlari)
     sonra_kodlar = [i["sorun"] for i in sonra_tum]
     kayit.update({
+        "sonra_sorunlar": sonra_tum,                 # tarama geneli bulgularla puan yeniden hesaplanirken kullanilir
         "sonra_sorun_sayisi": len(sonra_tum),
         "sonra_puan": puan(sonra_tum),
         "sonra_puanlar": puanlar(sonra_tum, sayfa_olculdu=not hata_sayfasi),
@@ -482,9 +492,16 @@ def topluca_analiz(hedefler, ayarlar, ogretme_klasoru, sonuc_koku, alt_yol=None,
         yaz("Sayfa sınırına ulaşıldı; kuyrukta " + str(len(kuyruk)) + " adres taranmadan kaldı.")
     # Sayfalar arasi tekrarlar ve baglanti grafigi tum tarama uzerinden hesaplanir (farkli alt alan
     # adlarindaki ayni meta aciklama da yakalanir); her site klasorune o siteyi ilgilendirenler yazilir.
+    kanonik_birlestirmeleri(rapor)
     bulgular = site_geneli(rapor) + tarama.baglanti_bulgulari(rapor, sitemap_adresleri, site_modu)
     for k in rapor:
         k["tekrar_bulgulari"] = sorted({g["sorun"] for g in bulgular if k.get("ad") in g["sayfalar"]})
+        # tarama geneli bulgular (tekrarlar, yetim sayfa...) ilgili sayfanin puanina da yansir
+        if k.get("once_puanlar"):
+            olculdu = not k.get("hata_sayfasi")
+            k["once_puanlar"] = puanlar(k.get("sorunlar") or [], olculdu, k["tekrar_bulgulari"])
+            k["sonra_puanlar"] = puanlar(k.get("sonra_sorunlar") or k.get("sorunlar") or [], olculdu,
+                                         k["tekrar_bulgulari"])
     if bulgular:
         yaz(str(len(bulgular)) + " tarama geneli bulgu grubu bulundu (site_geneli.json).")
     if bulgular_hazir:

@@ -1,10 +1,10 @@
-"""Adim 10: kategori ve katman bazli normallestirilmis puan (A10)."""
+"""Kategori ve katman bazli puan: carpimsal agirlik, kritik tavan, sayfaya atama (puanlama.py)."""
 import json
 
 import pytest
 from conftest import KOK, html_yap, sahte_canli, sahte_model
 
-from seo_app import boru
+from seo_app import boru, puanlama
 from seo_app.kurallar import (ACIKLAMA, CIDDIYET_AGIRLIK, KATEGORILER, SORUN_TANIMI, TARAMA_GENELI_KODLARI,
                               puan, puanlar)
 
@@ -16,25 +16,57 @@ def sorun(kod, ciddiyet, katman):
 
 
 def test_her_sorun_kodunun_puan_tanimi_var():
-    assert set(ACIKLAMA) - set(TARAMA_GENELI_KODLARI) == set(SORUN_TANIMI)
-    for kat, _, ciddiyet, katmanlar in SORUN_TANIMI.values():
+    assert set(ACIKLAMA) == set(SORUN_TANIMI)
+    for kod, (kat, _, ciddiyet, katmanlar) in SORUN_TANIMI.items():
         assert kat in KATEGORILER and ciddiyet in CIDDIYET_AGIRLIK
-        assert set(katmanlar.split()) <= {"sayfa", "site"}
+        assert set(katmanlar.split()) <= {"sayfa", "site", "tarama"}
+        assert ("tarama" in katmanlar) == (kod in TARAMA_GENELI_KODLARI)
+    assert set(puanlama.TARAMA_CIDDIYETI) == set(TARAMA_GENELI_KODLARI)
+    assert set(puanlama.TAVAN) | set(puanlama.SAYFAYA_OZGU) | set(puanlama.KOD_CIDDIYETI) <= set(SORUN_TANIMI)
 
 
-def test_sorunsuz_sayfa_100_tum_sayfa_sorunlari_0():
+def test_sorunsuz_sayfa_100_tum_sayfa_sorunlari_sifira_yakin():
     assert puanlar([])["sayfa"] == 100
-    # her sayfa grubundan en agir sorun bir arada -> en kotu durum
-    en_kotu, gorulen = [], set()
-    for kod, (kat, grup, ciddiyet, katmanlar) in SORUN_TANIMI.items():
-        if "sayfa" in katmanlar.split():
-            agirlik = CIDDIYET_AGIRLIK[ciddiyet]
-            onceki = next((s for s in en_kotu if SORUN_TANIMI[s["sorun"]][1] == grup), None)
-            if onceki is None or CIDDIYET_AGIRLIK[onceki["ciddiyet"]] < agirlik:
-                if onceki:
-                    en_kotu.remove(onceki)
-                en_kotu.append(sorun(kod, ciddiyet, "sayfa"))
-    assert puanlar(en_kotu)["sayfa"] == 0
+    en_kotu = [sorun(kod, ciddiyet, "sayfa") for kod, (_, _, ciddiyet, k) in SORUN_TANIMI.items() if "sayfa" in k]
+    assert puanlar(en_kotu)["sayfa"] <= 5
+
+
+def test_tek_yuksek_sorun_belirgin_dusurur_ve_sorunlar_birikir():
+    """Eski hesapta tek yuksek sorun sayfa puanini 6,6 puan dusuruyordu; artik agirligi kadar (%20)."""
+    tek = puanlar([sorun("meta_description_yok", "yuksek", "sayfa")])["sayfa"]
+    assert tek == 80
+    bes = puanlar([sorun("meta_description_yok", "yuksek", "sayfa"), sorun("img_alt_eksik", "orta", "sayfa"),
+                   sorun("viewport_yok", "orta", "sayfa"), sorun("canonical_yok", "dusuk", "sayfa"),
+                   sorun("html_lang_yok", "dusuk", "sayfa")])["sayfa"]
+    assert bes < 65 < tek
+
+
+def test_sorun_eklemek_puani_hic_artirmaz():
+    kodlar = [(k, c) for k, (_, _, c, katman) in SORUN_TANIMI.items() if "sayfa" in katman][:25]
+    onceki, liste = 100, []
+    for kod, c in kodlar:
+        liste.append(sorun(kod, c, "sayfa"))
+        p = puanlar(liste)["sayfa"]
+        assert p <= onceki
+        onceki = p
+
+
+def test_ayni_grup_bir_kez_cezalanir():
+    assert puanlar([sorun("title_kisa", "orta", "sayfa"), sorun("title_uzun", "orta", "sayfa")])["sayfa"] == 91
+
+
+def test_kritik_sorun_tavani():
+    assert puanlar([sorun("noindex", "yuksek", "sayfa")])["sayfa"] == 60
+    assert puanlar([sorun("yumusak_404", "yuksek", "site")])["sayfa"] == 40
+
+
+def test_sayfaya_ozgu_site_bulgusu_ve_tarama_geneli_bulgu_sayfa_puanina_girer():
+    temel = puanlar([])["sayfa"]
+    assert puanlar([sorun("kirik_ic_link", "orta", "site")])["sayfa"] < temel
+    assert puanlar([sorun("https_yok", "yuksek", "site")])["sayfa"] == temel        # site geneli: site puaninda
+    assert puanlar([sorun("https_yok", "yuksek", "site")])["site"] == 80
+    p = puanlar([], tarama_kodlari=["title_tekrar", "icerik_tekrar"])
+    assert p["sayfa"] == 70 and p["icerik"] == 70                                   # kopya icerik tavani 70
 
 
 def test_eski_olcegi_sifirlayan_sorunlar_yeni_olcekte_ayirt_edilir():

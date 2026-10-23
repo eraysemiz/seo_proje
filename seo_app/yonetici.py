@@ -114,7 +114,7 @@ def tara_ve_planla(hedefler, kok, temel_url, ayarlar, ogretme_klasoru, sonuc_kok
     bulgular = _json_oku(klasor / "site_geneli.json") if (klasor / "site_geneli.json").exists() else []
     yaz("Değişiklik planı hazırlanıyor (siteye henüz hiçbir şey yazılmıyor)")
     plan = duzeltme.plan_uret(rapor, bulgular, adaptor, temel_url, ayarlar.get("dil", "tr"),
-                              yz_istemcisi(ayarlar, ogretme_klasoru), gunluk=yaz)
+                              yz_istemcisi(ayarlar, ogretme_klasoru), gunluk=yaz, esik=ayarlar.get("oto_esik"))
     plan["tarama"] = {"hedefler": hedefler, "ayarlar": {k: v for k, v in tarama_ayarlari.items() if k != "model"},
                       "ogretme_klasoru": str(ogretme_klasoru), "zaman": zaman}
     _json_yaz(klasor / "degisiklikler.json", plan)
@@ -122,7 +122,9 @@ def tara_ve_planla(hedefler, kok, temel_url, ayarlar, ogretme_klasoru, sonuc_kok
                                          encoding="utf-8")
     o = plan_ozeti(plan)
     yaz(f"Plan hazır: {o['sayilar']['kural']} kural, {o['sayilar']['yz']} YZ önerisi "
-        f"({o['sayilar']['yuksek_risk']} yüksek risk), {len(plan['elle'])} elle yapılacak iş. Onay bekleniyor.")
+        f"({o['sayilar']['yuksek_risk']} yüksek risk), {len(plan['elle'])} elle yapılacak iş. "
+        f"{o['sayilar']['otomatik']} değişiklik güven eşiğini ({plan['esik']:.2f}) geçti ve otomatik onaylı; "
+        f"{o['sayilar']['onay_gerekli']} değişiklik onay bekliyor.")
     return klasor, plan
 
 
@@ -132,7 +134,8 @@ def plan_ozeti(plan, oku=None):
     for d in plan["degisiklikler"]:
         oge = {k: d.get(k) for k in ("id", "kategori", "risk", "bulgu", "bulgu_aciklamasi", "url", "dosya", "konum",
                                      "eski", "yeni", "gerekce", "kaynaklar", "uretici", "etki", "yer_tutucu",
-                                     "dogrulama", "durum", "durum_nedeni", "onay_turu")}
+                                     "dogrulama", "durum", "durum_nedeni", "onay_turu", "guven", "guven_nedenleri",
+                                     "zorunlu_onay", "deneme")}
         oge["duzenlenebilir"] = bool(d.get("duzenleme")) and d["kategori"] == "yz"
         if oku:
             oge["diff"] = duzeltme.degisiklik_diff(d, oku(d["dosya"]))
@@ -142,8 +145,11 @@ def plan_ozeti(plan, oku=None):
             "sayilar": {"kural": len(gruplar["kural"]), "yz": len(yz),
                         "yuksek_risk": sum(1 for d in yz if d["risk"] == "yuksek"),
                         "gecersiz": sum(1 for d in plan["degisiklikler"] if d["durum"] == "gecersiz"),
-                        "yer_tutucu": sum(1 for d in plan["degisiklikler"] if d["yer_tutucu"])},
-            "hedef": plan["hedef"], "model": plan.get("model")}
+                        "yer_tutucu": sum(1 for d in plan["degisiklikler"] if d["yer_tutucu"]),
+                        "otomatik": sum(1 for d in plan["degisiklikler"] if d.get("onay_turu") == "otomatik"),
+                        "onay_gerekli": sum(1 for d in plan["degisiklikler"]
+                                            if d.get("onay_turu") != "otomatik" and d["durum"] != "gecersiz")},
+            "hedef": plan["hedef"], "model": plan.get("model"), "esik": plan.get("esik")}
 
 
 def kararlari_kaydet(klasor, kararlar):
@@ -171,7 +177,10 @@ def uygula_ve_dogrula(klasor, kararlar, sonuc_kok, gunluk=None, tekrar_tara=True
     (klasor / "uygulanan.diff").write_text("".join(v["diff"] for v in ozet["dosyalar"].values()), encoding="utf-8")
     ozet_kayit = {"zaman": time.strftime("%Y-%m-%d %H:%M:%S"), "yedek": ozet["yedek"], "uygulanan": ozet["uygulanan"],
                   "dosyalar": {d: {k: v[k] for k in ("once", "sonra")} for d, v in ozet["dosyalar"].items()},
-                  "durumlar": _durum_sayilari(plan)}
+                  "durumlar": _durum_sayilari(plan), "esik": duzeltme.onay_esigi(plan, kararlar),
+                  "onay_kaynaklari": {kaynak: sum(1 for d in plan["degisiklikler"] if d["durum"] == "uygulandi"
+                                                  and d.get("onay_kaynagi") == kaynak)
+                                      for kaynak in ("otomatik", "kullanıcı", "toplu")}}
     _json_yaz(klasor / "uygulama.json", ozet_kayit)
     yaz(f"{ozet['uygulanan']} değişiklik uygulandı ({len(ozet['dosyalar'])} dosya).")
     if ozet["yedek"]:
@@ -253,7 +262,8 @@ def yonetici_raporu(klasor):
     for d in plan["degisiklikler"]:
         durumlar.setdefault(d["kategori"], {}).setdefault(d["durum"], []).append(
             {k: d.get(k) for k in ("id", "bulgu", "bulgu_aciklamasi", "url", "dosya", "eski", "yeni", "gerekce", "risk",
-                                   "etki", "durum_nedeni", "uretici", "kaynaklar", "yer_tutucu")})
+                                   "etki", "durum_nedeni", "uretici", "kaynaklar", "yer_tutucu", "guven",
+                                   "guven_nedenleri", "zorunlu_onay", "onay_kaynagi")})
     uygulama = _json_oku(klasor / "uygulama.json") if (klasor / "uygulama.json").exists() else None
     rapor = {"klasor": str(klasor), "hedef": plan["hedef"], "model": plan.get("model"), "zaman": time.strftime("%Y-%m-%d %H:%M:%S"),
              "puanlar": {"once": once_p, "sonra": sonra_p}, "durumlar": durumlar, "elle": plan["elle"],

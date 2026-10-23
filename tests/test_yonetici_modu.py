@@ -220,8 +220,11 @@ def _kayitlar(*kodlar):
              "sorunlar": [{"sorun": k, "katman": "site" if k == "https_yok" else "sayfa"} for k in kodlar]}]
 
 
-def _plan(a, yz=None, kodlar=("html_lang_yok", "viewport_yok", "h1_birden_fazla", "noindex", "https_yok")):
-    return dz.plan_uret(_kayitlar(*kodlar), [], a, TEMEL, yz=yz)
+ELLE = 1.01   # esik 1'in ustunde: hicbir degisiklik otomatik onayli gelmez (elle onay akisini sinamak icin)
+
+
+def _plan(a, yz=None, kodlar=("html_lang_yok", "viewport_yok", "h1_birden_fazla", "noindex", "https_yok"), esik=ELLE):
+    return dz.plan_uret(_kayitlar(*kodlar), [], a, TEMEL, yz=yz, esik=esik)
 
 
 def _bul(plan, bulgu):
@@ -304,14 +307,18 @@ def test_belgeyi_bozan_degisiklik_uygulanmaz(tmp_path):
 
 
 class SahteYZ:
-    """YZIstemcisi yerine: sirayla verilen cevaplari dondurur (model ve ag yok)."""
+    """YZIstemcisi yerine: sirayla verilen cevaplari dondurur, son cevap tekrarlanir (model ve ag yok).
+    Gelen gorevler (yeniden deneme isteği dahil) kaydedilir."""
     model = "sahte-model"
 
     def __init__(self, *cevaplar):
         self.cevaplar = list(cevaplar)
+        self.gorevler = []
 
     def iste(self, gorev, d, kodlar, sayfa_verisi, dil="tr"):
-        return {"deger": self.cevaplar.pop(0), "gerekce": "sahte gerekçe", "kaynaklar": [{"id": "t01"}],
+        self.gorevler.append(gorev)
+        deger = self.cevaplar.pop(0) if len(self.cevaplar) > 1 else self.cevaplar[0]
+        return {"deger": deger, "gerekce": "sahte gerekçe", "kaynaklar": [{"id": "t01"}],
                 "kaynak_metni": "Başlık 30-60 karakter olmalı."}
 
 

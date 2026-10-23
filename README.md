@@ -108,7 +108,10 @@ standart modda **yalnızca** `model` sorunları gönderilir.
 ## İki mod: standart ve yönetici
 
 **Standart mod (Mod 2)** erişimimiz olmayan siteler içindir. Site indirilir, analiz edilir ve
-raporlanır; siteye hiçbir şey yazılmaz. Analiz ve puanlar önceki sürümle birebir aynıdır.
+raporlanır; siteye hiçbir şey yazılmaz. Yönetici moduyla aynı analizi ve aynı puanlamayı kullanır.
+Doğruluk iyileştirmesinden (`dogruluk-iyilestirme` dalı) sonra standart modda da yeni denetimler
+(charset, render'ı engelleyen betik, URL'de büyük harf, yumuşak 404, sitemap'te yönlendirme) ve yeni
+puanlama geçerlidir. Önceki taramalarla puanlar doğrudan karşılaştırılamaz.
 
 **Yönetici modu (Mod 1)** admin erişimimiz olan siteler içindir. Akış: analiz → değişiklik planı →
 önizleme → onay → yedek + uygulama → otomatik tekrar tarama → önce/sonra raporu.
@@ -125,25 +128,41 @@ raporlanır; siteye hiçbir şey yazılmaz. Analiz ve puanlar önceki sürümle 
 - **YZ önerilerinin doğrulanması:** Model yalnızca sitedeki içerikten ve bilgi tabanından
   yararlanır. Sitede olmayan bir olgu gerekiyorsa `[doğrulanmalı: …]` yer tutucusu yazar; böyle bir
   öneri, değer elle doldurulmadan uygulanamaz. Her öneri şunlardan geçer: uzunluk, dil, bozuk
-  karakter ve harfleri düşürülmüş Türkçe (cay/çay) denetimi; sayfada olmayan sayı ve doğrulanamayan
-  övgü denetimi; JSON-LD şeması. Geçemeyen öneri uygulanmaz ve nedeniyle raporlanır.
+  karakter ve harfleri düşürülmüş Türkçe (cay/çay) denetimi; sayfada olmayan sayı, özel ad ve
+  doğrulanamayan övgü denetimi; JSON-LD şeması. Geçemeyen öneri, ret nedeniyle birlikte modele bir
+  kez daha sorulur; yine geçemezse uygulanmaz ve nedeniyle raporlanır. Bozuk JSON-LD sözdizimi ve
+  fiyat/para birimi yazımı (`1.250` → `1250`, `TL` → `TRY`) modele gitmeden deterministik düzeltilir.
 - **Güvenli uygulama:**
   - Önce sitenin tam yedeği alınır.
   - Plandan sonra değişmiş dosyaya yazılmaz.
   - HTML, XML ya da JSON-LD geçerliliğini bozacak değişiklik reddedilir.
   - Her sonuç günlüğe yazılır.
   - Son uygulama tek komutla geri alınır ve dosya hash'leriyle doğrulanır.
-- **Onay:** Kural grubu toplu onaylanabilir. YZ önerileri tek tek onaylanır, düzenlenir ya da
-  reddedilir. Yüksek riskli öneriler ayrıca risk onayı ister. Onaysız hiçbir değişiklik yazılmaz.
+- **Güven puanı ve onay** (`seo_app/guven.py`): Her değişikliğin 0–1 arası bir güven puanı ve düşük
+  güven nedeni vardır. Puan şuna göre belirlenir:
+  - Kural düzeltmeleri: kural başına sabit değer. Örneğin görsel boyutu 0,98; `defer` ekleme 0,60.
+  - Sezgisel yapısal kararlar: kanıta göre. Örneğin canonical'ın gösterdiği sayfa 404 dönüyor ya da
+    içerik ondan açıkça farklıysa güven yüksek; içerikler benzerse sayfa gerçekten kopya olabilir,
+    güven düşük.
+  - Dil modeli önerileri: alan tabanı (title/meta/H1 0,92, paragraf 0,70). Yeniden deneme ve önerideki
+    kelimelerin kaynakta geçmeme oranı puanı düşürür.
 
-Arayüzde mod formun ilk adımında seçilir; yönetici modunda kök klasör ve temel adres istenir.
-Komut satırından:
+  **Eşiği** (`oto_esik`, varsayılan 0,8; `--esik`, web formu, masaüstü) geçen değişiklikler otomatik
+  onaylı gelir ve reddedilebilir; altındakiler onay ister. Şunlar güven ne olursa olsun her zaman
+  onaya düşer: `[doğrulanmalı]` yer tutuculu içerik, sayfayı canonical ile başka sayfaya bağlayıp
+  dizinden düşüren birleştirme, noindex/nofollow/Disallow ekleyen ve büyük bir içerik bloğunu silen
+  değişiklikler. Onay ekranı güven puanını ve nedenini gösterir. Eşiğin altındaki yüksek riskli
+  öneriler ayrıca risk onayı ister. Otomatik uygulananlar da aynı yedek, günlük, diff ve geri alma
+  yolundan geçer.
+
+Arayüzde mod formun ilk adımında seçilir; yönetici modunda kök klasör, temel adres ve güven eşiği
+istenir. Komut satırından:
 
 ```
-py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model qwen/qwen3.5-9b
-py yonet.py onizle sonuclar/127.0.0.1/sonuc_<tarih_saat> [--diff]
-py yonet.py onayla <klasör> --kural-hepsi --onay D021 D030 --riski-kabul D030 --ret D033 --duzenle "D021=Yeni başlık | Site"
-py yonet.py uygula <klasör>        # yedek + uygulama + günlük + tekrar tarama + yonetici_raporu.html
+py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model qwen/qwen3.5-9b [--esik 0.8] [--oto-uygula]
+py yonet.py onizle sonuclar/127.0.0.1/sonuc_<tarih_saat> [--diff]   # güven puanları ve onay bekleyenler
+py yonet.py uygula <klasör>        # onaylar.json yoksa yalnızca otomatik onaylılar uygulanır
+py yonet.py onayla <klasör> --onay D021 D030 --riski-kabul D030 --ret D033 --duzenle "D021=Yeni başlık | Site" [--esik 0.9]
 py yonet.py geri-al sonuclar/127.0.0.1
 ```
 
@@ -161,8 +180,8 @@ betikleri sitenin dışında, `test_sitesi_degerlendirme/` altındadır; analiz 
 py test_sitesi/sunucu.py                         # 1. siteyi başlat (yalnızca http://127.0.0.1:8080)
 py test_sitesi_degerlendirme/dogrula.py          #    kayıtlı 47 sorunun sitede var olduğunu doğrula
 py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model <model>   # 2. tara
-py yonet.py onayla <klasör> --kural-hepsi --onay ... # 3. düzelt (onay)
-py yonet.py uygula <klasör>                      # 4. uygula + tekrar tara
+py yonet.py onayla <klasör> --onay ...           # 3. (isteğe bağlı) eşiğin altındakileri onayla
+py yonet.py uygula <klasör>                      # 4. uygula (otomatik onaylılar + onaylananlar) + tekrar tara
 py test_sitesi_degerlendirme/degerlendir.py --sonuc <klasör>   # 5. değerlendir
 py test_sitesi_degerlendirme/sifirla.py          # 6. sıfırla (hash doğrulamalı)
 ```
@@ -377,11 +396,24 @@ py -m pytest tests
 ## Puanlama hakkında uyarı
 
 Arayüz **sayfa** ve **site** puanlarını ayrı gösterir; ayrıntı panelinde ayrıca içerik, teknik,
-güvenlik ve performans kategori puanları vardır. Her puan 0-100 arasıdır ve o kapsamda görülebilecek
-en kötü durumun cezasına bölünerek hesaplanır (ceza ağırlıkları: yüksek 15, orta 8, düşük 3).
-Böylece birkaç sorun ölçeği 0'a indirmez. Hata sayfasında (4xx/5xx) sayfa katmanı denetlenmez ve
-"ölçülmedi" olarak gösterilir. Eski tek puan (`once_puan` /
-`sonra_puan`) deney karşılaştırılabilirliği için raporda korunur.
+güvenlik ve performans kategori puanları vardır. Hesap ve ağırlıklar tek yapılandırmadadır
+(`seo_app/puanlama.py`):
+
+- Her sorun puanı kendi ağırlığı oranında düşürür: yüksek %20, orta %9, düşük %3,5. Aynı gruptaki
+  sorunlar bir kez sayılır. Puan = 100 × Π(1 − ağırlık).
+- Kritik sorunlarda üst sınır vardır: noindex 60, robots engeli 50, yumuşak 404 40, kopya içerik 70,
+  title yok 75.
+- Sayfa puanına o sayfaya ait site bulguları (kırık bağlantı, yönlendirme, sitemap…) ve sayfayı
+  içeren tarama geneli bulgular (tekrar eden title/meta/H1, kopya içerik, yetim sayfa) da girer.
+  HTTPS gibi site geneli sorunlar site puanında görünür. Yönlendirme ile aynı sayfaya düşen adresler
+  ve doğru canonical'lar kopya sayılmaz.
+
+Önceki hesap cezayı "olabilecek tüm sorunların cezasına" (227) bölüyordu. Bu yüzden yüksek önemli bir
+sorun sayfa puanını yalnızca 6,6 puan düşürüyor, 47 kasıtlı sorunlu test sitesinde sayfaların 26/29'u
+90'ın üzerinde çıkıyordu. Yeni hesapla ortalama 95,3'ten 78,8'e indi. En az iki gerçek sorunu olan 14
+sayfanın 90 ve üstü alanı 13'ten 2'ye düştü. Hata sayfasında (4xx/5xx) sayfa katmanı denetlenmez ve
+"ölçülmedi" olarak gösterilir. Eski tek puan (`once_puan` / `sonra_puan`) deney karşılaştırılabilirliği
+için raporda korunur.
 
 Bu puanlar aracın kendi ölçeğidir, Lighthouse gibi **bağımsız bir ölçüm değildir**. Aracın kendi
 kurallarıyla kendi başarısını ölçmek döngüsel olacağından, ödevde bağımsız bir doğrulama ayrıca
@@ -412,7 +444,9 @@ tests/                   pytest testleri (tests/veri/: RAG ölçüm seti)
 seo_app/
   bagimsiz.py            PageSpeed (Lighthouse) SEO puanı ve Core Web Vitals
   cikarma.py             HTML'den veri çıkarma
-  kurallar.py            kural denetimi, çözüm yolu sınıflandırması, puanlama
+  kurallar.py            kural denetimi, çözüm yolu sınıflandırması, puanlar, tekrar/takma ad denetimi
+  puanlama.py            puan ağırlıkları, kritik sorun tavanları, bulguların sayfaya atanması (tek yapılandırma)
+  guven.py               düzeltme güven puanı, otomatik onay eşiği, her zaman onay isteyen durumlar
   canli.py               canlı erişim denetimleri (robots, sitemap, HTTPS, hız)
   ogretme.py             few-shot ve bilgi tabanı (hibrit RAG)
   rag_olcum.py           getirme ölçütleri (kapsama, isabet, MRR, sorun isabeti)

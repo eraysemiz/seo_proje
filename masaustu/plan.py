@@ -56,17 +56,30 @@ def baslangic_secimleri(plan, onceki):
     return secimler
 
 
+def esik(plan, kararlar=None):
+    e = (kararlar or {}).get("esik")
+    return float(e) if e is not None else float(plan.get("esik", 0.8))
+
+
+def otomatik_mi(d, esik_degeri):
+    """seo_app.guven.otomatik_mi ile ayni kosul: dogrulamadan gecmis, zorunlu onay ve yer tutucu yok,
+    guven esigi geciyor. Guven puani olmayan (eski) planlarda hicbir degisiklik otomatik degildir."""
+    return ("guven" in d and d["dogrulama"]["gecti"] and not d.get("zorunlu_onay") and not d.get("yer_tutucu")
+            and d["guven"] >= esik_degeri)
+
+
 def onaylanan_sayisi(plan, kararlar):
     """Kaydedilmis kararlara gore uygulanacak degisiklik sayisi (duzeltme.kararlari_coz'un
     onay kosullari; duzenlenen degerin dogrulamasi uygulama aninda yapilir)."""
-    sayi = 0
+    sayi, e = 0, esik(plan, kararlar)
     for d in plan["degisiklikler"]:
         k = kararlar["kararlar"].get(d["id"]) or {}
         if d["durum"] == "gecersiz" or k.get("karar") == "ret":
             continue
-        if not (k.get("karar") == "onay" or (d["kategori"] == "kural" and kararlar["kural_hepsi"])):
+        oto = otomatik_mi(d, e)
+        if not (k.get("karar") == "onay" or oto or (d["kategori"] == "kural" and kararlar["kural_hepsi"])):
             continue
-        if d["risk"] == "yuksek" and not k.get("risk_onay"):
+        if d["risk"] == "yuksek" and not k.get("risk_onay") and not oto:
             continue
         sayi += 1
     return sayi

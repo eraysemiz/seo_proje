@@ -9,9 +9,12 @@ Akis:
     py yonet.py uygula <klasor>            # yedek + uygulama + gunluk + otomatik tekrar tarama + rapor
     py yonet.py geri-al sonuclar/127.0.0.1 # son uygulamayi geri al (hash dogrulamali)
 
-Onay kurallari: "Kural çözer" grubu --kural-hepsi ile toplu onaylanabilir; "YZ önerir" onerileri
-yalnizca kimlikleriyle tek tek onaylanir; yuksek riskli oneriler ayrica --riski-kabul ister.
-Onay verilmeyen hicbir degisiklik siteye yazilmaz.
+Onay kurallari: her degisikligin bir guven puani vardir (seo_app/guven.py). Esigi (--esik, varsayilan
+0.8) gecenler otomatik onayli gelir; onaylar.json olmadan 'uygula' yalnizca bunlari yazar, --ret ile
+tek tek reddedilebilirler. Esigin altindakiler ve her zaman onay isteyenler ([doğrulanmalı] yer tutucusu,
+canonical ile birlestirme, indekslemeyi kapatan yonergeler) kimlikleriyle --onay ister; yuksek riskli
+olanlar ayrica --riski-kabul ister. "Kural çözer" grubu --kural-hepsi ile toplu onaylanabilir.
+Onay verilmeyen (otomatik ya da elle) hicbir degisiklik siteye yazilmaz.
 """
 import argparse
 import json
@@ -37,6 +40,8 @@ def _gunluk(mesaj):
 def komut_tara(a):
     ayarlar = {**VARSAYILAN_AYARLAR, "tarama_modu": "site", "en_fazla_sayfa": a.sayfa, "en_fazla_derinlik": a.derinlik,
                "bekleme_sn": a.bekleme, "dil": a.dil, "model": a.model, "embed_model": a.embed_model}
+    if a.esik is not None:
+        ayarlar["oto_esik"] = a.esik
     if a.lm_url:
         ayarlar["url"] = a.lm_url
     if a.model:
@@ -52,7 +57,11 @@ def komut_tara(a):
     print("\nSonuç klasörü:", klasor)
     _ozet_yaz(plan)
     print("\nÖnizleme:", klasor / "onizleme.diff")
-    print("Sonraki adım: py yonet.py onayla", _goreli(klasor), "--kural-hepsi --onay <ID ...> [--riski-kabul <ID ...>]")
+    if a.oto_uygula:
+        print("\n--oto-uygula: yalnızca güven eşiğini geçen değişiklikler uygulanıyor")
+        return _uygula(klasor, {"kural_hepsi": False, "kararlar": {}}, tekrar_tara=True)
+    print("Sonraki adım: py yonet.py uygula", _goreli(klasor), " (yalnızca otomatik onaylılar)")
+    print("        ya da: py yonet.py onayla", _goreli(klasor), "--onay <ID ...> [--riski-kabul <ID ...>] [--ret <ID ...>]")
     return 0
 
 
@@ -68,12 +77,20 @@ def _ozet_yaz(plan, ayrinti=True):
     s = o["sayilar"]
     print(f"\nPlan: {s['kural']} Kural çözer · {s['yz']} YZ önerir ({s['yuksek_risk']} yüksek risk) · "
           f"{len(o['elle'])} Elle düzeltilir · {s['gecersiz']} doğrulamadan geçmeyen · {s['yer_tutucu']} yer tutuculu")
+    if o.get("esik") is not None:
+        print(f"Güven eşiği {o['esik']:.2f}: {s['otomatik']} değişiklik otomatik onaylı, {s['onay_gerekli']} onay bekliyor")
     if not ayrinti:
         return
     for kategori in ("kural", "yz"):
         print(f"\n== {kat.KATEGORI_ADI[kategori]} ==")
         for d in o["gruplar"][kategori]:
             isaret = []
+            if d.get("guven") is not None:
+                isaret.append(f"güven {d['guven']:.2f} " + ("OTOMATİK" if d.get("onay_turu") == "otomatik" else "ONAY"))
+            if d.get("zorunlu_onay"):
+                isaret.append("HER ZAMAN ONAY: " + d["zorunlu_onay"])
+            elif d.get("onay_turu") != "otomatik" and d.get("guven_nedenleri"):
+                isaret.append("; ".join(d["guven_nedenleri"]))
             if d["risk"] == "yuksek":
                 isaret.append("YÜKSEK RİSK")
             if d["durum"] == "gecersiz":
@@ -119,6 +136,8 @@ def komut_onayla(a):
     tek = kararlar.setdefault("kararlar", {})
     if a.kural_hepsi:
         kararlar["kural_hepsi"] = True
+    if a.esik is not None:
+        kararlar["esik"] = a.esik
     for i in a.onay or []:
         if i not in ids:
             raise yonetici.YoneticiHatasi("Bilinmeyen değişiklik kimliği: " + i)
@@ -151,11 +170,24 @@ def komut_onayla(a):
 
 def komut_uygula(a):
     yol = Path(a.klasor) / "onaylar.json"
-    if not yol.exists():
-        print("HATA: Önce 'onayla' komutuyla kararlarınızı kaydedin; onaysız hiçbir değişiklik uygulanmaz.")
-        return 2
-    kararlar = json.loads(yol.read_text(encoding="utf-8"))
-    rapor = yonetici.uygula_ve_dogrula(a.klasor, kararlar, SONUC_KOK, gunluk=_gunluk, tekrar_tara=not a.tekrar_tarama_yok)
+    if yol.exists():
+        kararlar = json.loads(yol.read_text(encoding="utf-8"))
+    else:
+        plan = _plan(a.klasor)
+        oto = sum(1 for d in plan["degisiklikler"] if d.get("onay_turu") == "otomatik")
+        if not oto:
+            print("HATA: Otomatik onaylı değişiklik yok; önce 'onayla' komutuyla kararlarınızı kaydedin.")
+            return 2
+        print(f"Onay kaydı yok: yalnızca güven eşiğini geçen {oto} otomatik onaylı değişiklik uygulanacak.")
+        kararlar = {"kural_hepsi": False, "kararlar": {}}
+    return _uygula(a.klasor, kararlar, tekrar_tara=not a.tekrar_tarama_yok)
+
+
+def _uygula(klasor, kararlar, tekrar_tara=True):
+    rapor = yonetici.uygula_ve_dogrula(klasor, kararlar, SONUC_KOK, gunluk=_gunluk, tekrar_tara=tekrar_tara)
+    kaynaklar = json.loads((Path(klasor) / "uygulama.json").read_text(encoding="utf-8")).get("onay_kaynaklari") or {}
+    if kaynaklar:
+        print("Uygulananların onayı: " + ", ".join(f"{k} {v}" for k, v in kaynaklar.items() if v))
     print("\nPuanlar (önce → sonra):")
     for k in yonetici.PUAN_ANAHTARLARI:
         o, s = rapor["puanlar"]["once"].get(k), (rapor["puanlar"]["sonra"] or {}).get(k)
@@ -163,8 +195,8 @@ def komut_uygula(a):
     for kategori, gruplar in rapor["durumlar"].items():
         print(f"{kat.KATEGORI_ADI[kategori]}: " + ", ".join(f"{yonetici.DURUM_ADI.get(d, d)} {len(v)}" for d, v in gruplar.items()))
     print("Yeni çıkan bulgu:", len(rapor["yeni_bulgular"]))
-    print("Rapor:", Path(a.klasor) / "yonetici_raporu.html")
-    print("Geri almak için: py yonet.py geri-al", _goreli(Path(a.klasor).parent))
+    print("Rapor:", Path(klasor) / "yonetici_raporu.html")
+    print("Geri almak için: py yonet.py geri-al", _goreli(Path(klasor).parent))
     return 0
 
 
@@ -189,6 +221,9 @@ def main():
     t.add_argument("--derinlik", type=int, default=6)
     t.add_argument("--bekleme", type=float, default=0.0)
     t.add_argument("--dil", default="tr")
+    t.add_argument("--esik", type=float, help="otomatik onay güven eşiği 0-1 (varsayılan "
+                                             + str(VARSAYILAN_AYARLAR["oto_esik"]) + ")")
+    t.add_argument("--oto-uygula", action="store_true", help="plan hazır olunca otomatik onaylıları hemen uygula")
     o = alt.add_parser("onizle", help="planı kategorilere göre göster")
     o.add_argument("klasor")
     o.add_argument("--diff", action="store_true", help="gruplu diff'i de yazdır")
@@ -199,6 +234,7 @@ def main():
     k.add_argument("--ret", nargs="*", help="reddedilen öneri kimlikleri")
     k.add_argument("--riski-kabul", nargs="*", help="yüksek riskli önerilerin risk onayı")
     k.add_argument("--duzenle", nargs="*", help="KIMLIK=yeni değer (düzenlenebilir YZ önerileri)")
+    k.add_argument("--esik", type=float, help="bu plan için otomatik onay güven eşiğini değiştir (0-1)")
     u = alt.add_parser("uygula", help="onaylananları yedek alarak uygula, tekrar tara, rapor üret")
     u.add_argument("klasor")
     u.add_argument("--tekrar-tarama-yok", action="store_true")

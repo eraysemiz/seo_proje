@@ -84,14 +84,23 @@ def baglanti_bulgulari(rapor, sitemap_adresleri=(), site_modu=True):
     if site_modu:
         baglanti_alan = set(gelen)
         baslangic = {url_anahtari(k.get("ad")) for k in gecerli if k.get("derinlik") == 0}
-        yetimler = []
+        # sitemap'te listelenen ama baska adrese yonlenen adres yetim degildir: sitemap'in son adresi
+        # listelemesi gerekir (sitemap_yonlendirme). Son adres baglanti aliyorsa sayfa da yetim degildir.
+        yonlenen = {url_anahtari(k["ad"]): k["site_url"] for k in gecerli
+                    if k.get("site_url") and url_anahtari(k["site_url"]) != url_anahtari(k["ad"])}
+        yetimler, yonlendirmeler = [], []
         for adres in dict.fromkeys(sitemap_adresleri):
             a = url_anahtari(adres)
-            if a not in baglanti_alan and a not in baslangic:
+            if a in yonlenen:
+                yonlendirmeler.append(adres)
+            elif a not in baglanti_alan and a not in baslangic:
                 yetimler.append(adres)
         if yetimler:
             bulgular.append(_grup("yetim_sayfa", f"{len(yetimler)} sitemap adresi, {len(gecerli)} taranan sayfaya göre",
                                   yetimler[:500]))
+        if yonlendirmeler:
+            bulgular.append(_grup("sitemap_yonlendirme", f"{len(yonlendirmeler)} sitemap adresi yönlendiriliyor",
+                                  yonlendirmeler[:500]))
         derinler = [k["ad"] for k in gecerli if (k.get("derinlik") or 0) > DERIN_ESIK]
         if derinler:
             bulgular.append(_grup("derin_sayfa", f"{len(derinler)} sayfa {DERIN_ESIK}+ tıklama derinliğinde", derinler))

@@ -46,6 +46,10 @@ pre { white-space:pre-wrap; margin:4px 0; }
 <td class="sayi">{{ r.puanlar.sonra.sayfa_sayisi if r.puanlar.sonra else "—" }}</td><td></td></tr>
 </tbody></table></div>
 <p class="soluk">Puanlar sayfa ortalamasıdır (araçtaki puan hesabıyla aynı). Düzeltmelerle yeni sayfalar taranabilir hale gelirse sayfa sayısı değişebilir.</p>
+{% if r.uygulama and r.uygulama.onay_kaynaklari %}
+<p>Uygulanan değişikliklerin onayı (güven eşiği {{ "%.2f"|format(r.uygulama.esik) }}):
+{% for kaynak, sayi in r.uygulama.onay_kaynaklari.items() if sayi %}{{ kaynak }} {{ sayi }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+{% endif %}
 
 {% for kategori in ["kural", "yz"] %}
 <h2>{{ KATEGORI_ADI[kategori] }}</h2>
@@ -58,12 +62,15 @@ pre { white-space:pre-wrap; margin:4px 0; }
 <thead><tr><th>ID</th><th>Bulgu</th><th>Sayfa / dosya</th><th>Eski → yeni</th><th>Gerekçe / neden</th></tr></thead>
 <tbody>
 {% for d in liste %}
-<tr><td>{{ d.id }}{% if d.risk == "yuksek" %} <span class="cip kotu">yüksek risk</span>{% endif %}</td>
+<tr><td>{{ d.id }}{% if d.risk == "yuksek" %} <span class="cip kotu">yüksek risk</span>{% endif %}
+{% if d.guven is not none %}<br><span class="cip {{ 'iyi' if d.onay_kaynagi == 'otomatik' else '' }}">güven {{ "%.2f"|format(d.guven) }}</span>{% endif %}
+{% if d.onay_kaynagi %}<br><span class="soluk">onay: {{ d.onay_kaynagi }}</span>{% endif %}</td>
 <td>{{ d.bulgu_aciklamasi }}<br><span class="soluk">{{ d.uretici }}</span></td>
 <td>{{ d.url }}<br><code>{{ d.dosya }}</code></td>
 <td><pre>{{ d.eski|truncate(220) }}</pre>→<pre>{{ d.yeni|truncate(400) }}</pre></td>
 <td>{{ d.gerekce }}{% if d.etki %}<br><span class="dikkat">Olası etki: {{ d.etki }}</span>{% endif %}
 {% if d.kaynaklar %}<br><span class="soluk">Kaynak: {{ d.kaynaklar|map(attribute="id")|join(", ") }}</span>{% endif %}
+{% if d.onay_kaynagi != "otomatik" and d.guven_nedenleri %}<br><span class="soluk">Güven notu: {{ d.guven_nedenleri|join("; ") }}</span>{% endif %}
 {% if d.durum_nedeni %}<br><b>{{ d.durum_nedeni }}</b>{% endif %}</td></tr>
 {% endfor %}
 </tbody></table></div>

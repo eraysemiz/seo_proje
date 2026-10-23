@@ -8,8 +8,9 @@ kural tabanli duzeltme veya elle mudahale gerektirir.
 """
 import re
 from collections import defaultdict
-from urllib.parse import urljoin, urlparse
+from urllib.parse import parse_qsl, urljoin, urlparse
 
+from . import puanlama
 from .cikarma import (GENEL_BAGLANTI_METINLERI, GENEL_KOKLER, SERP_GENISLIK, baslik_piksel, imza_benzerligi,
                       kokler, tr_lower, url_anahtari)
 
@@ -132,6 +133,11 @@ ACIKLAMA = {
     "cwv_inp_yavas": "Etkileşime yanıt süresi (INP) yavaş",
     "cwv_cls_yuksek": "Görsel düzen kayması (CLS) yüksek",
     "sayfa_agir": "Sayfanın toplam indirme boyutu büyük (3 MB üstü)",
+    "charset_yok": "Sayfada <meta charset> karakter kodlaması bildirimi yok",
+    "render_engelleyen_kaynak": "<head> içindeki betikler async/defer olmadan yükleniyor (sayfanın görüntülenmesini geciktirir)",
+    "url_buyuk_harf": "Adreste büyük harf var (aynı sayfa farklı yazımlarla ayrı adres sayılabilir)",
+    "yumusak_404": "Hata sayfası 200 durum koduyla dönüyor (yumuşak 404)",
+    "sitemap_yonlendirme": "Sitemap'te yönlendirilen bir adres listeleniyor",
 }
 
 # Sorun basina somut duzeltme onerisi (raporda "Nasil duzeltilir" olarak gosterilir).
@@ -236,6 +242,11 @@ DUZELTME = {
     "cwv_inp_yavas": "Uzun JavaScript görevlerini bölün, gereksiz üçüncü taraf betikleri kaldırın.",
     "cwv_cls_yuksek": "Görsel, reklam ve gömülü öğelere sabit boyut verin; içerik üstüne sonradan öğe eklemeyin.",
     "sayfa_agir": "Görselleri sıkıştırın, kullanılmayan JS/CSS'i kaldırın, yazı tiplerini alt kümeye indirin.",
+    "charset_yok": "<head>'in başına <meta charset=\"utf-8\"> ekleyin.",
+    "render_engelleyen_kaynak": "Head'deki betiklere defer (çalışma sırası önemliyse) ya da async ekleyin; kritik olmayanları sayfa sonuna taşıyın.",
+    "url_buyuk_harf": "Adresleri küçük harfle yayınlayın; büyük harfli adresi 301 ile küçük harfliye yönlendirip bağlantıları güncelleyin.",
+    "yumusak_404": "Bulunamayan sayfalar için sunucu 404 (kalıcı olarak kaldırıldıysa 410) durum kodu döndürmeli.",
+    "sitemap_yonlendirme": "Sitemap'te yönlendirmenin son adresini listeleyin.",
 }
 
 KURUM_SCHEMA_TURLERI = {"Organization", "EducationalOrganization", "CollegeOrUniversity",
@@ -320,6 +331,17 @@ def _ana_sayfa_mi(url):
     return url is None or urlparse(url).path in ("", "/") and not urlparse(url).query
 
 
+def parametre_kanonigi_mi(sayfa_url, hedef):
+    """Parametreli adresin canonical'i ayni yolun parametresiz (ya da parametrelerinin bir alt kumesiyle
+    yazilmis) bicimini gosteriyorsa bu dogru kullanimdir: siralama/izleme parametreli kopyalar asil
+    adrese baglanir. Boyle bir canonical 'baska adresi gosteriyor' sayilmaz."""
+    s, h = urlparse(sayfa_url), urlparse(hedef)
+    if not s.query or url_anahtari(s._replace(query="", fragment="").geturl()) != \
+            url_anahtari(h._replace(query="", fragment="").geturl()):
+        return False
+    return set(parse_qsl(h.query)) <= set(parse_qsl(s.query))
+
+
 def canonical_denetimi(yv, sayfa_url, add):
     """Canonical etiketinin yapisi ve hedefi. noindex ile birlikte celiski de burada denetlenir."""
     hepsi = yv.get("canonicallar") or []
@@ -340,7 +362,7 @@ def canonical_denetimi(yv, sayfa_url, add):
         add("canonical_goreli", "dusuk", html_c[0]["href"][:100])
     hedef = urljoin(sayfa_url, asil)
     noindex = bool({"noindex", "none"} & set(yv.get("robots_yonergeleri") or []))
-    if url_anahtari(hedef) != url_anahtari(sayfa_url):
+    if url_anahtari(hedef) != url_anahtari(sayfa_url) and not parametre_kanonigi_mi(sayfa_url, hedef):
         add("canonical_capraz", "dusuk", hedef[:160])
         if noindex:
             add("noindex_canonical_catismasi", "orta", hedef[:160])
@@ -432,6 +454,13 @@ def ek_html_denetimi(yv: dict, sayfa_url=None) -> list:
         add("js_yonlendirme", "dusuk", "satır içi betikte location ataması")
     if yv.get("js_iskelet"):
         add("js_bagimli_icerik", "orta", "ham HTML'de 50'den az kelime; uygulama iskeleti (tahmin)")
+    if yv.get("engelleyen_betikler"):
+        b = yv["engelleyen_betikler"]
+        add("render_engelleyen_kaynak", "orta", f"{len(b)} betik: " + ", ".join(b[:3])[:150])
+    if not yv.get("charset_meta", True):
+        add("charset_yok", "dusuk")
+    if sayfa_url and re.search(r"[A-Z]", urlparse(sayfa_url).path):
+        add("url_buyuk_harf", "dusuk", urlparse(sayfa_url).path[:120])
     seviyeler = yv.get("baslik_seviyeleri") or []
     atlamalar = [f"H{a}->H{b}" for a, b in zip(seviyeler, seviyeler[1:]) if b > a + 1]
     if atlamalar:
@@ -459,6 +488,21 @@ def ek_html_denetimi(yv: dict, sayfa_url=None) -> list:
     return issues
 
 
+HATA_IFADESI = re.compile(r"bulunamad|bulunmuyor|mevcut değil|artık yok|kaldırıldı|not found|\b404\b|"
+                          r"no longer (available|exists)|does not exist|page unavailable")
+YUMUSAK_404_KELIME = 150
+
+
+def yumusak_404_supheli(d: dict):
+    """200 donen sayfanin basligi ya da H1'i bir hata bildiriyorsa ve icerik inceyse (hata sayfasi kalibi)
+    suphe ayrintisi, degilse None. Kesinlesmesi icin canli.yumusak_404_yoklama ile sunucu da sinanir."""
+    metin = tr_lower(" ".join([d.get("title") or ""] + list(d.get("h1") or [])))
+    kelime = d.get("icerik_kelime_sayisi", d.get("word_count") or 0)
+    if HATA_IFADESI.search(metin) and kelime < YUMUSAK_404_KELIME:
+        return f"başlık/H1 hata bildiriyor ({(d.get('title') or ' / '.join(d.get('h1') or []))[:60]}), {kelime} kelime"
+    return None
+
+
 def odak_terim_denetimi(d: dict) -> list:
     """Title, H1 ve icerik arasinda ortak anahtar terim olup olmadigini denetler.
     Kokler 5 harfe kisaltildigi icin Turkce ek farklari tolere edilir; kurumlarin her sayfada
@@ -480,12 +524,51 @@ def _normal(metin):
     return " ".join((metin or "").lower().split())
 
 
+def kimlik(k):
+    """Kaydin temsil ettigi asil sayfa. Yonlendirilen adres (ayni son adres), parametreli adresin kendi
+    yoluna verdigi canonical ve neredeyse ayni icerige verilen canonical (kanonik_birlestirmeleri) ayni
+    sayfayi gosterir; tekrar denetimleri bu kimlikler arasinda yapilir, takma adlar kopya sayilmaz."""
+    kendi = k.get("site_url") or k.get("ad")
+    kanonik = k.get("kanonik")
+    if kanonik and (k.get("kanonik_birlestirme") or parametre_kanonigi_mi(k.get("ad") or kendi, kanonik)):
+        return url_anahtari(kanonik)
+    return url_anahtari(kendi)
+
+
+def _kimlige_gore_tekil(kayitlar):
+    """Her asil sayfa icin tek kayit (oncelik: adresi kendi kimligi olan kayit)."""
+    secilen = {}
+    for k in kayitlar:
+        a = kimlik(k)
+        if a not in secilen or url_anahtari(k.get("ad")) == a:
+            secilen[a] = k
+    return [k for k in kayitlar if secilen.get(kimlik(k)) is k]
+
+
+def kanonik_birlestirmeleri(rapor):
+    """Neredeyse ayni icerikli bir sayfaya verilen canonical bilincli bir birlestirmedir: kopya sayfa
+    asil sayfaya baglanmistir. Bu sayfadaki 'canonical baska adresi gosteriyor' bulgusu sorun degildir
+    ve kaldirilir; kayda kanonik_birlestirme (asil sayfa) yazilir. Farkli icerikli sayfaya verilen
+    canonical (asil sayfanin yanlislikla baska urune baglanmasi gibi) bulgu olarak kalir."""
+    adaylar = {url_anahtari(k.get("site_url") or k.get("ad")): k for k in rapor
+               if k.get("icerik_imzasi") and (k.get("icerik_kelime_sayisi") or 0) >= EN_AZ_KELIME_TEKRAR}
+    for k in rapor:
+        hedef = adaylar.get(url_anahtari(k.get("kanonik") or ""))
+        if hedef is None or hedef is k or (k.get("icerik_kelime_sayisi") or 0) < EN_AZ_KELIME_TEKRAR:
+            continue
+        if imza_benzerligi(k.get("icerik_imzasi") or [], hedef["icerik_imzasi"]) >= BENZERLIK_ESIGI:
+            k["kanonik_birlestirme"] = hedef.get("ad")
+            for alan in ("sorunlar", "sonra_sorunlar"):
+                if k.get(alan):
+                    k[alan] = [i for i in k[alan] if i["sorun"] != "canonical_capraz"]
+
+
 def site_geneli(rapor: list) -> list:
     """Taramadaki sayfalar arasinda tekrar eden title / meta / H1 degerlerini bulur.
-    Her kayit icin tek tek bakilarak gorulemeyen, tarama geneline ait bir denetimdir.
-    Grup listesi dondurur: [{"sorun", "deger", "sayfalar"}]."""
+    Her kayit icin tek tek bakilarak gorulemeyen, tarama geneline ait bir denetimdir. Ayni asil sayfanin
+    takma adlari (kimlik) tek sayfa sayilir. Grup listesi dondurur: [{"sorun", "deger", "sayfalar"}]."""
     gruplar = {"title_tekrar": defaultdict(list), "meta_tekrar": defaultdict(list), "h1_tekrar": defaultdict(list)}
-    for k in rapor:
+    for k in _kimlige_gore_tekil(rapor):
         if k.get("hata") or k.get("atlandi") or k.get("hata_sayfasi"):
             continue
         if _normal(k.get("title")):
@@ -506,8 +589,8 @@ EN_AZ_KELIME_TEKRAR = 50          # cok kisa sayfalarin (giris, hata) benzerligi
 def icerik_tekrarlari(rapor):
     """Ana icerik metni birebir ayni (icerik_tekrar) ya da %90 ustu benzer (icerik_benzer) sayfa
     gruplari. Imzalar cikarma.icerik_imzasi ile uretilir; benzer gruplar birlesim-bul ile toplanir."""
-    adaylar = [k for k in rapor if k.get("icerik_imzasi") and not (k.get("hata") or k.get("atlandi") or
-               k.get("hata_sayfasi")) and (k.get("icerik_kelime_sayisi") or 0) >= EN_AZ_KELIME_TEKRAR]
+    adaylar = [k for k in _kimlige_gore_tekil(rapor) if k.get("icerik_imzasi") and not (k.get("hata") or
+               k.get("atlandi") or k.get("hata_sayfasi")) and (k.get("icerik_kelime_sayisi") or 0) >= EN_AZ_KELIME_TEKRAR]
     birebir = defaultdict(list)
     for k in adaylar:
         birebir[tuple(k["icerik_imzasi"])].append(k["ad"])
@@ -641,44 +724,51 @@ SORUN_TANIMI = {
     "cwv_inp_yavas": ("performans", "inp", "orta", "site"),
     "cwv_cls_yuksek": ("performans", "cls", "orta", "site"),
     "sayfa_agir": ("performans", "agirlik", "dusuk", "site"),
+    # --- dogruluk iyilestirmesi ile eklenen denetimler ---
+    "charset_yok": ("teknik", "charset", "dusuk", "sayfa"),
+    "render_engelleyen_kaynak": ("performans", "engelleyen", "orta", "sayfa"),
+    "url_buyuk_harf": ("teknik", "url_harf", "dusuk", "sayfa"),
+    "yumusak_404": ("teknik", "erisim", "yuksek", "site"),
+    # --- tarama geneli (sayfalar arasi); ciddiyetleri puanlama.TARAMA_CIDDIYETI ---
+    "title_tekrar": ("icerik", "title_tekrar", "orta", "tarama"),
+    "meta_tekrar": ("icerik", "meta_tekrar", "dusuk", "tarama"),
+    "h1_tekrar": ("icerik", "h1_tekrar", "dusuk", "tarama"),
+    "icerik_tekrar": ("icerik", "icerik_tekrar", "yuksek", "tarama"),
+    "icerik_benzer": ("icerik", "icerik_tekrar", "orta", "tarama"),
+    "yetim_sayfa": ("teknik", "yetim", "orta", "tarama"),
+    "derin_sayfa": ("teknik", "derin", "dusuk", "tarama"),
+    "hreflang_donus_yok": ("teknik", "hreflang_donus", "dusuk", "tarama"),
+    "sitemap_yonlendirme": ("teknik", "sitemap_yon", "dusuk", "tarama"),
 }
 KATEGORILER = ("icerik", "teknik", "guvenlik", "performans")
 # tarama geneline ait bulgular (site_geneli, tarama.baglanti_bulgulari); sayfa kaydinin sorunlarina
-# girmez, puanlanmaz
+# girmez, kayda tekrar_bulgulari olarak yazilir ve ilgili sayfanin puanina eklenir (puanlama.TARAMA_CIDDIYETI)
 TARAMA_GENELI_KODLARI = ("title_tekrar", "meta_tekrar", "h1_tekrar", "icerik_tekrar", "icerik_benzer",
-                         "yetim_sayfa", "derin_sayfa", "hreflang_donus_yok")
+                         "yetim_sayfa", "derin_sayfa", "hreflang_donus_yok", "sitemap_yonlendirme")
 
 
-def _azami_ceza(katmanlar, kategori=None):
-    """Verilen katmanlarda gorulebilen tum gruplarin en yuksek cezalarinin toplami."""
-    gruplar = {}
-    for kat, grup, ciddiyet, kod_katmanlari in SORUN_TANIMI.values():
-        if (kategori is None or kat == kategori) and set(kod_katmanlari.split()) & set(katmanlar):
-            gruplar[grup] = max(gruplar.get(grup, 0), CIDDIYET_AGIRLIK[ciddiyet])
-    return sum(gruplar.values())
+def _grup(kod):
+    return SORUN_TANIMI.get(kod, ("", kod))[1]
 
 
-def _normal_puan(issues, katmanlar, kategori=None):
-    secili = [i for i in issues if i.get("katman") in katmanlar and
-              (kategori is None or SORUN_TANIMI.get(i["sorun"], ("",))[0] == kategori)]
-    azami = _azami_ceza(katmanlar, kategori)
-    if not azami:
-        return None
-    ceza = sum(CIDDIYET_AGIRLIK.get(i.get("ciddiyet"), 5) for i in secili)
-    return max(0, round(100 * (1 - ceza / azami)))
+def _kategori_gorulebilir(kategori, katmanlar):
+    return any(kat == kategori and set(k.split()) & set(katmanlar) for kat, _, _, k in SORUN_TANIMI.values())
 
 
-def puanlar(issues, sayfa_olculdu=True) -> dict:
-    """Katman ve kategori bazli, 0-100 arasina normallestirilmis puanlar.
-    Her puan, o kapsamda gorulebilecek en kotu durumun cezasina bolunur; boylece birkac
-    sorun olcegi 0'a indirmez ve siteler birbirinden ayirt edilebilir. Sayfa katmani
-    olculmediyse (hata sayfasi) sayfa puani None olur, kategoriler site katmanindan hesaplanir."""
-    # hata sayfasinda (4xx/5xx) sayfa katmani denetlenmez; bulgu olmamasi "kusursuz" demek degildir
-    katmanlar = ("sayfa", "site") if sayfa_olculdu else ("site",)
-    sonuc = {"sayfa": _normal_puan(issues, ("sayfa",)) if sayfa_olculdu else None,
-             "site": _normal_puan(issues, ("site",))}
+def puanlar(issues, sayfa_olculdu=True, tarama_kodlari=()) -> dict:
+    """Katman ve kategori bazli 0-100 puanlar (hesap ve agirliklar: puanlama.py).
+    tarama_kodlari: bu sayfayi iceren tarama geneli bulgular (tekrar eden title, kopya icerik...).
+    Sayfa katmani olculmediyse (hata sayfasi) sayfa puani None olur; o durumda yalnizca site katmaninda
+    gorulebilen kategoriler puanlanir (bulgu olmamasi "kusursuz" demek degildir)."""
+    tarama_b = puanlama.tarama_bulgulari(tarama_kodlari) if sayfa_olculdu else []
+    sayfa_b = [i for i in issues if i.get("katman") == "sayfa" or i["sorun"] in puanlama.SAYFAYA_OZGU] + tarama_b
+    katmanlar = ("sayfa", "site", "tarama") if sayfa_olculdu else ("site",)
+    sonuc = {"sayfa": puanlama.hesapla(sayfa_b, _grup) if sayfa_olculdu else None,
+             "site": puanlama.hesapla([i for i in issues if i.get("katman") == "site"], _grup)}
     for kat in KATEGORILER:
-        sonuc[kat] = _normal_puan(issues, katmanlar, kat)
+        secili = [i for i in list(issues) + tarama_b if i.get("katman") in katmanlar and
+                  SORUN_TANIMI.get(i["sorun"], ("",))[0] == kat]
+        sonuc[kat] = puanlama.hesapla(secili, _grup) if _kategori_gorulebilir(kat, katmanlar) else None
     return sonuc
 
 

@@ -7,6 +7,9 @@ Her sorun kodu uc kategoriden birine girer:
   elle  -> "Elle düzeltilir": sunucu/barindirma, HTTPS, gercek gorsel uretimi, site disi SEO gibi
            yapay zekanin kapsami disindaki isler; yalnizca raporda oneri olarak kalir.
 
+Kategori bir onerinin nasil uretildigini anlatir; onay gerekip gerekmedigini guven puani belirler
+(guven.py): esigi gecen oneriler otomatik onayli gelir, gecmeyenler ve indekslemeyi daraltanlar onaya duser.
+
 Bu modul yalnizca gosterim ve yonetici modu icindir. kurallar.cozum_yolu analiz akisini (modele
 hangi sorunlarin gidecegini ve cozum oranlarini) belirler ve degismez; standart modun analizi ve
 puanlari bu yapilandirmadan etkilenmez.
@@ -29,6 +32,7 @@ KATEGORI = {
     "ic_nofollow": ("kural", "dusuk"), "bos_baslik": ("kural", "dusuk"),
     "robots_sitemap_bildirilmemis": ("kural", "dusuk"), "sitemap_hatali_adres": ("kural", "dusuk"),
     "sayfa_sitemapte_yok": ("kural", "dusuk"), "sitemap_olu_adres": ("kural", "dusuk"),
+    "sitemap_yonlendirme": ("kural", "dusuk"), "render_engelleyen_kaynak": ("kural", "dusuk"),
     # --- YZ önerir: icerik ---
     "title_yok": ("yz", "dusuk"), "title_kisa": ("yz", "dusuk"), "title_uzun": ("yz", "dusuk"),
     "title_genis": ("yz", "dusuk"), "title_tekrar": ("yz", "dusuk"), "title_h1_uyumsuz": ("yz", "dusuk"),
@@ -76,11 +80,9 @@ ETKI = {
 
 # Yalnizca yonetici modunun dosya duzeyindeki denetimlerinde uretilen kodlar
 EK_ACIKLAMA = {
-    "charset_yok": "Sayfada <meta charset> karakter kodlaması bildirimi yok",
     "sitemap_olu_adres": "Sitemap'te hata kodu (4xx/5xx) döndüren bir adres listeleniyor",
 }
 EK_DUZELTME = {
-    "charset_yok": "<head>'in başına <meta charset=\"utf-8\"> ekleyin.",
     "sitemap_olu_adres": "Hata kodu döndüren adresi sitemap'ten çıkarın.",
 }
 
