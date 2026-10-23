@@ -7,11 +7,15 @@ LCP, INP ve CLS ondan, yoksa laboratuvar olcumunden (LCP, CLS, INP yerine TBT) o
 
 Sinirlar:
   - API yalnizca internetten erisilebilen canli adresleri olcer; duzeltilmis HTML yerel bir
-    dosya oldugu icin "sonra" puani bu yontemle alinamaz.
+    dosya oldugu icin "sonra" puani bu yontemle alinamaz. localhost ve ozel ag adresleri
+    (127.0.0.1, 10.x, 192.168.x, tek parcali makine adlari vb.) icin API hic cagrilmaz:
+    Google bu adreslere ulasamaz, her istek ~17 sn bekleyip FAILED_DOCUMENT_REQUEST doner.
   - Anahtarsiz kullanimda Google'in paylasimli gunluk kotasi cabuk dolar (HTTP 429).
     Ucretsiz bir API anahtari PSI_API_ANAHTARI ortam degiskenine yazilarak kullanilabilir.
 """
+import ipaddress
 import os
+from urllib.parse import urlsplit
 
 import requests
 
@@ -42,9 +46,24 @@ def _saha_verisi(veri):
     return None
 
 
+def yerel_adres_mi(url):
+    """Adres internetten erisilemeyen bir makineyi mi gosteriyor? (localhost, loopback, ozel ag,
+    link-local, tek parcali makine adi ya da .local/.localhost/.internal alan adi). DNS sorgusu
+    yapilmaz; yalnizca adresin kendisine bakilir."""
+    ana = (urlsplit(url if "//" in url else "//" + url).hostname or "").rstrip(".").lower()
+    if not ana:
+        return False
+    try:
+        ip = ipaddress.ip_address(ana)
+    except ValueError:
+        return "." not in ana or ana.endswith((".localhost", ".local", ".internal", ".lan", ".home.arpa"))
+    return not ip.is_global
+
+
 def pagespeed_seo(url, anahtar=None, strateji="mobile", zaman_asimi=120):
     """Bir adresin Lighthouse SEO puanini (0-100), basarisiz SEO denetimlerini, performans puanini
-    ve Core Web Vitals degerlerini dondurur. Hata durumunda istisna firlatmaz; 'hata' alani doldurulur."""
+    ve Core Web Vitals degerlerini dondurur. Hata durumunda istisna firlatmaz; 'hata' alani doldurulur.
+    Yerel/ozel ag adreslerinde API cagrilmaz; 'atlandi' True olur."""
     anahtar = anahtar or os.environ.get("PSI_API_ANAHTARI")
     parametreler = [("url", url), ("category", "SEO"), ("category", "PERFORMANCE"), ("strategy", strateji)]
     if anahtar:
@@ -52,6 +71,10 @@ def pagespeed_seo(url, anahtar=None, strateji="mobile", zaman_asimi=120):
     sonuc = {"kaynak": "pagespeed_insights", "strateji": strateji, "seo_puani": None,
              "basarisiz_denetimler": [], "lighthouse_surumu": None, "performans_puani": None,
              "cwv": None, "hata": None}
+    if yerel_adres_mi(url):
+        sonuc.update(atlandi=True, hata="yerel ya da özel ağ adresi; PageSpeed yalnızca internetten "
+                                        "erişilebilen adresleri ölçebilir")
+        return sonuc
     try:
         r = requests.get(PSI_ADRESI, params=parametreler, timeout=zaman_asimi)
         veri = r.json()

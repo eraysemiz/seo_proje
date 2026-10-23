@@ -3,6 +3,8 @@ import csv
 import io
 from pathlib import Path
 
+import pytest
+
 from conftest import sahte_canli, sahte_model
 
 from seo_app import bagimsiz, boru, canli
@@ -52,6 +54,23 @@ def test_kota_hatasi_istisnasiz_raporlanir(monkeypatch):
                         lambda *a, **k: _Yanit({"error": {"code": 429, "message": "Quota exceeded"}}, 429))
     s = bagimsiz.pagespeed_seo("https://ornek.edu.tr/")
     assert s["seo_puani"] is None and s["hata"].startswith("HTTP 429")
+
+
+@pytest.mark.parametrize("adres,yerel", [
+    ("http://127.0.0.1:8080/", True), ("http://localhost/x", True), ("https://192.168.1.20/", True),
+    ("http://10.0.0.5", True), ("http://[::1]:5000/", True), ("http://intranet/", True),
+    ("https://site.local/", True), ("http://169.254.1.1/", True),
+    ("https://www.duzce.edu.tr/", False), ("https://8.8.8.8/", False), ("ornek.com.tr", False),
+])
+def test_yerel_adres_ayirt_edilir(adres, yerel):
+    assert bagimsiz.yerel_adres_mi(adres) is yerel
+
+
+def test_yerel_adreste_api_cagrilmaz(monkeypatch):
+    cagrildi = []
+    monkeypatch.setattr(bagimsiz.requests, "get", lambda *a, **k: cagrildi.append(a))
+    s = bagimsiz.pagespeed_seo("http://127.0.0.1:8080/")
+    assert cagrildi == [] and s["atlandi"] is True and s["seo_puani"] is None and "yerel" in s["hata"]
 
 
 def test_analiz_akisinda_rapora_ve_csvye_yazilir(monkeypatch, tmp_path):

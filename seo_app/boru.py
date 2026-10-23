@@ -249,7 +249,9 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
                                "sonra": None,   # duzeltilmis HTML yerel dosya; API canli adres ister
                                "sonra_aciklama": "düzeltilmiş sayfa yerel olduğu için ölçülemez"}
         site_sorunlari += cwv_sorunlari(olcum)
-        if olcum["hata"]:
+        if olcum.get("atlandi"):
+            yaz("PageSpeed atlandı: " + olcum["hata"])
+        elif olcum["hata"]:
             yaz("UYARI: PageSpeed ölçümü alınamadı: " + olcum["hata"])
 
     # sayfalar arasi tekrar denetimi (site_geneli) icin ozgun degerler
