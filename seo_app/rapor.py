@@ -9,12 +9,27 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from . import kategoriler as kat
 from .kurallar import ACIKLAMA, CIDDIYET_AGIRLIK, DUZELTME
 
 _ortam = Environment(loader=FileSystemLoader(str(Path(__file__).resolve().parent / "sablonlar")),
                      autoescape=select_autoescape(["html"]))
 CIDDIYET_ADI = {"yuksek": "yüksek", "orta": "orta", "dusuk": "düşük", "bilgi": "bilgi"}
-COZUM_ADI = {"model": "model çözer", "kural": "kural çözer", "elle": "elle düzeltilir"}
+# rapor tek dosyalik ve betiksizdir; kategori aciklamasi title niteligiyle (fare ustunde) gosterilir
+KATEGORI_IPUCU = {
+    "kural": "Deterministik bir kuralla güvenle düzeltilir (lang, charset, viewport, kırık iç bağlantı, görsel boyutu, "
+             "robots.txt/sitemap). Yönetici modunda toplu onaylanabilir.",
+    "yz": "Yerel model ya da sezgisel bir yöntem öneri üretir; insan onayı gerekir. Canonical, noindex, yönlendirme ve "
+          "hreflang gibi yapısal kararlar yüksek risklidir.",
+    "elle": "Yapay zekânın kapsamı dışında (sunucu/barındırma, HTTPS, önbellek, gerçek görsel, site dışı SEO); "
+            "yalnızca öneri olarak raporlanır.",
+}
+
+
+def kategori_etiketi(kod):
+    k = kat.kategori(kod)
+    return {"ad": kat.KATEGORI_ADI[k] + (" · yüksek risk" if kat.risk(kod) == "yuksek" else ""),
+            "ipucu": KATEGORI_IPUCU[k]}
 
 
 def _ortalama(degerler):
@@ -32,7 +47,7 @@ def html_rapor(kayitlar, ozet, bulgular=(), baslik="SEO denetimi"):
     return _ortam.get_template("rapor_cikti.html").render(
         baslik=baslik, tarih=time.strftime("%d.%m.%Y %H:%M"), kayitlar=kayitlar, gecerli=gecerli, sayfalar=sayfalar,
         ozet=ozet, bulgular=list(bulgular), sayac=sayac, ACIKLAMA=ACIKLAMA, DUZELTME=DUZELTME,
-        CIDDIYET_ADI=CIDDIYET_ADI, COZUM_ADI=COZUM_ADI,
+        CIDDIYET_ADI=CIDDIYET_ADI, kategori_etiketi=kategori_etiketi,
         ort_once=_ortalama([(k.get("once_puanlar") or {}).get("sayfa") for k in gecerli]),
         ort_sonra=_ortalama([(k.get("sonra_puanlar") or {}).get("sayfa") for k in gecerli]),
         ort_site=_ortalama([(k.get("once_puanlar") or {}).get("site") for k in gecerli]))

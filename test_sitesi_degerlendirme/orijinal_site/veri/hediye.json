@@ -1,0 +1,45 @@
+{
+  "baslik": "Hediye Paketleri",
+  "giris": "Ahşap kutularda sunulan hediye paketlerimiz iki ya da dört farklı çaydan oluşur. Kutunun içine kısa bir not ekleyebilir, paketi doğrudan sevdiklerinizin adresine gönderebilirsiniz. Her kutuda demleme önerilerini anlatan bir kart ve çayların hangi bahçeden geldiğini gösteren küçük bir harita bulunur. Kutular yeniden kullanılabilir masif ahşaptan üretilir.",
+  "paketler": [
+    {
+      "ad": "İkili Tadım Kutusu",
+      "fiyat": "390 TL",
+      "aciklama": "Sabah ve akşam için iki farklı karakterde çay: filiz çayının yumuşak içimi ile kış harmanının baharatlı sıcaklığı aynı kutuda buluşur.",
+      "icerik": [
+        {
+          "ad": "Rize Filiz Çayı",
+          "adres": "/urunler/rize-filiz-cayi.html"
+        },
+        {
+          "ad": "Kış Çayı Harmanı",
+          "adres": "/urunler/Kis-Cayi.html"
+        }
+      ]
+    },
+    {
+      "ad": "Dörtlü Keşif Kutusu",
+      "fiyat": "720 TL",
+      "aciklama": "Siyah, beyaz ve bitki çaylarından oluşan dörtlü kutu, çay dünyasını tanımak isteyenler için hazırlandı. Her çayın demleme süresi kutunun kapağında yazılıdır.",
+      "icerik": [
+        {
+          "ad": "Özel Harman Siyah Çay",
+          "adres": "/urunler/arsiv/2019/ozel-harman.html"
+        },
+        {
+          "ad": "Beyaz Çay",
+          "adres": "/urunler/beyaz-cay.html"
+        },
+        {
+          "ad": "Ada Çayı",
+          "adres": "/urunler/ada-cayi.html"
+        },
+        {
+          "ad": "Ihlamur",
+          "adres": "/urunler/ihlamur.html"
+        }
+      ]
+    }
+  ],
+  "kapanis": "Kurumsal hediye siparişleriniz için kutulara kurum adınızı ya da logonuzu baskı olarak ekleyebiliriz. Toplu siparişler için en az iki hafta önceden bizimle iletişime geçmenizi öneririz."
+}

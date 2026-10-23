@@ -26,11 +26,21 @@ const lm = { durum: "bekle", url: "", modeller: [] };
 const CIDDIYET_ADI = { yuksek: "yüksek", orta: "orta", dusuk: "düşük" };
 const CIDDIYET_SINIF = { yuksek: "kotu", orta: "dikkat", dusuk: "" };
 const CIDDIYET_SIRA = { yuksek: 0, orta: 1, dusuk: 2 };
-const COZUM_ADI = { model: "model çözer", kural: "kural çözer", elle: "elle düzeltilir" };
+// bulgu kategorileri tek yapilandirmadan gelir (kategoriler.py, /api/kategoriler); yuklenene kadar
+// analiz akisindaki cozum yolundan yaklasik bir eslesme kullanilir
+const KATEGORI_ADI = { kural: "Kural çözer", yz: "YZ önerir", elle: "Elle düzeltilir" };
+const COZUM_YOLU_KATEGORI = { model: "yz", kural: "kural", elle: "elle" };
+let kategoriler = {};
+function kategoriEtiketi(kod, cozumYolu) {
+  const k = (kategoriler[kod] && kategoriler[kod].kategori) || COZUM_YOLU_KATEGORI[cozumYolu];
+  if (!k) return "";
+  const risk = kategoriler[kod] && kategoriler[kod].risk === "yuksek" ? " · yüksek risk" : "";
+  return ipucuHtml(KATEGORI_ADI[k] + risk, "cozum_" + k);
+}
 
 // Rapordaki puan ve etiket aciklamalari (bilgi balonlari). Metinler kodun gercek hesabina dayanir:
 // puanlar -> kurallar.py: puanlar / _normal_puan / _azami_ceza / SORUN_TANIMI / CIDDIYET_AGIRLIK
-// cozum yollari -> kurallar.py: cozum_yolu, KURAL_SORUNLARI, ALAN_SORUN; uygula.py: kural_duzelt, apply_fixes
+// kategoriler -> kategoriler.py: KATEGORI, ETKI; yonetici modu: duzeltme.py, yonetici.py
 const IPUCU = {
   puanlar: "Sorunlar ciddiyete göre ceza alır: yüksek 15, orta 8, düşük 3. Toplam ceza olası en kötü cezaya bölünür; puan 100 × (1 − oran).",
   sayfa: "Yalnız sayfanın HTML kodunda görülen sorunları ölçer. Toplam ceza, HTML'de görülebilecek en kötü durumun cezasına oranlanıp 100'den düşülür.",
@@ -39,9 +49,9 @@ const IPUCU = {
   teknik: "Canonical, dil, viewport, yapısal veri, noindex/nofollow, yönlendirme, robots.txt, sitemap ve bağlantıları ölçer. Toplam ceza en kötü duruma oranlanıp 100'den düşülür.",
   guvenlik: "HTTPS kullanımı, https yönlendirmesi, SSL sertifikası, HSTS ve karışık içeriği ölçer. Toplam ceza, en kötü duruma oranlanıp 100'den düşülür.",
   performans: "Yanıt süresi, sıkıştırma, HTML boyutu, görseller ve (PageSpeed açıksa) Core Web Vitals ölçülür. Toplam ceza en kötü duruma oranlanıp 100'den düşülür.",
-  cozum_model: "Dil modeli yeni metin önerir (title, meta açıklama, H1, görsel alt metni); doğrulamadan geçen öneriler düzeltilmiş HTML'e yazılır.",
-  cozum_kural: "Araç bunu dil modeli olmadan, sabit bir kuralla düzeltilmiş HTML'de giderir: canonical, lang, viewport, Open Graph eklenir; fazla H1'ler H2 yapılır.",
-  cozum_elle: "Araç bunu düzeltmez; site sahibinin sunucuda veya sayfa kodunda kendisinin değiştirmesi gerekir (ör. robots.txt, sitemap, HTTPS, sertifika, yapısal veri)."
+  cozum_kural: "Deterministik bir kuralla güvenle düzeltilir: eksik lang/charset/viewport, kırık iç bağlantı, görsellere width/height, robots.txt ve sitemap düzeltmeleri. Yönetici modunda grup olarak toplu onaylanabilir.",
+  cozum_yz: "Yerel model (ya da sezgisel bir yöntem) öneri üretir, insan onayı gerekir: title/meta/H1, alt metni, içerik genişletme, JSON-LD, iç bağlantı. Canonical, noindex, yönlendirme ve hreflang gibi yapısal kararlar yüksek risklidir ve olası etkisiyle gösterilir. Model sitede olmayan bilgi uydurmaz; gerekirse [doğrulanmalı: …] yer tutucusu yazar.",
+  cozum_elle: "Yapay zekânın kapsamı dışında: sunucu/barındırma ayarı, HTTPS ve sertifika, önbellek, gerçek görsel üretimi, firmaya özgü doğrulanmış bilgi, site dışı SEO. Yalnızca raporda öneri olarak kalır."
 };
 let ipucuSayaci = 0;
 // klavyeyle odaklanabilen, ekran okuyucuya aria-describedby ile baglanan bilgi balonu
@@ -102,6 +112,7 @@ function adresSayisi() {
 }
 const yalnizcaDenetim = () => $("#yalnizca-denetim").checked;
 const siteModu = () => $("#mod-site").checked;
+const yoneticiModu = () => $("#mod-yonetici").checked;
 
 /* ------------------------------------------------------------------ baslangic */
 document.addEventListener("DOMContentLoaded", () => {
@@ -123,7 +134,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }));
   $("#en-fazla-sayfa").addEventListener("input", hazirligiGuncelle);
   $("#en-fazla-derinlik").addEventListener("input", hazirligiGuncelle);
+  document.querySelectorAll('input[name="calisma-modu"]').forEach((r) => r.addEventListener("change", () => {
+    $("#yonetici-alanlari").classList.toggle("gizli", !yoneticiModu());
+    // yonetici modunda baglanti grafigi (yetim/derin sayfa) icin site taramasi onerilir
+    if (yoneticiModu() && !siteModu()) { $("#mod-site").checked = true; $("#site-ayarlari").classList.remove("gizli"); }
+    hazirligiGuncelle();
+  }));
+  $("#yonetici-kok").addEventListener("input", hazirligiGuncelle);
+  $("#yonetici-url").addEventListener("input", () => {
+    if (!$("#adresler").value.trim()) $("#adresler").value = $("#yonetici-url").value.trim();
+    hazirligiGuncelle();
+  });
+  $("#yonetici-uygula").addEventListener("click", yoneticiUygula);
+  $("#yonetici-geri-al").addEventListener("click", yoneticiGeriAl);
 
+  fetch("/api/kategoriler").then((r) => r.json()).then((d) => { kategoriler = d.kodlar || {}; tabloImzasi = ""; ozetImzasi = ""; });
   fetch("/api/aciklamalar").then((r) => r.json()).then((d) => { aciklamalar = d; tabloImzasi = ""; });
   fetch("/api/duzeltmeler").then((r) => r.json()).then((d) => { duzeltmeler = d; tabloImzasi = ""; ozetImzasi = ""; });
   modelleriGetir();
@@ -195,6 +220,13 @@ const modelBul = (id) => lm.modeller.find((m) => m.id === id);
 function hazirligiGuncelle() {
   const maddeler = [];
   const adet = adresSayisi();
+  const yoneticiEksik = yoneticiModu() && (!$("#yonetici-kok").value.trim() || !$("#yonetici-url").value.trim());
+  if (yoneticiModu()) {
+    maddeler.push(yoneticiEksik
+      ? { d: "eksik", bas: "Yönetici modu: hedef eksik", ac: "Site kök klasörünü ve temel adresi yazın." }
+      : { d: "uyari", bas: "Yönetici modu: onaylanan düzeltmeler siteye yazılır",
+          ac: $("#yonetici-kok").value.trim() + " · " + $("#yonetici-url").value.trim() });
+  }
   maddeler.push(!adet
     ? { d: "eksik", bas: "Taranacak adres yok", ac: "Her satıra bir adres yazın ya da alt siteleri keşfedin." }
     : siteModu()
@@ -263,12 +295,14 @@ function hazirligiGuncelle() {
 
   // adimlar sirasiyla tamamlandikca numarasi koyulasir
   const adimlar = document.querySelectorAll(".adim");
-  const modelTamam = yalnizcaDenetim() || (lm.durum === "bagli" && !maddeler.slice(1).some((x) => x.d === "eksik"));
-  adimlar[0].classList.toggle("tamam", adet > 0);
-  adimlar[1].classList.toggle("tamam", modelTamam);
-  adimlar[2].classList.toggle("tamam", adet > 0 && modelTamam);
+  const ilkModel = yoneticiModu() ? 2 : 1;        // hazirlik listesinde model maddelerinin basladigi yer
+  const modelTamam = yalnizcaDenetim() || (lm.durum === "bagli" && !maddeler.slice(ilkModel).some((x) => x.d === "eksik"));
+  adimlar[0].classList.toggle("tamam", !yoneticiEksik);
+  adimlar[1].classList.toggle("tamam", adet > 0);
+  adimlar[2].classList.toggle("tamam", modelTamam);
+  adimlar[3].classList.toggle("tamam", adet > 0 && modelTamam && !yoneticiEksik);
 
-  const engel = maddeler.find((x) => x.d === "eksik") || (lm.durum === "bekle" && !yalnizcaDenetim() ? maddeler[1] : null);
+  const engel = maddeler.find((x) => x.d === "eksik") || (lm.durum === "bekle" && !yalnizcaDenetim() ? maddeler[ilkModel] : null);
   const dugme = $("#basla");
   dugme.disabled = calisiyor || !!engel;
   dugme.textContent = calisiyor ? "Tarama sürüyor…" : "Taramayı başlat";
@@ -342,8 +376,12 @@ function taramayiBaslat() {
     uy_robots: $("#uy-robots").checked,
     bagimsiz_olcum: $("#bagimsiz-olcum").checked,
     bekleme_sn: $("#bekleme").value,
-    zaman_asimi: $("#zaman-asimi").value
+    zaman_asimi: $("#zaman-asimi").value,
+    mod: yoneticiModu() ? "yonetici" : "standart",
+    kok: yoneticiModu() ? $("#yonetici-kok").value.trim() : "",
+    temel_url: yoneticiModu() ? $("#yonetici-url").value.trim() : ""
   };
+  yoneticiImzasi = "";
   $("#basla").disabled = true;
   fetch("/api/tara", {
     method: "POST", headers: { "Content-Type": "application/json" },
@@ -396,6 +434,165 @@ function ekraniCiz(d) {
   ozetiCiz(sonuclar);
   siteOzetiniGetir(sonuclar, d.calisiyor);
   tabloyuCiz(sonuclar, d.toplam || 0, d.calisiyor);
+  yoneticiDurumu(d);
+}
+
+/* ------------------------------------------------------------- yonetici modu
+   Tarama yonetici modunda bittiyse sunucu bir degisiklik plani uretir (siteye yazmaz). Panel:
+   "Kural çözer" toplu onay kutusu; "YZ önerir" her oneri icin onay/ret ve duzenlenebilir deger;
+   yuksek riskli onerilerde olasi etki ve ayrica risk onayi. Onaysiz hicbir degisiklik uygulanmaz. */
+let yoneticiImzasi = "";
+let yoneticiPlan = null;
+
+function yoneticiDurumu(d) {
+  const panel = $("#yonetici-paneli");
+  const y = d.mod === "yonetici" ? d.yonetici : null;
+  panel.classList.toggle("gizli", !y || y.asama === "taraniyor");
+  if (!y || y.asama === "taraniyor") return;
+  const imza = y.asama + "|" + (y.klasor || "") + "|" + d.calisiyor;
+  if (imza === yoneticiImzasi) return;
+  yoneticiImzasi = imza;
+  const uyari = $("#yonetici-uyari");
+  uyari.classList.add("gizli");
+  if (y.asama === "hata") {
+    uyari.textContent = "Yönetici modu hatası: " + (y.hata || "bilinmeyen hata");
+    uyari.classList.remove("gizli");
+    return;
+  }
+  if (y.asama === "uygulaniyor") {
+    $("#yonetici-notu").textContent = "Uygulanıyor: yedek alınıyor, onaylanan değişiklikler yazılıyor, site yeniden taranıyor…";
+    $("#yonetici-uygula").disabled = true;
+    return;
+  }
+  fetch("/api/yonetici/plan").then((r) => r.json()).then((p) => { yoneticiPlan = p; yoneticiPaneliniCiz(p, y); })
+    .catch((e) => { uyari.textContent = "Plan okunamadı: " + e; uyari.classList.remove("gizli"); });
+}
+
+const DURUM_ADI = { oneriliyor: "önerildi", uygulandi: "uygulandı", reddedildi: "reddedildi", basarisiz: "başarısız",
+  onay_bekliyor: "onay verilmedi", gecersiz: "doğrulamadan geçmedi" };
+
+function degisiklikHtml(x, duzenlenebilir, kilitli) {
+  const yuksek = x.risk === "yuksek";
+  const gecersiz = x.durum === "gecersiz";
+  const isaretler = [yuksek ? '<span class="cip kotu">yüksek risk</span>' : "",
+    x.yer_tutucu ? '<span class="cip dikkat">yer tutucu: değer doldurulmadan uygulanamaz</span>' : "",
+    gecersiz ? '<span class="cip kotu">doğrulamadan geçmedi: ' + kacis(x.dogrulama && x.dogrulama.neden) + "</span>" : "",
+    x.durum && !["oneriliyor", "gecersiz"].includes(x.durum) ? '<span class="cip">' + kacis(DURUM_ADI[x.durum] || x.durum) +
+      (x.durum_nedeni ? ": " + kacis(x.durum_nedeni) : "") + "</span>" : ""].join(" ");
+  let kontrol = "";
+  if (!kilitli && !gecersiz) {
+    if (x.kategori === "kural") {
+      kontrol = '<label class="kutu"><input type="checkbox" class="kural-onay" data-id="' + x.id + '" checked><span>Onayla</span></label>';
+    } else {
+      kontrol = '<span class="karar"><label class="kutu"><input type="radio" name="k-' + x.id + '" value="onay" data-id="' + x.id +
+        '"><span>Onayla</span></label><label class="kutu"><input type="radio" name="k-' + x.id + '" value="ret" data-id="' + x.id +
+        '"><span>Reddet</span></label></span>' +
+        (yuksek ? '<label class="kutu risk-onay"><input type="checkbox" class="risk-onay-kutu" data-id="' + x.id +
+          '"><span>Olası etkiyi okudum, bu yüksek riskli değişikliği onaylıyorum</span></label>' : "");
+    }
+  }
+  const duzen = duzenlenebilir && !kilitli && !gecersiz
+    ? '<label class="duzen-etiketi" for="d-' + x.id + '">Önerilen değer (düzenleyebilirsiniz)</label><textarea id="d-' + x.id +
+      '" class="duzen" data-id="' + x.id + '" rows="' + Math.min(10, 1 + Math.ceil(String(x.yeni).length / 90)) + '">' + kacis(x.yeni) + "</textarea>"
+    : "";
+  return '<li class="degisiklik' + (yuksek ? " yuksek-risk" : "") + '"><div class="degisiklik-ust"><strong>' + x.id + "</strong> " +
+    kacis(x.bulgu_aciklamasi) + ' <span class="ayr">' + kacis(x.dosya) + " · " + kacis(x.uretici) + "</span> " + isaretler + "</div>" +
+    '<p class="gerekce">' + kacis(x.gerekce) + "</p>" +
+    (yuksek && x.etki ? '<p class="etki"><strong>Olası etki:</strong> ' + kacis(x.etki) + "</p>" : "") +
+    (x.kaynaklar && x.kaynaklar.length ? '<p class="ayr">Kaynak: ' + x.kaynaklar.map((k) => kacis(k.id + (k.baslik ? " " + k.baslik : ""))).join(", ") + "</p>" : "") +
+    duzen + "<details><summary>Değişiklik (diff)</summary><pre class=\"diff\">" + kacis(x.diff || "") + "</pre></details>" +
+    (kontrol ? '<div class="degisiklik-kontrol">' + kontrol + "</div>" : "") + "</li>";
+}
+
+function yoneticiPaneliniCiz(p, y) {
+  const kilitli = p.asama !== "plan_hazir";
+  const s = p.sayilar;
+  $("#yonetici-notu").textContent = s.kural + " kural · " + s.yz + " YZ önerisi (" + s.yuksek_risk + " yüksek risk) · " +
+    p.elle.length + " elle yapılacak iş" + (p.model ? " · model " + p.model : " · model seçilmedi") + " · " + p.klasor;
+  let h = "";
+  if (y.asama === "tamam" && y.rapor) {
+    const o = y.rapor.puanlar.once, so = y.rapor.puanlar.sonra || {};
+    h += '<div class="yonetici-sonuc"><strong>Uygulandı ve yeniden tarandı.</strong> Sayfa puanı ' + o.sayfa + " → " + (so.sayfa ?? "—") +
+      ", teknik " + o.teknik + " → " + (so.teknik ?? "—") + ", içerik " + o.icerik + " → " + (so.icerik ?? "—") +
+      " · yeni çıkan bulgu: " + y.rapor.yeni_bulgular.length + "</div>";
+  }
+  if (y.asama === "geri_alindi") h += '<div class="yonetici-sonuc">Son uygulama geri alındı; site uygulama öncesi haline döndü.</div>';
+  const kural = p.gruplar.kural;
+  h += '<h3>' + ipucuHtml(KATEGORI_ADI.kural, "cozum_kural") + " (" + kural.length + ")</h3>";
+  if (!kilitli && kural.some((x) => x.durum !== "gecersiz")) {
+    h += '<label class="kutu toplu"><input type="checkbox" id="kural-hepsi" checked><span>Kural çözer grubunun tamamını onayla</span></label>';
+  }
+  h += '<ul class="degisiklik-listesi">' + kural.map((x) => degisiklikHtml(x, false, kilitli)).join("") + "</ul>";
+  const yz = p.gruplar.yz;
+  h += '<h3>' + ipucuHtml(KATEGORI_ADI.yz, "cozum_yz") + " (" + yz.length + ")</h3>" +
+    (kilitli ? "" : '<p class="not">Her öneriyi tek tek onaylayın, düzenleyin ya da reddedin. Karar verilmeyen öneri uygulanmaz.</p>') +
+    '<ul class="degisiklik-listesi">' + yz.map((x) => degisiklikHtml(x, x.duzenlenebilir, kilitli)).join("") + "</ul>";
+  h += '<h3>' + ipucuHtml(KATEGORI_ADI.elle, "cozum_elle") + " (" + p.elle.length + ")</h3><ul class=\"elle-listesi\">" +
+    p.elle.map((e) => "<li>" + kacis(e.bulgu_aciklamasi) + ' <span class="ayr">' + e.sayfalar.length + " sayfa</span>" +
+      (e.duzeltme ? '<span class="duzeltme">' + kacis(e.duzeltme) + "</span>" : "") + "</li>").join("") + "</ul>";
+  if (p.atlanan.length) {
+    h += '<details class="reddedilen"><summary>Otomatik öneri üretilemeyenler (' + p.atlanan.length + ")</summary><ul>" +
+      p.atlanan.map((a) => "<li>" + kacis(a.bulgu_aciklamasi) + ' <span class="ayr">' + kacis(a.url) + " — " + kacis(a.neden) + "</span></li>").join("") +
+      "</ul></details>";
+  }
+  $("#yonetici-icerik").innerHTML = h;
+  $("#yonetici-uygula").classList.toggle("gizli", kilitli);
+  $("#yonetici-uygula").disabled = kilitli;
+  $("#yonetici-geri-al").classList.toggle("gizli", y.asama !== "tamam");
+  $("#yonetici-rapor").classList.toggle("gizli", !["tamam", "geri_alindi"].includes(y.asama));
+  const hepsi = $("#kural-hepsi");
+  if (hepsi) hepsi.addEventListener("change", () => document.querySelectorAll(".kural-onay").forEach((k) => { k.checked = hepsi.checked; }));
+}
+
+function yoneticiKararlari() {
+  const kararlar = {};
+  const kuralKutulari = [...document.querySelectorAll(".kural-onay")];
+  const hepsi = kuralKutulari.length > 0 && kuralKutulari.every((k) => k.checked) && $("#kural-hepsi") && $("#kural-hepsi").checked;
+  kuralKutulari.forEach((k) => { kararlar[k.dataset.id] = { karar: k.checked ? "onay" : "ret" }; });
+  document.querySelectorAll('.karar input[type="radio"]:checked').forEach((r) => { kararlar[r.dataset.id] = { karar: r.value }; });
+  document.querySelectorAll(".risk-onay-kutu:checked").forEach((k) => { if (kararlar[k.dataset.id]) kararlar[k.dataset.id].risk_onay = true; });
+  document.querySelectorAll("textarea.duzen").forEach((t) => {
+    const oneri = (yoneticiPlan.gruplar.yz.find((x) => x.id === t.dataset.id) || {}).yeni;
+    if (kararlar[t.dataset.id] && kararlar[t.dataset.id].karar === "onay" && t.value !== oneri) kararlar[t.dataset.id].deger = t.value;
+  });
+  return { kural_hepsi: hepsi, kararlar };
+}
+
+function yoneticiUygula() {
+  const k = yoneticiKararlari();
+  const onay = Object.values(k.kararlar).filter((x) => x.karar === "onay");
+  const riskEksik = yoneticiPlan.gruplar.yz.filter((x) => x.risk === "yuksek" && k.kararlar[x.id] &&
+    k.kararlar[x.id].karar === "onay" && !k.kararlar[x.id].risk_onay).map((x) => x.id);
+  const uyari = $("#yonetici-uyari");
+  if (riskEksik.length) {
+    uyari.textContent = "Yüksek riskli öneriler için risk onayı kutusunu işaretleyin: " + riskEksik.join(", ");
+    uyari.classList.remove("gizli");
+    return;
+  }
+  if (!onay.length) { uyari.textContent = "Onaylanan değişiklik yok."; uyari.classList.remove("gizli"); return; }
+  if (!window.confirm(onay.length + " değişiklik siteye yazılacak. Önce sitenin tam yedeği alınır. Devam edilsin mi?")) return;
+  uyari.classList.add("gizli");
+  fetch("/api/yonetici/uygula", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kararlar: k }) })
+    .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+    .then(({ ok, d }) => {
+      if (!ok) { uyari.textContent = d.hata || "Uygulama başlatılamadı."; uyari.classList.remove("gizli"); return; }
+      yoneticiImzasi = "";
+      durumuSor();
+    });
+}
+
+function yoneticiGeriAl() {
+  if (!window.confirm("Son uygulama yedekten geri alınacak. Devam edilsin mi?")) return;
+  fetch("/api/yonetici/geri-al", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+    .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+    .then(({ ok, d }) => {
+      const uyari = $("#yonetici-uyari");
+      uyari.textContent = ok ? (d.eslesiyor ? "Geri alındı: tüm dosyaların hash'i yedekle eşleşiyor." : "Geri alındı ama dosya hash'leri eşleşmiyor!")
+        : (d.hata || "Geri alınamadı.");
+      uyari.classList.remove("gizli");
+      yoneticiImzasi = "";
+      durumuSor();
+    });
 }
 
 /* Site ozeti: en cok sayfayi etkileyen sorunlar ve nasil duzeltilecegi; tarama geneli bulgular.
@@ -427,7 +624,7 @@ function siteOzetiniCiz(d, suruyor) {
     ilk.map((s) => "<tr><td>" + ciddiyetCipi(s.ciddiyet) + "</td><td>" + kacis(s.aciklama) +
       (s.duzeltme ? '<span class="duzeltme">' + kacis(s.duzeltme) + "</span>" : "") + "</td>" +
       '<td class="sayi">' + s.sayfa_sayisi + '</td><td class="gizle-dar">' +
-      (s.cozum_yolu ? ipucuHtml(COZUM_ADI[s.cozum_yolu] || s.cozum_yolu, "cozum_" + s.cozum_yolu) : "") +
+      kategoriEtiketi(s.sorun, s.cozum_yolu) +
       "</td></tr>").join("") + "</tbody></table>";
   if (ozet.length > ilk.length) {
     h += '<details class="reddedilen"><summary>Diğer sorunlar (' + (ozet.length - ilk.length) + ")</summary><ul>" +
@@ -588,7 +785,7 @@ function tabloyuCiz(sonuclar, toplam, suruyor) {
 function sorunMaddesi(kod, sorunlar) {
   const s = sorunlar[kod] || { sorun: kod };
   const meta = [s.katman && kacis(s.katman),
-    s.cozum_yolu && ipucuHtml(COZUM_ADI[s.cozum_yolu] || s.cozum_yolu, "cozum_" + s.cozum_yolu),
+    kategoriEtiketi(kod, s.cozum_yolu),
     s.ayrinti && kacis(s.ayrinti)].filter(Boolean).join(" · ");
   const cip = s.ciddiyet ? '<span class="cip ' + (CIDDIYET_SINIF[s.ciddiyet] || "") + '">' +
     (CIDDIYET_ADI[s.ciddiyet] || s.ciddiyet) + "</span>" : "<span></span>";

@@ -1,0 +1,10 @@
+{
+  "yonlendirmeler": {
+    "/eski-urunler": {"kod": 301, "hedef": "/urunler-eski"},
+    "/urunler-eski": {"kod": 301, "hedef": "/koleksiyon/"},
+    "/koleksiyon/": {"kod": 301, "hedef": "/urunler/"},
+    "/kampanya": {"kod": 302, "hedef": "/blog/kis-caylari.html"}
+  },
+  "urun_bulunamadi_onekleri": ["/urunler/"],
+  "sessiz": false
+}

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yönetici raporu: {{ r.hedef.temel_url }}</title>
+<style>
+:root { color-scheme: light dark; --zemin:#f7f7f5; --kart:#fff; --metin:#1c1c1c; --soluk:#5f5f5f; --cizgi:#e2e2de;
+  --mavi:#1d5fbf; --kotu:#b3261e; --dikkat:#8a5a00; --iyi:#1e7a3c; }
+@media (prefers-color-scheme: dark) { :root { --zemin:#141414; --kart:#1d1d1d; --metin:#ececec; --soluk:#a6a6a6;
+  --cizgi:#333; --mavi:#7aa7ef; --kotu:#f08a83; --dikkat:#e3b45b; --iyi:#6fcf8f; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--zemin); color:var(--metin); font:15px/1.5 system-ui, "Segoe UI", sans-serif; }
+main { max-width:1100px; margin:0 auto; padding:24px 16px 48px; }
+h1 { font-size:26px; margin:0 0 4px; } h2 { font-size:19px; margin:32px 0 10px; } h3 { font-size:16px; margin:18px 0 6px; }
+.soluk { color:var(--soluk); }
+table { width:100%; border-collapse:collapse; background:var(--kart); border:1px solid var(--cizgi); }
+th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--cizgi); vertical-align:top; overflow-wrap:anywhere; }
+th { font-size:13px; color:var(--soluk); font-weight:600; }
+td.sayi, th.sayi { text-align:right; white-space:nowrap; }
+.cip { display:inline-block; font-size:12px; padding:1px 7px; border-radius:10px; border:1px solid currentColor; white-space:nowrap; }
+.kotu { color:var(--kotu); } .dikkat { color:var(--dikkat); } .iyi { color:var(--iyi); }
+details { background:var(--kart); border:1px solid var(--cizgi); border-radius:8px; margin:8px 0; padding:10px 12px; }
+summary { cursor:pointer; font-weight:600; }
+code, pre { font-family: ui-monospace, Consolas, monospace; font-size:13px; }
+pre { white-space:pre-wrap; margin:4px 0; }
+.tablo-kap { overflow-x:auto; }
+</style>
+</head>
+<body>
+<main>
+<h1>Yönetici modu raporu</h1>
+<p class="soluk">{{ r.hedef.temel_url }} · site kökü {{ r.hedef.adaptor.kok }} · {{ r.zaman }}{% if r.model %} · model {{ r.model }}{% endif %}</p>
+
+<h2>Önce / sonra puanlar</h2>
+<div class="tablo-kap"><table>
+<thead><tr><th>Puan</th><th class="sayi">Önce</th><th class="sayi">Sonra</th><th class="sayi">Fark</th></tr></thead>
+<tbody>
+{% for a in PUAN_ANAHTARLARI %}
+{% set o = r.puanlar.once[a] %}{% set s = r.puanlar.sonra[a] if r.puanlar.sonra else none %}
+<tr><td>{{ a }}</td><td class="sayi">{{ o if o is not none else "—" }}</td><td class="sayi">{{ s if s is not none else "—" }}</td>
+<td class="sayi {% if o is not none and s is not none %}{{ 'iyi' if s > o else ('kotu' if s < o else '') }}{% endif %}">
+{% if o is not none and s is not none %}{{ "%+d"|format(s - o) }}{% else %}—{% endif %}</td></tr>
+{% endfor %}
+<tr><td>taranan sayfa</td><td class="sayi">{{ r.puanlar.once.sayfa_sayisi }}</td>
+<td class="sayi">{{ r.puanlar.sonra.sayfa_sayisi if r.puanlar.sonra else "—" }}</td><td></td></tr>
+</tbody></table></div>
+<p class="soluk">Puanlar sayfa ortalamasıdır (araçtaki puan hesabıyla aynı). Düzeltmelerle yeni sayfalar taranabilir hale gelirse sayfa sayısı değişebilir.</p>
+
+{% for kategori in ["kural", "yz"] %}
+<h2>{{ KATEGORI_ADI[kategori] }}</h2>
+{% set gruplar = r.durumlar.get(kategori, {}) %}
+{% if not gruplar %}<p class="soluk">Öneri yok.</p>{% endif %}
+{% for durum, liste in gruplar.items() %}
+<details {% if durum != "uygulandi" %}open{% endif %}>
+<summary>{{ DURUM_ADI.get(durum, durum) }} ({{ liste|length }})</summary>
+<div class="tablo-kap"><table>
+<thead><tr><th>ID</th><th>Bulgu</th><th>Sayfa / dosya</th><th>Eski → yeni</th><th>Gerekçe / neden</th></tr></thead>
+<tbody>
+{% for d in liste %}
+<tr><td>{{ d.id }}{% if d.risk == "yuksek" %} <span class="cip kotu">yüksek risk</span>{% endif %}</td>
+<td>{{ d.bulgu_aciklamasi }}<br><span class="soluk">{{ d.uretici }}</span></td>
+<td>{{ d.url }}<br><code>{{ d.dosya }}</code></td>
+<td><pre>{{ d.eski|truncate(220) }}</pre>→<pre>{{ d.yeni|truncate(400) }}</pre></td>
+<td>{{ d.gerekce }}{% if d.etki %}<br><span class="dikkat">Olası etki: {{ d.etki }}</span>{% endif %}
+{% if d.kaynaklar %}<br><span class="soluk">Kaynak: {{ d.kaynaklar|map(attribute="id")|join(", ") }}</span>{% endif %}
+{% if d.durum_nedeni %}<br><b>{{ d.durum_nedeni }}</b>{% endif %}</td></tr>
+{% endfor %}
+</tbody></table></div>
+</details>
+{% endfor %}
+{% endfor %}
+
+<h2>{{ KATEGORI_ADI["elle"] }} ({{ r.elle|length }})</h2>
+<div class="tablo-kap"><table>
+<thead><tr><th>Bulgu</th><th>Nasıl düzeltilir</th><th class="sayi">Sayfa</th></tr></thead>
+<tbody>
+{% for e in r.elle %}
+<tr><td>{{ e.bulgu_aciklamasi }}</td><td>{{ e.duzeltme }}</td><td class="sayi">{{ e.sayfalar|length }}</td></tr>
+{% endfor %}
+</tbody></table></div>
+
+<h2>Otomatik öneri üretilemeyenler ({{ r.atlanan|length }})</h2>
+<details><summary>Ayrıntılar</summary>
+<ul>{% for a in r.atlanan %}<li>{{ a.bulgu_aciklamasi }} — {{ a.url }}: <span class="soluk">{{ a.neden }}</span></li>{% endfor %}</ul>
+</details>
+
+<h2>Düzeltme sonrası ortaya çıkan yeni bulgular ({{ r.yeni_bulgular|length }})</h2>
+{% if r.yeni_bulgular %}
+<ul>{% for y in r.yeni_bulgular %}<li>{{ y.aciklama }} — {{ y.url }} <span class="soluk">({{ KATEGORI_ADI[y.kategori] }})</span></li>{% endfor %}</ul>
+{% else %}<p class="soluk">{{ "Yeni bulgu yok." if r.puanlar.sonra else "Tekrar taraması yapılmadı." }}</p>{% endif %}
+<p class="soluk">Giderilen bulgu sayısı (sayfa × bulgu): {{ r.giderilen_bulgu_sayisi }}.
+{% if r.uygulama and r.uygulama.yedek %}Yedek: <code>{{ r.uygulama.yedek }}</code>{% endif %}</p>
+</main>
+</body>
+</html>

@@ -51,7 +51,7 @@ ul { margin:8px 0 0; padding-left:18px; } li { margin:4px 0; }
 {% for s in ozet %}
 <tr><td><span class="cip {{ s.ciddiyet }}">{{ CIDDIYET_ADI.get(s.ciddiyet, s.ciddiyet) }}</span></td>
 <td>{{ s.aciklama }}<span class="duzelt">{{ s.duzeltme }}</span></td>
-<td class="sayi">{{ s.sayfa_sayisi }}</td><td>{{ COZUM_ADI.get(s.cozum_yolu, s.cozum_yolu or "") }}</td></tr>
+<td class="sayi">{{ s.sayfa_sayisi }}</td><td>{% set ke = kategori_etiketi(s.sorun) %}<span title="{{ ke.ipucu }}">{{ ke.ad }}</span></td></tr>
 {% else %}<tr><td colspan="4">Sorun bulunamadı.</td></tr>{% endfor %}
 </tbody></table></div>
 

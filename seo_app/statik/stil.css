@@ -491,3 +491,28 @@ p.duzeltme { margin: 8px 0 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before { transition: none !important; animation: none !important; }
 }
+
+/* ------------------------------------------------------------- yonetici modu */
+#yonetici-alanlari { margin-top: 10px; }
+#yonetici-paneli h3 { font-size: 15px; margin: 18px 0 6px; }
+.degisiklik-listesi { list-style: none; margin: 0; padding: 0; }
+.degisiklik { border-top: 1px solid var(--cizgi); padding: 10px 0; }
+.degisiklik.yuksek-risk { border-left: 3px solid var(--kotu); padding-left: 10px; }
+.degisiklik-ust { line-height: 22px; overflow-wrap: anywhere; }
+.degisiklik .ayr { color: var(--soluk); font-size: 12px; }
+.degisiklik .gerekce { margin: 4px 0 0; font-size: 13px; }
+.degisiklik .etki { margin: 4px 0 0; font-size: 13px; color: var(--hata-metin); background: var(--hata-zemin);
+  border-radius: var(--r-kontrol); padding: 6px 8px; }
+.degisiklik details summary { cursor: pointer; font-size: 12px; color: var(--soluk); margin-top: 4px; width: max-content; }
+pre.diff { background: var(--yukseltilmis); border: 1px solid var(--kenar); border-radius: var(--r-kontrol); padding: 8px;
+  font: 12px/17px ui-monospace, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 320px; overflow: auto; }
+.degisiklik-kontrol { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 6px; }
+.degisiklik-kontrol .karar { display: flex; gap: 12px; }
+.duzen-etiketi { display: block; font-size: 12px; color: var(--soluk); margin-top: 6px; }
+textarea.duzen { min-height: 40px; width: 100%; }
+.kutu.toplu { margin: 4px 0 6px; font-weight: 600; }
+.elle-listesi { margin: 0; padding-left: 18px; }
+.elle-listesi li { margin: 6px 0; }
+.yonetici-dugmeler { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.yonetici-sonuc { background: var(--iyi-zemin); color: var(--iyi-metin); border-radius: var(--r-kontrol); padding: 8px 10px; margin-bottom: 8px; }
+#yonetici-uyari { margin-top: 10px; }

@@ -128,6 +128,55 @@ ardından eksikler kapatıldı. Ayrıntılı liste README'de "Denetim katmanlar�
 - **Puanlar değişti:** yeni bulgular sayfa/site puanlarını etkiler; bu daldan önceki taramalarla
   puanlar doğrudan karşılaştırılamaz.
 
+## 4d. 23 Ekim 2026: yönetici modu ve test sitesi (`yonetici-modu` dalı)
+
+- **İki mod:**
+  - *Standart mod (Mod 2):* mevcut akış, salt okunur. Analiz, puan ve tüm JSON çıktıları `main`
+    ile birebir aynı. Bu, iki kod tabanıyla aynı site taranarak doğrulandı; değişen tek şey HTML
+    rapordaki kategori etiketleri.
+  - *Yönetici modu (Mod 1):* `yonetici.py`, `duzeltme.py`, `yazma.py`, `yz_oneri.py`; giriş
+    noktaları `yonet.py` ve arayüzdeki mod seçimi.
+- **Üç kategori:** `kategoriler.py` tek yapılandırmadır (Kural çözer / YZ önerir / Elle düzeltilir +
+  risk + olası etki). `kurallar.cozum_yolu` bilinçli olarak değiştirilmedi; o, modele hangi
+  sorunların gideceğini ve `cozum_orani`'nı belirliyor. Kategori yalnızca gösterim ve yönetici modu
+  içindir; kayıtlı veri şeması değişmedi.
+- **Yazma güvenliği:** yazma adaptör arayüzünden geçer, yalnızca doğrulanmış köke yapılır
+  (`..`, mutlak yol, symlink ve junction reddedilir; aracın klasörü ve `sonuclar/` hedef olamaz).
+  Değişiklikler karakter konumlu parça değişimleridir. Uygulama şu durumları reddeder:
+  - plandan sonra değişmiş dosya;
+  - çakışan öneriler;
+  - HTML/XML/JSON-LD'yi bozan değişiklik;
+  - doldurulmamış `[doğrulanmalı: …]` yer tutucusu.
+
+  Yazmadan önce tam yedek alınır, geri alma hash'le doğrulanır.
+- **Yönetici moduna özgü ek denetimler:** `charset_yok` (dosyada meta charset yok),
+  `sitemap_olu_adres` (sitemap'te 4xx dönen adres) ve robots nedeniyle atlanan sayfa için
+  `robots_sayfayi_engelliyor`. Bunlar standart modun analizine eklenmedi (Mod 2 sonuçları değişmesin
+  diye).
+- **Test sitesi:** `test_sitesi/` (Çaylıbahçe, 25 sayfa; `sunucu.py` yalnızca 127.0.0.1:8080, harf
+  duyarlı, gzip). Değerlendirme dosyaları `test_sitesi_degerlendirme/` içinde:
+  - `sorunlar.json`: 47 sorun, her biri otomatik kontrollü;
+  - `dogrula.py`, `degerlendir.py`;
+  - `sifirla.py` + `orijinal_site/` + hash manifesti;
+  - `site_uret.py`: orijinal kopyayı yeniden üretir.
+- **İlk tam döngü (qwen/qwen3.5-9b + qwen3-embedding):**
+  - Plan: 20 kural, 32 YZ önerisi (13 yüksek risk), 9 elle iş.
+  - 4 model önerisi doğrulamada elendi: "en iyi" ifadesi, iki uzunluk aşımı, sayfada olmayan
+    ifade. 1 öneri yer tutuculuydu (stok durumu).
+  - 47 değişiklik uygulandı. Sayfa puanı 95→99, içerik 92→97, teknik 95→99.
+  - `sorunlar.json`'a göre tespit 44/47, düzeldi 35/47. Kural 13/13, YZ 22/27, elle 0/7;
+    kolay 15/18, orta 10/16, zor 10/13.
+  - Geri alma sonrası 48 dosyanın hash'i eşleşti. Sonuç klasörü:
+    `sonuclar/127.0.0.1/sonuc_2026-10-23_12-48-02`.
+- **Testler:** 226 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi). Yeni testler
+  `tests/test_yonetici_modu.py` dosyasında.
+- **Bilinen sınırlar:**
+  - Araç dört sorunu hiç tespit etmez: yumuşak 404, render'ı engelleyen kaynak, URL'de büyük harf
+    ve (standart modda) charset eksikliği.
+  - Yönlendirme zinciri, 302 yönlendirme, büyük görsel ve JS'e bağımlı içerik sunucu ya da
+    geliştirici işidir (elle).
+  - Kopya içerik için öneri canonical'dır (yüksek risk); içeriği özgünleştirme önerisi üretilmez.
+
 ## 5. Test seti ve ilk gerçek sonuçlar
 
 **Test seti:** `test_setleri/duzce_birimleri.txt` — 58 Düzce Üniversitesi birim sitesi, aracın keşif özelliğiyle anasayfadan otomatik çıkarıldı.

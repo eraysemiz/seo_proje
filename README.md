@@ -85,16 +85,97 @@ kapalıysa tarama sessizce modelsiz devam etmez, hata verir.
 sonrası DOM üzerinden denetlenir; ham HTML'e göre metin belirgin artıyorsa içerik JavaScript'e
 bağlı sayılır.
 
-## Her sorunun bir çözüm yolu vardır
+## Her sorunun bir çözüm kategorisi vardır
 
-Rapordaki her bulgu üç sınıftan birine düşer:
+Rapordaki her bulgu üç kategoriden birine düşer. Kategoriler tek bir yapılandırmada tanımlıdır
+(`seo_app/kategoriler.py`); arayüzdeki etiketler ve bilgi balonları buradan gelir:
 
-- `model` — dil modelinin metin üretmesi gerekir (title, meta description, H1, alt metni)
-- `kural` — kod ile kesin biçimde düzeltilir (canonical, lang, fazla H1, viewport, og etiketleri)
-- `elle` — sunucu/yönetici müdahalesi gerekir (robots.txt, sertifika, yanıt süresi...)
+- **Kural çözer**: deterministik bir kuralla güvenle düzeltilir. Örnekler: eksik lang, charset ya
+  da viewport; fazla H1; kırık iç bağlantı; görsellere width/height; robots.txt ve sitemap
+  düzeltmeleri. Yönetici modunda grup olarak toplu onaylanabilir.
+- **YZ önerir**: yerel model ya da sezgisel bir yöntem öneri üretir ve insan onayı gerekir.
+  Örnekler: title/meta/H1 yeniden yazımı, alt metni, ince içeriği genişletme, JSON-LD, yetim ya da
+  derin sayfalara iç bağlantı. Canonical, noindex, yönlendirme, hreflang ve robots kararları
+  **yüksek risklidir**; öneriyle birlikte olası etkisi gösterilir.
+- **Elle düzeltilir**: yapay zekânın kapsamı dışındadır ve yalnızca raporda öneri olarak kalır.
+  Örnekler: sunucu/barındırma ayarı, HTTPS, önbellek, gerçek görsel üretimi, firmaya özgü
+  doğrulanmış bilgi, site dışı SEO.
 
-Dil modeline **yalnızca** `model` sınıfındaki sorunlar gönderilir. Bu ayrım, "modelin başarısı"
-ile "aracın toplam başarısı" ölçümlerinin karışmasını önler.
+Bu kategori gösterim ve yönetici modu içindir. Analiz akışında modele hangi sorunların gideceğini
+`kurallar.cozum_yolu` belirler (`model` / `kural` / `elle`) ve bu değişmemiştir. Dil modeline
+standart modda **yalnızca** `model` sorunları gönderilir.
+
+## İki mod: standart ve yönetici
+
+**Standart mod (Mod 2)** erişimimiz olmayan siteler içindir. Site indirilir, analiz edilir ve
+raporlanır; siteye hiçbir şey yazılmaz. Analiz ve puanlar önceki sürümle birebir aynıdır.
+
+**Yönetici modu (Mod 1)** admin erişimimiz olan siteler içindir. Akış: analiz → değişiklik planı →
+önizleme → onay → yedek + uygulama → otomatik tekrar tarama → önce/sonra raporu.
+
+- **Hedef:** Site kök klasörü ve temel adres açıkça verilir. Yazma yalnızca bu klasöre yapılır.
+  `..`, mutlak yol, sembolik bağlantı ve junction ile dışarı çıkış reddedilir. Aracın kendi
+  klasörü ve `sonuclar/` hedef olamaz.
+- **Yazma katmanı:** Siteye yazma `seo_app/yazma.py` içindeki adaptör arayüzünden geçer (oku, yaz,
+  listele, yedekle, geri al). Şimdilik yalnızca yerel dosya sistemi adaptörü vardır.
+  FTP/SFTP/CMS adaptörleri aynı arayüzle eklenebilir.
+- **Değişiklik kaydı:** Her değişiklik yapılandırılmıştır: kategori, risk, dosya, satır/sütun,
+  eski ve yeni değer, ilgili bulgu, gerekçe ve RAG kaynağı. Dosya yeniden yazılmaz; yalnızca ilgili
+  parça değiştirilir, bu yüzden diff'ler okunur kalır.
+- **YZ önerilerinin doğrulanması:** Model yalnızca sitedeki içerikten ve bilgi tabanından
+  yararlanır. Sitede olmayan bir olgu gerekiyorsa `[doğrulanmalı: …]` yer tutucusu yazar; böyle bir
+  öneri, değer elle doldurulmadan uygulanamaz. Her öneri şunlardan geçer: uzunluk, dil, bozuk
+  karakter ve harfleri düşürülmüş Türkçe (cay/çay) denetimi; sayfada olmayan sayı ve doğrulanamayan
+  övgü denetimi; JSON-LD şeması. Geçemeyen öneri uygulanmaz ve nedeniyle raporlanır.
+- **Güvenli uygulama:**
+  - Önce sitenin tam yedeği alınır.
+  - Plandan sonra değişmiş dosyaya yazılmaz.
+  - HTML, XML ya da JSON-LD geçerliliğini bozacak değişiklik reddedilir.
+  - Her sonuç günlüğe yazılır.
+  - Son uygulama tek komutla geri alınır ve dosya hash'leriyle doğrulanır.
+- **Onay:** Kural grubu toplu onaylanabilir. YZ önerileri tek tek onaylanır, düzenlenir ya da
+  reddedilir. Yüksek riskli öneriler ayrıca risk onayı ister. Onaysız hiçbir değişiklik yazılmaz.
+
+Arayüzde mod formun ilk adımında seçilir; yönetici modunda kök klasör ve temel adres istenir.
+Komut satırından:
+
+```
+py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model qwen/qwen3.5-9b
+py yonet.py onizle sonuclar/127.0.0.1/sonuc_<tarih_saat> [--diff]
+py yonet.py onayla <klasör> --kural-hepsi --onay D021 D030 --riski-kabul D030 --ret D033 --duzenle "D021=Yeni başlık | Site"
+py yonet.py uygula <klasör>        # yedek + uygulama + günlük + tekrar tarama + yonetici_raporu.html
+py yonet.py geri-al sonuclar/127.0.0.1
+```
+
+Yönetici modu klasöründe standart taramanın çıktılarına ek olarak şu dosyalar bulunur:
+`degisiklikler.json`, `onizleme.diff`, `onaylar.json`, `yedek/`, `uygulama_gunlugu.jsonl`,
+`uygulanan.diff`, `sonra/` (tekrar taraması) ve `yonetici_raporu.html`.
+
+## Test sitesi
+
+`test_sitesi/` altında yerelde çalışan, kurgusal bir çay mağazası sitesi var (Çaylıbahçe, 25 sayfa).
+Sitede 47 kasıtlı SEO sorunu bulunur: 18 kolay, 16 orta, 13 zor. Sorunların kaydı ve değerlendirme
+betikleri sitenin dışında, `test_sitesi_degerlendirme/` altındadır; analiz aracı bunlara erişemez.
+
+```
+py test_sitesi/sunucu.py                         # 1. siteyi başlat (yalnızca http://127.0.0.1:8080)
+py test_sitesi_degerlendirme/dogrula.py          #    kayıtlı 47 sorunun sitede var olduğunu doğrula
+py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model <model>   # 2. tara
+py yonet.py onayla <klasör> --kural-hepsi --onay ... # 3. düzelt (onay)
+py yonet.py uygula <klasör>                      # 4. uygula + tekrar tara
+py test_sitesi_degerlendirme/degerlendir.py --sonuc <klasör>   # 5. değerlendir
+py test_sitesi_degerlendirme/sifirla.py          # 6. sıfırla (hash doğrulamalı)
+```
+
+`degerlendir.py` her sorun için şunları raporlar ve `degerlendirme.md` dosyasına yazar:
+
+- önce taramasında tespit edildi mi;
+- canlı sitede düzeldi mi;
+- araç sonra taramasında hâlâ buluyor mu.
+
+Sonuçlar zorluğa, SEO alanına ve beklenen çözüm kategorisine göre özetlenir. Düzeltme sırasında
+yeni çıkan bulgular ve kayıt dışında kalan bulgular da listelenir. Sıfırlama yalnızca
+`test_sitesi/site/` klasörünü değiştirir.
 
 ## Modele verilen ek bağlam
 
@@ -279,6 +360,7 @@ yapılmalıdır.
 
 ```
 calistir.py              uygulamayı başlatır
+yonet.py                 yönetici modu komut satırı (tara, onizle, onayla, uygula, geri-al)
 deney.py                 deney matrisi koşucusu (komut satırı)
 rag_degerlendir.py       bilgi getirme (RAG) ölçümü
 tests/                   pytest testleri (tests/veri/: RAG ölçüm seti)
@@ -295,10 +377,18 @@ seo_app/
   tarama.py              site taraması kuyruğu (BFS + sitemap), bağlantı grafiği bulguları
   render.py              Chrome/Edge ile JavaScript render
   rapor.py               tek dosyalık HTML rapor (sablonlar/rapor_cikti.html)
+  kategoriler.py         bulgu kategorileri (Kural çözer / YZ önerir / Elle düzeltilir), risk ve olası etki
+  yazma.py               yönetici modu yazma katmanı (adaptör arayüzü, yerel dosya adaptörü, yol güvenliği)
+  html_konum.py          HTML etiketlerinin kaynak metindeki konumları
+  duzeltme.py            değişiklik planı, önizleme diff'i, güvenli uygulama
+  yz_oneri.py            YZ önerileri: model + RAG + uydurma/dil/JSON-LD doğrulaması
+  yonetici.py            yönetici modu akışı, geri alma, önce/sonra raporu (sablonlar/yonetici_rapor.html)
   web.py                 Flask arayüzü
   sablonlar/ statik/     arayüz dosyaları
 ogretme/                 örnekler, bilgi tabanı, gömme önbelleği
 test_setleri/            tarama adres listeleri
+test_sitesi/             yerel test sitesi (sunucu.py, sunucu_ayarlari.json, site/)
+test_sitesi_degerlendirme/  sorunlar.json, dogrula.py, degerlendir.py, sifirla.py, orijinal_site/
 sonuclar/                tüm tarama çıktıları
 ```
 

@@ -35,6 +35,25 @@
       <div class="form-govde">
       <ol class="adimlar">
         <li class="adim">
+          <h3>Mod</h3>
+          <fieldset class="secim-grubu">
+            <legend>Çalışma modu</legend>
+            <label class="kutu"><input type="radio" name="calisma-modu" id="mod-standart" value="standart" checked>
+              <span>Standart mod <span class="ipucu">erişimimiz olmayan siteler: indir, analiz et, raporla; siteye hiçbir şey yazılmaz</span></span></label>
+            <label class="kutu"><input type="radio" name="calisma-modu" id="mod-yonetici" value="yonetici">
+              <span>Yönetici modu <span class="ipucu">admin erişimimiz olan site: analiz et, onaylanan düzeltmeleri siteye yaz, tekrar tara</span></span></label>
+          </fieldset>
+          <div id="yonetici-alanlari" class="gizli">
+            <label for="yonetici-kok">Site kök klasörü <span class="ipucu">yazma yalnızca bu klasörün içine yapılır</span></label>
+            <input type="text" id="yonetici-kok" spellcheck="false" placeholder="test_sitesi/site">
+            <label for="yonetici-url">Temel adres <span class="ipucu">yalnızca bu adresin altındaki sayfalar taranır ve düzeltilir</span></label>
+            <input type="text" id="yonetici-url" spellcheck="false" placeholder="http://127.0.0.1:8080/">
+            <p class="not">Tarama bitince öneriler önizlemeyle gösterilir; onay vermeden siteye hiçbir değişiklik yazılmaz.
+               Uygulamadan önce sitenin tam yedeği alınır ve son uygulama tek tıkla geri alınabilir.</p>
+          </div>
+        </li>
+
+        <li class="adim">
           <h3>Adresler</h3>
           <label for="adresler">Taranacak adresler <span class="ipucu">her satıra bir adres</span></label>
           <textarea id="adresler" rows="5" spellcheck="false"
@@ -159,6 +178,20 @@
           <p class="panel-not" id="site-ozeti-notu"></p>
         </div>
         <div id="site-ozeti"></div>
+      </div>
+
+      <div class="panel gizli" id="yonetici-paneli">
+        <div class="panel-ust">
+          <h2>Yönetici modu: değişiklik önizlemesi</h2>
+          <p class="panel-not" id="yonetici-notu"></p>
+        </div>
+        <div id="yonetici-icerik"></div>
+        <div class="yonetici-dugmeler" id="yonetici-dugmeler">
+          <button class="dugme" id="yonetici-uygula" type="button">Onaylananları uygula</button>
+          <button class="dugme ikincil gizli" id="yonetici-geri-al" type="button">Son uygulamayı geri al</button>
+          <a class="dugme ikincil gizli" id="yonetici-rapor" href="/api/yonetici/rapor" target="_blank" rel="noopener">Yönetici raporunu aç</a>
+        </div>
+        <div class="uyari gizli" id="yonetici-uyari" role="alert"></div>
       </div>
 
       <div id="bos-durum" class="panel bos-durum">
