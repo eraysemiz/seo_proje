@@ -1,6 +1,6 @@
 # HANDOVER: Yerel Dil Modeli ile SEO Denetimi ve İyileştirme
 
-Son güncelleme: **23 Ekim 2026** · Aktif dal: `yonetici-modu` (son commit `14d2142`).
+Son güncelleme: **23 Ekim 2026** · Aktif dal: `masaustu-uygulama` (`main`'den, birleştirilmedi).
 Ayrıntılı kullanım: [README.md](README.md). Bu belgenin önceki sürümü (ödev bağlamı, Düzce birim
 siteleri bulguları, 20–23 Ekim notları) git geçmişinde: `git show 14d2142:handover.md`.
 
@@ -43,6 +43,14 @@ py yonet.py uygula <klasör>
 py yonet.py geri-al sonuclar/127.0.0.1
 ```
 
+**Masaüstü uygulaması (Windows):** yukarıdaki işlemlerin hepsi tek pencereden yürütülür (README →
+"Masaüstü uygulaması").
+```
+py masaustu/baslat.py                         # kaynaktan
+py build_exe.py   (ya da build_exe.bat)       # → dist/SEO_Denetim/SEO_Denetim.exe (onedir)
+dist/SEO_Denetim/SEO_Denetim.exe --oto-test rapor.json   # tam döngüyü arayüz üzerinden sına
+```
+
 ## 3. Mimari
 
 | Dosya | Sorumluluk |
@@ -60,6 +68,9 @@ py yonet.py geri-al sonuclar/127.0.0.1
 | `seo_app/kategoriler.py` | Kural çözer / YZ önerir / Elle düzeltilir + risk + olası etki |
 | `seo_app/yonetici.py`, `duzeltme.py`, `yz_oneri.py`, `yazma.py`, `html_konum.py` | Yönetici modu: akış, değişiklik planı, YZ önerisi doğrulama, yazma adaptörü, HTML konumları |
 | `seo_app/rapor.py`, `web.py`, `sablonlar/`, `statik/` | HTML raporlar ve arayüz |
+| `masaustu/` | Masaüstü başlatıcı (Tkinter): betikleri alt süreç olarak çalıştırır; onay ekranı, durum çubuğu, oto-test |
+| `masaustu/salt_okunur.py` | Salt okunur taramanın komut satırı karşılığı (`web.ayarlari_dogrula` + `boru.topluca_analiz`) |
+| `build_exe.py`, `masaustu/seo_masaustu.spec` | uv + Python 3.13 ortamında PyInstaller derlemesi |
 
 **Veri akışı:**
 1. **Tarama:** `boru.topluca_analiz` → `canli.sayfa_getir` (+ site modunda `tarama.Kuyruk`).
@@ -169,10 +180,23 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   onay/yedek/geri alma, test sitesi ve değerlendirme betikleri.
 - **23 Ekim (`14d2142`):** `.gitattributes` ile test sitesi dosyaları bayt bayt saklanıyor; hash
   manifesti başka makinelerde de eşleşsin diye.
+- **23 Ekim:** `yonetici-modu` yerelde `main`'e fast-forward birleştirildi (`c75660e`). Push edilmedi:
+  bu oturumdan GitHub kimlik doğrulaması yapılamıyor.
+- **23 Ekim (`masaustu-uygulama`):** Tkinter masaüstü başlatıcı ve PyInstaller ile `.exe` derlemesi.
+  Mevcut kod değişmedi; yeni olanlar `masaustu/`, `build_exe.py/.bat` ve `tests/test_masaustu.py`.
 
 ## 8. Mevcut durum
 
-- **Testler:** `py -m pytest -q` → 226 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
+- **Testler:** `py -m pytest -q` → 238 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
+  Python 3.13 derleme ortamında da aynı sonuç.
+- **.exe tam döngüsü (23 Ekim, `--oto-test`, qwen3.5-9b):**
+  - .exe proje dışında, Türkçe karakterli bir klasörden çalıştırıldı; 13/13 adım başarılı.
+  - Döngü: test sitesi → doğrula → modelli tarama (399 sn) → onay → uygula → değerlendir → geri al
+    → iptal → sıfırla → doğrula → web arayüzü.
+  - Arayüz en fazla 112 ms takıldı.
+  - Kapanışta geride süreç kalmadı, 8080 ve 5000 portları kapandı.
+  - Doğrula ve hash karşılaştırma çıktıları doğrudan CLI ile satır satır aynı.
+  - "LM Studio kapalı" durumu, LM adresi kullanılmayan bir porta çevrilerek denendi.
 - **Mod 2 eşdeğerliği:** `main` ile `yonetici-modu` aynı test sitesini taradığında `rapor.json`,
   `site_geneli.json`, `site_ozeti.json` ve puanlar aynı çıktı. Fark yalnızca HTML rapordaki
   kategori etiketlerinde.
@@ -193,7 +217,8 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - FTP/SFTP/CMS adaptörleri.
   - Rerank sunucusuyla gerçek deneme.
   - 58 Düzce sitesinde modelli tam tarama (önceki notlara göre) `[doğrulanmalı]`.
-- **Merge edilmemiş dal:** `yonetici-modu` henüz `main`'e birleştirilmedi ve push edilmedi.
+- **Push bekleyen:** `main` (yönetici modu dahil) ve `yonetici-modu` yerelde güncel, `origin`'e
+  gönderilmedi. `masaustu-uygulama` dalı henüz `main`'e birleştirilmedi.
 - **Tarama çıktıları git dışında:** `sonuclar/` tamamen `.gitignore`'da (`98e0922`). Önceden
   izlenen 114 dosya (örn. `adim9_lighthouse/`) depodan çıkarıldı, diskte duruyor; eski sürümleri
   git geçmişinde (`git show 0261537:sonuclar/...`).
@@ -217,6 +242,16 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
 - **Uydurmaya karşı yer tutucu:** model sitede olmayan bilgiyi `[doğrulanmalı: …]` ile yazar;
   doldurulmadan uygulanamaz.
 - **Puan aracın kendi ölçeğidir** (yüksek 15 / orta 8 / düşük 3 ceza), bağımsız bir ölçüm değildir.
+- **Masaüstü uygulaması yalnızca arayüz katmanıdır:**
+  - Her işlem mevcut betiği alt süreç olarak çalıştırır. Onaylar `yonet.py onayla` argümanlarına
+    çevrilir; `onaylar.json` dosyasına doğrudan yazılmaz.
+  - Salt okunur taramanın CLI'ı yoktu. `masaustu/salt_okunur.py` web arayüzüyle aynı fonksiyonları
+    çağırır.
+  - `seo_app` .exe'ye gömülmez, proje klasöründen okunur.
+- **.exe kararları:**
+  - Paketleme uv ile ayrı bir Python 3.13 ortamında, PyInstaller ile *onedir* olarak yapılır.
+  - Arayüzde "Bilgi tabanı" sekmesi şimdilik yok: Google'dan içerik çeken bir güncelleme betiği yok.
+  - Uygula, geri al, sıfırla ve onay kaydı yarıda kesilemez (yazma işlemleri).
 
 ## 10. Bilinen tuzaklar
 
@@ -241,10 +276,21 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
 - **Git worktree:** bu yolda (`Düzce Üniversitesi`, uzun geçici yol) `git worktree add`
   başarısız oldu. Karşılaştırma için `git archive main | tar -x` kullanıldı.
 - **PageSpeed localhost'u ölçemez:** düzeltilmiş ya da yerel sayfa için "sonra" Lighthouse puanı alınamaz.
+- **Masaüstü / .exe:**
+  - .exe projenin kodunu gömülü **Python 3.13** ile çalıştırır. Kaynaktan çalışmada 3.15 kullanılır.
+    Testler iki sürümde de geçiyor; yeni kod 3.13 ile uyumlu kalmalı.
+  - .exe'nin kullandığı modüller, `seo_masaustu.spec` derleme sırasında proje dosyalarının import
+    satırları taranarak eklenir. `seo_app`'e yeni bir dış kütüphane eklenince yeniden derlemek gerekir.
+  - Pencereli .exe'nin stdout'u cp1252'dir. `baslat.akislari_hazirla` her modda UTF-8'e çevirir.
+  - Windows'ta kapalı bir porta bağlanmak zaman aşımına kadar sürer. Port ve LM denetimleri arayüz
+    iş parçacığında yapılmaz (`Uygulama.arka_planda`).
+  - Ayarlar `%APPDATA%\SEO Denetim Aracı\ayarlar.json` dosyasındadır. Oto-test için `--ayar` ile ayrı
+    bir dosya verin.
 
 ## 11. Sonraki adımlar (öncelik sırasıyla)
 
-1. `yonetici-modu` dalını gözden geçirip `main`'e birleştirmek ve push etmek (kullanıcı kararı).
+1. `git push origin main yonetici-modu` (kullanıcı çalıştırmalı). Ardından `masaustu-uygulama`
+   dalını gözden geçirip birleştirmek.
 2. Hocadan konu ve kapsam onayı. Önceki notlarda "alınmadı" olarak duruyordu `[doğrulanmalı]`.
 3. 58 Düzce sitesinde (`test_setleri/duzce_birimleri.txt`) modelli tarama ve `deney.py` ile deney
    matrisi (model × `sifir`/`ornek`/`bilgi`/`ornek+bilgi` × retry).

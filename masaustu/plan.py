@@ -1,0 +1,110 @@
+"""Yonetici modu planinin (degisiklikler.json) onay ekrani icin okunmasi ve kararlarin
+`yonet.py onayla` argumanlarina cevrilmesi. Kararlar yalnizca yonet.py uzerinden kaydedilir;
+bu modul onaylar.json'a dogrudan yazmaz.
+"""
+import json
+import re
+from pathlib import Path
+
+# seo_app.kategoriler.KATEGORI_ADI ve seo_app.yonetici.DURUM_ADI ile ayni; arayuz sureci seo_app'i
+# ice aktarmaz (.exe icinde gomulu degildir), bu yuzden gosterim adlari burada da tutulur.
+KATEGORI_ADI = {"kural": "Kural çözer", "yz": "YZ önerir", "elle": "Elle düzeltilir"}
+DURUM_ADI = {"uygulandi": "Uygulandı", "reddedildi": "Reddedildi", "basarisiz": "Başarısız",
+             "onay_bekliyor": "Onay verilmedi", "gecersiz": "Doğrulamadan geçmedi", "oneriliyor": "Önerildi"}
+_BLOK_BASI = re.compile(r"^# (D\d+) \[")
+
+
+def plani_oku(klasor):
+    return json.loads((Path(klasor) / "degisiklikler.json").read_text(encoding="utf-8"))
+
+
+def kararlari_oku(klasor):
+    yol = Path(klasor) / "onaylar.json"
+    try:
+        veri = json.loads(yol.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        veri = {}
+    return {"kural_hepsi": bool(veri.get("kural_hepsi")), "kararlar": veri.get("kararlar") or {}}
+
+
+def diff_bloklari(klasor):
+    """onizleme.diff'i degisiklik kimligine gore parcalar: {"D001": "...diff metni..."}."""
+    yol = Path(klasor) / "onizleme.diff"
+    if not yol.exists():
+        return {}
+    bloklar, kimlik, satirlar = {}, None, []
+    for satir in yol.read_text(encoding="utf-8").splitlines():
+        m = _BLOK_BASI.match(satir)
+        if m or satir.startswith("####"):
+            if kimlik:
+                bloklar[kimlik] = "\n".join(satirlar).strip("\n")
+            kimlik, satirlar = (m.group(1), [satir]) if m else (None, [])
+        elif kimlik:
+            satirlar.append(satir)
+    if kimlik:
+        bloklar[kimlik] = "\n".join(satirlar).strip("\n")
+    return bloklar
+
+
+def baslangic_secimleri(plan, onceki):
+    """Onay ekraninin ilk durumu: daha once kaydedilmis kararlar."""
+    secimler = {}
+    for d in plan["degisiklikler"]:
+        k = onceki["kararlar"].get(d["id"]) or {}
+        secimler[d["id"]] = {"karar": k.get("karar"), "risk": bool(k.get("risk_onay")),
+                             "deger": k.get("deger")}
+    return secimler
+
+
+def onaylanan_sayisi(plan, kararlar):
+    """Kaydedilmis kararlara gore uygulanacak degisiklik sayisi (duzeltme.kararlari_coz'un
+    onay kosullari; duzenlenen degerin dogrulamasi uygulama aninda yapilir)."""
+    sayi = 0
+    for d in plan["degisiklikler"]:
+        k = kararlar["kararlar"].get(d["id"]) or {}
+        if d["durum"] == "gecersiz" or k.get("karar") == "ret":
+            continue
+        if not (k.get("karar") == "onay" or (d["kategori"] == "kural" and kararlar["kural_hepsi"])):
+            continue
+        if d["risk"] == "yuksek" and not k.get("risk_onay"):
+            continue
+        sayi += 1
+    return sayi
+
+
+def onay_argumanlari(plan, onceki, secimler, kural_hepsi):
+    """Secimleri `yonet.py onayla <klasor>` argumanlarina cevirir. (argumanlar, uyarilar) dondurur.
+
+    yonet.py onceki kararlarin uzerine ekler; bu yuzden ekranda geri cekilen bir onay (ya da
+    kapatilan 'tumunu onayla') ret olarak gonderilir. Verilmis bir risk onayi komut satirindan geri
+    alinamaz; boyle bir durumda kullanici uyarilir (oneriyi reddetmek her zaman mumkundur)."""
+    onay, ret, risk, duzenle, uyarilar = [], [], [], [], []
+    for d in plan["degisiklikler"]:
+        if d["durum"] == "gecersiz":
+            continue
+        i = d["id"]
+        s = secimler.get(i) or {}
+        k = onceki["kararlar"].get(i) or {}
+        karar = s.get("karar")
+        if karar == "onay":
+            onay.append(i)
+            if d["risk"] == "yuksek":
+                if s.get("risk"):
+                    risk.append(i)
+                elif k.get("risk_onay"):
+                    uyarilar.append(i + ": daha önce verilen risk onayı geri alınamıyor; uygulanmasın "
+                                    "istiyorsanız Ret seçin.")
+            deger = s.get("deger")
+            if d.get("duzenleme") and deger is not None and deger != d.get("yeni"):
+                duzenle.append(i + "=" + deger)
+        elif karar == "ret":
+            ret.append(i)
+        elif k.get("karar") == "onay":
+            ret.append(i)                    # ekranda onay geri cekildi
+        elif d["kategori"] == "kural" and onceki["kural_hepsi"] and not kural_hepsi:
+            ret.append(i)                    # 'tumunu onayla' kapatildi; yonet.py bu bayragi geri almaz
+    argumanlar = ["--kural-hepsi"] if kural_hepsi else []
+    for bayrak, liste in (("--onay", onay), ("--ret", ret), ("--riski-kabul", risk), ("--duzenle", duzenle)):
+        if liste:
+            argumanlar += [bayrak, *liste]
+    return argumanlar, uyarilar

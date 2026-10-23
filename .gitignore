@@ -16,3 +16,7 @@ graphify-out/
 
 # Tarama çıktıları (her çalıştırmada yeniden üretilir)
 sonuclar/
+
+# Masaüstü uygulaması derleme ortamı ve çıktısı (build_exe.py yeniden üretir)
+build/
+dist/

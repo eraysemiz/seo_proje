@@ -1,3 +1,5 @@
 # Test sitesi hash manifestiyle doğrulanır; satır sonları dönüştürülmeden bayt bayt saklanır
 test_sitesi/site/** -text
 test_sitesi_degerlendirme/orijinal_site/** -text
+# Windows toplu iş dosyaları CRLF satır sonuyla saklanır
+*.bat text eol=crlf

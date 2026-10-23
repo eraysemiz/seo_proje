@@ -177,6 +177,49 @@ Sonuçlar zorluğa, SEO alanına ve beklenen çözüm kategorisine göre özetle
 yeni çıkan bulgular ve kayıt dışında kalan bulgular da listelenir. Sıfırlama yalnızca
 `test_sitesi/site/` klasörünü değiştirir.
 
+## Masaüstü uygulaması (Windows)
+
+Yukarıdaki komutların hepsi tek bir pencereden de çalıştırılabilir. Uygulama yalnızca bir arayüz
+katmanıdır (`masaustu/`): her işlem mevcut betiği alt süreç olarak çalıştırır, çıktısı alttaki
+panelde canlı görünür. Komut satırı kullanımı aynen geçerlidir.
+
+```
+py masaustu/baslat.py            # kaynaktan çalıştır (Tkinter, ek bağımlılık yok)
+build_exe.bat                    # ya da: py build_exe.py  → dist/SEO_Denetim/SEO_Denetim.exe
+```
+
+| Sekme | İşlemler |
+|---|---|
+| Analiz | Mod (Yönetici / Salt okunur), site adresi, kök klasör, model seçimi, taramayı başlat; yönetici modunda **önizle ve onayla** (kategoriye göre gruplu diff, YZ önerilerine tek tek onay/ret, yüksek risk onayı, değer düzenleme) ve **uygula**; tarayıcı arayüzünü (`calistir.py`) başlat/durdur |
+| Test sitesi | Başlat / durdur / tarayıcıda aç, doğrula, sıfırla, hash karşılaştır, değerlendir |
+| Sonuçlar | `sonuclar/` altındaki taramalar; rapor ve klasör açma, son uygulamayı geri alma |
+| Ayarlar | Proje klasörü, LM Studio adresi, varsayılan modeller, portlar, ses |
+
+- Alttaki durum çubuğu LM Studio'ya ulaşılıp ulaşılamadığını, seçilen modellerin yüklü olup
+  olmadığını, test sitesi ve web arayüzünün çalışıp çalışmadığını gösterir.
+- Aynı anda tek iş çalışır. Tarama ve doğrulama gibi işler **İptal** ile durdurulabilir.
+  Uygulama, geri alma, sıfırlama ve onay kaydı siteye ya da sonuç klasörüne yazdığı için yarıda
+  kesilmez. Siteye yazan işlemler önce onay penceresi gösterir.
+- Her alt süreç bir Windows Job Object'e bağlıdır. Uygulama kapanınca, beklenmedik biçimde
+  kapansa bile, başlattığı sunucular ve alt süreçler kapanır.
+- Ayarlar `%APPDATA%\SEO Denetim Aracı\ayarlar.json` dosyasında tutulur (`--ayar` ile başka dosya).
+  Proje klasörü ayarda yoksa .exe'nin bulunduğu klasörden yukarı doğru `yonet.py` aranır.
+  .exe proje dışına taşındıysa klasör Ayarlar sekmesinden seçilir.
+- `--oto-test rapor.json` tam döngüyü arayüz üzerinden kendiliğinden çalıştırır: test sitesi →
+  doğrula → tarama → onay → uygula → değerlendir → geri al → iptal → sıfırla. Sonunda geride
+  süreç kalmadığını denetleyip raporu JSON olarak yazar. `SEO_OTO_MODELSIZ=1` ile tarama modelsiz
+  yapılır.
+
+**Derleme.** `build_exe.py`, uv ile `build/venv313` altında ayrı bir Python 3.13 ortamı kurar.
+PyInstaller yalnızca bu ortama yüklenir, projenin bağımlılıklarına eklenmez. Varsayılan çıktı
+*onedir* biçimindedir: hızlı açılır ve antivirüs yazılımlarına daha az takılır.
+`--onefile` tek dosya üretir, ama her açılışta kendini geçici klasöre açtığı için birkaç saniye geç
+başlar ve yanlış alarma daha sık takılır. .exe yalnızca Python çalışma ortamını, arayüzü ve
+kütüphaneleri içerir. `seo_app/`, betikler, `ogretme/` (gömme önbelleği dahil), `sonuclar/` ve
+test sitesi gömülmez, proje klasöründen okunur. Bu yüzden kod değişikliği için yeniden derlemek
+gerekmez. İkon `masaustu/ikon.ico` dosyasıdır; `masaustu/ikon_uret.py` ile yeniden üretilir ya da
+aynı adla başka bir ikon konabilir.
+
 ## Modele verilen ek bağlam
 
 Deney koşulu sabittir: **`ornek+bilgi`**. Modele her taramada few-shot örnekler
@@ -363,6 +406,8 @@ calistir.py              uygulamayı başlatır
 yonet.py                 yönetici modu komut satırı (tara, onizle, onayla, uygula, geri-al)
 deney.py                 deney matrisi koşucusu (komut satırı)
 rag_degerlendir.py       bilgi getirme (RAG) ölçümü
+build_exe.py / .bat      masaüstü uygulamasını derler (dist/SEO_Denetim/)
+masaustu/                masaüstü başlatıcı (Tkinter): baslat.py, uygulama.py, onay ekranı, salt_okunur.py, oto_test.py
 tests/                   pytest testleri (tests/veri/: RAG ölçüm seti)
 seo_app/
   bagimsiz.py            PageSpeed (Lighthouse) SEO puanı ve Core Web Vitals
