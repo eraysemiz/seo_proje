@@ -113,8 +113,15 @@ Doğruluk iyileştirmesinden (`dogruluk-iyilestirme` dalı) sonra standart modda
 (charset, render'ı engelleyen betik, URL'de büyük harf, yumuşak 404, sitemap'te yönlendirme) ve yeni
 puanlama geçerlidir. Önceki taramalarla puanlar doğrudan karşılaştırılamaz.
 
-**Yönetici modu (Mod 1)** admin erişimimiz olan siteler içindir. Akış: analiz → değişiklik planı →
-önizleme → onay → yedek + uygulama → otomatik tekrar tarama → önce/sonra raporu.
+**Yönetici modu (Mod 1)** admin erişimimiz olan siteler içindir. Akış üç aşamalıdır:
+
+1. **Başlangıç:** analiz → değişiklik planı.
+2. **Otomatik düzeltmeler:** güven eşiğini geçen ve her zaman onay isteyen kurallara girmeyen
+   değişiklikler tarama biter bitmez, onay beklemeden yazılır (önce tam yedek); site yeniden taranır.
+3. **Onaylı düzeltmeler:** onay ekranında onaylanan, düzenlenen ya da reddedilen değişiklikler
+   uygulanır; otomatik yazılmış bir değişiklik reddedilirse geri çekilir; site yeniden taranır.
+
+Rapor üç aşamayı yan yana gösterir. Geri alma tüm aşamaları birlikte geri alır.
 
 - **Hedef:** Site kök klasörü ve temel adres açıkça verilir. Yazma yalnızca bu klasöre yapılır.
   `..`, mutlak yol, sembolik bağlantı ve junction ile dışarı çıkış reddedilir. Aracın kendi
@@ -133,11 +140,14 @@ puanlama geçerlidir. Önceki taramalarla puanlar doğrudan karşılaştırılam
   kez daha sorulur; yine geçemezse uygulanmaz ve nedeniyle raporlanır. Bozuk JSON-LD sözdizimi ve
   fiyat/para birimi yazımı (`1.250` → `1250`, `TL` → `TRY`) modele gitmeden deterministik düzeltilir.
 - **Güvenli uygulama:**
-  - Önce sitenin tam yedeği alınır.
-  - Plandan sonra değişmiş dosyaya yazılmaz.
-  - HTML, XML ya da JSON-LD geçerliliğini bozacak değişiklik reddedilir.
-  - Her sonuç günlüğe yazılır.
-  - Son uygulama tek komutla geri alınır ve dosya hash'leriyle doğrulanır.
+  - İlk yazmadan önce sitenin tam yedeği alınır; sonraki aşama aynı yedeği kullanır.
+  - Her aşamada dosya, yedekteki özgün halinden yeniden kurulur: önceki aşamada uygulananlar ve yeni
+    onaylananlar birlikte, her biri belge geçerliliği denetlenerek.
+  - Plandan ya da önceki aşamadan sonra elle değişmiş dosyaya yazılmaz.
+  - HTML, XML ya da JSON-LD geçerliliğini bozacak değişiklik uygulanmaz ve "Başarısız" raporlanır.
+  - Her sonuç aşamasıyla birlikte günlüğe (`uygulama_gunlugu.jsonl`) ve diff'e (`uygulanan.diff`) yazılır.
+  - Son uygulama (tüm aşamalar) tek komutla geri alınır ve dosya hash'leriyle doğrulanır; durumlar ve
+    metrikler başlangıç haline döner.
 - **Güven puanı ve onay** (`seo_app/guven.py`): Her değişikliğin 0–1 arası bir güven puanı ve düşük
   güven nedeni vardır. Puan şuna göre belirlenir:
   - Kural düzeltmeleri: kural başına sabit değer. Örneğin görsel boyutu 0,98; `defer` ekleme 0,60.
@@ -148,27 +158,44 @@ puanlama geçerlidir. Önceki taramalarla puanlar doğrudan karşılaştırılam
     kelimelerin kaynakta geçmeme oranı puanı düşürür.
 
   **Eşiği** (`oto_esik`, varsayılan 0,8; `--esik`, web formu, masaüstü) geçen değişiklikler otomatik
-  onaylı gelir ve reddedilebilir; altındakiler onay ister. Şunlar güven ne olursa olsun her zaman
+  aşamada onaysız yazılır ve onay ekranında reddedilebilir (geri çekilir); altındakiler onay ister. Şunlar güven ne olursa olsun her zaman
   onaya düşer: `[doğrulanmalı]` yer tutuculu içerik, sayfayı canonical ile başka sayfaya bağlayıp
   dizinden düşüren birleştirme, noindex/nofollow/Disallow ekleyen ve büyük bir içerik bloğunu silen
   değişiklikler. Onay ekranı güven puanını ve nedenini gösterir. Eşiğin altındaki yüksek riskli
   öneriler ayrıca risk onayı ister. Otomatik uygulananlar da aynı yedek, günlük, diff ve geri alma
   yolundan geçer.
 
+- **Sorun durumları:** Başlangıç taramasındaki her (sorun, sayfa) bulgusunun bir durumu vardır:
+  `Çözüldü (otomatik)`, `Çözüldü (onaylı)`, `Onay bekliyor`, `Reddedildi`, `Başarısız` (nedeniyle),
+  `Elle düzeltilir`. "Çözüldü" yalnızca düzeltmeden sonraki yeniden taramada bulgu artık tespit
+  edilmiyorsa verilir; uygulandığı halde hâlâ tespit edilen bulgu "Başarısız – düzeltme etkisiz" olur.
+  Sayfa yeniden taramada yoksa (ör. sitemap'ten çıkarıldı) durum "Uygulandı, yeniden kontrol yapılmadı"
+  olarak kalır. Durumlar `bulgu_durumlari.json`'a, yönetici raporuna, analiz raporuna (`rapor.html`,
+  her sorunun yanında), web arayüzüne ve masaüstü özetine yazılır.
+- **Çözüm oranı** = çözülen çözülebilir bulgu / çözülebilir bulgu. Çözülebilir: araçta bir düzeltme
+  önerisi olan bulgu (onaylanmış, bekleyen, reddedilen ya da doğrulamadan geçemeyen). Önerisi olmayan
+  "Elle düzeltilir" bulgular orana girmez, ayrı sayılır (başka bir düzeltmeyle dolaylı giderilenler de
+  gösterilir). Her aşamanın değerleri o aşamadan sonraki yeniden taramadan ölçülür.
+- **Yeniden kontrol tam taramadır:** Tekrar eden başlık, yetim sayfa, sitemap ve robots.txt gibi site
+  geneli bulgular tüm sayfalara bağlı olduğu için yalnızca değişen sayfaları taramak (artımlı tarama)
+  bunları yanlış ölçer. Her aşamadan sonra site baştan taranır (modelsiz; test sitesinde birkaç saniye).
+
 Arayüzde mod formun ilk adımında seçilir; yönetici modunda kök klasör, temel adres ve güven eşiği
 istenir. Komut satırından:
 
 ```
-py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model qwen/qwen3.5-9b [--esik 0.8] [--oto-uygula]
+py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model qwen/qwen3.5-9b [--esik 0.8] [--oto-uygulama-yok]
+                                   # plan + otomatik aşama (eşiği geçenler yazılır, site yeniden taranır)
 py yonet.py onizle sonuclar/127.0.0.1/sonuc_<tarih_saat> [--diff]   # güven puanları ve onay bekleyenler
-py yonet.py uygula <klasör>        # onaylar.json yoksa yalnızca otomatik onaylılar uygulanır
 py yonet.py onayla <klasör> --onay D021 D030 --riski-kabul D030 --ret D033 --duzenle "D021=Yeni başlık | Site" [--esik 0.9]
-py yonet.py geri-al sonuclar/127.0.0.1
+py yonet.py uygula <klasör>        # onaylı aşama + yeniden tarama + üç aşamalı rapor
+py yonet.py geri-al sonuclar/127.0.0.1 [--tekrar-tara]   # tüm aşamaları geri al
 ```
 
 Yönetici modu klasöründe standart taramanın çıktılarına ek olarak şu dosyalar bulunur:
-`degisiklikler.json`, `onizleme.diff`, `onaylar.json`, `yedek/`, `uygulama_gunlugu.jsonl`,
-`uygulanan.diff`, `sonra/` (tekrar taraması) ve `yonetici_raporu.html`.
+`degisiklikler.json` (plan ve aşamalar), `onizleme.diff`, `onaylar.json`, `yedek/`,
+`uygulama_gunlugu.jsonl`, `uygulanan.diff`, `uygulama.json`, `sonra_otomatik/` ve `sonra/` (aşama
+sonrası taramalar), `geri_alma/` (isteğe bağlı), `bulgu_durumlari.json` ve `yonetici_raporu.html`.
 
 ## Test sitesi
 
@@ -179,9 +206,9 @@ betikleri sitenin dışında, `test_sitesi_degerlendirme/` altındadır; analiz 
 ```
 py test_sitesi/sunucu.py                         # 1. siteyi başlat (yalnızca http://127.0.0.1:8080)
 py test_sitesi_degerlendirme/dogrula.py          #    kayıtlı 47 sorunun sitede var olduğunu doğrula
-py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model <model>   # 2. tara
-py yonet.py onayla <klasör> --onay ...           # 3. (isteğe bağlı) eşiğin altındakileri onayla
-py yonet.py uygula <klasör>                      # 4. uygula (otomatik onaylılar + onaylananlar) + tekrar tara
+py yonet.py tara --kok test_sitesi/site --url http://127.0.0.1:8080/ --model <model>   # 2. tara + otomatik aşama
+py yonet.py onayla <klasör> --onay ... --ret ... # 3. (isteğe bağlı) eşiğin altındakileri onayla / reddet
+py yonet.py uygula <klasör>                      # 4. onaylı aşama + tekrar tara
 py test_sitesi_degerlendirme/degerlendir.py --sonuc <klasör>   # 5. değerlendir
 py test_sitesi_degerlendirme/sifirla.py          # 6. sıfırla (hash doğrulamalı)
 ```
@@ -190,7 +217,10 @@ py test_sitesi_degerlendirme/sifirla.py          # 6. sıfırla (hash doğrulama
 
 - önce taramasında tespit edildi mi;
 - canlı sitede düzeldi mi;
-- araç sonra taramasında hâlâ buluyor mu.
+- araç sonra taramasında (`sonra/`, yoksa `sonra_otomatik/`) hâlâ buluyor mu;
+- aracın "Çözüldü" dediği sorunlar canlı kontrolde de düzelmiş mi (tutarlılık; yanlış ve eksik
+  "Çözüldü" ayrı listelenir). Analiz aracı `sorunlar.json`'u okumaz; bu karşılaştırma yalnızca
+  değerlendirme betiğindedir.
 
 Sonuçlar zorluğa, SEO alanına ve beklenen çözüm kategorisine göre özetlenir. Düzeltme sırasında
 yeni çıkan bulgular ve kayıt dışında kalan bulgular da listelenir. Sıfırlama yalnızca
@@ -209,7 +239,7 @@ build_exe.bat                    # ya da: py build_exe.py  → dist/SEO_Denetim/
 
 | Sekme | İşlemler |
 |---|---|
-| Analiz | Mod (Yönetici / Salt okunur), site adresi, kök klasör, model seçimi, taramayı başlat; yönetici modunda **önizle ve onayla** (kategoriye göre gruplu diff, YZ önerilerine tek tek onay/ret, yüksek risk onayı, değer düzenleme) ve **uygula**; tarayıcı arayüzünü (`calistir.py`) başlat/durdur |
+| Analiz | Mod (Yönetici / Salt okunur), site adresi, kök klasör, model seçimi, taramayı başlat; yönetici modunda tarama otomatik aşamayı da yürütür; ardından **önizle ve onayla** (kategoriye göre gruplu diff, YZ önerilerine tek tek onay/ret, otomatik yazılmış değişikliği geri çekme, yüksek risk onayı, değer düzenleme) ve **onaylı aşamayı uygula**; plan alanında üç aşamalı metrikler (sayfa puanı, sorun sayısı, çözüm oranı) ve sorun durumları görünür; tarayıcı arayüzünü (`calistir.py`) başlat/durdur |
 | Test sitesi | Başlat / durdur / tarayıcıda aç, doğrula, sıfırla, hash karşılaştır, değerlendir |
 | Sonuçlar | `sonuclar/` altındaki taramalar; rapor ve klasör açma, son uygulamayı geri alma |
 | Ayarlar | Proje klasörü, LM Studio adresi, varsayılan modeller, portlar, ses |

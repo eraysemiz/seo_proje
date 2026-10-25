@@ -25,10 +25,24 @@ def geri_alinabilir(site_klasoru):
     return bool(bilgi) and bilgi.get("durum") != "geri_alindi"
 
 
+def _uygulama_kaydi(k):
+    try:
+        return json.loads((k / "uygulama.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
 def klasor_bilgisi(k):
     yonetici = (k / "degisiklikler.json").exists()
-    if (k / "uygulama.json").exists():
-        durum = "uygulandı"
+    u = _uygulama_kaydi(k) if (k / "uygulama.json").exists() else None
+    adlar = [a["ad"] for a in (u or {}).get("asamalar") or []]
+    var = u is not None
+    if var and u.get("geri_alindi"):
+        durum = "geri alındı"
+    elif var and ("onayli" in adlar or not adlar):
+        durum = "uygulandı"                   # asamasiz kayit: eski tek seferlik uygulama
+    elif var and "otomatik" in adlar:
+        durum = "otomatik uygulandı"
     elif (k / "onaylar.json").exists():
         durum = "onaylandı"
     elif yonetici:
@@ -51,6 +65,6 @@ def listele(proje_koku):
 
 def son_yonetici_klasoru(proje_koku, site="127.0.0.1", uygulanmis=False):
     for x in listele(proje_koku):
-        if x["site"] == site and x["tur"] == "Yönetici" and (not uygulanmis or x["durum"] == "uygulandı"):
+        if x["site"] == site and x["tur"] == "Yönetici" and (not uygulanmis or x["durum"] in ("uygulandı", "otomatik uygulandı")):
             return x["klasor"]
     return None

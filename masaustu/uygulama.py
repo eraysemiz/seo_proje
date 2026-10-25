@@ -445,11 +445,14 @@ class Uygulama:
         self.plan_etiketi = ttk.Label(self.yonetici_cercevesi, text="Plan: henüz yok (önce tarayın ya da "
                                                                      "Sonuçlar sekmesinden bir plan açın)")
         self.plan_etiketi.pack(anchor="w")
+        # asama metrikleri (baslangic -> otomatik -> onayli) ve bulgu durumlari: yonetici_raporu.json
+        self.plan_ozeti = ttk.Label(self.yonetici_cercevesi, text="", style="Not.TLabel", justify="left")
+        self.plan_ozeti.pack(anchor="w", pady=(4, 0))
         dugmeler = ttk.Frame(self.yonetici_cercevesi)
         dugmeler.pack(anchor="w", pady=(6, 0))
         self.onay_dugmesi = self._dugme(dugmeler, "1. Önizle ve onayla…", self.onay_ekrani)
         self.onay_dugmesi.pack(side="left")
-        self.uygula_dugmesi = self._dugme(dugmeler, "2. Uygula (siteye yazar)…", self.uygula)
+        self.uygula_dugmesi = self._dugme(dugmeler, "2. Onaylı aşamayı uygula (siteye yazar)…", self.uygula)
         self.uygula_dugmesi.pack(side="left", padx=6)
         self.plan_rapor_dugmesi = ttk.Button(dugmeler, text="Yönetici raporunu aç", command=self._plan_raporu)
         self.plan_rapor_dugmesi.pack(side="left")
@@ -556,17 +559,23 @@ class Uygulama:
 
     def plan_sec(self, klasor):
         self.plan_klasoru = Path(klasor) if klasor else None
+        ozet = []
         if self.plan_klasoru:
             bilgi = sn.klasor_bilgisi(self.plan_klasoru)
             self.plan_etiketi.configure(text=f"Plan: {self._goreli(self.plan_klasoru)} · durum: {bilgi['durum']}")
+            ozet = pl.ozet_satirlari(pl.rapor_ozeti(self.plan_klasoru))
+        self.plan_ozeti.configure(text="\n".join(ozet))
+        for satir in ozet:
+            self.log("  " + satir, "soluk")
         self.plan_dugmeleri_guncelle()
 
     def plan_dugmeleri_guncelle(self):
         var = self.plan_klasoru is not None and (self.plan_klasoru / "degisiklikler.json").exists()
         mesgul = self.is_ is not None
         self.onay_dugmesi.configure(state="normal" if var and not mesgul else "disabled")
-        onayli = var and ((self.plan_klasoru / "onaylar.json").exists() or self._otomatik_var())
-        self.uygula_dugmesi.configure(state="normal" if onayli and not mesgul else "disabled")
+        # onayli asama bir kez yapilir; otomatik asamadan sonra onay kaydi olmasa da (yeni karar yoksa) yapilabilir
+        acik = var and not self._plan_kilitli() and ((self.plan_klasoru / "onaylar.json").exists() or self._otomatik_var())
+        self.uygula_dugmesi.configure(state="normal" if acik and not mesgul else "disabled")
         rapor = var and (self.plan_klasoru / "yonetici_raporu.html").exists()
         self.plan_rapor_dugmesi.configure(state="normal" if rapor else "disabled")
 
@@ -576,6 +585,12 @@ class Uygulama:
         except (OSError, ValueError):
             return False
         return any(d.get("onay_turu") == "otomatik" for d in plan["degisiklikler"])
+
+    def _plan_kilitli(self):
+        try:
+            return pl.kilitli_mi(pl.plani_oku(self.plan_klasoru))
+        except (OSError, ValueError):
+            return True
 
     def _plan_raporu(self):
         if self.plan_klasoru:
@@ -614,19 +629,21 @@ class Uygulama:
         if not klasor:
             return
         plan = pl.plani_oku(klasor)
-        sayi = pl.onaylanan_sayisi(plan, pl.kararlari_oku(klasor))
+        kararlar = pl.kararlari_oku(klasor)
+        sayi = pl.onaylanan_sayisi(plan, kararlar)
+        geri = pl.geri_cekilecek_sayisi(plan, kararlar)
+        zaten = sum(1 for d in plan["degisiklikler"] if d["durum"] == "uygulandi")
         kok = ((plan.get("hedef") or {}).get("adaptor") or {}).get("kok")
-        ileti = (f"Onaylanan {sayi} değişiklik siteye yazılacak" + (f":\n{kok}" if kok else ".") +
-                 "\n\nYazmadan önce tam yedek alınır; geri almak için Sonuçlar → 'Son uygulamayı geri al'. "
-                 "Bu işlem yarıda kesilemez.\n\nDevam edilsin mi?")
-        if sayi == 0:
+        if sayi == 0 and geri == 0 and zaten == 0:
             self.hata_goster("Onaylı değişiklik yok", "Uygulanacak onaylı değişiklik yok (otomatik onaylı da yok). "
                                                       "Önce onay ekranından önerileri onaylayın.")
             return
-        oto = sum(1 for d in plan["degisiklikler"] if pl.otomatik_mi(d, pl.esik(plan, pl.kararlari_oku(klasor))))
-        if oto:
-            ileti = ileti.replace("siteye yazılacak", f"siteye yazılacak ({oto} tanesi güven eşiğini geçtiği için "
-                                                      "otomatik onaylı)", 1)
+        ileti = (f"Onaylı aşama: {sayi} değişiklik siteye yazılacak" +
+                 (f", otomatik aşamada yazılmış {geri} değişiklik geri çekilecek" if geri else "") +
+                 (f":\n{kok}" if kok else ".") +
+                 (f"\n\nOtomatik aşamada {zaten} değişiklik zaten yazıldı." if zaten else "") +
+                 "\n\nİlk yazmadan önce tam yedek alınır; geri almak için Sonuçlar → 'Son uygulamayı geri al' "
+                 "(tüm aşamaları geri alır). Ardından site yeniden taranır. Bu işlem yarıda kesilemez.\n\nDevam edilsin mi?")
         if self.onay_sor("Siteye yazılsın mı?", ileti):
             self.calistir("Uygula", "yonet", ["uygula", self._goreli(klasor)], iptal_edilebilir=False,
                           bitince=lambda kod, s: self.plan_sec(klasor))
@@ -949,7 +966,11 @@ class OnayPenceresi:
         self.diffler = pl.diff_bloklari(klasor)
         self.secimler = pl.baslangic_secimleri(self.plan, self.onceki)
         self.degisiklik = {d["id"]: d for d in self.plan["degisiklikler"]}
-        self.uygulanmis = (self.klasor / "uygulama.json").exists()
+        # onayli asama tamamlandiysa ya da geri alindiysa kararlar yalnizca goruntulenir; otomatik asamadan
+        # sonra uygulanmis degisiklikler reddedilebilir (onayli asamada geri cekilir)
+        self.uygulanmis = pl.kilitli_mi(self.plan)
+        self.oto_uygulanan = sum(1 for d in self.plan["degisiklikler"]
+                                 if d["durum"] == "uygulandi" and d.get("asama") == "otomatik")
 
         self.p = tk.Toplevel(uyg.k)
         self.p.title("Önizleme ve onay — " + self.klasor.name)
@@ -974,8 +995,12 @@ class OnayPenceresi:
         ttk.Checkbutton(ust, text="Kural çözer önerilerinin tümünü onayla", variable=self.kural_hepsi,
                         command=self._agaci_yenile).pack(side="right")
         if self.uygulanmis:
-            ttk.Label(self.p, text="Bu plan zaten uygulandı; kararlar yalnızca görüntülenir.",
-                      foreground="#ef6c00", padding=(8, 0)).pack(fill="x")
+            ttk.Label(self.p, text="Bu planın onaylı aşaması tamamlandı ya da uygulama geri alındı; kararlar "
+                                   "yalnızca görüntülenir.", foreground="#ef6c00", padding=(8, 0)).pack(fill="x")
+        elif self.oto_uygulanan:
+            ttk.Label(self.p, text=f"Otomatik aşama: güven eşiğini geçen {self.oto_uygulanan} değişiklik siteye "
+                                   "yazıldı ve site yeniden tarandı. İstemediğinizi Reddedin; onaylı aşamada geri çekilir.",
+                      foreground="#2e7d32", padding=(8, 0)).pack(fill="x")
 
         bolme = ttk.PanedWindow(self.p, orient="horizontal")
         bolme.pack(fill="both", expand=True, padx=8, pady=4)
@@ -1059,6 +1084,8 @@ class OnayPenceresi:
         k = self.secimler[d["id"]]["karar"]
         if d["durum"] == "gecersiz":
             return "uygulanamaz"
+        if d["durum"] == "uygulandi":
+            return "✖ Geri çek" if k == "ret" else "✔ Uygulandı"
         if k is None and pl.otomatik_mi(d, self.esik):
             return "✔ Otomatik"
         if k is None and d["kategori"] == "kural" and self.kural_hepsi.get():
@@ -1074,7 +1101,7 @@ class OnayPenceresi:
                 etiketler = ("gecersiz",)
             guven = f"{d['guven']:.2f}" if d.get("guven") is not None else ""
             self.agac.item(d["id"], values=(self._karar_gosterimi(d), guven, risk, d["bulgu"], d["dosya"],
-                                            pl.DURUM_ADI.get(d["durum"], d["durum"])), tags=etiketler)
+                                            pl.durum_metni(d)), tags=etiketler)
 
     def _ayrinti(self):
         sec = self.agac.selection()
@@ -1094,7 +1121,9 @@ class OnayPenceresi:
             notlar = []
             if d.get("guven") is not None:
                 notlar.append(f"Güven {d['guven']:.2f} (eşik {self.esik:.2f}) · " +
-                              ("otomatik onaylı; istemiyorsanız Reddet" if pl.otomatik_mi(d, self.esik) else "onay gerekir"))
+                              ("otomatik aşamada uygulandı; istemiyorsanız Reddet (geri çekilir)" if d["durum"] == "uygulandi"
+                               else "otomatik onaylı; istemiyorsanız Reddet" if pl.otomatik_mi(d, self.esik)
+                               else "onay gerekir"))
             if d.get("zorunlu_onay"):
                 notlar.append("Her zaman onay: " + d["zorunlu_onay"])
             notlar += ["Güven notu: " + n for n in d.get("guven_nedenleri") or []]

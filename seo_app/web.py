@@ -113,9 +113,27 @@ def _kancalar():
             "bulgular_hazir": bulgular_hazir}
 
 
+def _yonetici_ozeti(klasor):
+    """Arayuz icin asama metrikleri ve bulgu durumlari (yonetici_raporu.json); yoksa None."""
+    yol = Path(klasor) / "yonetici_raporu.json"
+    if not yol.exists():
+        return None
+    r = json.loads(yol.read_text(encoding="utf-8"))
+    guncel = {}
+    son = next((a for a in reversed(r.get("asamalar") or []) if a["olculdu"] and a["ad"] != "baslangic"), None)
+    if son and (Path(klasor) / son["tarama"] / "rapor.json").exists():
+        for k in json.loads((Path(klasor) / son["tarama"] / "rapor.json").read_text(encoding="utf-8")):
+            guncel[k.get("ad")] = {"puan": (k.get("once_puanlar") or {}).get("sayfa"), "sorun": k.get("once_sorun_sayisi")}
+    return {"asamalar": r.get("asamalar") or [], "sayilar": r.get("bulgu_sayilari") or {},
+            "toplam": r.get("bulgu_toplam", 0), "tanim": r.get("cozum_orani_tanimi"),
+            "geri_alindi": r.get("geri_alindi"), "guncel": guncel,
+            "durumlar": {b["sorun"] + "|" + b["url"]: {k: b[k] for k in ("durum", "durum_adi", "neden")}
+                         for b in r.get("bulgu_durumlari") or []}}
+
+
 def _tarama_isi(hedefler, ayarlar, ogretme_klasoru, sonuc_koku, zaman, yonetici_hedefi=None):
-    """Arka planda calisan tarama. Yonetici modunda tarama bitince degisiklik plani da uretilir
-    (siteye yazilmaz; uygulama ayrica onay ister)."""
+    """Arka planda calisan tarama. Yonetici modunda tarama bitince degisiklik plani uretilir ve guven
+    esigini gecen degisiklikler onay beklemeden uygulanir (otomatik asama); digerleri onay ister."""
     cikti = _cikti_ozeti(hedefler, zaman)
     gunluk = _gunluk_yaz
     try:
@@ -124,7 +142,7 @@ def _tarama_isi(hedefler, ayarlar, ogretme_klasoru, sonuc_koku, zaman, yonetici_
                                                 ogretme_klasoru, sonuc_koku, gunluk=gunluk, zaman=zaman,
                                                 tarama_kancalari=_kancalar())
             with _kilit:
-                DURUM["yonetici"] = {"asama": "plan_hazir", "klasor": str(klasor)}
+                DURUM["yonetici"] = {"asama": "plan_hazir", "klasor": str(klasor), "ozet": _yonetici_ozeti(klasor)}
         else:
             topluca_analiz(hedefler, ayarlar, ogretme_klasoru, sonuc_koku, zaman, gunluk=gunluk, **_kancalar())
         gunluk("Tarama tamamlandı. Çıktı klasörü: " + cikti)
@@ -334,7 +352,8 @@ def api_yonetici_plan():
         return oku_onbellek[dosya]
     with _kilit:
         asama = DURUM["yonetici"].get("asama")
-    return jsonify({"asama": asama, "klasor": str(klasor), **yonetici.plan_ozeti(plan, oku)})
+    return jsonify({"asama": asama, "klasor": str(klasor), **yonetici.plan_ozeti(plan, oku),
+                    "ozet": _yonetici_ozeti(klasor)})
 
 
 def _yonetici_uygula_isi(klasor, kararlar):
@@ -342,7 +361,7 @@ def _yonetici_uygula_isi(klasor, kararlar):
         rapor = yonetici.uygula_ve_dogrula(klasor, kararlar, SONUC_KOK, gunluk=_gunluk_yaz,
                                            tarama_kancalari={"iptal": lambda: DURUM["iptal"]})
         with _kilit:
-            DURUM["yonetici"] = {"asama": "tamam", "klasor": str(klasor),
+            DURUM["yonetici"] = {"asama": "tamam", "klasor": str(klasor), "ozet": _yonetici_ozeti(klasor),
                                  "rapor": {k: rapor[k] for k in ("puanlar", "yeni_bulgular", "giderilen_bulgu_sayisi")} |
                                  {"durumlar": {kt: {d: len(v) for d, v in g.items()} for kt, g in rapor["durumlar"].items()}}}
     except Exception as e:
@@ -365,7 +384,7 @@ def api_yonetici_uygula():
     with _kilit:
         DURUM.update({"calisiyor": True, "iptal": False, "baslangic": time.time(), "bitis": None})
         DURUM["yonetici"]["asama"] = "uygulaniyor"
-    _gunluk_yaz("Onaylanan değişiklikler uygulanıyor (önce tam yedek alınır)")
+    _gunluk_yaz("Onaylı aşama: kararlar uygulanıyor (ilk yazmadan önce tam yedek alınır)")
     threading.Thread(target=_yonetici_uygula_isi, args=(klasor, kararlar), daemon=True).start()
     return jsonify({"tamam": True})
 
@@ -373,19 +392,21 @@ def api_yonetici_uygula():
 @uygulama.route("/api/yonetici/geri-al", methods=["POST"])
 def api_yonetici_geri_al():
     _istek_dogrula()
-    klasor = _yonetici_klasoru(("tamam",))
+    # otomatik asamadan sonra (plan_hazir) da yazilmis degisiklikler olabilir; geri alma tum asamalari kapsar
+    klasor = _yonetici_klasoru(("plan_hazir", "tamam"))
     try:
         sonuc = yonetici.geri_al(klasor.parent, gunluk=_gunluk_yaz)
     except yonetici.YoneticiHatasi as e:
         return jsonify({"hata": str(e)}), 400
     with _kilit:
         DURUM["yonetici"]["asama"] = "geri_alindi"
+        DURUM["yonetici"]["ozet"] = _yonetici_ozeti(klasor)
     return jsonify({"tamam": True, **sonuc})
 
 
 @uygulama.route("/api/yonetici/rapor")
 def api_yonetici_rapor():
-    klasor = _yonetici_klasoru(("tamam", "geri_alindi"))
+    klasor = _yonetici_klasoru(("plan_hazir", "tamam", "geri_alindi"))
     yol = klasor / "yonetici_raporu.html"
     if not yol.exists():
         abort(404)

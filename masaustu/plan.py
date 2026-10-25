@@ -10,12 +10,62 @@ from pathlib import Path
 # ice aktarmaz (.exe icinde gomulu degildir), bu yuzden gosterim adlari burada da tutulur.
 KATEGORI_ADI = {"kural": "Kural çözer", "yz": "YZ önerir", "elle": "Elle düzeltilir"}
 DURUM_ADI = {"uygulandi": "Uygulandı", "reddedildi": "Reddedildi", "basarisiz": "Başarısız",
-             "onay_bekliyor": "Onay verilmedi", "gecersiz": "Doğrulamadan geçmedi", "oneriliyor": "Önerildi"}
+             "onay_bekliyor": "Onay verilmedi", "gecersiz": "Doğrulamadan geçmedi", "oneriliyor": "Önerildi",
+             "geri_alindi": "Geri alındı"}
+ASAMA_KISA = {"otomatik": "otomatik", "onayli": "onaylı"}
+# seo_app.yonetici.BULGU_DURUM_ADI ile ayni
+BULGU_DURUM_ADI = {"cozuldu_otomatik": "Çözüldü (otomatik)", "cozuldu_onayli": "Çözüldü (onaylı)",
+                   "onay_bekliyor": "Onay bekliyor", "reddedildi": "Reddedildi", "basarisiz": "Başarısız",
+                   "dogrulanmadi": "Uygulandı, yeniden kontrol yapılmadı", "elle": "Elle düzeltilir"}
 _BLOK_BASI = re.compile(r"^# (D\d+) \[")
 
 
 def plani_oku(klasor):
     return json.loads((Path(klasor) / "degisiklikler.json").read_text(encoding="utf-8"))
+
+
+def asamalar(plan):
+    return [a["ad"] for a in plan.get("asamalar") or []]
+
+
+def kilitli_mi(plan):
+    """Onayli asama tamamlandiysa ya da uygulama geri alindiysa kararlar degistirilemez."""
+    return bool(plan.get("geri_alindi")) or "onayli" in asamalar(plan)
+
+
+def durum_metni(d):
+    metin = DURUM_ADI.get(d["durum"], d["durum"])
+    if d["durum"] == "uygulandi" and d.get("asama"):
+        metin += " (" + ASAMA_KISA.get(d["asama"], d["asama"]) + ")"
+    return metin
+
+
+def rapor_ozeti(klasor):
+    """yonetici_raporu.json'dan asama metrikleri ve bulgu durumlari; yoksa None."""
+    try:
+        r = json.loads((Path(klasor) / "yonetici_raporu.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return {"asamalar": r.get("asamalar") or [], "sayilar": r.get("bulgu_sayilari") or {},
+            "toplam": r.get("bulgu_toplam", 0), "tanim": r.get("cozum_orani_tanimi", ""),
+            "geri_alindi": r.get("geri_alindi")}
+
+
+def ozet_satirlari(oz):
+    """Asama metriklerinin kisa metin hali (masaustu plan alani ve gunluk icin)."""
+    if not oz or not oz["asamalar"]:
+        return []
+    satirlar = []
+    for a in oz["asamalar"]:
+        if not a.get("olculdu"):
+            satirlar.append(f"{a['adi']}: ölçülmedi")
+            continue
+        oran = "—" if a.get("cozum_orani") is None else f"%{round(100 * a['cozum_orani'])}"
+        satirlar.append(f"{a['adi']}: sayfa puanı {a['puanlar']['sayfa']} · sorun {a['bulgu_sayisi']} · "
+                        f"çözüm oranı {oran} ({a['cozulen']}/{a['cozulebilir']}) · elle {a['elle']}")
+    durumlar = ", ".join(f"{BULGU_DURUM_ADI.get(d, d)} {n}" for d, n in oz["sayilar"].items() if n)
+    satirlar.append(f"Sorun durumları ({oz['toplam']}): {durumlar}")
+    return satirlar
 
 
 def kararlari_oku(klasor):
@@ -68,13 +118,20 @@ def otomatik_mi(d, esik_degeri):
             and d["guven"] >= esik_degeri)
 
 
+def geri_cekilecek_sayisi(plan, kararlar):
+    """Otomatik asamada yazilip onay ekraninda reddedilen (onayli asamada geri cekilecek) degisiklikler."""
+    return sum(1 for d in plan["degisiklikler"] if d["durum"] == "uygulandi"
+               and (kararlar["kararlar"].get(d["id"]) or {}).get("karar") == "ret")
+
+
 def onaylanan_sayisi(plan, kararlar):
-    """Kaydedilmis kararlara gore uygulanacak degisiklik sayisi (duzeltme.kararlari_coz'un
-    onay kosullari; duzenlenen degerin dogrulamasi uygulama aninda yapilir)."""
+    """Kaydedilmis kararlara gore onayli asamada yeni yazilacak degisiklik sayisi (duzeltme.kararlari_coz'un
+    onay kosullari; duzenlenen degerin dogrulamasi uygulama aninda yapilir). Otomatik asamada zaten
+    yazilmis olanlar sayilmaz."""
     sayi, e = 0, esik(plan, kararlar)
     for d in plan["degisiklikler"]:
         k = kararlar["kararlar"].get(d["id"]) or {}
-        if d["durum"] == "gecersiz" or k.get("karar") == "ret":
+        if d["durum"] in ("gecersiz", "uygulandi") or k.get("karar") == "ret":
             continue
         oto = otomatik_mi(d, e)
         if not (k.get("karar") == "onay" or oto or (d["kategori"] == "kural" and kararlar["kural_hepsi"])):

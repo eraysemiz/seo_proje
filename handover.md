@@ -81,7 +81,10 @@ dist/SEO_Denetim/SEO_Denetim.exe --oto-test rapor.json   # tam döngüyü arayü
 3. **RAG:** yalnızca `cozum_yolu == "model"` bulgular için `ogretme.ogretme_metni` → `llm.llm_fixes`.
 4. **Sınıflandırma:** `kategoriler.kategori()` yalnızca gösterim ve yönetici modunda kullanılır.
 5. **Rapor:** `sonuclar/<site>/sonuc_<tarih_saat>/` altına `rapor.json`, `site_ozeti.json`, `rapor.html`, `ozet.csv`.
-6. **Yazma (yalnızca yönetici modu):** `duzeltme.plan_uret` → onay → `duzeltme.uygula` (adaptör) → tekrar tarama.
+6. **Yazma (yalnızca yönetici modu), üç aşama:** `duzeltme.plan_uret` → otomatik aşama
+   (`yonetici.asama_uygula(..., "otomatik")`, tarama sonunda) → tekrar tarama `sonra_otomatik/` → onay →
+   onaylı aşama (`uygula_ve_dogrula`) → tekrar tarama `sonra/` → `yonetici.rapor_uret`
+   (`bulgu_durumlari.json`, `yonetici_raporu`, durumlu `rapor.html`).
 
 ## 4. Temel kavramlar
 
@@ -90,7 +93,8 @@ dist/SEO_Denetim/SEO_Denetim.exe --oto-test rapor.json   # tam döngüyü arayü
 - **Yönetici modu (Mod 1):**
   - Site kök klasörü ve temel adres açıkça verilir.
   - Taramada model çağrılmaz; YZ önerileri plan aşamasında üretilir.
-  - Plan sırasında siteye yazılmaz.
+  - Plan sırasında siteye yazılmaz; plandan hemen sonra otomatik aşama eşiği geçenleri yazar
+    (`ayarlar["oto_uygula"]`, CLI `--oto-uygulama-yok` ile kapatılır).
 - **Kategoriler** (`seo_app/kategoriler.py`):
   - **Kural çözer:** toplu onaylanabilir.
   - **YZ önerir:** tek tek onaylanır, düzenlenebilir. Canonical, noindex, hreflang ve robots
@@ -102,11 +106,23 @@ dist/SEO_Denetim/SEO_Denetim.exe --oto-test rapor.json   # tam döngüyü arayü
   - `SiteAdaptoru` arayüzü: oku, yaz, listele, yedekle, geri_al.
   - Tek uygulama `YerelDosyaAdaptoru`. FTP/SFTP/CMS adaptörleri henüz uygulanmadı.
   - `..`, mutlak yol, symlink ve junction reddedilir. Aracın klasörü ve `sonuclar/` hedef olamaz.
-- **Onay → yedek → uygulama:**
-  - Yazmadan önce tam yedek alınır (`yedek/`).
+- **Aşamalı uygulama** (`duzeltme.uygula(..., asama)`):
+  - İlk yazmadan önce tam yedek alınır (`yedek/`); onaylı aşama aynı yedeği kullanır.
+  - Değişiklik konumları planın gördüğü özgün dosyaya göredir. Bu yüzden her aşamada dosya yedekteki
+    özgün halinden yeniden kurulur: önceki aşamada uygulananlar + yeni onaylananlar; reddedilen
+    otomatik değişiklik dışarıda bırakılır (geri çekilir). `plan["dosya_guncel"]` son yazılan hash'i
+    tutar; dosya aşamalar arasında elle değiştiyse yazılmaz.
   - Plandan sonra değişmiş dosyaya, çakışan değişikliğe, HTML/XML/JSON-LD'yi bozan değişikliğe ve
-    doldurulmamış `[doğrulanmalı: …]` yer tutucusuna yazılmaz.
+    doldurulmamış `[doğrulanmalı: …]` yer tutucusuna yazılmaz ("Başarısız").
   - Model önerileri uygulama anında yeniden doğrulanır.
+  - Aşama kaydı `plan["asamalar"]`: ad, zaman, yazılan dosyalar, ölçüldüğü tarama klasörü
+    (`None` = yazıldı ama taranmadı; dosya yazılmadıysa önceki ölçüm geçerli).
+- **Bulgu durumları** (`yonetici.bulgu_durumlari`): başlangıç taramasındaki her (sorun, sayfa) için
+  `cozuldu_otomatik` / `cozuldu_onayli` / `onay_bekliyor` / `reddedildi` / `basarisiz` /
+  `dogrulanmadi` / `elle`. "Çözüldü" yalnızca yeniden taramaya dayanır. Bulgu → değişiklik eşlemesi:
+  önce (bulgu, url) birebir; site katmanındaki sayfaya özgü olmayan bulgular (robots.txt, sitemap adresi)
+  ve tekrar grupları (title/meta/H1/içerik tekrarı) aynı kodun başka adresteki düzeltmesine bağlanır.
+  Çözüm oranı = çözülen çözülebilir / çözülebilir (önerisi olan bulgular); "Elle" ayrı sayılır.
 - **Güven puanı ve otomatik onay** (`seo_app/guven.py`):
   - Her değişikliğe 0–1 `guven` ve `guven_nedenleri` yazılır. Kural: kural başına sabit; sezgisel:
     kanıta göre; model: alan tabanı − yeniden deneme cezası (0.12) − kaynakta geçmeyen kelime cezası.
@@ -114,11 +130,14 @@ dist/SEO_Denetim/SEO_Denetim.exe --oto-test rapor.json   # tam döngüyü arayü
   - Güvenden bağımsız hep onay: `[doğrulanmalı]` yer tutucusu, canonical ile başka sayfaya bağlama,
     noindex/nofollow/Disallow ekleyen, 2000+ karakter silen değişiklikler (`zorunlu_onay`).
   - `onaylar.json` / `uygulama.json` her değişikliğin onay kaynağını (kullanıcı/otomatik/toplu) tutar.
-- **Rollback:** `py yonet.py geri-al sonuclar/<site>`. `sonuclar/<site>/son_uygulama.json`
-  üzerinden çalışır ve dosya hash'leriyle doğrular.
+- **Rollback:** `py yonet.py geri-al sonuclar/<site> [--tekrar-tara]`. `sonuclar/<site>/son_uygulama.json`
+  üzerinden çalışır, tüm aşamaları birlikte geri alır ve dosya hash'leriyle doğrular. Uygulanmış
+  değişiklikler `geri_alindi` olur, bulgu durumları başlangıca döner; geçmiş aşamaların ölçümleri
+  raporda kalır, "Geri alma sonrası" sütunu eklenir.
 - **Yönetici modu sonuç klasörü** (`sonuclar/<site>/sonuc_<tarih_saat>/`): standart çıktılar +
   `degisiklikler.json`, `onizleme.diff`, `onaylar.json`, `yedek/`, `uygulama_gunlugu.jsonl`,
-  `uygulanan.diff`, `uygulama.json`, `sonra/`, `yonetici_raporu.json/.html`.
+  `uygulanan.diff` (aşama başlıklı), `uygulama.json`, `sonra_otomatik/`, `sonra/`, `geri_alma/`,
+  `bulgu_durumlari.json`, `yonetici_raporu.json/.html`.
 - **Puanlama** (`seo_app/puanlama.py`): her grup için `100 × Π(1 − ağırlık)`, ağırlıklar yüksek 0.20 /
   orta 0.09 / düşük 0.035; kritik bulgular tavan koyar (erişilemez 0, robots tüm site 20, 4xx/5xx 30,
   yumuşak 404 40, noindex 60, kopya içerik 70…). Sayfaya özgü site bulguları ve tarama geneli bulgular
@@ -209,10 +228,23 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - Güven puanı + otomatik onay eşiği (web, masaüstü, CLI, yönetici raporu).
   - Yeni puanlama (`puanlama.py`); README güncellendi; `tests/test_dogruluk.py`.
   - `sorunlar.json`'a yalnızca değerlendirme etiketi eklendi (O14/Z06/Z10 tespit kodları, O03/O04 `yan`).
+- **25 Ekim (`main`, commit edilmedi): üç aşamalı uygulama ve doğrulanmış durumlar.**
+  - Kök neden: otomatik onay yalnızca bir etiketti (`onay_turu`); siteye yazan tek fonksiyon
+    (`uygula_ve_dogrula`) kullanıcı "Uygula"ya basınca çalışıyordu ve plan başına bir kez
+    çalışabiliyordu. Rapor yalnızca önce/sonra ortalama puanı gösteriyordu; web tablosu ve analiz
+    raporu yönetici modunda da "sonra" değerini düzeltilmiş HTML kopyasından alıyordu.
+  - Otomatik aşama tarama sonunda yazıyor; onaylı aşama üstüne yazıyor/geri çekiyor; her aşamadan
+    sonra tam yeniden tarama (önce `canli.onbellek_temizle()`: aynı süreçteki robots/sitemap önbelleği
+    yazılan dosyaları gizliyordu).
+  - Bulgu durumları + üç aşamalı metrikler: `bulgu_durumlari.json`, yönetici raporu, durumlu `rapor.html`,
+    web paneli/tablosu, masaüstü plan özeti ve onay penceresi, CLI tablosu.
+  - Geri alma tüm aşamaları kapsıyor; durumlar ve metrikler başlangıca dönüyor (`--tekrar-tara`).
+  - `degerlendir.py`: `sonra_otomatik/` desteği ve araç "Çözüldü" ↔ canlı kontrol tutarlılığı.
+  - Yeni testler `tests/test_asamalar.py` (13).
 
 ## 8. Mevcut durum
 
-- **Testler:** `py -m pytest -q` → 261 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
+- **Testler:** `py -m pytest -q` → 274 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
   Python 3.13 derleme ortamında da aynı sonuç.
 - **.exe tam döngüsü (23 Ekim, `--oto-test`, qwen3.5-9b):**
   - .exe proje dışında, Türkçe karakterli bir klasörden çalıştırıldı; 13/13 adım başarılı.
@@ -236,6 +268,17 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - Tespit 47/47; düzeldi 36/47 (kolay 17/18, orta 10/16, zor 9/13; kural 13/13, YZ 23/27, elle 0/7).
   - Yeni çıkan bulgu 0. Geri alma + `sifirla.py` sonrası 48 dosyanın hash'i eşleşti.
   - Çıktılar `sonuclar/127.0.0.1/sonuc_2026-10-23_18-56-35/`.
+- **Üç aşamalı tam döngü (25 Ekim, qwen3.5-9b, CLI):**
+  - Otomatik aşama: onaysız 50 değişiklik / 19 dosya; sayfa puanı 79 → 95, sorun 187 → 81,
+    çözüm oranı %91 (73/80 çözülebilir); 5 onay bekledi, D048 doğrulamadan geçmedi (Başarısız).
+  - Onaylı aşama: D004/D005 (`defer`) ve D038 onaylandı; D050, D029 reddedildi; otomatik yazılmış
+    D024 (iletişim title) geri çekildi. D038 uygulandı ama ince içerik hâlâ bulunuyor → "Başarısız –
+    düzeltme etkisiz". Durumlar: Çözüldü (otomatik) 89, Çözüldü (onaylı) 1, Reddedildi 4, Başarısız 3, Elle 90.
+  - `degerlendir.py`: düzeldi 36/47; araç 34 sorunu "Çözüldü" dedi, 34'ü canlı kontrolde de düzelmiş
+    (yanlış "Çözüldü" yok); eksik: O07 (sayfa sitemap'ten çıkınca taranmadığı için doğrulanamıyor).
+  - Geri alma (`--tekrar-tara`): 19 dosya geri yazıldı, 48 hash eşleşti; ölçüm başlangıçla aynı
+    (79 / 187), durumlar başlangıçtaki gibi (78 onay bekliyor, 2 başarısız, 107 elle).
+  - Çıktılar `sonuclar/127.0.0.1/sonuc_2026-10-25_22-28-42/`.
 - **Kısmen çalışan:**
   - İnce içerik (`O10`, `O11`): paragraf önerileri düşük güvenli (0.44/0.58), onay bekliyor.
   - `K05`: model tek uzun cümle yazıyor (186 karakter); kırpma yalnızca son cümle/marka eki atar.
@@ -336,7 +379,8 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
 5. Açık sorular (yönetici modu):
    - `canonical_yok` Kural çözer mi kalmalı, YZ önerir · yüksek risk mi?
    - Kopya içerik için özgünleştirme görevi eklensin mi?
-6. `dogruluk-iyilestirme` değişikliklerini gözden geçirmek. Puanlama ve yeni denetimler Mod 2
+6. 25 Ekim değişikliklerini commit etmek ve .exe'yi yeniden derlemek (açık bir `SEO_Denetim.exe`
+   `dist/` klasörünü kilitler; derlemeden önce kapatın). `dogruluk-iyilestirme` değişikliklerini gözden geçirmek. Puanlama ve yeni denetimler Mod 2
    puanlarını da değiştirir; Düzce sitelerindeki eski sonuçlarla karşılaştırma yeniden yapılmalı.
 7. Açık sorular (güven): K05 için kelime sınırında kırpma eklensin mi? `defer` güveni satır içi
    betik bağımlılığı denetlenerek yükseltilsin mi? Eşik 0.8 başka sitelerde ölçülmeli.

@@ -205,6 +205,17 @@ class Senaryo:
             sonuc = self._is_sonucu(son, "Sonuç klasörü:", cikti=False)
             sonuc["plan_klasoru"] = str(self.ui(lambda: u.plan_klasoru))
             sonuc["model"] = self.ui(u.model_kullan.get)
+            # otomatik asama: guven esigini gecenler onaysiz yazildi ve site yeniden tarandi
+            k = Path(sonuc["plan_klasoru"])
+            plan = pl.plani_oku(k)
+            oz = pl.rapor_ozeti(k)
+            sonuc["otomatik_uygulanan"] = sum(1 for d in plan["degisiklikler"]
+                                              if d["durum"] == "uygulandi" and d.get("asama") == "otomatik")
+            sonuc["asamalar"] = pl.asamalar(plan)
+            sonuc["ozet"] = pl.ozet_satirlari(oz)
+            sonuc["arayuz_ozeti"] = self.ui(lambda: u.plan_ozeti.cget("text"))
+            sonuc["basarili"] = (sonuc["basarili"] and sonuc["otomatik_uygulanan"] > 0 and sonuc["asamalar"] == ["otomatik"]
+                                 and (k / "sonra_otomatik" / "rapor.json").exists() and "Otomatik" in sonuc["arayuz_ozeti"])
             return sonuc
         tarama = self.adim("Yönetici taraması", yonetici_tara)
         klasor = Path(tarama.get("plan_klasoru") or "")
@@ -214,9 +225,16 @@ class Senaryo:
                 p = arayuz.OnayPenceresi(u, klasor)
                 p.kural_hepsi.set(True)
                 yz = next((d for d in p.plan["degisiklikler"] if d["kategori"] == "yz" and d["risk"] != "yuksek"
-                           and d["durum"] != "gecersiz"), None)
+                           and d["durum"] not in ("gecersiz", "uygulandi")), None)
                 if yz:
                     p.secimler[yz["id"]]["karar"] = "onay"
+                # otomatik asamada yazilmis bir degisiklik reddedilir: onayli asamada geri cekilmeli
+                geri = next((d for d in p.plan["degisiklikler"] if d["durum"] == "uygulandi"
+                             and d.get("asama") == "otomatik"), None)
+                if geri:
+                    p.secimler[geri["id"]]["karar"] = "ret"
+                    kutu["geri_cekilecek"] = geri["id"]
+                kutu["gosterim"] = p._karar_gosterimi(geri) if geri else None
                 p._agaci_yenile()
                 arg, _ = pl.onay_argumanlari(p.plan, p.onceki, p.secimler, True)
                 p.kaydet()
@@ -226,13 +244,26 @@ class Senaryo:
             argumanlar = kutu.get("argumanlar")
             kararlar = pl.kararlari_oku(klasor)
             sonuc.update({"argumanlar": argumanlar, "kural_hepsi": kararlar["kural_hepsi"],
-                          "onaylanan": pl.onaylanan_sayisi(pl.plani_oku(klasor), kararlar)})
+                          "onaylanan": pl.onaylanan_sayisi(pl.plani_oku(klasor), kararlar),
+                          "geri_cekilecek": kutu.get("geri_cekilecek"), "gosterim": kutu.get("gosterim"),
+                          "geri_cekilecek_sayisi": pl.geri_cekilecek_sayisi(pl.plani_oku(klasor), kararlar)})
             return sonuc
         self.adim("Onay ekranı → kararları kaydet", onay)
 
         def uygula():
-            sonuc = self._is_sonucu(self.is_calistir(u.uygula), "Kural çözer: Uygulandı", cikti=False)
+            sonuc = self._is_sonucu(self.is_calistir(u.uygula), "Aşamalara göre metrikler", cikti=False)
             sonuc["uygulama_json"] = (klasor / "uygulama.json").exists()
+            plan = pl.plani_oku(klasor)
+            oz = pl.rapor_ozeti(klasor)
+            sonuc["asamalar"] = pl.asamalar(plan)
+            sonuc["ozet"] = pl.ozet_satirlari(oz)
+            sonuc["arayuz_ozeti"] = self.ui(lambda: u.plan_ozeti.cget("text"))
+            i = self.rapor["adimlar"][-1].get("geri_cekilecek") if self.rapor["adimlar"] else None
+            d = next((x for x in plan["degisiklikler"] if x["id"] == i), None)
+            sonuc["geri_cekilen_durum"] = d and d["durum"]
+            sonuc["basarili"] = (sonuc["basarili"] and sonuc["asamalar"] == ["otomatik", "onayli"]
+                                 and (not i or sonuc["geri_cekilen_durum"] == "reddedildi")
+                                 and "Onaylı düzeltmeler sonrası" in sonuc["arayuz_ozeti"])
             return sonuc
         self.adim("Uygula", uygula)
 
@@ -247,7 +278,15 @@ class Senaryo:
             return sonuc
         self.adim("Değerlendir", degerlendir)
 
-        self.adim("Geri al", lambda: self._is_sonucu(self.is_calistir(u.geri_al, klasor.parent), "eşleşiyor"))
+        def geri_al():
+            sonuc = self._is_sonucu(self.is_calistir(u.geri_al, klasor.parent), "eşleşiyor")
+            oz = pl.rapor_ozeti(klasor)
+            sonuc["durumlar"] = {d: n for d, n in (oz or {}).get("sayilar", {}).items() if n}
+            sonuc["ozet"] = pl.ozet_satirlari(oz)
+            sonuc["basarili"] = (sonuc["basarili"] and bool(oz and oz["geri_alindi"])
+                                 and set(sonuc["durumlar"]) <= {"onay_bekliyor", "elle", "basarisiz"})
+            return sonuc
+        self.adim("Geri al", geri_al)
 
         def iptal():
             def bas():

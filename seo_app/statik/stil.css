@@ -515,4 +515,8 @@ textarea.duzen { min-height: 40px; width: 100%; }
 .elle-listesi li { margin: 6px 0; }
 .yonetici-dugmeler { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .yonetici-sonuc { background: var(--iyi-zemin); color: var(--iyi-metin); border-radius: var(--r-kontrol); padding: 8px 10px; margin-bottom: 8px; }
+.yonetici-sonuc .tablo-kap { overflow-x: auto; margin: 6px 0; }
+.asama-tablosu { border-collapse: collapse; font-size: 13px; min-width: 100%; }
+.asama-tablosu th, .asama-tablosu td { padding: 3px 8px; text-align: right; white-space: nowrap; border-bottom: 1px solid currentColor; border-bottom-color: color-mix(in srgb, currentColor 18%, transparent); }
+.asama-tablosu tbody th { text-align: left; font-weight: 500; }
 #yonetici-uyari { margin-top: 10px; }

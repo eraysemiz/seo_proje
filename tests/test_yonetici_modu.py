@@ -369,7 +369,8 @@ def test_tam_akis_geri_alma_hash_eslesir(tmp_path):
     (klasor / "degisiklikler.json").write_text(json.dumps(plan, ensure_ascii=False), encoding="utf-8")
     rapor = yonetici.uygula_ve_dogrula(klasor, {"kural_hepsi": True}, tmp_path / "sonuclar", tekrar_tara=False)
     assert a.hashler() != once and rapor["durumlar"]["kural"]["uygulandi"]
-    assert (klasor / "uygulanan.diff").read_text(encoding="utf-8").startswith("--- a/index.html")
+    diff = (klasor / "uygulanan.diff").read_text(encoding="utf-8")
+    assert diff.startswith("# ===== Aşama: Onaylı") and "\n--- a/index.html" in diff
     assert (klasor / "yonetici_raporu.html").exists()
     with pytest.raises(yonetici.YoneticiHatasi):
         yonetici.uygula_ve_dogrula(klasor, {"kural_hepsi": True}, tmp_path / "sonuclar", tekrar_tara=False)

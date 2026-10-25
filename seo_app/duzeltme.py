@@ -1398,15 +1398,33 @@ def onay_esigi(plan, kararlar=None):
     return float(e) if e is not None else float(plan.get("esik", gv.ESIK))
 
 
-def kararlari_coz(plan, kararlar):
-    """Her degisiklik icin uygulanacak mi? Durum ve neden yazar. Onaylananlarin listesini dondurur.
-    Guven puani esigi gecen degisiklikler (guven.otomatik_mi) kullanici reddetmedikce onayli sayilir."""
+ASAMALAR = ("otomatik", "onayli")
+
+
+def kararlari_coz(plan, kararlar, asama="onayli"):
+    """Her degisiklik icin bu asamada uygulanacak mi? Durum ve neden yazar. (onaylanan, geri_cekilen) dondurur.
+
+    asama "otomatik": kullanici kararlari okunmaz; yalnizca guven esigini gecenler (guven.otomatik_mi).
+    asama "onayli": esigi gecenler kullanici reddetmedikce, digerleri kullanici onayiyla. Onceki asamada
+    uygulanmis bir degisiklik reddedilirse geri cekilir; degeri duzenlendiyse yeni degerle yeniden uygulanir."""
     kararlar = kararlar or {}
-    tek = kararlar.get("kararlar") or {}
     esik = onay_esigi(plan, kararlar)
-    onaylanan = []
+    if asama == "otomatik":
+        kararlar = {}
+    tek = kararlar.get("kararlar") or {}
+    onaylanan, geri_cekilen = [], []
     for d in plan["degisiklikler"]:
         k = tek.get(d["id"]) or {}
+        if d["durum"] == "uygulandi":
+            if k.get("karar") == "ret":
+                geri_cekilen.append(d)
+            elif k.get("deger") is not None and k.get("deger") != d.get("yeni"):
+                gecti, neden = duzenle(d, k["deger"], plan)
+                if gecti:
+                    onaylanan.append(d)
+                else:
+                    d["durum_nedeni"] = "düzenlenen değer doğrulamadan geçmedi, önceki değer yerinde kaldı: " + neden
+            continue
         if d["durum"] == "gecersiz":
             d["durum_nedeni"] = "doğrulamadan geçmedi: " + d["dogrulama"]["neden"]
             continue
@@ -1441,85 +1459,135 @@ def kararlari_coz(plan, kararlar):
             d["durum"], d["durum_nedeni"] = "basarisiz", "[doğrulanmalı: …] yer tutucusu doldurulmadan uygulanamaz"
             continue
         onaylanan.append(d)
-    return onaylanan
+    return onaylanan, geri_cekilen
 
 
-def uygula(plan, kararlar, adaptor, yedek_klasoru, gunluk_yolu):
-    """Onaylanan degisiklikleri uygular. Once sitenin tam yedegi alinir. Ozet dondurur."""
+def _ozgun_icerik(plan, adaptor, dosya, yedek_klasoru):
+    """Dosyanin plan anindaki icerigi ve simdiki icerigi: (ozgun, simdiki) bayt; hata nedeni ya da ''.
+    Onceki bir asamada yazilan dosyanin ozgun hali yedekten okunur (konumlar ozgun metne goredir)."""
+    simdiki = adaptor.oku(dosya)
+    guncel = plan.get("dosya_guncel") or {}
+    if dosya not in guncel:
+        if ozet_hash(simdiki) != plan["dosya_hashleri"].get(dosya):
+            return None, simdiki, "dosya plandan sonra değişmiş; öneriler eski içeriğe göre"
+        return simdiki, simdiki, ""
+    if ozet_hash(simdiki) != guncel[dosya]:
+        return None, simdiki, "dosya önceki uygulamadan sonra elle değişmiş; öneriler eski içeriğe göre"
+    ozgun = (Path(yedek_klasoru) / "dosyalar" / dosya).read_bytes()
+    if ozet_hash(ozgun) != plan["dosya_hashleri"].get(dosya):
+        return None, simdiki, "yedekteki özgün dosya planla eşleşmiyor"
+    return ozgun, simdiki, ""
+
+
+def uygula(plan, kararlar, adaptor, yedek_klasoru, gunluk_yolu, asama="onayli"):
+    """Bu asamada onaylanan degisiklikleri uygular; ozet dondurur.
+
+    Ilk yazmadan once sitenin tam yedegi alinir; sonraki asamalar ayni yedegi kullanir, boylece geri alma
+    tum asamalari kapsar. Her dosya ozgun icerikten yeniden kurulur: onceki asamalarda uygulananlar
+    (geri cekilenler haric) ve bu asamada onaylananlar birlikte, her biri belge gecerliligi denetlenerek."""
     hedef = plan["hedef"]["adaptor"]
     if adaptor.tanim() != hedef:
         raise YolGuvenligiHatasi("Plan başka bir hedef için üretilmiş: " + json.dumps(hedef, ensure_ascii=False))
-    onaylanan = kararlari_coz(plan, kararlar)
+    if asama not in ASAMALAR:
+        raise ValueError("Bilinmeyen uygulama aşaması: " + str(asama))
+    onaylanan, geri_cekilen = kararlari_coz(plan, kararlar, asama)
     gunluk = Path(gunluk_yolu)
     gunluk.parent.mkdir(parents=True, exist_ok=True)
 
     def kaydet(d, durum, neden="", **ek):
         d["durum"], d["durum_nedeni"] = durum, neden
         with gunluk.open("a", encoding="utf-8") as f:
-            f.write(json.dumps({"zaman": time.strftime("%Y-%m-%d %H:%M:%S"), "id": d["id"], "dosya": d["dosya"],
-                                "kategori": d["kategori"], "bulgu": d["bulgu"], "durum": durum, "neden": neden, **ek},
-                               ensure_ascii=False) + "\n")
+            f.write(json.dumps({"zaman": time.strftime("%Y-%m-%d %H:%M:%S"), "asama": asama, "id": d["id"],
+                                "dosya": d["dosya"], "kategori": d["kategori"], "bulgu": d["bulgu"], "durum": durum,
+                                "neden": neden, **ek}, ensure_ascii=False) + "\n")
 
     for d in plan["degisiklikler"]:
-        if d not in onaylanan:
+        if d not in onaylanan and d not in geri_cekilen and d["durum"] != "uygulandi":
             kaydet(d, d["durum"], d.get("durum_nedeni", ""))
-    if not onaylanan:
-        return {"yedek": None, "uygulanan": 0, "dosyalar": {}}
-    manifest = adaptor.yedekle(yedek_klasoru)     # yazmadan once tam yedek
-    dosyalar = {}
-    for dosya in sorted({d["dosya"] for d in onaylanan}):
-        grup = sorted((d for d in onaylanan if d["dosya"] == dosya), key=lambda d: int(d["id"][1:]))
+    bos = {"yedek": None, "uygulanan": sum(1 for d in plan["degisiklikler"] if d["durum"] == "uygulandi"),
+           "yeni_uygulanan": 0, "geri_cekilen": 0, "dosyalar": {}}
+    if not onaylanan and not geri_cekilen:
+        return bos
+    yedek = Path(yedek_klasoru)
+    if (yedek / "manifest.json").exists():         # onceki asamanin yedegi: sitenin uygulama oncesi hali
+        manifest = json.loads((yedek / "manifest.json").read_text(encoding="utf-8"))["dosyalar"]
+    else:
+        manifest = adaptor.yedekle(yedek)          # yazmadan once tam yedek
+    guncel = plan.setdefault("dosya_guncel", {})
+    sirala = lambda ds: sorted(ds, key=lambda d: int(d["id"][1:]))
+    dosyalar, yeni_uygulanan, cekilen = {}, 0, 0
+    for dosya in sorted({d["dosya"] for d in onaylanan + geri_cekilen}):
+        yeniler = sirala(d for d in onaylanan if d["dosya"] == dosya)
+        cekilecek = [d for d in geri_cekilen if d["dosya"] == dosya]
+        # onceki asamalarda uygulanip yerinde kalanlar; degeri duzenlenen yeniden (yeniler icinde) kurulur
+        kalanlar = sirala(d for d in plan["degisiklikler"] if d["dosya"] == dosya and d["durum"] == "uygulandi"
+                          and d not in cekilecek and d not in yeniler)
         try:
-            ham = adaptor.oku(dosya)
+            ozgun_b, ham, hata = _ozgun_icerik(plan, adaptor, dosya, yedek)
         except (OSError, YolGuvenligiHatasi) as e:
-            for d in grup:
-                kaydet(d, "basarisiz", "dosya okunamadı: " + str(e))
+            ozgun_b, ham, hata = None, b"", "dosya okunamadı: " + str(e)
+        if hata:
+            for d in yeniler:
+                if d["durum"] == "uygulandi":       # duzenlenen deger yazilamadi; onceki deger yerinde
+                    d["durum_nedeni"] = hata
+                else:
+                    kaydet(d, "basarisiz", hata)
+            for d in cekilecek:
+                d["durum_nedeni"] = "geri çekilemedi: " + hata
             continue
-        if ozet_hash(ham) != plan["dosya_hashleri"].get(dosya):
-            for d in grup:
-                kaydet(d, "basarisiz", "dosya plandan sonra değişmiş; öneriler eski içeriğe göre")
-            continue
-        ozgun = metin = ham.decode("utf-8")
+        ozgun = metin = ozgun_b.decode("utf-8")
         dolu = []                                     # uygulanmis parcalar: (bas, son, uzunluk farki), ozgun konumlarla
-        for d in grup:
+        for d in kalanlar + yeniler:
             parcalar = _parcalar(d)
+            neden = ""
             if any(ozgun[a:b] != x["eski"] for (a, b, _), x in zip(parcalar, d["parcalar"])):
-                kaydet(d, "basarisiz", "değiştirilecek metin dosyada beklenen konumda değil")
-                continue
-            if _cakisiyor(parcalar, [(a, b) for a, b, _ in dolu]):
-                kaydet(d, "basarisiz", "aynı bölgeyi değiştiren başka bir onaylı öneriyle çakışıyor")
-                continue
-            # parca konumlari ozgun metne goredir; daha once uygulanan parcalarin kaydirmasi eslenir
-            esli = []
-            for a, b, y in parcalar:
-                ea = _esle(a, dolu, bitis=False)
-                esli.append((ea, ea if a == b else _esle(b, dolu, bitis=True), y))   # ekleme: bas = son
-            aday = metne_uygula(metin, esli)
-            neden = gecerlilik_bozuluyor_mu(dosya, metin, aday)
+                neden = "değiştirilecek metin dosyada beklenen konumda değil"
+            elif _cakisiyor(parcalar, [(a, b) for a, b, _ in dolu]):
+                neden = "aynı bölgeyi değiştiren başka bir onaylı öneriyle çakışıyor"
+            else:
+                # parca konumlari ozgun metne goredir; daha once uygulanan parcalarin kaydirmasi eslenir
+                esli = []
+                for a, b, y in parcalar:
+                    ea = _esle(a, dolu, bitis=False)
+                    esli.append((ea, ea if a == b else _esle(b, dolu, bitis=True), y))   # ekleme: bas = son
+                aday = metne_uygula(metin, esli)
+                neden = gecerlilik_bozuluyor_mu(dosya, metin, aday)
             if neden:
-                kaydet(d, "basarisiz", neden)
+                kaydet(d, "basarisiz", ("önceki aşamada uygulanmıştı, yeniden kurulamadı: " if d in kalanlar else "")
+                       + neden)
                 continue
             metin = aday
             dolu += [(a, b, len(y) - (b - a)) for a, b, y in parcalar]
             d["_uygulanacak"] = True
-        uygulananlar = [d for d in grup if d.pop("_uygulanacak", False)]
-        if not uygulananlar:
-            continue
+        uygulananlar = [d for d in yeniler if d.pop("_uygulanacak", False)]
+        for d in kalanlar:
+            d.pop("_uygulanacak", None)
         yeni = metin.encode("utf-8")
-        try:
-            adaptor.yaz(dosya, yeni)
-        except (OSError, YolGuvenligiHatasi) as e:
-            for d in uygulananlar:
-                kaydet(d, "basarisiz", "dosyaya yazılamadı: " + str(e))
-            continue
-        dosyalar[dosya] = {"once": ozet_hash(ham), "sonra": ozet_hash(yeni),
-                           "diff": "".join(difflib.unified_diff(ozgun.splitlines(keepends=True),
-                                                                metin.splitlines(keepends=True),
-                                                                fromfile="a/" + dosya, tofile="b/" + dosya, n=2))}
+        if yeni != ham:
+            try:
+                adaptor.yaz(dosya, yeni)
+            except (OSError, YolGuvenligiHatasi) as e:
+                for d in uygulananlar:
+                    kaydet(d, "basarisiz", "dosyaya yazılamadı: " + str(e))
+                continue
+            dosyalar[dosya] = {"once": ozet_hash(ham), "sonra": ozet_hash(yeni),
+                               "diff": "".join(difflib.unified_diff(ham.decode("utf-8").splitlines(keepends=True),
+                                                                    metin.splitlines(keepends=True),
+                                                                    fromfile="a/" + dosya, tofile="b/" + dosya, n=2))}
+        guncel[dosya] = ozet_hash(yeni)
         for d in uygulananlar:
+            d["asama"] = asama
             kaydet(d, "uygulandi", "", once=ozet_hash(ham), sonra=ozet_hash(yeni))
-    return {"yedek": str(yedek_klasoru), "yedek_dosya_sayisi": len(manifest),
-            "uygulanan": sum(1 for d in plan["degisiklikler"] if d["durum"] == "uygulandi"), "dosyalar": dosyalar}
+        for d in cekilecek:
+            d["geri_cekildi"] = asama
+            d.pop("asama", None)
+            kaydet(d, "reddedildi", "otomatik uygulanmıştı; kullanıcı reddetti, değişiklik geri çekildi",
+                   once=ozet_hash(ham), sonra=ozet_hash(yeni))
+        yeni_uygulanan += len(uygulananlar)
+        cekilen += len(cekilecek)
+    return {"yedek": str(yedek), "yedek_dosya_sayisi": len(manifest),
+            "uygulanan": sum(1 for d in plan["degisiklikler"] if d["durum"] == "uygulandi"),
+            "yeni_uygulanan": yeni_uygulanan, "geri_cekilen": cekilen, "dosyalar": dosyalar}
 
 
 def _esle(konum, dolu, bitis):

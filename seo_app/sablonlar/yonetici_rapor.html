@@ -25,6 +25,10 @@ summary { cursor:pointer; font-weight:600; }
 code, pre { font-family: ui-monospace, Consolas, monospace; font-size:13px; }
 pre { white-space:pre-wrap; margin:4px 0; }
 .tablo-kap { overflow-x:auto; }
+.durum { font-size:12px; padding:1px 7px; border-radius:10px; border:1px solid currentColor; white-space:nowrap; }
+.durum.cozuldu_otomatik, .durum.cozuldu_onayli { color:var(--iyi); } .durum.basarisiz { color:var(--kotu); }
+.durum.onay_bekliyor, .durum.dogrulanmadi { color:var(--dikkat); } .durum.reddedildi, .durum.elle { color:var(--soluk); }
+.sayilar { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
 </style>
 </head>
 <body>
@@ -32,20 +36,38 @@ pre { white-space:pre-wrap; margin:4px 0; }
 <h1>Yönetici modu raporu</h1>
 <p class="soluk">{{ r.hedef.temel_url }} · site kökü {{ r.hedef.adaptor.kok }} · {{ r.zaman }}{% if r.model %} · model {{ r.model }}{% endif %}</p>
 
-<h2>Önce / sonra puanlar</h2>
+{% if r.geri_alindi %}<p class="kotu"><b>Uygulama geri alındı ({{ r.geri_alindi.zaman }}).</b> Site yedekten uygulama öncesi haline döndü{% if r.geri_alindi.eslesiyor %} (tüm dosyaların hash'i eşleşiyor){% endif %}; durumlar başlangıç haline döndü.</p>{% endif %}
+<h2>Aşamalara göre metrikler</h2>
+<p class="soluk">Başlangıç → otomatik düzeltmeler (güven eşiğini geçenler, onay beklemeden) → onaylı düzeltmeler. Her aşamadan sonra site yeniden taranır.</p>
+{% with asamalar=r.asamalar, tanim=r.cozum_orani_tanimi %}{% include "_asama_tablosu.html" %}{% endwith %}
+
+<h3>Puan ayrıntısı</h3>
 <div class="tablo-kap"><table>
-<thead><tr><th>Puan</th><th class="sayi">Önce</th><th class="sayi">Sonra</th><th class="sayi">Fark</th></tr></thead>
+<thead><tr><th>Puan</th>{% for a in r.asamalar %}<th class="sayi">{{ a.adi }}</th>{% endfor %}</tr></thead>
 <tbody>
-{% for a in PUAN_ANAHTARLARI %}
-{% set o = r.puanlar.once[a] %}{% set s = r.puanlar.sonra[a] if r.puanlar.sonra else none %}
-<tr><td>{{ a }}</td><td class="sayi">{{ o if o is not none else "—" }}</td><td class="sayi">{{ s if s is not none else "—" }}</td>
-<td class="sayi {% if o is not none and s is not none %}{{ 'iyi' if s > o else ('kotu' if s < o else '') }}{% endif %}">
-{% if o is not none and s is not none %}{{ "%+d"|format(s - o) }}{% else %}—{% endif %}</td></tr>
+{% for k in PUAN_ANAHTARLARI %}
+<tr><td>{{ k }}</td>{% for a in r.asamalar %}<td class="sayi">{{ a.puanlar[k] if a.olculdu and a.puanlar[k] is not none else "—" }}</td>{% endfor %}</tr>
 {% endfor %}
-<tr><td>taranan sayfa</td><td class="sayi">{{ r.puanlar.once.sayfa_sayisi }}</td>
-<td class="sayi">{{ r.puanlar.sonra.sayfa_sayisi if r.puanlar.sonra else "—" }}</td><td></td></tr>
 </tbody></table></div>
 <p class="soluk">Puanlar sayfa ortalamasıdır (araçtaki puan hesabıyla aynı). Düzeltmelerle yeni sayfalar taranabilir hale gelirse sayfa sayısı değişebilir.</p>
+
+<h2>Sorun durumları ({{ r.bulgu_toplam }})</h2>
+<div class="sayilar">{% for d, n in r.bulgu_sayilari.items() %}<span class="durum {{ d }}">{{ BULGU_DURUM_ADI[d] }}: {{ n }}</span>{% endfor %}</div>
+<p class="soluk">"Çözüldü" yalnızca düzeltme uygulandıktan sonraki yeniden kontrolde sorun artık tespit edilmiyorsa verilir; uygulandığı halde hâlâ tespit edilen sorun "Başarısız" (düzeltme etkisiz) sayılır.</p>
+{% for d in BULGU_DURUM_ADI if r.bulgu_sayilari.get(d) %}
+<details {% if d in ("basarisiz", "onay_bekliyor") %}open{% endif %}>
+<summary>{{ BULGU_DURUM_ADI[d] }} ({{ r.bulgu_sayilari[d] }})</summary>
+<div class="tablo-kap"><table>
+<thead><tr><th>Sorun</th><th>Sayfa</th><th>Neden</th><th>Değişiklik</th></tr></thead>
+<tbody>
+{% for b in r.bulgu_durumlari if b.durum == d %}
+<tr><td>{{ b.aciklama }}<br><span class="soluk">{{ KATEGORI_ADI[b.kategori] }}</span></td><td>{{ b.url }}</td>
+<td>{{ b.neden }}</td><td>{{ b.degisiklikler|join(", ") or "—" }}</td></tr>
+{% endfor %}
+</tbody></table></div>
+</details>
+{% endfor %}
+
 {% if r.uygulama and r.uygulama.onay_kaynaklari %}
 <p>Uygulanan değişikliklerin onayı (güven eşiği {{ "%.2f"|format(r.uygulama.esik) }}):
 {% for kaynak, sayi in r.uygulama.onay_kaynaklari.items() if sayi %}{{ kaynak }} {{ sayi }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
@@ -64,7 +86,8 @@ pre { white-space:pre-wrap; margin:4px 0; }
 {% for d in liste %}
 <tr><td>{{ d.id }}{% if d.risk == "yuksek" %} <span class="cip kotu">yüksek risk</span>{% endif %}
 {% if d.guven is not none %}<br><span class="cip {{ 'iyi' if d.onay_kaynagi == 'otomatik' else '' }}">güven {{ "%.2f"|format(d.guven) }}</span>{% endif %}
-{% if d.onay_kaynagi %}<br><span class="soluk">onay: {{ d.onay_kaynagi }}</span>{% endif %}</td>
+{% if d.onay_kaynagi %}<br><span class="soluk">onay: {{ d.onay_kaynagi }}</span>{% endif %}
+{% if d.asama %}<br><span class="soluk">aşama: {{ ASAMA_ADI.get(d.asama, d.asama) }}</span>{% endif %}</td>
 <td>{{ d.bulgu_aciklamasi }}<br><span class="soluk">{{ d.uretici }}</span></td>
 <td>{{ d.url }}<br><code>{{ d.dosya }}</code></td>
 <td><pre>{{ d.eski|truncate(220) }}</pre>→<pre>{{ d.yeni|truncate(400) }}</pre></td>
@@ -95,7 +118,7 @@ pre { white-space:pre-wrap; margin:4px 0; }
 <h2>Düzeltme sonrası ortaya çıkan yeni bulgular ({{ r.yeni_bulgular|length }})</h2>
 {% if r.yeni_bulgular %}
 <ul>{% for y in r.yeni_bulgular %}<li>{{ y.aciklama }} — {{ y.url }} <span class="soluk">({{ KATEGORI_ADI[y.kategori] }})</span></li>{% endfor %}</ul>
-{% else %}<p class="soluk">{{ "Yeni bulgu yok." if r.puanlar.sonra else "Tekrar taraması yapılmadı." }}</p>{% endif %}
+{% else %}<p class="soluk">{{ "Yeni bulgu yok." if r.puanlar.sonra else "Henüz uygulama sonrası tarama yapılmadı." }}</p>{% endif %}
 <p class="soluk">Giderilen bulgu sayısı (sayfa × bulgu): {{ r.giderilen_bulgu_sayisi }}.
 {% if r.uygulama and r.uygulama.yedek %}Yedek: <code>{{ r.uygulama.yedek }}</code>{% endif %}</p>
 </main>

@@ -1,20 +1,23 @@
-"""Yonetici modu (Mod 1): admin erisimi olan siteyi tara -> oneri plani -> onizleme -> onay ->
-yedekle + uygula + gunluk -> tekrar tara -> once/sonra raporu; tek komutla son uygulamayi geri al.
+"""Yonetici modu (Mod 1): admin erisimi olan siteyi tara -> oneri plani -> otomatik asama (guven esigini
+gecenler onaysiz yazilir) -> onay -> onayli asama -> her asamadan sonra tekrar tarama -> uc asamali rapor;
+tek komutla tum asamalari geri al.
 
 Standart mod (Mod 2) bu modulu kullanmaz; analiz akisi (boru.topluca_analiz) iki modda aynidir.
 Yazma yalnizca hedef_dogrula'dan gecen, acikca yapilandirilmis site kokune ve yalnizca onaylanan
-degisiklikler icin yapilir.
+(otomatik ya da kullanici) degisiklikler icin yapilir.
 
 Bir yonetici calismasinin klasoru (sonuclar/<site>/sonuc_<tarih_saat>/):
-  rapor.json, site_geneli.json, ...   once taramasi (standart modla ayni ciktilar)
-  degisiklikler.json                  plan: yapilandirilmis degisiklikler, elle yapilacaklar, atlananlar
+  rapor.json, site_geneli.json, ...   baslangic taramasi (standart modla ayni ciktilar)
+  degisiklikler.json                  plan: degisiklikler, elle yapilacaklar, atlananlar, asamalar
   onizleme.diff                       kategoriye gore gruplu onizleme
   onaylar.json                        kullanicinin kararlari
-  yedek/                              uygulama oncesi sitenin tam yedegi (+ manifest.json)
-  uygulama_gunlugu.jsonl              her degisikligin sonucu
-  uygulanan.diff, uygulama.json       uygulanan degisikliklerin dosya diff'leri ve ozeti
-  sonra/                              uygulama sonrasi otomatik tekrar taramasi
-  yonetici_raporu.json / .html        once/sonra raporu
+  yedek/                              ilk yazmadan once sitenin tam yedegi (+ manifest.json)
+  uygulama_gunlugu.jsonl              her degisikligin her asamadaki sonucu
+  uygulanan.diff, uygulama.json       asama asama dosya diff'leri ve ozet
+  sonra_otomatik/, sonra/             otomatik ve onayli asamalardan sonraki tekrar taramalari
+  geri_alma/                          (istege bagli) geri alma sonrasi tekrar taramasi
+  bulgu_durumlari.json                her bulgunun durumu ve asama metrikleri
+  yonetici_raporu.json / .html        uc asamali rapor
 """
 import json
 import time
@@ -23,10 +26,11 @@ from urllib.parse import urlsplit
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from . import duzeltme
+from . import canli, duzeltme, puanlama
 from . import kategoriler as kat
+from . import rapor as rapor_modulu
 from .boru import site_adi, topluca_analiz, zaman_damgasi
-from .kurallar import CIDDIYET_AGIRLIK
+from .kurallar import ACIKLAMA, CIDDIYET_AGIRLIK
 from .yazma import YerelDosyaAdaptoru, YolGuvenligiHatasi
 from .yz_oneri import YZIstemcisi
 
@@ -101,7 +105,9 @@ def _site_klasoru(hedefler, sonuc_kok):
 
 def tara_ve_planla(hedefler, kok, temel_url, ayarlar, ogretme_klasoru, sonuc_kok, gunluk=None, zaman=None,
                    tarama_kancalari=None):
-    """Once taramasi + degisiklik plani. Siteye yazmaz. (klasor, plan) dondurur."""
+    """Baslangic taramasi + degisiklik plani + otomatik asama: guven esigini gecen ve zorunlu onay
+    kuralina girmeyen degisiklikler yedek alinarak hemen yazilir ve site yeniden taranir
+    (ayarlar["oto_uygula"] False ise yazilmaz). (klasor, plan) dondurur."""
     yaz = gunluk or (lambda m: None)
     adaptor, temel_url = hedef_dogrula(kok, temel_url, sonuc_kok)
     adresleri_denetle(hedefler, temel_url)
@@ -125,6 +131,14 @@ def tara_ve_planla(hedefler, kok, temel_url, ayarlar, ogretme_klasoru, sonuc_kok
         f"({o['sayilar']['yuksek_risk']} yüksek risk), {len(plan['elle'])} elle yapılacak iş. "
         f"{o['sayilar']['otomatik']} değişiklik güven eşiğini ({plan['esik']:.2f}) geçti ve otomatik onaylı; "
         f"{o['sayilar']['onay_gerekli']} değişiklik onay bekliyor.")
+    if ayarlar.get("oto_uygula", True) and o["sayilar"]["otomatik"]:
+        yaz(f"Otomatik aşama: güven eşiğini geçen {o['sayilar']['otomatik']} değişiklik onay beklemeden uygulanıyor "
+            "(önce tam yedek alınır)")
+        # yeniden tarama arayuzun ilerleme kancalarini almaz: baslangic sonuclarinin uzerine yazmasin
+        iptal = {k: v for k, v in (tarama_kancalari or {}).items() if k == "iptal"}
+        asama_uygula(klasor, plan, {}, "otomatik", sonuc_kok, yaz, tekrar_tara=True, tarama_kancalari=iptal)
+    else:
+        rapor_uret(klasor, plan)
     return klasor, plan
 
 
@@ -148,8 +162,12 @@ def plan_ozeti(plan, oku=None):
                         "yer_tutucu": sum(1 for d in plan["degisiklikler"] if d["yer_tutucu"]),
                         "otomatik": sum(1 for d in plan["degisiklikler"] if d.get("onay_turu") == "otomatik"),
                         "onay_gerekli": sum(1 for d in plan["degisiklikler"]
-                                            if d.get("onay_turu") != "otomatik" and d["durum"] != "gecersiz")},
-            "hedef": plan["hedef"], "model": plan.get("model"), "esik": plan.get("esik")}
+                                            if d.get("onay_turu") != "otomatik" and d["durum"] != "gecersiz"),
+                        "uygulandi": sum(1 for d in plan["degisiklikler"] if d["durum"] == "uygulandi"),
+                        "otomatik_uygulandi": sum(1 for d in plan["degisiklikler"]
+                                                  if d["durum"] == "uygulandi" and d.get("asama") == "otomatik")},
+            "hedef": plan["hedef"], "model": plan.get("model"), "esik": plan.get("esik"),
+            "asamalar": [a["ad"] for a in plan.get("asamalar") or []], "geri_alindi": bool(plan.get("geri_alindi"))}
 
 
 def kararlari_kaydet(klasor, kararlar):
@@ -160,39 +178,108 @@ def _son_uygulama_yolu(site_klasoru):
     return Path(site_klasoru) / "son_uygulama.json"
 
 
+ASAMA_ADI = {"baslangic": "Başlangıç", "otomatik": "Otomatik düzeltmeler sonrası",
+             "onayli": "Onaylı düzeltmeler sonrası", "geri_alma": "Geri alma sonrası"}
+TARAMA_KLASORU = {"otomatik": "sonra_otomatik", "onayli": "sonra", "geri_alma": "geri_alma"}
+
+
+def _asamalar(plan):
+    return plan.get("asamalar") or []
+
+
+def asama_yapildi_mi(plan, ad):
+    return any(a["ad"] == ad for a in _asamalar(plan))
+
+
+def _son_tarama(plan):
+    """Son olculen asamanin tarama klasoru (sonuc klasorune gore goreli; '' baslangic taramasi)."""
+    for a in reversed(_asamalar(plan)):
+        if a.get("tarama") is not None:
+            return a["tarama"]
+    return ""
+
+
+def _tekrar_tara(plan, alt, sonuc_kok, yaz, tarama_kancalari):
+    # ayni surecteki onceki taramanin robots.txt / sitemap / yoklama onbellegi yazilan dosyalari gizler
+    canli.onbellek_temizle()
+    tarama = plan["tarama"]
+    topluca_analiz(tarama["hedefler"], tarama["ayarlar"], tarama["ogretme_klasoru"], sonuc_kok,
+                   alt_yol=tarama["zaman"] + "/" + alt, gunluk=yaz, **(tarama_kancalari or {}))
+
+
+def asama_uygula(klasor, plan, kararlar, asama, sonuc_kok, gunluk=None, tekrar_tara=True, tarama_kancalari=None):
+    """Bir uygulama asamasini yurutur: ilk yazmadan once tam yedek, uygulama + gunluk + diff, dosya
+    yazildiysa sitenin yeniden taranmasi, bulgu durumlari ve raporlar. (asama kaydi, rapor) dondurur.
+
+    Site geneli bulgular (tekrar eden baslik, yetim sayfa, sitemap, robots.txt) tum sayfalara baglidir;
+    bu yuzden yeniden kontrol yalnizca degisen sayfalarla sinirlanmaz, site bastan taranir."""
+    yaz = gunluk or (lambda m: None)
+    klasor = Path(klasor)
+    hedef = plan["hedef"]
+    adaptor, temel_url = hedef_dogrula(hedef["adaptor"]["kok"], hedef["temel_url"], sonuc_kok)
+    yedek = klasor / "yedek"
+    ilk_yedek = not (yedek / "manifest.json").exists()
+    ozet = duzeltme.uygula(plan, kararlar, adaptor, yedek, klasor / "uygulama_gunlugu.jsonl", asama=asama)
+    if ilk_yedek and ozet["yedek"]:
+        yaz("Uygulama öncesi sitenin tam yedeği alındı: " + ozet["yedek"])
+    zaman = time.strftime("%Y-%m-%d %H:%M:%S")
+    kayit = {"ad": asama, "zaman": zaman, "yeni_uygulanan": ozet["yeni_uygulanan"],
+             "geri_cekilen": ozet["geri_cekilen"],
+             "dosyalar": {d: {k: v[k] for k in ("once", "sonra")} for d, v in ozet["dosyalar"].items()}}
+    if ozet["dosyalar"]:
+        with (klasor / "uygulanan.diff").open("a", encoding="utf-8") as f:
+            f.write(f"# ===== Aşama: {ASAMA_ADI[asama]} ({zaman}) =====\n" +
+                    "".join(v["diff"] for v in ozet["dosyalar"].values()))
+        _json_yaz(_son_uygulama_yolu(klasor.parent), {
+            "sonuc": str(klasor), "yedek": str(yedek), "adaptor": adaptor.tanim(), "temel_url": temel_url,
+            "zaman": zaman, "durum": "uygulandi", "asamalar": [a["ad"] for a in _asamalar(plan)] + [asama]})
+    yaz(f"{ASAMA_ADI[asama]}: {ozet['yeni_uygulanan']} değişiklik uygulandı"
+        + (f", {ozet['geri_cekilen']} değişiklik geri çekildi" if ozet["geri_cekilen"] else "")
+        + f" ({len(ozet['dosyalar'])} dosya yazıldı).")
+    if ozet["dosyalar"] and tekrar_tara:
+        yaz("Düzeltmelerin etkisini ölçmek için site yeniden taranıyor")
+        _tekrar_tara(plan, TARAMA_KLASORU[asama], sonuc_kok, yaz, tarama_kancalari)
+        kayit["tarama"] = TARAMA_KLASORU[asama]
+    else:
+        # dosya yazilmadiysa site degismedi ve onceki olcum gecerlidir; yazildi ama taranmadiysa olcum yoktur
+        kayit["tarama"] = None if ozet["dosyalar"] else _son_tarama(plan)
+    plan.setdefault("asamalar", []).append(kayit)
+    _json_yaz(klasor / "degisiklikler.json", plan)
+    _uygulama_ozeti_yaz(klasor, plan, kararlar)
+    return kayit, rapor_uret(klasor, plan)
+
+
+def _uygulama_ozeti_yaz(klasor, plan, kararlar):
+    ds = plan["degisiklikler"]
+    dosyalar = {}
+    for a in _asamalar(plan):
+        for dosya, h in (a.get("dosyalar") or {}).items():
+            dosyalar.setdefault(dosya, {"once": h["once"]})["sonra"] = h["sonra"]
+    yedek = Path(klasor) / "yedek"
+    _json_yaz(Path(klasor) / "uygulama.json", {
+        "zaman": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "yedek": str(yedek) if (yedek / "manifest.json").exists() else None,
+        "uygulanan": sum(1 for d in ds if d["durum"] == "uygulandi"), "dosyalar": dosyalar,
+        "durumlar": _durum_sayilari(plan), "esik": duzeltme.onay_esigi(plan, kararlar),
+        "onay_kaynaklari": {kaynak: sum(1 for d in ds if d["durum"] == "uygulandi" and d.get("onay_kaynagi") == kaynak)
+                            for kaynak in ("otomatik", "kullanıcı", "toplu")},
+        "asamalar": [{k: a.get(k) for k in ("ad", "zaman", "yeni_uygulanan", "geri_cekilen", "tarama")}
+                     for a in _asamalar(plan)],
+        "geri_alindi": plan.get("geri_alindi")})
+
+
 def uygula_ve_dogrula(klasor, kararlar, sonuc_kok, gunluk=None, tekrar_tara=True, tarama_kancalari=None):
-    """Onaylanan degisiklikleri yedek alarak uygular, gunluge yazar, siteyi tekrar tarar ve rapor uretir."""
+    """Onayli asama: kullanicinin kararlari (onay / ret / duzenleme) uygulanir; otomatik asamada yazilmis
+    bir degisiklik reddedildiyse geri cekilir. Ardindan site yeniden taranir ve raporlar guncellenir."""
     yaz = gunluk or (lambda m: None)
     klasor = Path(klasor)
     plan = _json_oku(klasor / "degisiklikler.json")
-    if (klasor / "uygulama.json").exists():
+    if plan.get("geri_alindi"):
+        raise YoneticiHatasi("Bu planın uygulaması geri alındı. Yeni değişiklikler için siteyi yeniden tarayın.")
+    if asama_yapildi_mi(plan, "onayli") or ((klasor / "uygulama.json").exists() and not _asamalar(plan)):
         raise YoneticiHatasi("Bu plan zaten uygulandı. Yeni değişiklikler için siteyi yeniden tarayın.")
-    hedef = plan["hedef"]
-    adaptor, temel_url = hedef_dogrula(hedef["adaptor"]["kok"], hedef["temel_url"], sonuc_kok)
     kararlari_kaydet(klasor, kararlar)
-    yedek = klasor / "yedek"
-    yaz("Sitenin tam yedeği alınıyor: " + str(yedek))
-    ozet = duzeltme.uygula(plan, kararlar, adaptor, yedek, klasor / "uygulama_gunlugu.jsonl")
-    _json_yaz(klasor / "degisiklikler.json", plan)
-    (klasor / "uygulanan.diff").write_text("".join(v["diff"] for v in ozet["dosyalar"].values()), encoding="utf-8")
-    ozet_kayit = {"zaman": time.strftime("%Y-%m-%d %H:%M:%S"), "yedek": ozet["yedek"], "uygulanan": ozet["uygulanan"],
-                  "dosyalar": {d: {k: v[k] for k in ("once", "sonra")} for d, v in ozet["dosyalar"].items()},
-                  "durumlar": _durum_sayilari(plan), "esik": duzeltme.onay_esigi(plan, kararlar),
-                  "onay_kaynaklari": {kaynak: sum(1 for d in plan["degisiklikler"] if d["durum"] == "uygulandi"
-                                                  and d.get("onay_kaynagi") == kaynak)
-                                      for kaynak in ("otomatik", "kullanıcı", "toplu")}}
-    _json_yaz(klasor / "uygulama.json", ozet_kayit)
-    yaz(f"{ozet['uygulanan']} değişiklik uygulandı ({len(ozet['dosyalar'])} dosya).")
-    if ozet["yedek"]:
-        _json_yaz(_son_uygulama_yolu(klasor.parent), {
-            "sonuc": str(klasor), "yedek": ozet["yedek"], "adaptor": adaptor.tanim(), "temel_url": temel_url,
-            "zaman": ozet_kayit["zaman"], "durum": "uygulandi"})
-    if tekrar_tara:
-        tarama = plan["tarama"]
-        yaz("Uygulama sonrası site yeniden taranıyor")
-        topluca_analiz(tarama["hedefler"], tarama["ayarlar"], tarama["ogretme_klasoru"], sonuc_kok,
-                       alt_yol=tarama["zaman"] + "/sonra", gunluk=yaz, **(tarama_kancalari or {}))
-    rapor = yonetici_raporu(klasor)
+    _, rapor = asama_uygula(klasor, plan, kararlar, "onayli", sonuc_kok, yaz, tekrar_tara, tarama_kancalari)
     yaz("Yönetici raporu: " + str(klasor / "yonetici_raporu.html"))
     return rapor
 
@@ -205,8 +292,9 @@ def _durum_sayilari(plan):
     return sayac
 
 
-def geri_al(site_klasoru, gunluk=None):
-    """Son uygulamayi yedekten geri alir ve dosya hash'leriyle dogrular."""
+def geri_al(site_klasoru, gunluk=None, tekrar_tara=False, tarama_kancalari=None):
+    """Son uygulamayi (otomatik ve onayli tum asamalari) yedekten geri alir ve dosya hash'leriyle dogrular.
+    Plandaki durumlar ve raporlar baslangic haline dondurulur; tekrar_tara ile site yeniden de olculur."""
     yaz = gunluk or (lambda m: None)
     isaret = _son_uygulama_yolu(site_klasoru)
     if not isaret.exists():
@@ -219,11 +307,187 @@ def geri_al(site_klasoru, gunluk=None):
     sonuc = adaptor.geri_al(bilgi["yedek"])
     bilgi.update({"durum": "geri_alindi", "geri_alma_zamani": time.strftime("%Y-%m-%d %H:%M:%S"), "geri_alma": sonuc})
     _json_yaz(isaret, bilgi)
-    with (Path(bilgi["sonuc"]) / "uygulama_gunlugu.jsonl").open("a", encoding="utf-8") as f:
+    klasor = Path(bilgi["sonuc"])
+    with (klasor / "uygulama_gunlugu.jsonl").open("a", encoding="utf-8") as f:
         f.write(json.dumps({"zaman": bilgi["geri_alma_zamani"], "olay": "geri_alma", **sonuc}, ensure_ascii=False) + "\n")
     yaz("Geri alma " + ("tamam: tüm dosyaların hash'i yedekle eşleşiyor" if sonuc["eslesiyor"] else "UYUMSUZ") +
         f" ({sonuc['geri_yazilan']} dosya geri yazıldı, {len(sonuc['silinen'])} dosya silindi)")
+    if (klasor / "degisiklikler.json").exists():
+        plan = _json_oku(klasor / "degisiklikler.json")
+        for d in plan["degisiklikler"]:
+            if d["durum"] == "uygulandi":
+                d["geri_alinan_asama"] = d.pop("asama", None)
+                d["durum"], d["durum_nedeni"] = "geri_alindi", "geri alındı: site yedekten uygulama öncesi haline döndü"
+        plan["geri_alindi"] = {"zaman": bilgi["geri_alma_zamani"], "eslesiyor": sonuc["eslesiyor"]}
+        plan["dosya_guncel"] = {}
+        # hash'ler eslesiyorsa site baslangic taramasindaki haliyle aynidir: baslangic olcumu gecerli
+        kayit = {"ad": "geri_alma", "zaman": bilgi["geri_alma_zamani"], "yeni_uygulanan": 0, "geri_cekilen": 0,
+                 "dosyalar": {}, "tarama": "" if sonuc["eslesiyor"] else None}
+        if tekrar_tara and plan.get("tarama"):
+            yaz("Geri alma sonrası site yeniden taranıyor")
+            _tekrar_tara(plan, TARAMA_KLASORU["geri_alma"], Path(site_klasoru).parent, yaz, tarama_kancalari)
+            kayit["tarama"] = TARAMA_KLASORU["geri_alma"]
+        plan.setdefault("asamalar", []).append(kayit)
+        _json_yaz(klasor / "degisiklikler.json", plan)
+        kararlar = _json_oku(klasor / "onaylar.json") if (klasor / "onaylar.json").exists() else {}
+        _uygulama_ozeti_yaz(klasor, plan, kararlar)
+        rapor_uret(klasor, plan)
     return sonuc
+
+
+# ------------------------------------------------------------------ bulgu durumlari ve metrikler
+BULGU_DURUM_ADI = {"cozuldu_otomatik": "Çözüldü (otomatik)", "cozuldu_onayli": "Çözüldü (onaylı)",
+                   "onay_bekliyor": "Onay bekliyor", "reddedildi": "Reddedildi", "basarisiz": "Başarısız",
+                   "dogrulanmadi": "Uygulandı, yeniden kontrol yapılmadı", "elle": "Elle düzeltilir"}
+TEKRAR_KODLARI = ("title_tekrar", "meta_tekrar", "h1_tekrar", "icerik_tekrar", "icerik_benzer")
+COZUM_ORANI_TANIMI = (
+    "Bulgu: başlangıç taramasındaki her (sorun, sayfa) çifti. Çözülen: düzeltmeler uygulandıktan sonra "
+    "yeniden taramada artık tespit edilmeyen bulgu (yalnızca yeniden tarama sonucuna dayanır). "
+    "Çözüm oranı = çözülen çözülebilir bulgu / çözülebilir bulgu; çözülebilir = araçta bir düzeltme önerisi "
+    "olan bulgu (onaylanmış, bekleyen, reddedilen ya da doğrulamadan geçemeyen). Önerisi olmayan "
+    "'Elle düzeltilir' bulgular orana girmez, ayrı sayılır.")
+
+
+def _tarama_bulgulari(klasor):
+    """Bir taramanin (sorun, sayfa) bulgulari ve taranan sayfalar; tarama yoksa None."""
+    klasor = Path(klasor)
+    if not (klasor / "rapor.json").exists():
+        return None
+    kayitlar = _json_oku(klasor / "rapor.json")
+    kume = {(s["sorun"], k.get("ad")) for k in kayitlar for s in k.get("sorunlar") or []}
+    if (klasor / "site_geneli.json").exists():
+        kume |= {(g["sorun"], a) for g in _json_oku(klasor / "site_geneli.json") for a in g.get("sayfalar") or []}
+    return {"kume": kume, "sayfalar": {k.get("ad") for k in kayitlar}, "kayitlar": kayitlar}
+
+
+def bulgu_durumlari(klasor, plan):
+    """Baslangic taramasindaki her bulgunun durumu ve asama metrikleri.
+
+    "Çözüldü" yalnizca yeniden tarama sonucuna dayanir: bulgu bir uygulama asamasindan sonraki taramada
+    artik tespit edilmiyorsa o asamada cozulmus sayilir. Sayfa o taramada hic yoksa bulgu dogrulanamaz;
+    yalnizca dogrudan uygulanmis bir duzeltmesi varsa cozulmus sayilir. Uygulandigi halde hala tespit
+    edilen bulgu "Başarısız" (duzeltme etkisiz) olur. Geri alindiysa durumlar baslangic haline doner."""
+    klasor = Path(klasor)
+    once = _tarama_bulgulari(klasor)
+    if once is None:
+        return {"asamalar": [], "bulgular": [], "sayilar": {}, "toplam": 0, "tanim": COZUM_ORANI_TANIMI,
+                "geri_alindi": bool(plan.get("geri_alindi"))}
+    b0 = once["kume"]
+    geri = bool(plan.get("geri_alindi"))
+    olcumler = [("baslangic", "", once)]
+    for a in _asamalar(plan):
+        t = a.get("tarama")
+        olcumler.append((a["ad"], t, _tarama_bulgulari(klasor / t) if t is not None else None))
+    tam, kod_ile = {}, {}
+    for d in plan["degisiklikler"]:
+        tam.setdefault((d["bulgu"], d["url"]), []).append(d)
+        kod_ile.setdefault(d["bulgu"], []).append(d)
+    elle = {(e["bulgu"], u): e.get("duzeltme", "") for e in plan.get("elle", []) for u in e.get("sayfalar", [])}
+    atlanan = {(a["bulgu"], a["url"]): a.get("neden", "") for a in plan.get("atlanan", [])}
+
+    site_kodlari = {s["sorun"] for k in once["kayitlar"] for s in k.get("sorunlar") or [] if s.get("katman") == "site"}
+
+    def site_geneli_mi(kod):
+        # tum siteyi ilgilendiren bulgu (robots.txt, sitemap adresi): tek bir duzeltmeyle her sayfada giderilir
+        return kod in site_kodlari and kod not in puanlama.SAYFAYA_OZGU
+
+    def ilgili_degisiklikler(f):
+        if f in tam:
+            return tam[f], True
+        if f in elle or f in atlanan:
+            return [], False
+        # site geneli bulgu ya da tekrar grubu (ayni title/icerik) baska adresteki tek bir duzeltmeyle
+        # giderilir; sayfaya ozgu bulgu yalnizca kendi duzeltmesine baglanir
+        if site_geneli_mi(f[0]) or f[0] in TEKRAR_KODLARI:
+            return kod_ile.get(f[0], []), False
+        return [], False
+
+    bulgular, varlik = [], {}
+    for f in sorted(b0):
+        ilgili, dogrudan = ilgili_degisiklikler(f)
+        uygulanan = [d for d in ilgili if d["durum"] == "uygulandi"]
+        # gecmis asamalarin olcumu geri almadan sonra da ayni kalsin: geri alinan da o asamada uygulanmisti
+        uygulanmisti = uygulanan or [d for d in ilgili if d.get("geri_alinan_asama")]
+        # her olcumde bulgu: True hala var, False yok (cozulmus), None dogrulanamadi (sayfa taranmadi)
+        v = []
+        for _, _, o in olcumler:
+            if o is None:
+                v.append(None)
+            elif f in o["kume"]:
+                v.append(True)
+            elif f[1] in o["sayfalar"] or (dogrudan and uygulanmisti) or \
+                    (site_geneli_mi(f[0]) and f[0] not in {k for k, _ in o["kume"]}):
+                v.append(False)
+            else:
+                v.append(None)
+        varlik[f] = v
+        cozuldu = None
+        if not geri:
+            for (ad, _, _), var in zip(olcumler, v):
+                if ad in duzeltme.ASAMALAR and var is not None:
+                    cozuldu = None if var else (cozuldu or ad)
+        if geri:
+            # site uygulama oncesi haline dondu: durumlar baslangictaki gibi (oneri bekliyor / gecersiz / elle)
+            gecerli = [d for d in ilgili if d["durum"] != "gecersiz"]
+            if gecerli:
+                durum, neden = "onay_bekliyor", "uygulama geri alındı; öneri yeniden onay bekler"
+            elif ilgili:
+                durum, neden = "basarisiz", "doğrulamadan geçmedi: " + ilgili[0]["dogrulama"]["neden"]
+            else:
+                durum, neden = "elle", elle.get(f) or atlanan.get(f) or "otomatik düzeltme önerisi yok"
+        elif cozuldu:
+            durum = "cozuldu_" + cozuldu
+            neden = "yeniden kontrolde artık tespit edilmiyor" + (
+                " · düzeltme: " + ", ".join(d["id"] for d in uygulanan) if dogrudan and uygulanan else
+                " · dolaylı: başka bir düzeltmeyle giderildi")
+        elif uygulanan:
+            sira = max(i for i, (ad, _, _) in enumerate(olcumler)
+                       if ad in {d.get("asama") for d in uygulanan} or i == 0)
+            sonraki = [var for (ad, _, _), var in list(zip(olcumler, v))[sira:] if ad in duzeltme.ASAMALAR]
+            son_olcum = next((var for var in reversed(sonraki) if var is not None), None)
+            if son_olcum:
+                durum = "basarisiz"
+                neden = ("düzeltme etkisiz: " + ", ".join(d["id"] for d in uygulanan) +
+                         " uygulandı ama yeniden kontrolde hâlâ tespit ediliyor")
+            else:
+                durum = "dogrulanmadi"
+                neden = ("düzeltme uygulandı; sayfa yeniden taramada yer almadığı için doğrulanamadı"
+                         if any(o is not None for (ad, _, o) in olcumler[sira:] if ad in duzeltme.ASAMALAR)
+                         else "düzeltme uygulandı; ardından yeniden tarama yapılmadı")
+        else:
+            bekleyen = [d for d in ilgili if d["durum"] in ("oneriliyor", "onay_bekliyor", "geri_alindi")]
+            reddedilen = [d for d in ilgili if d["durum"] == "reddedildi"]
+            basarisiz = [d for d in ilgili if d["durum"] in ("basarisiz", "gecersiz")]
+            if bekleyen:
+                durum, neden = "onay_bekliyor", bekleyen[0].get("durum_nedeni") or "öneri onay bekliyor"
+            elif reddedilen:
+                durum, neden = "reddedildi", reddedilen[0].get("durum_nedeni") or "kullanıcı reddetti"
+            elif basarisiz:
+                d = basarisiz[0]
+                durum, neden = "basarisiz", d.get("durum_nedeni") or "doğrulamadan geçmedi: " + d["dogrulama"]["neden"]
+            else:
+                durum, neden = "elle", elle.get(f) or atlanan.get(f) or "otomatik düzeltme önerisi yok"
+        bulgular.append({"sorun": f[0], "url": f[1], "aciklama": ACIKLAMA.get(f[0], f[0]),
+                         "kategori": kat.kategori(f[0]), "durum": durum, "durum_adi": BULGU_DURUM_ADI[durum],
+                         "neden": neden, "degisiklikler": [d["id"] for d in ilgili], "dogrudan": dogrudan,
+                         "elle_turu": not ilgili})
+    elle_turu = {(b["sorun"], b["url"]) for b in bulgular if b["elle_turu"]}
+    cozulebilir = [f for f in sorted(b0) if f not in elle_turu]
+    asamalar = []
+    for i, (ad, tarama, o) in enumerate(olcumler):
+        m = {"ad": ad, "adi": ASAMA_ADI[ad], "tarama": tarama, "olculdu": o is not None}
+        if o is not None:
+            # geri alindiysa uygulama asamalarinin olcumleri gecmisi gosterir; durumlar baslangica doner
+            cozulen = sum(1 for f in cozulebilir if varlik[f][i] is False)
+            elle_cozulen = sum(1 for f in elle_turu if varlik[f][i] is False)
+            m.update({"puanlar": _ortalama_puanlar(o["kayitlar"]), "bulgu_sayisi": len(o["kume"]),
+                      "yeni_bulgu": len(o["kume"] - b0), "cozulen": cozulen, "cozulebilir": len(cozulebilir),
+                      "elle": len(elle_turu) - elle_cozulen, "elle_dolayli_cozulen": elle_cozulen,
+                      "cozum_orani": round(cozulen / len(cozulebilir), 3) if cozulebilir else None})
+        asamalar.append(m)
+    sayilar = {d: sum(1 for b in bulgular if b["durum"] == d) for d in BULGU_DURUM_ADI}
+    return {"asamalar": asamalar, "bulgular": bulgular, "sayilar": sayilar, "toplam": len(b0),
+            "tanim": COZUM_ORANI_TANIMI, "geri_alindi": geri}
 
 
 # ------------------------------------------------------------------ rapor
@@ -238,44 +502,76 @@ def _ortalama_puanlar(kayitlar):
 
 
 def _bulgu_kumesi(klasor):
-    kume = set()
-    for k in _json_oku(klasor / "rapor.json"):
-        for s in k.get("sorunlar") or []:
-            kume.add((s["sorun"], k.get("ad")))
-    if (klasor / "site_geneli.json").exists():
-        for g in _json_oku(klasor / "site_geneli.json"):
-            for a in g.get("sayfalar") or []:
-                kume.add((g["sorun"], a))
-    return kume
+    t = _tarama_bulgulari(klasor)
+    return t["kume"] if t else set()
 
 
-def yonetici_raporu(klasor):
+def rapor_uret(klasor, plan=None):
+    """bulgu_durumlari.json, yonetici_raporu.json/.html ve durumlu rapor.html'i yeniden yazar."""
     klasor = Path(klasor)
-    plan = _json_oku(klasor / "degisiklikler.json")
+    plan = plan or _json_oku(klasor / "degisiklikler.json")
+    durumlar = bulgu_durumlari(klasor, plan)
+    _json_yaz(klasor / "bulgu_durumlari.json", durumlar)
+    rapor = yonetici_raporu(klasor, plan, durumlar)
+    _analiz_raporunu_guncelle(klasor, durumlar)
+    return rapor
+
+
+def _son_olcum(durumlar):
+    """Son olculen uygulama/geri alma asamasi (baslangic haric); yoksa None."""
+    return next((a for a in reversed(durumlar["asamalar"]) if a["olculdu"] and a["ad"] != "baslangic"), None)
+
+
+def _analiz_raporunu_guncelle(klasor, durumlar):
+    """Baslangic taramasinin rapor.html'i: her sorunun yaninda guncel durumu ve asama metrikleri.
+    Yalnizca yonetici modu klasorlerinde cagrilir; standart mod raporu degismez."""
+    gerekli = [klasor / a for a in ("rapor.json", "site_ozeti.json", "site_geneli.json")]
+    if not all(p.exists() for p in gerekli):
+        return
+    kayitlar, ozet, bulgular = (_json_oku(p) for p in gerekli)
+    son = _son_olcum(durumlar)
+    son_klasor = klasor / son["tarama"] if son else klasor
+    guncel = {k.get("ad"): (k.get("once_puanlar") or {}).get("sayfa") for k in _json_oku(son_klasor / "rapor.json")}
+    bilgi = {"durumlar": {b["sorun"] + "|" + b["url"]: b for b in durumlar["bulgular"]},
+             "asamalar": durumlar["asamalar"], "sayilar": durumlar["sayilar"], "toplam": durumlar["toplam"],
+             "guncel_puan": guncel, "DURUM_ADI": BULGU_DURUM_ADI, "tanim": durumlar["tanim"],
+             "son_asama": son["adi"] if son else None}
+    (klasor / "rapor.html").write_text(rapor_modulu.html_rapor(kayitlar, ozet, bulgular, baslik=klasor.parent.name,
+                                                               yonetici=bilgi), encoding="utf-8")
+
+
+def yonetici_raporu(klasor, plan=None, durumlar=None):
+    klasor = Path(klasor)
+    plan = plan or _json_oku(klasor / "degisiklikler.json")
+    durumlar = durumlar or bulgu_durumlari(klasor, plan)
     once_k = _json_oku(klasor / "rapor.json")
-    sonra_var = (klasor / "sonra" / "rapor.json").exists()
-    sonra_k = _json_oku(klasor / "sonra" / "rapor.json") if sonra_var else []
-    once_p, sonra_p = _ortalama_puanlar(once_k), (_ortalama_puanlar(sonra_k) if sonra_var else None)
-    yeni = sorted(_bulgu_kumesi(klasor / "sonra") - _bulgu_kumesi(klasor)) if sonra_var else []
-    giderilen = sorted(_bulgu_kumesi(klasor) - _bulgu_kumesi(klasor / "sonra")) if sonra_var else []
-    durumlar = {}
+    son = _son_olcum(durumlar)
+    sonra_klasor = klasor / son["tarama"] if son else None
+    once_p, sonra_p = _ortalama_puanlar(once_k), (son["puanlar"] if son else None)
+    yeni = sorted(_bulgu_kumesi(sonra_klasor) - _bulgu_kumesi(klasor)) if son else []
+    giderilen = sorted(_bulgu_kumesi(klasor) - _bulgu_kumesi(sonra_klasor)) if son else []
+    gruplar = {}
     for d in plan["degisiklikler"]:
-        durumlar.setdefault(d["kategori"], {}).setdefault(d["durum"], []).append(
+        gruplar.setdefault(d["kategori"], {}).setdefault(d["durum"], []).append(
             {k: d.get(k) for k in ("id", "bulgu", "bulgu_aciklamasi", "url", "dosya", "eski", "yeni", "gerekce", "risk",
                                    "etki", "durum_nedeni", "uretici", "kaynaklar", "yer_tutucu", "guven",
-                                   "guven_nedenleri", "zorunlu_onay", "onay_kaynagi")})
+                                   "guven_nedenleri", "zorunlu_onay", "onay_kaynagi", "asama")})
     uygulama = _json_oku(klasor / "uygulama.json") if (klasor / "uygulama.json").exists() else None
     rapor = {"klasor": str(klasor), "hedef": plan["hedef"], "model": plan.get("model"), "zaman": time.strftime("%Y-%m-%d %H:%M:%S"),
-             "puanlar": {"once": once_p, "sonra": sonra_p}, "durumlar": durumlar, "elle": plan["elle"],
+             "puanlar": {"once": once_p, "sonra": sonra_p}, "durumlar": gruplar, "elle": plan["elle"],
              "atlanan": plan["atlanan"], "yeni_bulgular": [{"sorun": k, "aciklama": kat.aciklama(k), "url": u,
                                                              "kategori": kat.kategori(k)} for k, u in yeni],
-             "giderilen_bulgu_sayisi": len(giderilen), "uygulama": uygulama}
+             "giderilen_bulgu_sayisi": len(giderilen), "uygulama": uygulama,
+             "asamalar": durumlar["asamalar"], "bulgu_durumlari": durumlar["bulgular"],
+             "bulgu_sayilari": durumlar["sayilar"], "bulgu_toplam": durumlar["toplam"],
+             "cozum_orani_tanimi": durumlar["tanim"], "geri_alindi": plan.get("geri_alindi")}
     _json_yaz(klasor / "yonetici_raporu.json", rapor)
     (klasor / "yonetici_raporu.html").write_text(_ortam.get_template("yonetici_rapor.html").render(
-        r=rapor, KATEGORI_ADI=kat.KATEGORI_ADI, PUAN_ANAHTARLARI=PUAN_ANAHTARLARI,
-        DURUM_ADI=DURUM_ADI, CIDDIYET_AGIRLIK=CIDDIYET_AGIRLIK), encoding="utf-8")
+        r=rapor, KATEGORI_ADI=kat.KATEGORI_ADI, PUAN_ANAHTARLARI=PUAN_ANAHTARLARI, ASAMA_ADI=ASAMA_ADI,
+        DURUM_ADI=DURUM_ADI, BULGU_DURUM_ADI=BULGU_DURUM_ADI, CIDDIYET_AGIRLIK=CIDDIYET_AGIRLIK), encoding="utf-8")
     return rapor
 
 
 DURUM_ADI = {"uygulandi": "Uygulandı", "reddedildi": "Reddedildi", "basarisiz": "Başarısız",
-             "onay_bekliyor": "Onay verilmedi", "gecersiz": "Doğrulamadan geçmedi", "oneriliyor": "Önerildi"}
+             "onay_bekliyor": "Onay verilmedi", "gecersiz": "Doğrulamadan geçmedi", "oneriliyor": "Önerildi",
+             "geri_alindi": "Geri alındı"}
