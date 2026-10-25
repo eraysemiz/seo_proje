@@ -228,7 +228,7 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - Güven puanı + otomatik onay eşiği (web, masaüstü, CLI, yönetici raporu).
   - Yeni puanlama (`puanlama.py`); README güncellendi; `tests/test_dogruluk.py`.
   - `sorunlar.json`'a yalnızca değerlendirme etiketi eklendi (O14/Z06/Z10 tespit kodları, O03/O04 `yan`).
-- **25 Ekim (`main`, commit edilmedi): üç aşamalı uygulama ve doğrulanmış durumlar.**
+- **25 Ekim (`asamali-uygulama`, `98a4534`): üç aşamalı uygulama ve doğrulanmış durumlar.**
   - Kök neden: otomatik onay yalnızca bir etiketti (`onay_turu`); siteye yazan tek fonksiyon
     (`uygula_ve_dogrula`) kullanıcı "Uygula"ya basınca çalışıyordu ve plan başına bir kez
     çalışabiliyordu. Rapor yalnızca önce/sonra ortalama puanı gösteriyordu; web tablosu ve analiz
@@ -379,8 +379,8 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
 5. Açık sorular (yönetici modu):
    - `canonical_yok` Kural çözer mi kalmalı, YZ önerir · yüksek risk mi?
    - Kopya içerik için özgünleştirme görevi eklensin mi?
-6. 25 Ekim değişikliklerini commit etmek ve .exe'yi yeniden derlemek (açık bir `SEO_Denetim.exe`
-   `dist/` klasörünü kilitler; derlemeden önce kapatın). `dogruluk-iyilestirme` değişikliklerini gözden geçirmek. Puanlama ve yeni denetimler Mod 2
+6. `asamali-uygulama` dalını `main`'e birleştirip push etmek. .exe bu dalla derlendi ve modelli
+   oto-test 13/13 geçti (açık bir `SEO_Denetim.exe` `dist/` klasörünü kilitler; derlemeden önce kapatın). `dogruluk-iyilestirme` değişikliklerini gözden geçirmek. Puanlama ve yeni denetimler Mod 2
    puanlarını da değiştirir; Düzce sitelerindeki eski sonuçlarla karşılaştırma yeniden yapılmalı.
 7. Açık sorular (güven): K05 için kelime sınırında kırpma eklensin mi? `defer` güveni satır içi
    betik bağımlılığı denetlenerek yükseltilsin mi? Eşik 0.8 başka sitelerde ölçülmeli.
