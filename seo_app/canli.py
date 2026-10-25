@@ -193,6 +193,7 @@ def sayfa_getir(url, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI, izin=None, ssl_zorunlu=
         "icerik_kodlama": yanit.headers.get("Content-Encoding"),
         "icerik_turu": yanit.headers.get("Content-Type"),
         "hsts": yanit.headers.get("Strict-Transport-Security"),
+        "guvenlik_basliklari": {b: yanit.headers.get(b) for b in GUVENLIK_BASLIKLARI},
         "x_robots_tag": yanit.headers.get("X-Robots-Tag"),
         "refresh": yanit.headers.get("Refresh"),
         "link_basligi": _link_basligi(yanit.headers.get("Link")),
@@ -201,6 +202,24 @@ def sayfa_getir(url, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI, izin=None, ssl_zorunlu=
 
 
 # ------------------------------------------------------------------- robots
+# robots.txt'de taninan alanlar (RFC 9309 + yaygin uzantilar); digerleri yazim hatasi ya da desteklenmeyen yonergedir
+ROBOTS_ALANLARI = ("user-agent", "disallow", "allow", "sitemap", "crawl-delay", "host", "clean-param",
+                   "request-rate", "visit-time")
+
+
+def robots_yonerge_hatalari(metin):
+    """Taninmayan alan adlari ve iki nokta icermeyen satirlar: [{"satir", "alan", "metin"}]."""
+    hatalar = []
+    for i, satir in enumerate(metin.splitlines(), 1):
+        ham = satir.split("#", 1)[0].strip()
+        if not ham:
+            continue
+        alan = ham.split(":", 1)[0].strip().lower() if ":" in ham else None
+        if alan not in ROBOTS_ALANLARI:
+            hatalar.append({"satir": i, "alan": alan, "metin": satir.strip()[:120]})
+    return hatalar
+
+
 def robots_bilgisi(site_koku, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
     anahtar = ("robots", site_koku)
     if anahtar in _onbellek:
@@ -208,7 +227,7 @@ def robots_bilgisi(site_koku, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
     adres = site_koku + "/robots.txt"
     bilgi = {"adres": adres, "var": False, "durum_kodu": None, "satir_sayisi": 0,
              "sitemapler": [], "tum_siteyi_engelliyor": False, "ilk_satirlar": "",
-             "hata": None, "_parser": None}
+             "yonerge_hatalari": [], "hata": None, "_parser": None}
     try:
         y, _ = _al(adres, zaman_asimi)
         bilgi["durum_kodu"] = y.status_code
@@ -226,6 +245,7 @@ def robots_bilgisi(site_koku, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
             bilgi["_parser"] = p
             bilgi["tum_siteyi_engelliyor"] = not p.can_fetch("*", site_koku + "/")
             bilgi["ilk_satirlar"] = "\n".join(metin.splitlines()[:25])
+            bilgi["yonerge_hatalari"] = robots_yonerge_hatalari(metin)[:20]
         elif y.status_code == 200 and html_mi:
             bilgi["hata"] = "robots.txt yerine HTML sayfa dönüyor"
     except requests.RequestException as e:
@@ -498,6 +518,9 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
             add("robots_sayfayi_engelliyor", "yuksek", son_url)
         if not robots["sitemapler"]:
             add("robots_sitemap_bildirilmemis", "dusuk")
+        if robots.get("yonerge_hatalari"):
+            h = robots["yonerge_hatalari"]
+            add("robots_bilinmeyen_yonerge", "orta", f"{len(h)} satır, ör. {h[0]['satir']}. satır: {h[0]['metin']}")
 
     # --- sitemap
     sitemap = sitemap_bilgisi(site_koku, robots, zaman_asimi)
@@ -524,6 +547,9 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
         add("yavas_yanit", "dusuk", "TTFB " + str(ttfb) + " ms")
     if not getirme.get("icerik_kodlama"):
         add("sikistirma_yok", "dusuk")
+    eksik = guvenlik_basligi_eksikleri(getirme.get("guvenlik_basliklari"))
+    if eksik:
+        add("guvenlik_basligi_eksik", "dusuk", ", ".join(eksik))
     boyut_kb = round((getirme.get("boyut_bayt") or 0) / 1024)
     if boyut_kb > 500:
         add("html_cok_buyuk", "dusuk", str(boyut_kb) + " KB")
@@ -595,6 +621,40 @@ def yumusak_404_yoklama(url, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI, izin=None):
 _baglanti_onbellegi = {}
 
 
+GUVENLIK_BASLIKLARI = ("X-Content-Type-Options", "X-Frame-Options", "Content-Security-Policy")
+
+
+def guvenlik_basligi_eksikleri(basliklar):
+    """Eksik ya da etkisiz guvenlik basliklari. X-Frame-Options yerine CSP frame-ancestors da kabul edilir.
+    Basliklar hic olculmediyse (eski kayit) bos liste."""
+    if basliklar is None:
+        return []
+    b = {k.lower(): (v or "").strip() for k, v in basliklar.items()}
+    csp = b.get("content-security-policy", "").lower()
+    eksik = []
+    if b.get("x-content-type-options", "").lower() != "nosniff":
+        eksik.append("X-Content-Type-Options: nosniff")
+    if not b.get("x-frame-options") and "frame-ancestors" not in csp:
+        eksik.append("X-Frame-Options (ya da CSP frame-ancestors)")
+    if not csp:
+        eksik.append("Content-Security-Policy")
+    return eksik
+
+
+def onbellekleniyor_mu(onbellek):
+    """Cache-Control max-age/s-maxage > 0 ya da (Cache-Control yokken) Expires varsa True; no-store/no-cache
+    ya da hic baslik yoksa False; olculmediyse None."""
+    if onbellek is None:
+        return None
+    cc = (onbellek.get("cache_control") or "").lower()
+    if "no-store" in cc or "no-cache" in cc:
+        return False
+    m = re.search(r"(?:s-)?max-age\s*=\s*(\d+)", cc)
+    if m:
+        return int(m.group(1)) > 0
+    return bool(onbellek.get("expires")) and not cc
+
+
 def baglanti_durumu(adres, zaman_asimi=10):
     """Bir baglanti/gorsel adresinin durumu: once HEAD, sunucu desteklemezse GET (govde okunmaz).
     Sonuc taramanin tamaminda onbellekte tutulur; ayni adres iki kez istenmez.
@@ -615,7 +675,8 @@ def baglanti_durumu(adres, zaman_asimi=10):
                 y = g
         sonuc.update({"durum": y.status_code, "son_url": y.url, "yonlendirme": len(y.history),
                       "boyut": int(y.headers["Content-Length"]) if (y.headers.get("Content-Length") or "").isdigit()
-                      else None})
+                      else None,
+                      "onbellek": {"cache_control": y.headers.get("Cache-Control"), "expires": y.headers.get("Expires")}})
     except requests.RequestException as e:
         sonuc["hata"] = type(e).__name__
     _baglanti_onbellegi[adres] = sonuc

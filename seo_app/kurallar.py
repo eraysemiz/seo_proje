@@ -8,6 +8,7 @@ kural tabanli duzeltme veya elle mudahale gerektirir.
 """
 import re
 from collections import defaultdict
+from datetime import date
 from urllib.parse import parse_qsl, urljoin, urlparse
 
 from . import puanlama
@@ -138,6 +139,24 @@ ACIKLAMA = {
     "url_buyuk_harf": "Adreste büyük harf var (aynı sayfa farklı yazımlarla ayrı adres sayılabilir)",
     "yumusak_404": "Hata sayfası 200 durum koduyla dönüyor (yumuşak 404)",
     "sitemap_yonlendirme": "Sitemap'te yönlendirilen bir adres listeleniyor",
+    # --- SEO kural listesine gore eklenen denetimler ---
+    "canonical_kirik": "Canonical'ın gösterdiği adres hata kodu (4xx/5xx) döndürüyor ya da açılmıyor",
+    "sitemap_olu_adres": "Sitemap'te hata kodu (4xx/5xx) döndüren bir adres listeleniyor",
+    "blank_noopener_yok": "Yeni sekmede açılan dış bağlantılarda rel=\"noopener\" yok",
+    "guvenlik_basligi_eksik": "Güvenlik başlıkları eksik (X-Content-Type-Options, X-Frame-Options, CSP)",
+    "onbellek_basligi_yok": "Stil, betik ya da görsel dosyaları önbellek başlığı (Cache-Control/Expires) olmadan sunuluyor",
+    "schema_kurum_logo_yok": "Kuruluş yapısal verisinde logo yok",
+    "schema_sosyal_profil_yok": "Kuruluş yapısal verisinde sosyal profiller (sameAs) yok",
+    "breadcrumb_yok": "Alt sayfada içerik haritası (BreadcrumbList) yapısal verisi yok",
+    "yapisal_veri_onerilen_alan": "Yapısal veride Google'ın önerdiği alanlar eksik",
+    "robots_bilinmeyen_yonerge": "robots.txt'de tanınmayan ya da yazım hatalı yönerge var",
+    "robots_kaynak_engelliyor": "robots.txt sayfanın CSS/JS dosyalarını engelliyor (arama motoru sayfayı doğru görüntüleyemez)",
+    "tarih_bilgisi_yok": "Yazı/haber yapısal verisinde yayın ya da güncelleme tarihi yok",
+    "icerik_eski": "Yazının son güncelleme tarihi 2 yıldan eski",
+    "anahtar_kelime_doldurma": "Bir anahtar terim ana içerikte aşırı sık geçiyor (%2,5'ten fazla)",
+    "form_etiketi_yok": "Etiketi (label) olmayan form alanları var",
+    "buton_adi_yok": "Metni ya da erişilebilir adı olmayan düğmeler var",
+    "aria_gecersiz_referans": "aria-labelledby/aria-describedby sayfada olmayan bir id'yi gösteriyor",
 }
 
 # Sorun basina somut duzeltme onerisi (raporda "Nasil duzeltilir" olarak gosterilir).
@@ -247,6 +266,23 @@ DUZELTME = {
     "url_buyuk_harf": "Adresleri küçük harfle yayınlayın; büyük harfli adresi 301 ile küçük harfliye yönlendirip bağlantıları güncelleyin.",
     "yumusak_404": "Bulunamayan sayfalar için sunucu 404 (kalıcı olarak kaldırıldıysa 410) durum kodu döndürmeli.",
     "sitemap_yonlendirme": "Sitemap'te yönlendirmenin son adresini listeleyin.",
+    "canonical_kirik": "Canonical'ı çalışan asıl adrese (genellikle sayfanın kendisine) çevirin.",
+    "sitemap_olu_adres": "Hata kodu döndüren adresi sitemap'ten çıkarın.",
+    "blank_noopener_yok": "target=\"_blank\" olan dış bağlantılara rel=\"noopener\" (ya da noreferrer) ekleyin.",
+    "guvenlik_basligi_eksik": "Sunucuda X-Content-Type-Options: nosniff, X-Frame-Options: SAMEORIGIN (ya da CSP frame-ancestors) ve bir Content-Security-Policy tanımlayın.",
+    "onbellek_basligi_yok": "Statik dosyalara uzun süreli önbellek verin (ör. Cache-Control: public, max-age=31536000) ve dosya adına sürüm ekleyin.",
+    "schema_kurum_logo_yok": "Organization verisine sitenin logo görselinin tam adresini \"logo\" alanı olarak ekleyin.",
+    "schema_sosyal_profil_yok": "Organization verisine resmi sosyal medya profillerini \"sameAs\" listesi olarak ekleyin.",
+    "breadcrumb_yok": "Sayfanın site içindeki yolunu (Ana sayfa › Bölüm › Sayfa) BreadcrumbList olarak JSON-LD'ye ekleyin.",
+    "yapisal_veri_onerilen_alan": "Ayrıntıda listelenen önerilen alanları gerçek değerleriyle doldurun; zengin sonuç görünürlüğü artar.",
+    "robots_bilinmeyen_yonerge": "Yönerge adını düzeltin (User-agent, Disallow, Allow, Sitemap); tanınmayan satırlar yok sayılır.",
+    "robots_kaynak_engelliyor": "Sayfanın görüntülenmesi için gereken CSS/JS dosyalarına robots.txt'de Allow ile izin verin.",
+    "tarih_bilgisi_yok": "Yazının datePublished ve dateModified alanlarını JSON-LD'ye ekleyin.",
+    "icerik_eski": "İçeriği gözden geçirip güncelleyin ve dateModified'ı gerçek güncelleme tarihiyle değiştirin.",
+    "anahtar_kelime_doldurma": "Terimi doğal sıklığa indirin; eş anlamlılar ve ilgili kavramlarla yazın.",
+    "form_etiketi_yok": "Her form alanına görünür bir <label for=\"...\"> ya da aria-label ekleyin.",
+    "buton_adi_yok": "Simge düğmelerine görünür metin ya da aria-label ekleyin.",
+    "aria_gecersiz_referans": "aria-labelledby/aria-describedby değerlerini sayfadaki gerçek bir öğenin id'siyle eşleştirin.",
 }
 
 KURUM_SCHEMA_TURLERI = {"Organization", "EducationalOrganization", "CollegeOrUniversity",
@@ -390,6 +426,9 @@ def baglanti_denetimi(baglantilar, add):
         add("ic_nofollow", "dusuk", f"{len(ic_nofollow)} bağlantı, ör. {ic_nofollow[0]['adres'][:80]}")
     if not any(b["ic"] for b in baglantilar):
         add("ic_baglanti_yok", "dusuk")
+    acik = [b for b in baglantilar if not b["ic"] and b.get("yeni_sekme") and not b.get("noopener")]
+    if acik:
+        add("blank_noopener_yok", "dusuk", f"{len(acik)} bağlantı, ör. {acik[0]['adres'][:80]}")
 
 
 def gorsel_denetimi(gorseller, add):
@@ -481,11 +520,59 @@ def ek_html_denetimi(yv: dict, sayfa_url=None) -> list:
     if yv["jsonld_sayisi"] and _ana_sayfa_mi(sayfa_url) and \
             not (set(yv.get("schema_turleri") or []) & KURUM_SCHEMA_TURLERI):
         add("schema_kurum_turu_yok", "dusuk", ", ".join(yv.get("schema_turleri") or []) or "tür yok")
+    yapisal_ek_denetim(yv, sayfa_url, add)
+    erisilebilirlik_denetimi(yv, add)
     if sayfa_url and sayfa_url.lower().startswith("https://") and yv.get("http_kaynak_sayisi"):
         add("karisik_icerik", "orta", str(yv["http_kaynak_sayisi"]) + " kaynak")
     baglanti_denetimi(yv.get("baglantilar"), add)
     gorsel_denetimi(yv.get("gorseller"), add)
     return issues
+
+
+ESKI_ICERIK_GUN = 730
+
+
+def _tarih(deger):
+    try:
+        return date.fromisoformat(str(deger)[:10])
+    except (TypeError, ValueError):
+        return None
+
+
+def yapisal_ek_denetim(yv, sayfa_url, add, bugun=None):
+    """Kurulus logosu ve sosyal profilleri (ana sayfada), alt sayfalarda icerik haritasi (BreadcrumbList),
+    onerilen schema alanlari ve yazilarin guncelligi (datePublished/dateModified)."""
+    if _ana_sayfa_mi(sayfa_url):
+        kurumlar = [n for n in yv.get("schema_nesneleri") or [] if set(n["turler"]) & KURUM_SCHEMA_TURLERI]
+        if kurumlar and not any(n["logo"] for n in kurumlar) and not all("Person" in n["turler"] for n in kurumlar):
+            add("schema_kurum_logo_yok", "dusuk", ", ".join(kurumlar[0]["turler"]))
+        if kurumlar and not any(n["sameAs"] for n in kurumlar):
+            add("schema_sosyal_profil_yok", "dusuk", ", ".join(kurumlar[0]["turler"]))
+    yol = [x for x in urlparse(sayfa_url or "").path.split("/") if x]
+    if len(yol) >= 2 and "BreadcrumbList" not in (yv.get("schema_turleri") or []):
+        add("breadcrumb_yok", "dusuk", "/" + "/".join(yol)[:100])
+    if yv.get("schema_onerilen_eksikleri"):
+        add("yapisal_veri_onerilen_alan", "dusuk", ", ".join(yv["schema_onerilen_eksikleri"][:4]))
+    bugun = bugun or date.today()
+    for m in yv.get("makale_tarihleri") or []:
+        son = _tarih(m.get("dateModified")) or _tarih(m.get("datePublished"))
+        if not (m.get("dateModified") or m.get("datePublished")):
+            add("tarih_bilgisi_yok", "dusuk", "datePublished ve dateModified yok")
+        elif son and (bugun - son).days > ESKI_ICERIK_GUN:
+            add("icerik_eski", "dusuk", f"son tarih {son.isoformat()} ({(bugun - son).days // 365} yıl önce)")
+        break                                       # sayfa basina ilk yazi nesnesi yeterli
+
+
+def erisilebilirlik_denetimi(yv, add):
+    """HTML'den gorulebilen erisilebilirlik: etiketsiz form alani, adsiz dugme, kirik aria baglantisi.
+    Kontrast ve klavye gezintisi gercek tarayici ister; burada denetlenmez."""
+    if yv.get("etiketsiz_form_alanlari"):
+        f = yv["etiketsiz_form_alanlari"]
+        add("form_etiketi_yok", "orta", f"{len(f)} alan, ör. {f[0]}")
+    if yv.get("adsiz_dugme_sayisi"):
+        add("buton_adi_yok", "dusuk", f"{yv['adsiz_dugme_sayisi']} düğme")
+    if yv.get("kirik_aria_referanslari"):
+        add("aria_gecersiz_referans", "dusuk", ", ".join(yv["kirik_aria_referanslari"][:4]))
 
 
 HATA_IFADESI = re.compile(r"bulunamad|bulunmuyor|mevcut değil|artık yok|kaldırıldı|not found|\b404\b|"
@@ -517,7 +604,34 @@ def odak_terim_denetimi(d: dict) -> list:
         add("title_h1_uyumsuz", "title: " + (d.get("title") or "")[:40] + " | h1: " + " / ".join(d["h1"])[:40])
     if title_k and d.get("icerik_kokleri") and not (title_k & d["icerik_kokleri"]):
         add("title_icerikle_uyumsuz", (d.get("title") or "")[:60])
+    doldurma = anahtar_yogunlugu(d)
+    if doldurma:
+        kok, oran, adet, toplam = doldurma
+        # %2,5-4 arasi dogal yazimda da gorulebilir (dusuk); %4 ustu belirgin doldurmadir (orta)
+        issues.append({"sorun": "anahtar_kelime_doldurma", "ciddiyet": "orta" if oran >= DOLDURMA_BELIRGIN else "dusuk",
+                       "katman": "sayfa",
+                       "cozum_yolu": cozum_yolu("anahtar_kelime_doldurma"),
+                       "ayrinti": f"\"{kok}…\" %{oran * 100:.1f} ({adet}/{toplam} kelime)"})
     return issues
+
+
+DOLDURMA_ESIGI = 0.025
+DOLDURMA_BELIRGIN = 0.04
+DOLDURMA_EN_AZ_KELIME = 150
+
+
+def anahtar_yogunlugu(d):
+    """Title'daki (site adi ve genel sozcukler haric) terimlerin ana icerikteki en yuksek sikligi esigi
+    asiyorsa (kok, oran, adet, toplam kelime), yoksa None. Kokler 5 harfle kisaltilir (Turkce ekler)."""
+    toplam = d.get("icerik_kelime_sayisi") or 0
+    sayilar = d.get("icerik_kok_sayilari") or {}
+    if toplam < DOLDURMA_EN_AZ_KELIME or not sayilar:
+        return None
+    adaylar = kokler(d.get("title") or "") - GENEL_KOKLER - kokler(d.get("site_adi") or "")
+    en = max(((k, sayilar.get(k, 0)) for k in adaylar), key=lambda x: x[1], default=None)
+    if en and en[1] / toplam > DOLDURMA_ESIGI:
+        return en[0], en[1] / toplam, en[1], toplam
+    return None
 
 
 def _normal(metin):
@@ -739,12 +853,31 @@ SORUN_TANIMI = {
     "derin_sayfa": ("teknik", "derin", "dusuk", "tarama"),
     "hreflang_donus_yok": ("teknik", "hreflang_donus", "dusuk", "tarama"),
     "sitemap_yonlendirme": ("teknik", "sitemap_yon", "dusuk", "tarama"),
+    "sitemap_olu_adres": ("teknik", "sitemap_olu", "orta", "tarama"),
+    # --- SEO kural listesine gore eklenen denetimler ---
+    "canonical_kirik": ("teknik", "canonical_hedef", "orta", "site"),
+    "blank_noopener_yok": ("guvenlik", "noopener", "dusuk", "sayfa"),
+    "guvenlik_basligi_eksik": ("guvenlik", "guvenlik_baslik", "dusuk", "site"),
+    "onbellek_basligi_yok": ("performans", "onbellek", "dusuk", "site"),
+    "schema_kurum_logo_yok": ("teknik", "schema_logo", "dusuk", "sayfa"),
+    "schema_sosyal_profil_yok": ("teknik", "schema_sameas", "dusuk", "sayfa"),
+    "breadcrumb_yok": ("teknik", "breadcrumb", "dusuk", "sayfa"),
+    "yapisal_veri_onerilen_alan": ("teknik", "yapisal_oneri", "dusuk", "sayfa"),
+    "robots_bilinmeyen_yonerge": ("teknik", "robots_yonerge", "orta", "site"),
+    "robots_kaynak_engelliyor": ("teknik", "robots_kaynak", "orta", "site"),
+    "tarih_bilgisi_yok": ("icerik", "guncellik", "dusuk", "sayfa"),
+    "icerik_eski": ("icerik", "guncellik", "dusuk", "sayfa"),
+    "anahtar_kelime_doldurma": ("icerik", "doldurma", "orta", "sayfa"),
+    "form_etiketi_yok": ("teknik", "erisilebilirlik_form", "orta", "sayfa"),
+    "buton_adi_yok": ("teknik", "erisilebilirlik_dugme", "dusuk", "sayfa"),
+    "aria_gecersiz_referans": ("teknik", "erisilebilirlik_aria", "dusuk", "sayfa"),
 }
 KATEGORILER = ("icerik", "teknik", "guvenlik", "performans")
 # tarama geneline ait bulgular (site_geneli, tarama.baglanti_bulgulari); sayfa kaydinin sorunlarina
 # girmez, kayda tekrar_bulgulari olarak yazilir ve ilgili sayfanin puanina eklenir (puanlama.TARAMA_CIDDIYETI)
 TARAMA_GENELI_KODLARI = ("title_tekrar", "meta_tekrar", "h1_tekrar", "icerik_tekrar", "icerik_benzer",
-                         "yetim_sayfa", "derin_sayfa", "hreflang_donus_yok", "sitemap_yonlendirme")
+                         "yetim_sayfa", "derin_sayfa", "hreflang_donus_yok", "sitemap_yonlendirme",
+                         "sitemap_olu_adres")
 
 
 def _grup(kod):

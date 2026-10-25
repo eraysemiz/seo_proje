@@ -23,7 +23,7 @@ from urllib.parse import urljoin, urlparse
 
 from . import canli, rapor as rapor_modulu, tarama
 from .bagimsiz import cwv_sorunlari, pagespeed_seo
-from .cikarma import extract, yapisal_veri
+from .cikarma import extract, url_anahtari, yapisal_veri
 from .kurallar import (cozum_yolu, ek_html_denetimi, kanonik_birlestirmeleri, odak_terim_denetimi, puan, puanlar,
                        rule_checks, site_geneli, site_ozeti, tekillestir, yumusak_404_supheli)
 from .llm import llm_fixes
@@ -64,6 +64,7 @@ VARSAYILAN_AYARLAR = {
     "oto_esik": 0.8,              # yonetici modu: guven puani bu degeri gecen duzeltmeler onaysiz uygulanir (guven.py)
 }
 GORSEL_DENETIM_SINIRI = 15        # sayfa basina boyutu/durumu denetlenen en fazla gorsel
+STATIK_DENETIM_SINIRI = 10        # sayfa basina onbellek basligi denetlenen en fazla stil/betik dosyasi
 BUYUK_GORSEL_BAYT = 200 * 1024
 
 
@@ -109,8 +110,11 @@ def baglanti_ve_gorsel_denetimi(yv, a, robots_engelli):
     gorsel = list(dict.fromkeys(g["src"] for g in yv.get("gorseller") or []
                                 if g.get("src") and not g.get("veri_uri") and g["src"].startswith("http")))
     gorsel = gorsel[:GORSEL_DENETIM_SINIRI]
+    # onbellek denetimi: site ici stil/betik dosyalari (gorseller zaten denetleniyor)
+    host = urlparse(yv.get("_sayfa_url") or "").hostname
+    statik = [x for x in yv.get("statik_kaynaklar") or [] if urlparse(x).hostname == host][:STATIK_DENETIM_SINIRI]
     izin = (lambda adres: not robots_engelli(adres)) if a["uy_robots"] else None
-    durum = canli.baglantilari_denetle(ic + dis + gorsel, zaman_asimi=min(a["zaman_asimi"], 10),
+    durum = canli.baglantilari_denetle(ic + dis + gorsel + statik, zaman_asimi=min(a["zaman_asimi"], 10),
                                        bekleme=a["bekleme_sn"] / 4, izin=izin)
 
     def kirik(adresler):
@@ -121,7 +125,14 @@ def baglanti_ve_gorsel_denetimi(yv, a, robots_engelli):
             "kirik_gorsel": kirik(gorsel)[:20],
             "buyuk_gorsel": [{"adres": x, "kb": round(durum[x]["boyut"] / 1024)} for x in gorsel
                              if (durum.get(x) or {}).get("boyut") and durum[x]["boyut"] > BUYUK_GORSEL_BAYT][:20]}
+    yerel = [x for x in statik + [g for g in gorsel if urlparse(g).hostname == host]
+             if (durum.get(x) or {}).get("durum") == 200]
+    onbelleksiz = [x for x in yerel if canli.onbellekleniyor_mu((durum.get(x) or {}).get("onbellek")) is False]
+    ozet["onbelleksiz"] = onbelleksiz[:20]
     sorunlar = []
+    if onbelleksiz:
+        sorunlar.append(_site_sorunu("onbellek_basligi_yok", "dusuk",
+                                     f"{len(onbelleksiz)}/{len(yerel)} dosya: {_kisa(onbelleksiz)}"))
     if ozet["kirik_ic"]:
         sorunlar.append(_site_sorunu("kirik_ic_link", "orta", f"{len(kirik(ic))} bağlantı: {_kisa(ozet['kirik_ic'])}"))
     if ozet["kirik_dis"]:
@@ -136,6 +147,29 @@ def baglanti_ve_gorsel_denetimi(yv, a, robots_engelli):
         sorunlar.append(_site_sorunu("gorsel_buyuk", "dusuk",
                                      f"{len(ozet['buyuk_gorsel'])} görsel, en büyüğü {en['kb']} KB"))
     return sorunlar, ozet
+
+
+def kaynak_ve_canonical_denetimi(yv, sayfa_url, a):
+    """Canli: canonical hedefinin durumu (kirik canonical) ve sayfanin CSS/JS dosyalarinin robots.txt
+    tarafindan engellenip engellenmedigi (arama motoru icin, ajan '*')."""
+    sorunlar = []
+    hedef = next((urljoin(sayfa_url, c["href"]) for c in yv.get("canonicallar") or [] if c.get("href")), None)
+    yasak = a["uy_robots"] and hedef and canli.sayfa_engelli_mi(canli.robots_bilgisi(canli.kok(hedef), a["zaman_asimi"]),
+                                                            hedef, canli.AJAN_BELIRTECI)
+    if hedef and not yasak and url_anahtari(hedef) != url_anahtari(sayfa_url) and hedef.startswith(("http://", "https://")):
+        d = canli.baglanti_durumu(hedef, zaman_asimi=min(a["zaman_asimi"], 10))
+        if d.get("hata") or (d.get("durum") or 0) >= 400:
+            sorunlar.append(_site_sorunu("canonical_kirik", "yuksek",
+                                         f"{hedef[:120]} → {d.get('durum') or d.get('hata')}"))
+    robots = canli.robots_bilgisi(canli.kok(sayfa_url), a["zaman_asimi"])
+    if robots.get("_parser"):
+        host = urlparse(sayfa_url).hostname
+        engelli = [x for x in yv.get("statik_kaynaklar") or []
+                   if urlparse(x).hostname == host and canli.sayfa_engelli_mi(robots, x)]
+        if engelli:
+            sorunlar.append(_site_sorunu("robots_kaynak_engelliyor", "orta",
+                                         f"{len(engelli)} dosya: {_kisa([urlparse(x).path for x in engelli])}"))
+    return sorunlar
 
 
 def _sayfa_denetimi(html, d, sayfa_url, link_basligi):
@@ -239,9 +273,11 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
                 "yumusak_404", "yuksek" if kod == 200 else "orta",
                 supheli + ("; aynı klasördeki var olmayan bir adres de 200 döndü" if kod == 200 else
                            f"; var olmayan adres {kod} döndü (sayfa içeriği hata bildiriyor)" if kod else "")))
+        site_sorunlari += kaynak_ve_canonical_denetimi(yv, sayfa_url, a)
         if a["link_denetimi"]:
             yaz("Bağlantılar ve görseller denetleniyor")
-            bag_sorunlari, kayit["baglanti_denetimi"] = baglanti_ve_gorsel_denetimi(yv, a, _robots_engelli)
+            bag_sorunlari, kayit["baglanti_denetimi"] = baglanti_ve_gorsel_denetimi({**yv, "_sayfa_url": sayfa_url},
+                                                                                   a, _robots_engelli)
             site_sorunlari += bag_sorunlari
     baglar = yv.get("baglantilar") or []
     kayit["ic_baglantilar"] = list(dict.fromkeys(b["adres"] for b in baglar if b["ic"] and not b["nofollow"]))[:1000]

@@ -35,6 +35,7 @@ TARAMA_CIDDIYETI = {
     "title_tekrar": "orta", "meta_tekrar": "dusuk", "h1_tekrar": "dusuk",
     "icerik_tekrar": "yuksek", "icerik_benzer": "orta",
     "yetim_sayfa": "orta", "derin_sayfa": "dusuk", "hreflang_donus_yok": "dusuk", "sitemap_yonlendirme": "dusuk",
+    "sitemap_olu_adres": "orta",
 }
 
 # Kritik sorunlarda puanin ust siniri: bu sorun varken sayfa diger acilardan kusursuz olsa da bu degeri gecemez
@@ -50,6 +51,7 @@ SAYFAYA_OZGU = {
     "uzun_yonlendirme_zinciri", "yumusak_404", "hata_durum_kodu", "canonical_baslik_catismasi", "noindex",
     "sayfa_nofollow", "meta_refresh", "yavas_yanit", "cok_yavas_yanit", "html_cok_buyuk",
     "cwv_lcp_yavas", "cwv_inp_yavas", "cwv_cls_yuksek", "sayfa_agir",
+    "canonical_kirik", "robots_kaynak_engelliyor", "onbellek_basligi_yok",
 }
 
 

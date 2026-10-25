@@ -57,19 +57,32 @@ kapalıysa tarama sessizce modelsiz devam etmez, hata verir.
   Twitter Card, favicon, hreflang (ISO 639-1 dil kodu, `en-UK` gibi hatalı bölge, x-default,
   kendine referans), karışık içerik (`srcset` ve CSS `url()` dahil)
 - **bağlantılar:** boş ve anlamsız bağlantı metni ("tıklayın", "devamı"), site içi nofollow,
-  çıkmaz sayfa; içeriği JavaScript'e bağlı sayfa iskeleti (tahmin)
+  çıkmaz sayfa, `target="_blank"` dış bağlantıda `noopener` eksikliği; içeriği JavaScript'e bağlı
+  sayfa iskeleti (tahmin)
+- **yapısal veri (ek):** ana sayfadaki kuruluş verisinde `logo` ve `sameAs`; iki düzey derinlikteki
+  sayfalarda BreadcrumbList; türe göre önerilen alanlar; yazılarda tarih bilgisi ve 2 yıldan eski
+  `dateModified`/`datePublished`
+- **içerik:** anahtar kelime doldurma (title'daki bir terimin ana içerikte %2,5'ten sık geçmesi,
+  150+ kelimelik sayfalarda; %4 üstü "orta" önemde)
+- **erişilebilirlik (HTML'den görülebilen):** etiketsiz form alanı, erişilebilir adı olmayan düğme,
+  olmayan id'yi gösteren `aria-labelledby`/`aria-describedby`. Kontrast ve klavye gezintisi gerçek
+  tarayıcı ister, denetlenmez.
 
 **Site katmanı** (canlı erişimle)
 
-- robots.txt: var mı, geçerli mi, sitemap bildiriyor mu, sayfayı engelliyor mu
+- robots.txt: var mı, geçerli mi, sitemap bildiriyor mu, sayfayı engelliyor mu, tanınmayan ya da
+  yazım hatalı yönerge var mı, sayfanın CSS/JS dosyalarını engelliyor mu
+- canonical'ın gösterdiği adres hata kodu döndürüyor mu (kırık canonical)
 - sitemap.xml: erişilebilir mi, geçerli XML mi, kaç adres içeriyor, sayfa listede mi, açılmayan
   sitemap adresleri, 50 MB / 50.000 adres sınırı, noindex sayfa sitemap'te mi
-- HTTPS: şema, http→https yönlendirmesi, sertifika süresi ve **zincir bütünlüğü**, HSTS
+- HTTPS: şema, http→https yönlendirmesi, sertifika süresi ve **zincir bütünlüğü**, HSTS;
+  güvenlik başlıkları (X-Content-Type-Options, X-Frame-Options ya da CSP frame-ancestors, CSP)
 - durum kodu, yönlendirme zinciri, **yönlendirme döngüsü**, 10'dan uzun zincir, Location'sız
   3xx, geçici (302/303/307) yönlendirme, `Refresh` başlığı, `X-Robots-Tag` (bota özel satırlar dahil)
 - **bağlantı ve görsel denetimi:** kırık site içi ve dış bağlantılar, yönlendirilen site içi
   bağlantılar, kırık ve 200 KB'tan büyük görseller (HEAD, gerekirse GET; farklı host'lar paralel,
-  aynı host'a sırayla ve beklemeli)
+  aynı host'a sırayla ve beklemeli); site içi CSS/JS ve görsellerde önbellek başlığı
+  (Cache-Control max-age ya da Expires)
 - Hız/boyut: TTFB, indirme süresi, HTML boyutu, sıkıştırma (gzip/br), dış kaynak sayısı;
   PageSpeed açıksa **Core Web Vitals** (LCP, INP, CLS) ve toplam sayfa ağırlığı
 
@@ -77,7 +90,8 @@ kapalıysa tarama sessizce modelsiz devam etmez, hata verir.
 
 - tekrar eden title / meta açıklama / H1
 - birebir aynı ve %90 üstü benzer ana içerik (5 kelimelik parçaların MinHash imzası)
-- yetim sayfa, 3'ten fazla tıklama derinliği, karşılıklı olmayan hreflang
+- yetim sayfa, 3'ten fazla tıklama derinliği, karşılıklı olmayan hreflang, sitemap'te hata kodu
+  döndüren adres (iki modda da)
 - her sayfa için tıklama derinliği ve kaç taranan sayfadan site içi bağlantı aldığı
 
 **JavaScript render (isteğe bağlı):** bilgisayarda kurulu Chrome/Edge başlıksız çalıştırılır

@@ -33,6 +33,8 @@ KATEGORI = {
     "robots_sitemap_bildirilmemis": ("kural", "dusuk"), "sitemap_hatali_adres": ("kural", "dusuk"),
     "sayfa_sitemapte_yok": ("kural", "dusuk"), "sitemap_olu_adres": ("kural", "dusuk"),
     "sitemap_yonlendirme": ("kural", "dusuk"), "render_engelleyen_kaynak": ("kural", "dusuk"),
+    "blank_noopener_yok": ("kural", "dusuk"), "schema_kurum_logo_yok": ("kural", "dusuk"),
+    "schema_sosyal_profil_yok": ("kural", "dusuk"), "breadcrumb_yok": ("kural", "dusuk"),
     # --- YZ önerir: icerik ---
     "title_yok": ("yz", "dusuk"), "title_kisa": ("yz", "dusuk"), "title_uzun": ("yz", "dusuk"),
     "title_genis": ("yz", "dusuk"), "title_tekrar": ("yz", "dusuk"), "title_h1_uyumsuz": ("yz", "dusuk"),
@@ -54,6 +56,9 @@ KATEGORI = {
     "hreflang_kendine_referans_yok": ("yz", "yuksek"), "hreflang_donus_yok": ("yz", "yuksek"),
     "icerik_tekrar": ("yz", "yuksek"), "icerik_benzer": ("yz", "yuksek"),
     "robots_sayfayi_engelliyor": ("yz", "yuksek"), "robots_tum_siteyi_engelliyor": ("yz", "yuksek"),
+    # robots.txt degisiklikleri taramayi acar/kapatir: toplu "Kural çözer" onayina girmesin diye YZ önerir
+    "canonical_kirik": ("yz", "yuksek"), "robots_bilinmeyen_yonerge": ("yz", "yuksek"),
+    "robots_kaynak_engelliyor": ("yz", "yuksek"),
 }
 
 # Yuksek riskli onerilerle birlikte gosterilen olasi etki
@@ -76,15 +81,14 @@ ETKI = {
     "icerik_benzer": "Benzer sayfa canonical ile asıl sayfaya bağlanır; benzer sayfa dizinden düşer. Sayfa özgünleştirilecekse uygulamayın.",
     "robots_sayfayi_engelliyor": "robots.txt kuralı değişirse sayfa taranmaya başlar.",
     "robots_tum_siteyi_engelliyor": "robots.txt değişirse tüm site taranmaya açılır.",
+    "canonical_kirik": "Canonical sayfanın kendi adresine çevrilir; sayfa kendi adresiyle dizine alınır.",
+    "robots_bilinmeyen_yonerge": "Düzeltilen yönerge artık uygulanır: yanlış yazılmış bir Disallow düzeltilince o yol taramaya kapanır.",
+    "robots_kaynak_engelliyor": "Allow satırı eklenen CSS/JS dosyaları arama motorlarınca indirilebilir hale gelir.",
 }
 
 # Yalnizca yonetici modunun dosya duzeyindeki denetimlerinde uretilen kodlar
-EK_ACIKLAMA = {
-    "sitemap_olu_adres": "Sitemap'te hata kodu (4xx/5xx) döndüren bir adres listeleniyor",
-}
-EK_DUZELTME = {
-    "sitemap_olu_adres": "Hata kodu döndüren adresi sitemap'ten çıkarın.",
-}
+EK_ACIKLAMA = {}      # sitemap_olu_adres artik iki modda da denetlenir (kurallar.ACIKLAMA)
+EK_DUZELTME = {}
 
 
 def kategori(kod):

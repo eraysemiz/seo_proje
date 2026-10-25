@@ -1052,6 +1052,177 @@ def yz_jsonld(p, s, b):
            kaynaklar=cevap["kaynaklar"], yer_tutucu=yer, dogrulama={"gecti": gecti, "neden": neden}, deneme=deneme)
 
 
+# --- SEO kural listesine gore eklenen duzelticiler
+def kural_noopener(p, s, b):
+    """target=_blank olan dis baglantilara rel="noopener" eklenir (mevcut rel degerine eklenir)."""
+    for o in hk.bul(s.ogeler, "a", lambda o: (o.nitelik("target") or "").strip().lower() == "_blank"):
+        hedef = _bag_hedefi(s, o.nitelik("href"))
+        rel = (o.nitelik("rel") or "").lower().split()
+        if not hedef.startswith(("http://", "https://")) or _goreli(hedef, p.temel_url) is not None or \
+                {"noopener", "noreferrer"} & set(rel):
+            continue
+        n = hk.nitelik_konumlari(o).get("rel")
+        if n:
+            yeni_rel = (n[4] + " noopener").strip()
+            parca, yeni = (n[2], n[3], yeni_rel), o.ham.replace(n[4], yeni_rel, 1) if n[4] else o.ham
+        else:
+            konum = hk.nitelik_ekleme_konumu(o)
+            parca, yeni = (konum, konum, ' rel="noopener"'), o.ham[:konum - o.bas] + ' rel="noopener"' + o.ham[konum - o.bas:]
+        p.ekle("blank_noopener_yok", s.dosya, [parca], o.ham, yeni,
+               "Yeni sekmede açılan sayfa window.opener ile bu sayfaya erişemez (tabnabbing önlemi).", "kural", url=s.url)
+
+
+SOSYAL_HOSTLAR = ("facebook.com", "instagram.com", "x.com", "twitter.com", "linkedin.com", "youtube.com",
+                  "tiktok.com", "pinterest.com", "threads.net")
+_KURUM_TURU = re.compile(r'"@type"\s*:\s*(\[[^\]]*\]|"[^"]*")')
+
+
+def _kurum_ekleme_konumu(s):
+    """Kurulus turlu JSON-LD nesnesinin "@type" ciftinden hemen sonraki konum ve eklenecek metnin bicimi.
+    Alan bu noktaya eklenir; diger alanlar ve bicim degismez. (konum, virgul_once) ya da Atla."""
+    from .kurallar import KURUM_SCHEMA_TURLERI
+    for o, icerik, veri in _jsonld_bloklari(s):
+        if veri is None:
+            continue
+        bas = o.bas_son
+        for m in _KURUM_TURU.finditer(s.metin, bas, o.kap_bas):
+            turler = set(re.findall(r'"([^"]+)"', m.group(1)))
+            if turler & KURUM_SCHEMA_TURLERI:
+                virgul = re.match(r"\s*,", s.metin[m.end():o.kap_bas])
+                return (m.end() + virgul.end(), False) if virgul else (m.end(), True)
+    raise Atla("kuruluş türlü JSON-LD nesnesi bulunamadı")
+
+
+def _kurum_alani_ekle(p, s, kod, alan, deger, gerekce):
+    konum, virgul_once = _kurum_ekleme_konumu(s)
+    cift = json.dumps(alan) + ": " + json.dumps(deger, ensure_ascii=False)
+    metin = (", " + cift) if virgul_once else (" " + cift + ",")
+    p.ekle(kod, s.dosya, [(konum, konum, metin)], "(yok)", cift, gerekce, "kural", url=s.url)
+
+
+def kural_kurum_logo(p, s, b):
+    logo = next((urljoin(s.url, o.nitelik("src")) for o in _gorseller(s) if "logo" in (o.nitelik("src") or "").lower()), None)
+    if not logo:
+        raise Atla("sayfada adı 'logo' içeren bir görsel yok; logo adresi elle eklenmeli")
+    _kurum_alani_ekle(p, s, "schema_kurum_logo_yok", "logo", logo,
+                      "Logo adresi sayfadaki logo görselinden alındı; arama sonucundaki bilgi panelinde kullanılır.")
+
+
+def kural_sosyal_profil(p, s, b):
+    profiller = []
+    for o in hk.bul(s.ogeler, "a", lambda o: o.nitelik("href")):
+        adres = _bag_hedefi(s, o.nitelik("href"))
+        host = (urlsplit(adres).hostname or "").lower().removeprefix("www.")
+        if any(host == h or host.endswith("." + h) for h in SOSYAL_HOSTLAR) and urlsplit(adres).path.strip("/"):
+            if adres not in profiller:
+                profiller.append(adres)
+    if not profiller:
+        raise Atla("sayfada sosyal medya profiline bağlantı yok; sameAs elle eklenmeli")
+    _kurum_alani_ekle(p, s, "schema_sosyal_profil_yok", "sameAs", profiller[:8],
+                      "Profiller sayfanın kendi verdiği sosyal medya bağlantılarından alındı.")
+
+
+def _sayfa_adi(sayfa):
+    h1 = [h for h in sayfa.d.get("h1") or [] if h.strip()]
+    ad = h1[0] if h1 else (sayfa.d.get("title") or "")
+    return re.split(r"\s+[|–—-]\s+", ad)[0].strip() if not h1 else ad.strip()
+
+
+def kural_breadcrumb(p, s, b):
+    """Adres yolundan (Ana sayfa > ust dizin sayfalari > sayfa) BreadcrumbList; adlar ust sayfalarin
+    H1'inden (yoksa title'in ilk parcasindan). Bir ust dizinin sayfasi yoksa uretilmez."""
+    yol = [x for x in urlsplit(s.url).path.split("/") if x]
+    if len(yol) < 2:
+        raise Atla("sayfa ana dizinde; içerik haritası gerekmez")
+    ogeler = [("Ana sayfa" if (s.dil or p.dil).lower().startswith("tr") else "Home", p.temel_url)]
+    for i in range(1, len(yol)):
+        adres = p.temel_url + "/".join(yol[:i]) + "/"
+        dosya = p.url_dosya(adres)
+        if not dosya:
+            raise Atla(f"üst dizin sayfası ({adres}) sitede yok")
+        ad = _sayfa_adi(p.sayfa(dosya, adres))
+        if not ad:
+            raise Atla(f"üst dizin sayfasının ({adres}) başlığı yok")
+        ogeler.append((ad, adres))
+    ad = _sayfa_adi(s)
+    if not ad:
+        raise Atla("sayfanın H1'i ya da title'ı yok")
+    ogeler.append((ad, s.url))
+    veri = {"@context": "https://schema.org", "@type": "BreadcrumbList",
+            "itemListElement": [{"@type": "ListItem", "position": i, "name": a, "item": u}
+                                for i, (a, u) in enumerate(ogeler, 1)]}
+    deger = json.dumps(veri, ensure_ascii=False, indent=2).replace("</", "<\\/")
+    konum = _head_sonu(s)
+    p.ekle("breadcrumb_yok", s.dosya, [(konum, konum, '<script type="application/ld+json">\n' + deger + "\n</script>\n")],
+           "(yok)", deger, "İçerik haritası sayfanın adres yolundan ve üst sayfaların başlıklarından üretildi.",
+           "kural", url=s.url)
+
+
+def yz_robots_yonerge(p, b, robots):
+    """Taninmayan robots.txt yonergesini en yakin taninan adla duzeltir (Dissallow -> Disallow)."""
+    from .canli import ROBOTS_ALANLARI, robots_yonerge_hatalari
+    metin = p.metin(robots)
+    satirlar = metin.splitlines(keepends=True)
+    bas = [0]
+    for x in satirlar:
+        bas.append(bas[-1] + len(x))
+    uretildi = False
+    for h in robots_yonerge_hatalari(metin):
+        if not h["alan"]:
+            p.atla("robots_bilinmeyen_yonerge", urljoin(p.temel_url, "robots.txt"),
+                   f"{h['satir']}. satırda iki nokta yok: {h['metin']}")
+            continue
+        yakin = difflib.get_close_matches(h["alan"], ROBOTS_ALANLARI, n=1, cutoff=0.75)
+        if not yakin:
+            p.atla("robots_bilinmeyen_yonerge", urljoin(p.temel_url, "robots.txt"),
+                   f"{h['satir']}. satırdaki '{h['alan']}' tanınan bir yönergeye benzemiyor")
+            continue
+        satir = satirlar[h["satir"] - 1]
+        m = re.match(r"\s*([^:#]+?)\s*:", satir)
+        dogru = "-".join(x.capitalize() for x in yakin[0].split("-"))
+        # satirin tamami degisir: duzeltilen satir bir Disallow ise "taramayi kapatan" olarak onaya duser
+        eski = satir.rstrip("\r\n")
+        yeni = eski[:m.start(1)] + dogru + eski[m.end(1):]
+        a = bas[h["satir"] - 1]
+        p.ekle("robots_bilinmeyen_yonerge", robots, [(a, a + len(eski), yeni)], eski, yeni,
+               f"'{m.group(1)}' robots.txt'de tanınmıyor ve yok sayılıyor; en yakın yönerge '{dogru}'.", "sezgisel",
+               url=urljoin(p.temel_url, "robots.txt"))
+        uretildi = True
+    if not uretildi:
+        raise Atla("düzeltilebilecek yönerge bulunamadı")
+
+
+def yz_robots_kaynak(p, s, b):
+    """Sayfanin robots.txt'ce engellenen CSS/JS dosyalari icin 'User-agent: *' grubuna Allow satiri eklenir."""
+    from urllib.robotparser import RobotFileParser
+    if "robots.txt" not in p.dosyalar:
+        raise Atla("sitede robots.txt yok")
+    metin = p.metin("robots.txt")
+    ua = re.search(r"(?im)^\s*user-agent\s*:\s*\*\s*$\n?", metin)
+    if not ua:
+        raise Atla("robots.txt'de 'User-agent: *' grubu yok")
+    rp = RobotFileParser()
+    rp.parse(metin.splitlines())
+    yollar = []
+    kaynaklar = hk.bul(s.ogeler, "link", lambda o: "stylesheet" in (o.nitelik("rel") or "").lower()) + \
+        hk.bul(s.ogeler, "script", lambda o: o.nitelik("src"))
+    for o in kaynaklar:
+        adres = _bag_hedefi(s, o.nitelik("src") or o.nitelik("href"))
+        if _goreli(adres, p.temel_url) is None or rp.can_fetch("*", adres):
+            continue
+        yol = urlsplit(adres).path
+        if ("robots_kaynak", yol) not in p.gorulen and yol not in yollar:
+            yollar.append(yol)
+    if not yollar:
+        raise Atla("engellenen CSS/JS dosyası bulunamadı ya da başka bir sayfanın önerisinde")
+    p.gorulen.update(("robots_kaynak", y) for y in yollar)
+    sonu = "\r\n" if "\r\n" in metin else "\n"         # dosyanin kendi satir sonu korunur
+    ek = "".join(f"Allow: {y}{sonu}" for y in yollar)
+    p.ekle("robots_kaynak_engelliyor", "robots.txt", [(ua.end(), ua.end(), ek)], "(yok)", ek.strip(),
+           "Sayfanın görüntülenmesi için gereken dosyalar arama motorlarınca indirilebilsin; yalnızca bu dosyalara "
+           "izin verilir, diğer kurallar değişmez.", "sezgisel", url=urljoin(p.temel_url, "robots.txt"))
+
+
 # ------------------------------------------------------------------ plan uretimi
 SAYFA_URETICI = {
     "charset_yok": kural_charset, "viewport_yok": kural_viewport, "viewport_sorunlu": kural_viewport,
@@ -1066,6 +1237,9 @@ SAYFA_URETICI = {
     "hreflang_kendine_referans_yok": yz_hreflang, "img_alt_eksik": yz_alt, "icerik_az": yz_paragraf,
     "yapisal_veri_gecersiz": yz_jsonld, "yapisal_veri_eksik_alan": yz_jsonld, "yapisal_veri_yok": yz_jsonld,
     "schema_kurum_turu_yok": yz_jsonld,
+    "canonical_kirik": yz_canonical, "blank_noopener_yok": kural_noopener,
+    "schema_kurum_logo_yok": kural_kurum_logo, "schema_sosyal_profil_yok": kural_sosyal_profil,
+    "breadcrumb_yok": kural_breadcrumb, "robots_kaynak_engelliyor": yz_robots_kaynak,
 }
 TITLE_KODLARI = ("title_yok", "title_kisa", "title_uzun", "title_genis", "title_h1_uyumsuz", "title_icerikle_uyumsuz")
 META_KODLARI = ("meta_description_yok", "meta_description_kisa", "meta_description_uzun")
@@ -1120,14 +1294,6 @@ def plan_uret(kayitlar, tarama_bulgulari, adaptor, temel_url, dil="tr", yz=None,
                 elif b.get("katman") == "sayfa":
                     p.atla(b["sorun"], k.get("ad"), "adres sitede ayrı bir dosyaya karşılık gelmiyor "
                                                     "(yönlendirme, parametreli adres ya da sunucu tarafında üretilen sayfa)")
-            if (k.get("durum_kodu") or 0) >= 400 and "sitemap.xml" in p.dosyalar and \
-                    any(url_anahtari(loc) == url_anahtari(k["ad"]) for _, _, loc in _sitemap_kayitlari(p.metin("sitemap.xml"))):
-                # hata kodu donen adres sitemap'te listeleniyorsa (kesif kaynagi ne olursa olsun)
-                p.ek_bulgular.append({"sorun": "sitemap_olu_adres", "url": k["ad"]})
-                try:
-                    kural_sitemap_cikar(p, k["ad"], k.get("durum_kodu"))
-                except Atla as e:
-                    p.atla("sitemap_olu_adres", k["ad"], str(e))
             continue
         try:
             s = p.sayfa(dosya, url, k)
@@ -1140,6 +1306,9 @@ def plan_uret(kayitlar, tarama_bulgulari, adaptor, temel_url, dil="tr", yz=None,
         if not re.search(r"<meta[^>]+charset=", s.metin, re.I) and "charset_yok" not in kodlar:
             p.ek_bulgular.append({"sorun": "charset_yok", "url": url})
             sorunlar.insert(0, {"sorun": "charset_yok", "katman": "sayfa"})
+        if "canonical_kirik" in kodlar and "canonical_capraz" in kodlar:
+            sorunlar = [b for b in sorunlar if b["sorun"] != "canonical_capraz"]
+            p.atla("canonical_capraz", url, "kırık canonical önerisiyle birlikte düzelir (canonical_kirik)")
         sira = {kod: i for i, kod in enumerate(ONCELIK)}
         sorunlar.sort(key=lambda b: sira.get(b["sorun"], len(ONCELIK)))
         model_alanlari = {"title": [c for c in kodlar if c in TITLE_KODLARI],
@@ -1153,14 +1322,16 @@ def plan_uret(kayitlar, tarama_bulgulari, adaptor, temel_url, dil="tr", yz=None,
                 continue
             if kod in TITLE_KODLARI + META_KODLARI + H1_KODLARI:
                 continue                              # alan basina tek oneri asagida uretilir
-            if b.get("katman") == "site" and kod in ("sitemap_hatali_adres", "robots_sitemap_bildirilmemis"):
+            if b.get("katman") == "site" and kod in ("sitemap_hatali_adres", "robots_sitemap_bildirilmemis",
+                                                     "robots_bilinmeyen_yonerge"):
                 if ("site", kod) in p.gorulen:
                     continue
                 p.gorulen.add(("site", kod))
                 try:
                     if "robots.txt" not in p.dosyalar:
                         raise Atla("sitede robots.txt yok")
-                    (kural_robots_sitemap if kod == "sitemap_hatali_adres" else kural_robots_bildir)(p, b, "robots.txt")
+                    {"sitemap_hatali_adres": kural_robots_sitemap, "robots_sitemap_bildirilmemis": kural_robots_bildir,
+                     "robots_bilinmeyen_yonerge": yz_robots_yonerge}[kod](p, b, "robots.txt")
                 except Atla as e:
                     p.atla(kod, url, str(e))
                 continue
@@ -1264,6 +1435,13 @@ def _tarama_geneli(p, kayitlar, kayitlar_url, bulgular):
                         yz_baglanti_ekle(p, a, "index.html", kod, "Sayfa ana sayfadan 3'ten fazla tıklama uzakta; "
                                                                   "ana sayfadan doğrudan bağlantı verildi.",
                                          "Öne çıkan:")
+                except Atla as e:
+                    p.atla(kod, a, str(e))
+        elif kod == "sitemap_olu_adres":
+            for a in sayfalar:
+                k = kayitlar_url.get(url_anahtari(a)) or next((x for x in kayitlar if x.get("ad") == a), {})
+                try:
+                    kural_sitemap_cikar(p, a, k.get("durum_kodu") or "erişilemiyor")
                 except Atla as e:
                     p.atla(kod, a, str(e))
         elif kod == "hreflang_donus_yok":

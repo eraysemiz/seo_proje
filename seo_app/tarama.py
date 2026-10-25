@@ -81,6 +81,15 @@ def baglanti_bulgulari(rapor, sitemap_adresleri=(), site_modu=True):
         anahtarlar = {url_anahtari(k.get("ad")), url_anahtari(k.get("site_url") or k.get("ad"))}
         k["gelen_baglanti"] = len(set().union(*(gelen.get(a, set()) for a in anahtarlar)))
     bulgular = []
+    # sitemap'te listelenen ama hata kodu donen (ya da acilmayan) adres; liste modunda da gecerlidir
+    olu = {}
+    sitemap_k = {url_anahtari(a) for a in sitemap_adresleri}
+    for k in rapor:
+        a = url_anahtari(k.get("ad"))
+        if a in sitemap_k and not k.get("atlandi") and (k.get("hata") or (k.get("durum_kodu") or 0) >= 400):
+            olu[a] = k["ad"]
+    if olu:
+        bulgular.append(_grup("sitemap_olu_adres", f"{len(olu)} sitemap adresi hata döndürüyor", list(olu.values())))
     if site_modu:
         baglanti_alan = set(gelen)
         baslangic = {url_anahtari(k.get("ad")) for k in gecerli if k.get("derinlik") == 0}
@@ -91,6 +100,8 @@ def baglanti_bulgulari(rapor, sitemap_adresleri=(), site_modu=True):
         yetimler, yonlendirmeler = [], []
         for adres in dict.fromkeys(sitemap_adresleri):
             a = url_anahtari(adres)
+            if a in olu:
+                continue                      # hata donen adres yetim degil, sitemap'ten cikmali (sitemap_olu_adres)
             if a in yonlenen:
                 yonlendirmeler.append(adres)
             elif a not in baglanti_alan and a not in baslangic:

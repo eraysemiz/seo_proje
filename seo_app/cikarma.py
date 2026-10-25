@@ -3,6 +3,7 @@ import json
 import os
 import re
 import zlib
+from collections import Counter
 from urllib.parse import unquote, urldefrag, urljoin, urlparse
 
 from bs4 import BeautifulSoup
@@ -214,6 +215,9 @@ def extract(html: str) -> dict:
     # icerik_ozeti: modele ve bilgi getirme sorgusuna giden ozet (menu/alt bilgi ve baglanti
     # listeleri ayiklanmis icerik bolgesi); bos kalirsa daha genis metne donulur
     sonuc["icerik_kokleri"] = kokler(icerik_metni)          # odak terim denetimi icin (title haric)
+    # anahtar kelime yogunlugu: ana icerikteki 5+ harfli kelimelerin kok sikliklari (en sik 40)
+    sayac = Counter(w[:5] for w in kelimeler(icerik_metni) if len(w) >= 5)
+    sonuc["icerik_kok_sayilari"] = dict(sayac.most_common(40))
     sonuc["kelime_kokleri"] = kokler(" ".join([
         icerik_metni, sonuc["title"] or "", sonuc["meta_description"] or "", " ".join(sonuc["h1"]),
         sonuc["site_adi"] or ""]))
@@ -238,6 +242,25 @@ SCHEMA_ZORUNLU = {
     "Review": ("itemReviewed", "author"),
 }
 URUN_EN_AZ_BIRI = ("offers", "review", "aggregateRating")
+# Google'in onerdigi (zorunlu olmayan) alanlar; ozet liste. Kurulus logosu (schema_kurum_logo_yok) ve
+# makale tarihleri (tarih_bilgisi_yok) kendi denetimleriyle ele alindigi icin burada yoktur.
+SCHEMA_ONERILEN = {
+    "Article": ("image", "author"), "NewsArticle": ("image", "author"), "BlogPosting": ("image", "author"),
+    "Product": ("image", "description", "brand"), "LocalBusiness": ("telephone", "url", "image"),
+    "Event": ("endDate", "image", "description"), "Recipe": ("author", "description", "recipeIngredient"),
+    "VideoObject": ("description",), "Course": ("provider",), "JobPosting": ("validThrough", "employmentType"),
+}
+MAKALE_TURLERI = ("Article", "NewsArticle", "BlogPosting")
+
+
+def _turler(nesne):
+    t = nesne.get("@type")
+    return [str(x) for x in (t if isinstance(t, list) else [t])]
+
+
+def _onerilen_eksikleri(nesne):
+    return [t + ": " + a for t in _turler(nesne) for a in SCHEMA_ONERILEN.get(t, ())
+            if nesne.get(a) in (None, "", [], {})]
 
 
 def _schema_nesneleri(veri):
@@ -290,7 +313,8 @@ ESKI_GORSEL = ("jpg", "jpeg", "png", "gif", "bmp", "tif", "tiff")
 
 
 def baglantilari_cikar(soup, taban):
-    """Sayfadaki <a href> baglantilari: mutlak adres, metin, nofollow ve ic/dis bilgisi.
+    """Sayfadaki <a href> baglantilari: mutlak adres, metin, nofollow, yeni sekme (target=_blank) ve
+    noopener/noreferrer bilgisi, ic/dis bilgisi.
     <base href> varsa goreli adresler ona gore cozulur."""
     base = soup.find("base", href=True)
     if base:
@@ -310,7 +334,9 @@ def baglantilari_cikar(soup, taban):
             (a.get("aria-label") or a.get("title") or "").strip()
         rel = [r.lower() for r in (a.get("rel") or [])]
         sonuc.append({"adres": adres, "metin": re.sub(r"\s+", " ", metin)[:120],
-                      "nofollow": "nofollow" in rel, "ic": ayni_site(p.hostname, host)})
+                      "nofollow": "nofollow" in rel, "ic": ayni_site(p.hostname, host),
+                      "yeni_sekme": (a.get("target") or "").strip().lower() == "_blank",
+                      "noopener": bool({"noopener", "noreferrer"} & set(rel))})
     return sonuc
 
 
@@ -346,7 +372,8 @@ def yapisal_veri(html, sayfa_url=None, link_basligi=None):
     ([{"url", "rel", "hreflang"}]); canonical ve hreflang basliktan da bildirilebilir."""
     soup = BeautifulSoup(html, "lxml")
     taban = sayfa_url or ""
-    jsonld, jsonld_hata, turler, eksikler = 0, 0, [], []
+    jsonld, jsonld_hata, turler, eksikler, onerilen = 0, 0, [], [], []
+    kurumlar, makaleler = [], []
     for s in soup.find_all("script", attrs={"type": re.compile(r"application/ld\+json", re.I)}):
         jsonld += 1
         try:
@@ -360,6 +387,12 @@ def yapisal_veri(html, sayfa_url=None, link_basligi=None):
             t = nesne["@type"]
             turler += t if isinstance(t, list) else [t]
             eksikler += _schema_eksikleri(nesne)
+            onerilen += _onerilen_eksikleri(nesne)
+            kurumlar.append({"turler": _turler(nesne), "logo": bool(nesne.get("logo")),
+                             "sameAs": bool(nesne.get("sameAs"))})
+            if set(_turler(nesne)) & set(MAKALE_TURLERI):
+                makaleler.append({"datePublished": str(nesne.get("datePublished") or "") or None,
+                                  "dateModified": str(nesne.get("dateModified") or "") or None})
     vp = soup.find("meta", attrs={"name": re.compile(r"^viewport$", re.I)})
     og = [m.get("property") for m in soup.find_all("meta", attrs={"property": re.compile(r"^og:", re.I)})]
     tw = [m.get("name") for m in soup.find_all("meta", attrs={"name": re.compile(r"^twitter:", re.I)})]
@@ -406,6 +439,29 @@ def yapisal_veri(html, sayfa_url=None, link_basligi=None):
     engelleyen = [s["src"] for s in (soup.head.find_all("script", src=True) if soup.head else [])
                   if not (s.has_attr("async") or s.has_attr("defer")) and
                   (s.get("type") or "text/javascript").strip().lower() in ("", "text/javascript", "application/javascript")]
+    # onbellek denetimi icin sayfanin yukledigi stil ve betik dosyalari (mutlak adres)
+    statik = [urljoin(taban, x.strip()) for x in
+              [l.get("href") for l in soup.find_all("link", rel=lambda v: v and "stylesheet" in v)] +
+              [t.get("src") for t in soup.find_all("script", src=True)] if x and x.strip() and taban]
+    # erisilebilirlik (HTML'den gorulebilen): etiketsiz form alani, adsiz dugme, olmayan id'ye aria baglantisi
+    kimlikler = {t.get("id") for t in soup.find_all(id=True)}
+    etiketli = {l.get("for") for l in soup.find_all("label", attrs={"for": True})}
+    etiketsiz = []
+    for t in soup.find_all(["input", "select", "textarea"]):
+        tur = (t.get("type") or "text").lower()
+        if t.name == "input" and tur in ("hidden", "submit", "button", "image", "reset"):
+            continue
+        adli = (t.get("id") and t.get("id") in etiketli) or t.find_parent("label") is not None or \
+            any((t.get(a) or "").strip() for a in ("aria-label", "aria-labelledby", "title"))
+        if not adli:
+            etiketsiz.append(t.get("name") or t.get("id") or t.name)
+    adsiz_dugme = [b for b in soup.find_all("button") if not b.get_text(strip=True) and
+                   not any((b.get(a) or "").strip() for a in ("aria-label", "aria-labelledby", "title")) and
+                   not any((i.get("alt") or "").strip() for i in b.find_all("img"))]
+    kirik_aria = sorted({i for t in soup.find_all(attrs={"aria-labelledby": True}) for i in t["aria-labelledby"].split()
+                         if i not in kimlikler} |
+                        {i for t in soup.find_all(attrs={"aria-describedby": True}) for i in t["aria-describedby"].split()
+                         if i not in kimlikler})
     charset_meta = bool(soup.find("meta", charset=True) or soup.find(
         "meta", attrs={"http-equiv": re.compile(r"^\s*content-type\s*$", re.I), "content": re.compile(r"charset=", re.I)}))
     return {
@@ -416,6 +472,13 @@ def yapisal_veri(html, sayfa_url=None, link_basligi=None):
         "jsonld_hatali": jsonld_hata,
         "schema_turleri": sorted(set(str(t) for t in turler))[:10],
         "schema_eksikleri": sorted(set(eksikler))[:10],
+        "schema_onerilen_eksikleri": sorted(set(onerilen))[:10],
+        "schema_nesneleri": kurumlar[:20],
+        "makale_tarihleri": makaleler[:5],
+        "statik_kaynaklar": list(dict.fromkeys(statik))[:40],
+        "etiketsiz_form_alanlari": etiketsiz[:20],
+        "adsiz_dugme_sayisi": len(adsiz_dugme),
+        "kirik_aria_referanslari": kirik_aria[:20],
         "mikroveri": bool(soup.find(attrs={"itemscope": True})),
         "viewport": vp.get("content") if vp else None,
         "og_etiketleri": sorted(set(x for x in og if x)),

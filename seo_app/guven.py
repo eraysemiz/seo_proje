@@ -25,9 +25,16 @@ KURAL_GUVENI = {
     "sitemap_yonlendirme": 0.92,
     "ic_nofollow": 0.88, "bos_baslik": 0.88, "gorsel_lazy_yok": 0.9,
     "render_engelleyen_kaynak": 0.6,   # defer betiklerin calisma anini degistirir
+    "blank_noopener_yok": 0.95,        # yalnizca rel'e noopener eklenir; gezinme degismez
+    "schema_kurum_logo_yok": 0.85,     # logo adresi sayfadaki "logo" adli gorselden alinir
+    "schema_sosyal_profil_yok": 0.85,  # profiller sayfanin kendi verdigi sosyal medya baglantilaridir
+    "breadcrumb_yok": 0.85,            # adlar ust sayfalarin H1/title'indan, yol adresten
 }
 KURAL_NEDENI = {
     "render_engelleyen_kaynak": "defer betiklerin çalışma anını değiştirir; satır içi betikler bunlara bağlıysa sayfa bozulabilir",
+}
+SEZGISEL_NEDENI = {
+    "robots_bilinmeyen_yonerge": "yönerge adı en yakın tanınan adla düzeltildi; düzeltilen satır tarama davranışını değiştirir",
 }
 SEZGISEL_GUVENI = {
     "_": 0.85,
@@ -39,6 +46,7 @@ SEZGISEL_GUVENI = {
     "noindex": 0.82, "sayfa_nofollow": 0.82,
     "yetim_sayfa": 0.85, "derin_sayfa": 0.8,
     "meta_refresh": 0.7,
+    "robots_bilinmeyen_yonerge": 0.6, "robots_kaynak_engelliyor": 0.85,
 }
 MODEL_TABANI = {"title": 0.92, "meta_description": 0.92, "h1": 0.92, "img_alt": 0.88, "baglanti_metni": 0.9,
                 "jsonld": 0.85, "paragraf": 0.7}
@@ -86,6 +94,8 @@ def degerlendir(d, kaynak_metin=None, guven=None, nedenler=None):
             nedenler.append(KURAL_NEDENI[d["bulgu"]])
     elif d["uretici"] == "sezgisel":
         g = SEZGISEL_GUVENI.get(d["bulgu"], SEZGISEL_GUVENI["_"])
+        if d["bulgu"] in SEZGISEL_NEDENI:
+            nedenler.append(SEZGISEL_NEDENI[d["bulgu"]])
     else:
         alan = (d.get("duzenleme") or {}).get("alan", "")
         g = MODEL_TABANI.get(alan, 0.85)

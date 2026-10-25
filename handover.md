@@ -242,9 +242,23 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - `degerlendir.py`: `sonra_otomatik/` desteği ve araç "Çözüldü" ↔ canlı kontrol tutarlılığı.
   - Yeni testler `tests/test_asamalar.py` (13).
 
+- **25 Ekim (`seo-kurallari`): SEO kural listesinden 12 kural eklendi.**
+  - Yeni kodlar: `canonical_kirik`, `sitemap_olu_adres` (artık iki modda, tarama geneli),
+    `blank_noopener_yok`, `guvenlik_basligi_eksik`, `onbellek_basligi_yok`, `schema_kurum_logo_yok`,
+    `schema_sosyal_profil_yok`, `breadcrumb_yok`, `yapisal_veri_onerilen_alan`,
+    `robots_bilinmeyen_yonerge`, `robots_kaynak_engelliyor`, `tarih_bilgisi_yok`, `icerik_eski`,
+    `anahtar_kelime_doldurma`, `form_etiketi_yok`, `buton_adi_yok`, `aria_gecersiz_referans`.
+  - Düzelticiler: noopener, kuruluş logo/sameAs (sayfadaki logo görseli ve sosyal bağlantılardan),
+    BreadcrumbList (adres yolu + üst sayfa H1'i), kırık canonical (mevcut canonical düzelticisi),
+    robots yönerge adı ve `Allow` satırı (YZ önerir, yüksek risk; toplu kural onayına girmesin diye).
+    Diğerleri elle.
+  - Puanı etkiler (iki mod): test sitesinde başlangıç ortalama sayfa puanı 79 → 72, bulgu 187 → 287.
+    `sorunlar.json`'a dokunulmadı; yeni bulgular değerlendirmede "plansız" (92) görünür.
+  - Testler `tests/test_yeni_kurallar.py` (15).
+
 ## 8. Mevcut durum
 
-- **Testler:** `py -m pytest -q` → 274 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
+- **Testler:** `py -m pytest -q` → 289 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
   Python 3.13 derleme ortamında da aynı sonuç.
 - **.exe tam döngüsü (23 Ekim, `--oto-test`, qwen3.5-9b):**
   - .exe proje dışında, Türkçe karakterli bir klasörden çalıştırıldı; 13/13 adım başarılı.
