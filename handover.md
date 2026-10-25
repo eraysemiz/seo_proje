@@ -194,12 +194,11 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   onay/yedek/geri alma, test sitesi ve değerlendirme betikleri.
 - **23 Ekim (`14d2142`):** `.gitattributes` ile test sitesi dosyaları bayt bayt saklanıyor; hash
   manifesti başka makinelerde de eşleşsin diye.
-- **23 Ekim:** `yonetici-modu` yerelde `main`'e fast-forward birleştirildi (`c75660e`). Push edilmedi:
-  bu oturumdan GitHub kimlik doğrulaması yapılamıyor.
+- **23 Ekim:** `yonetici-modu` `main`'e fast-forward birleştirildi (`102f83f`).
 - **23 Ekim (`masaustu-uygulama`):** Tkinter masaüstü başlatıcı ve PyInstaller ile `.exe` derlemesi.
   Mevcut kod değişmedi; yeni olanlar `masaustu/`, `build_exe.py/.bat` ve `tests/test_masaustu.py`.
-  `fc80cf2`: PageSpeed yerel/özel ağ adreslerinde çağrılmaz.
-- **23 Ekim (`dogruluk-iyilestirme`, commit edilmedi):**
+  `2ff300d`: PageSpeed yerel/özel ağ adreslerinde çağrılmaz.
+- **23 Ekim (`dogruluk-iyilestirme`, `489189d`):**
   - Yeni denetimler: yumuşak 404 (başlık/H1 hata kalıbı + rastgele kardeş adres yoklaması),
     render'ı engelleyen betik, URL'de büyük harf, charset (her iki mod), sitemap'te yönlendiren adres.
   - Sayfa kimliği: yönlendirme takma adları, parametre canonical'ları ve %90+ benzer canonical
@@ -246,9 +245,10 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - FTP/SFTP/CMS adaptörleri.
   - Rerank sunucusuyla gerçek deneme.
   - 58 Düzce sitesinde modelli tam tarama (önceki notlara göre) `[doğrulanmalı]`.
-- **Push bekleyen:** `main` (yönetici modu dahil) ve `yonetici-modu` yerelde güncel, `origin`'e
-  gönderilmedi. `masaustu-uygulama` dalı henüz `main`'e birleştirilmedi.
-- **Tarama çıktıları git dışında:** `sonuclar/` tamamen `.gitignore`'da (`98e0922`). Önceden
+- **Dallar:** tüm dallar `main`'e birleştirildi ve GitHub'a gönderildi. `main`, `yonetici-modu` ve
+  `dogruluk-iyilestirme` aynı commit'te. Son 5 commit'in mesajından `Co-Authored-By` satırı
+  silindi (geçmiş yeniden yazıldı; eski hâli yerel `yedek/coauthor-oncesi-*` etiketlerinde).
+- **Tarama çıktıları git dışında:** `sonuclar/` tamamen `.gitignore`'da (`3bad90d`). Önceden
   izlenen 114 dosya (örn. `adim9_lighthouse/`) depodan çıkarıldı, diskte duruyor; eski sürümleri
   git geçmişinde (`git show 0261537:sonuclar/...`).
 
@@ -327,21 +327,19 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
 
 ## 11. Sonraki adımlar (öncelik sırasıyla)
 
-1. `git push origin main yonetici-modu` (kullanıcı çalıştırmalı). Ardından `masaustu-uygulama`
-   dalını gözden geçirip birleştirmek.
-2. Hocadan konu ve kapsam onayı. Önceki notlarda "alınmadı" olarak duruyordu `[doğrulanmalı]`.
-3. 58 Düzce sitesinde (`test_setleri/duzce_birimleri.txt`) modelli tarama ve `deney.py` ile deney
+1. Hocadan konu ve kapsam onayı. Önceki notlarda "alınmadı" olarak duruyordu `[doğrulanmalı]`.
+2. 58 Düzce sitesinde (`test_setleri/duzce_birimleri.txt`) modelli tarama ve `deney.py` ile deney
    matrisi (model × `sifir`/`ornek`/`bilgi`/`ornek+bilgi` × retry).
-4. Elle değerlendirme tablosu: sadakat ve Türkçe kalitesi, en az 2 kişi, model adı gizli.
-5. Literatür taraması ve ödev metni. Metin öğrencilerce yazılmalı; kodda YZ yardımı yöntem
+3. Elle değerlendirme tablosu: sadakat ve Türkçe kalitesi, en az 2 kişi, model adı gizli.
+4. Literatür taraması ve ödev metni. Metin öğrencilerce yazılmalı; kodda YZ yardımı yöntem
    bölümünde belirtilmeli.
-6. Açık sorular (yönetici modu):
+5. Açık sorular (yönetici modu):
    - `canonical_yok` Kural çözer mi kalmalı, YZ önerir · yüksek risk mi?
    - Kopya içerik için özgünleştirme görevi eklensin mi?
-7. `dogruluk-iyilestirme` dalını commit edip gözden geçirmek. Puanlama ve yeni denetimler Mod 2
+6. `dogruluk-iyilestirme` değişikliklerini gözden geçirmek. Puanlama ve yeni denetimler Mod 2
    puanlarını da değiştirir; Düzce sitelerindeki eski sonuçlarla karşılaştırma yeniden yapılmalı.
-8. Açık sorular (güven): K05 için kelime sınırında kırpma eklensin mi? `defer` güveni satır içi
+7. Açık sorular (güven): K05 için kelime sınırında kırpma eklensin mi? `defer` güveni satır içi
    betik bağımlılığı denetlenerek yükseltilsin mi? Eşik 0.8 başka sitelerde ölçülmeli.
-9. Diğer kararlar:
+8. Diğer kararlar:
    - `test_sitesi/site/` git'te kalsın mı, `.gitignore`'a alınıp `sifirla.py` ile mi üretilsin?
-10. `seo_kurallari.json` atıfsız. Ödevde kullanılacaksa kaynaklandırılmalı.
+9. `seo_kurallari.json` atıfsız. Ödevde kullanılacaksa kaynaklandırılmalı.
