@@ -53,14 +53,19 @@ class SahteYZ:
 def test_kural_degisiklikleri_yuksek_guvenle_otomatik_uygulanir_yedek_ve_gunluk_tutulur(tmp_path):
     a = _site(tmp_path)
     plan = _plan(a, ("html_lang_yok", "h1_birden_fazla"))
-    for kod in ("html_lang_yok", "h1_birden_fazla", "charset_yok"):
+    for kod in ("html_lang_yok", "charset_yok"):
         d = _bul(plan, kod)
         assert d["guven"] >= 0.9 and d["onay_turu"] == "otomatik"
+    # Google icin baslik sayisi belirleyici degil (SEO Baslangic Rehberi): fazla H1 duzeltmesi onay ister
+    h1 = _bul(plan, "h1_birden_fazla")
+    assert h1["guven"] == 0.6 and h1["onay_turu"] != "otomatik"
     sonuc = dz.uygula(plan, {}, a, tmp_path / "yedek", tmp_path / "g.jsonl")          # hic onay verilmeden
     metin = a.oku("index.html").decode("utf-8")
-    assert '<html lang="tr">' in metin and "<h2>Servis</h2>" in metin and sonuc["uygulanan"] == 3
-    assert (tmp_path / "yedek").exists() and {d["onay_kaynagi"] for d in plan["degisiklikler"]} == {"otomatik"}
-    assert all(json.loads(s)["durum"] == "uygulandi" for s in (tmp_path / "g.jsonl").read_text(encoding="utf-8").splitlines())
+    assert '<html lang="tr">' in metin and "<h2>Servis</h2>" not in metin and sonuc["uygulanan"] == 2
+    assert (tmp_path / "yedek").exists()
+    assert {d["onay_kaynagi"] for d in plan["degisiklikler"] if d["durum"] == "uygulandi"} == {"otomatik"}
+    gunluk = [json.loads(s) for s in (tmp_path / "g.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert {s["durum"] for s in gunluk if s.get("id") != h1["id"]} <= {"uygulandi"}
 
 
 def test_otomatik_onayli_degisiklik_reddedilebilir_ve_esik_degistirilebilir(tmp_path):

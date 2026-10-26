@@ -66,7 +66,8 @@ def test_sayfaya_ozgu_site_bulgusu_ve_tarama_geneli_bulgu_sayfa_puanina_girer():
     assert puanlar([sorun("https_yok", "yuksek", "site")])["sayfa"] == temel        # site geneli: site puaninda
     assert puanlar([sorun("https_yok", "yuksek", "site")])["site"] == 80
     p = puanlar([], tarama_kodlari=["title_tekrar", "icerik_tekrar"])
-    assert p["sayfa"] == 70 and p["icerik"] == 70                                   # kopya icerik tavani 70
+    # tarama geneli bulgular sayfa puanina girer; kopya icerik ceza olmadigi icin tavan koymaz (SEO Baslangic Rehberi)
+    assert 70 < p["sayfa"] < temel and p["icerik"] < 100 and "icerik_tekrar" not in puanlama.TAVAN
 
 
 def test_eski_olcegi_sifirlayan_sorunlar_yeni_olcekte_ayirt_edilir():
@@ -96,10 +97,16 @@ def test_analiz_kaydinda_once_sonra_puanlari(monkeypatch, tmp_path):
     assert k["sonra_puanlar"]["sayfa"] > k["once_puanlar"]["sayfa"]      # kural duzeltmeleri puani artirir
 
 
+# 26 Ekim'de SEO Baslangic Rehberi'ne gore onemi bilerek dusurulen kodlar; kayitli eski taramada eski
+# onemleriyle durur (yeni taramalar dusuk/orta uretir)
+ONCEKI_UST_SINIR = {"sitemap_yok": "orta", "h1_birden_fazla": "orta", "icerik_tekrar": "yuksek"}
+
+
 @pytest.mark.skipif(not TABAN.exists(), reason="58 sitelik temel tarama yok")
 def test_gercek_veride_tespit_edilen_ciddiyet_tablodaki_ust_siniri_asmaz():
     for k in json.loads(TABAN.read_text(encoding="utf-8")):
         for s in k.get("sorunlar", []):
             kat, grup, en_yuksek, katmanlar = SORUN_TANIMI[s["sorun"]]
+            en_yuksek = ONCEKI_UST_SINIR.get(s["sorun"], en_yuksek)
             assert CIDDIYET_AGIRLIK[s["ciddiyet"]] <= CIDDIYET_AGIRLIK[en_yuksek], s
             assert s["katman"] in katmanlar.split(), s

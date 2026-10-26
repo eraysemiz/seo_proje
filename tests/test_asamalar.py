@@ -14,7 +14,7 @@ SAYFA = ('<!DOCTYPE html>\n<html>\n<head>\n<title>Çay Demleme Rehberi ve Öneri
          '<meta name="robots" content="noindex, follow">\n</head>\n<body>\n<main>\n<h1>Çay demleme</h1>\n'
          '<p>Demlik ısıtılır, çay 185 TL değerindeki pakettendir.</p>\n<h1>Servis</h1>\n</main>\n</body>\n</html>\n')
 KODLAR = ("html_lang_yok", "viewport_yok", "h1_birden_fazla", "noindex", "https_yok")
-ESIK = 0.9   # kurallar (0.95) otomatik; noindex kaldirma (sezgisel 0.82) onay ister
+ESIK = 0.9   # kurallar (0.95) otomatik; noindex kaldirma (sezgisel 0.82) ve h1_birden_fazla (0.6) onay ister
 
 
 def _kayit(kodlar, puan=60):
@@ -54,18 +54,19 @@ def _tarama_yaz(klasor, alt, kodlar, puan):
 def test_otomatik_asama_onaysiz_yazar_ve_esik_altini_bekletir(ortam):
     kayit, _ = _otomatik(ortam)
     metin = ortam["a"].oku("index.html").decode("utf-8")
-    assert '<html lang="tr">' in metin and '<meta charset="utf-8">' in metin and "<h2>Servis</h2>" in metin
+    assert '<html lang="tr">' in metin and '<meta charset="utf-8">' in metin and "<h2>Servis</h2>" not in metin
     assert "noindex" in metin                                   # guven 0.82 < 0.9: onay bekler
     plan = ortam["plan"]
     assert _bul(plan, "html_lang_yok")["durum"] == "uygulandi" and _bul(plan, "html_lang_yok")["asama"] == "otomatik"
     assert _bul(plan, "html_lang_yok")["onay_kaynagi"] == "otomatik"
     assert _bul(plan, "noindex")["durum"] == "onay_bekliyor"
-    assert kayit["yeni_uygulanan"] == 4 and (ortam["klasor"] / "yedek" / "manifest.json").exists()
+    assert _bul(plan, "h1_birden_fazla")["durum"] == "onay_bekliyor"   # Google icin onemsiz: otomatik degil
+    assert kayit["yeni_uygulanan"] == 3 and (ortam["klasor"] / "yedek" / "manifest.json").exists()
     gunluk = [json.loads(s) for s in (ortam["klasor"] / "uygulama_gunlugu.jsonl").read_text(encoding="utf-8").splitlines()]
     assert {s["asama"] for s in gunluk} == {"otomatik"}
     assert (ortam["klasor"] / "uygulanan.diff").read_text(encoding="utf-8").startswith("# ===== Aşama: Otomatik")
     u = json.loads((ortam["klasor"] / "uygulama.json").read_text(encoding="utf-8"))
-    assert [a["ad"] for a in u["asamalar"]] == ["otomatik"] and u["onay_kaynaklari"]["otomatik"] == 4
+    assert [a["ad"] for a in u["asamalar"]] == ["otomatik"] and u["onay_kaynaklari"]["otomatik"] == 3
 
 
 def test_zorunlu_onay_ve_yer_tutucu_otomatik_yazilmaz(ortam):
@@ -106,16 +107,18 @@ def test_otomatik_asamada_belgeyi_bozan_degisiklik_basarisiz(ortam):
 def test_onayli_asama_otomatigin_ustune_yazar_ve_reddedileni_geri_ceker(ortam):
     _otomatik(ortam)
     plan = ortam["plan"]
-    noindex, h1 = _bul(plan, "noindex")["id"], _bul(plan, "h1_birden_fazla")["id"]
-    kararlar = {"kararlar": {noindex: {"karar": "onay", "risk_onay": True}, h1: {"karar": "ret"}}}
+    noindex, vp = _bul(plan, "noindex")["id"], _bul(plan, "viewport_yok")["id"]
+    kararlar = {"kararlar": {noindex: {"karar": "onay", "risk_onay": True}, vp: {"karar": "ret"}}}
+    assert "viewport" in ortam["a"].oku("index.html").decode("utf-8")   # otomatik asamada yazilmisti
     kayit, _ = yonetici.asama_uygula(ortam["klasor"], plan, kararlar, "onayli", ortam["sonuc"], tekrar_tara=False)
     metin = ortam["a"].oku("index.html").decode("utf-8")
     assert 'content="index, follow"' in metin                  # onayli asamada yeni yazildi
     assert '<html lang="tr">' in metin                          # otomatik asamadaki yerinde kaldi
-    assert "<h1>Servis</h1>" in metin and "<h2>Servis</h2>" not in metin   # reddedilen geri cekildi
+    assert "viewport" not in metin                              # reddedilen geri cekildi
     assert _bul(plan, "noindex")["asama"] == "onayli" and _bul(plan, "noindex")["onay_kaynagi"] == "kullanıcı"
-    assert _bul(plan, "h1_birden_fazla")["durum"] == "reddedildi"
-    assert "geri çekildi" in _bul(plan, "h1_birden_fazla")["durum_nedeni"]
+    assert _bul(plan, "viewport_yok")["durum"] == "reddedildi"
+    assert "geri çekildi" in _bul(plan, "viewport_yok")["durum_nedeni"]
+    assert _bul(plan, "h1_birden_fazla")["durum"] == "onay_bekliyor" and "<h1>Servis</h1>" in metin
     assert kayit["yeni_uygulanan"] == 1 and kayit["geri_cekilen"] == 1
     diff = (ortam["klasor"] / "uygulanan.diff").read_text(encoding="utf-8")
     assert "# ===== Aşama: Otomatik" in diff and "# ===== Aşama: Onaylı" in diff
@@ -306,7 +309,7 @@ def test_web_plan_ucu_asama_ozetini_ve_durumlari_dondurur(ortam):
         d = web.uygulama.test_client().get("/api/yonetici/plan").get_json()
     finally:
         web.DURUM.update({"mod": "standart", "yonetici": None})
-    assert d["sayilar"]["uygulandi"] == 4 and d["sayilar"]["otomatik_uygulandi"] == 4 and d["asamalar"] == ["otomatik"]
+    assert d["sayilar"]["uygulandi"] == 3 and d["sayilar"]["otomatik_uygulandi"] == 3 and d["asamalar"] == ["otomatik"]
     assert [a["ad"] for a in d["ozet"]["asamalar"]] == ["baslangic", "otomatik"]
     assert d["ozet"]["durumlar"]["html_lang_yok|" + TEMEL]["durum"] == "dogrulanmadi"
 

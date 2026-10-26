@@ -64,6 +64,14 @@ kapalıysa tarama sessizce modelsiz devam etmez, hata verir.
   `dateModified`/`datePublished`
 - **içerik:** anahtar kelime doldurma (title'daki bir terimin ana içerikte %3'ten sık geçmesi,
   150+ kelimelik sayfalarda; %4 üstü "orta" önemde)
+- **SEO Başlangıç Rehberi'ne göre:** yalnızca kimlikten oluşan adres (`url_aciklayici_degil`;
+  anahtar kelime aranmaz), dosya adı ya da "resim" gibi genel sözcük olan alt metni
+  (`alt_metni_anlamsiz`, model yeniden yazar), yorum/forum bölümündeki `ugc`/`nofollow`'suz dış
+  bağlantı (`kullanici_baglantisi_isaretsiz`, kural `rel="ugc nofollow"` ekler), ara başlıksız 700+
+  kelimelik metin (`uzun_metin_ara_baslik_yok`), başlıksız gömülü video (`video_baslik_yok`).
+  Rehberin "odaklanmayın" dediği konulara göre: fazla H1 düşük önemde ve onay ister (yalnızca
+  erişilebilirlik), başlık sırası erişilebilirlik bulgusudur, kelime sayısı hedef verilmez, kopya
+  içerik puana tavan koymaz (ceza değil), sitemap yokluğu düşük önemdedir; meta keywords denetlenmez.
 - **erişilebilirlik (HTML'den görülebilen):** etiketsiz form alanı, erişilebilir adı olmayan düğme,
   olmayan id'yi gösteren `aria-labelledby`/`aria-describedby`. Kontrast ve klavye gezintisi gerçek
   tarayıcı ister, denetlenmez.
@@ -307,13 +315,25 @@ Deney koşulu sabittir: **`ornek+bilgi`**. Modele her taramada few-shot örnekle
 verilir; arayüzde koşul seçeneği yoktur.
 
 Bilgi tabanı (`ogretme/bilgi_tabani.json`) Google Arama Merkezi ve W3C WAI belgelerine dayanan,
-Türkçe yazılmış 28 parçadır. Her parçada `alan` (title, meta_description, h1, img_alt, genel…),
+Türkçe yazılmış 51 parçadır. Her parçada `alan` (title, meta_description, h1, img_alt, genel…),
 `baslik`, `etiketler`, `kaynak` (bağlantı), `kaynak_basligi` ve `erisim_tarihi` bulunur.
+23 parça Google'ın [SEO Başlangıç Rehberi](https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=tr)'nin
+bölümlerinin kendi cümlelerimizle özetidir (alıntı değil; içerik CC BY 4.0, atıf: Google Arama Merkezi).
+Bunlarda `kaynak` bölüm çapalı Türkçe sayfayı, `kaynak_en` aynı bölümün İngilizcesini gösterir ve
+`lisans` alanı bulunur. Bilgi tabanı elle güncellenir; bir çekme/güncelleme komutu yoktur.
+Değişen parçaların gömmesi bir sonraki kullanımda içerik hash'iyle yeniden hesaplanır.
+
+Few-shot örneklerin 5'i rehbere dayanır (`kaynak.etiket = "google-starter-guide"`; `kaynak` alanı
+isteme girmez). Model alanları dışındaki tavsiyeler için sorunlu → tavsiye → düzeltilmiş HTML
+örnekleri `ogretme/rehber_ornekleri.json`'dadır; bu dosya isteme girmez, belge ve test içindir.
 
 Bir **gömme (embedding) modeli** seçilirse parçalar hibrit getirmeyle (RAG) seçilir
 (`seo_app/ogretme.py: bilgi_getir`):
 
 1. **Metadata filtresi:** yalnızca sayfanın sorunlu alanlarına ve genel yönergelere ait parçalar aday olur.
+   Modelin metin yazmadığı bulgular (canonical, kopya içerik, adres, bağlantı metni, robots/sitemap…)
+   yalnızca getirme için `BILGI_ALANI_SORUN` ile kendi alanlarına bağlanır; yönetici modunun YZ
+   önerileri böylece ilgili parçaları alır. Mod 2'de modele giden alanlar değişmez.
 2. **Sorgu:** sorun kodları yerine Türkçe açıklamaları, sayfa başlığı, site adı ve menüden ayıklanmış
    içerik özeti; gömme modeline uygun sorgu öneki (Qwen3 `Instruct:`, e5 `query:`, nomic `search_query:`).
 3. **Sıralama:** kosinüs (anlamsal) ve BM25 (sözcüksel) sıralamaları ağırlıklı RRF ile birleştirilir

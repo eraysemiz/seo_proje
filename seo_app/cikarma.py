@@ -106,6 +106,21 @@ def gorseller(soup):
     return [i for i in soup.find_all("img") if i.find_parent(["noscript", "script"]) is None]
 
 
+# alt metninin gorevini gormeyen degerler: dosya adi, kamera dosya adi kalibi ya da tek bir genel sozcuk
+_GENEL_ALT = {"resim", "görsel", "gorsel", "foto", "fotoğraf", "fotograf", "image", "img", "picture", "photo",
+              "pic", "görüntü", "goruntu", "banner", "untitled", "adsız", "adsiz"}
+_DOSYA_ALT = re.compile(r"(\.(jpe?g|png|gif|webp|avif|svg|bmp)$)|(^(img|dsc|dscn|image|photo|foto|pic|screenshot)[\s_-]*\d+$)", re.I)
+
+
+def anlamsiz_alt_mi(alt, src=""):
+    """Alt metni dolu ama gorseli anlatmiyor mu (dosya adi ya da genel sozcuk). Bos alt="" dekoratif
+    gorsel icin bilincli tercihtir, anlamsiz sayilmaz."""
+    a = " ".join((alt or "").split())
+    if not a:
+        return False
+    return tr_lower(a) in _GENEL_ALT or bool(_DOSYA_ALT.search(a)) or (bool(src) and a == dosya_adi(src))
+
+
 def gercek_src(img):
     """Tembel yuklemede (lazy-load) src yer tutucudur; asil adres data-src'dedir."""
     return img.get("data-src") or img.get("data-lazy-src") or img.get("src", "")
@@ -182,6 +197,7 @@ def extract(html: str) -> dict:
     # alt niteligi hic olmayan gorsel eksiktir; alt="" ise dekoratif gorsel icin bilincli
     # ve gecerli bir tercihtir (WCAG), eksik sayilmaz
     eksik = [(n, i) for n, i in enumerate(imgs) if i.get("alt") is None]
+    anlamsiz = [(n, i) for n, i in enumerate(imgs) if anlamsiz_alt_mi(i.get("alt"), gercek_src(i))]
     sonuc = {
         "lang": (soup.html.get("lang") if soup.html else None),
         "title": baslik,
@@ -195,7 +211,9 @@ def extract(html: str) -> dict:
         "img_total": len(imgs),
         "img_no_alt": [{"sira": n, "src": gercek_src(i)} for n, i in eksik],
         "img_bos_alt": sum(1 for i in imgs if i.get("alt") is not None and not i["alt"].strip()),
-        "img_baglam": {n: _baglam(i) for n, i in eksik},
+        # alt metni dosya adi ya da genel sozcuk olan gorseller (model eksik alt gibi yeniden yazar)
+        "img_anlamsiz_alt": [{"sira": n, "src": gercek_src(i), "alt": i.get("alt")} for n, i in anlamsiz],
+        "img_baglam": {n: _baglam(i) for n, i in eksik + anlamsiz},
         "word_count": len(text.split()),
         "text_sample": text[:800],
     }
@@ -211,6 +229,8 @@ def extract(html: str) -> dict:
     icerik_metni = re.sub(r"\s+", " ", icerik.get_text(" ", strip=True))
     # ince icerik olcutu menu/alt bilgi disindaki metindir; sayfalar arasi benzerlik de buradan
     sonuc["icerik_kelime_sayisi"] = len(icerik_metni.split())
+    # uzun metnin ara basliklarla bolumlenip bolumlenmedigi (ana icerik bolgesindeki H2/H3 sayisi)
+    sonuc["icerik_ara_baslik_sayisi"] = len(icerik.find_all(["h2", "h3"]))
     sonuc["icerik_imzasi"] = icerik_imzasi(icerik_metni)
     # icerik_ozeti: modele ve bilgi getirme sorgusuna giden ozet (menu/alt bilgi ve baglanti
     # listeleri ayiklanmis icerik bolgesi); bos kalirsa daha genis metne donulur
@@ -365,6 +385,31 @@ def _srcset_adresleri(deger):
     return [p.strip().split()[0] for p in (deger or "").split(",") if p.strip()]
 
 
+# kullanicilarin icerik ekledigi bolumlerin sinif/kimlik ipuclari (yorum, forum, degerlendirme)
+KULLANICI_ALANI = re.compile(r"comment|yorum|forum|review|degerlendirme|değerlendirme|ugc|guestbook|ziyaretci", re.I)
+VIDEO_ADRESI = re.compile(r"youtube(-nocookie)?\.com/embed|youtu\.be/|player\.vimeo\.com|dailymotion\.com/embed|"
+                          r"wistia\.(com|net)|/embed/video|\.mp4($|\?)", re.I)
+
+
+def kullanici_alani_mi(etiket):
+    """Etiket (ya da bir atasi) sinifi/kimligiyle kullanici icerigi bolumu mu (yorum, forum...)."""
+    for t in [etiket] + list(etiket.parents):
+        if getattr(t, "attrs", None) is None:
+            continue
+        ipucu = " ".join(t.get("class") or []) + " " + (t.get("id") or "")
+        if ipucu.strip() and KULLANICI_ALANI.search(ipucu):
+            return True
+    return False
+
+
+def _dis_adres_mi(href, taban):
+    h = (href or "").strip()
+    if not h.lower().startswith(("http://", "https://", "//")):
+        return False
+    host = urlparse(urljoin(taban or "https://x.invalid/", h)).hostname or ""
+    return not ayni_site(host, urlparse(taban).hostname or "") if taban else True
+
+
 def yapisal_veri(html, sayfa_url=None, link_basligi=None):
     """Yapisal veri, indekslenebilirlik, mobil uyum, paylasim etiketleri, baglanti ve gorsel bilgisi.
     Tamami sayfanin HTML'inden gorulebilir. sayfa_url verilirse goreli adresler cozulur ve
@@ -462,6 +507,15 @@ def yapisal_veri(html, sayfa_url=None, link_basligi=None):
                          if i not in kimlikler} |
                         {i for t in soup.find_all(attrs={"aria-describedby": True}) for i in t["aria-describedby"].split()
                          if i not in kimlikler})
+    # kullanicilarin icerik ekledigi bolumlerdeki (yorum, forum, degerlendirme) isaretsiz dis baglantilar
+    ugc_ici = [a for a in soup.find_all("a", href=True) if kullanici_alani_mi(a)]
+    isaretsiz_ugc = [a["href"] for a in ugc_ici if _dis_adres_mi(a["href"], taban) and
+                     not {"nofollow", "ugc", "sponsored"} & set((" ".join(a.get("rel") or [])).lower().split())]
+    # basligi (title / aria-label) olmayan gomulu video oynaticilari
+    videolar = [t for t in soup.find_all(["iframe", "video"])
+                if t.name == "video" or VIDEO_ADRESI.search(t.get("src") or t.get("data-src") or "")]
+    basliksiz_video = [t.get("src") or t.get("data-src") or t.name for t in videolar
+                       if not any((t.get(a) or "").strip() for a in ("title", "aria-label", "aria-labelledby"))]
     charset_meta = bool(soup.find("meta", charset=True) or soup.find(
         "meta", attrs={"http-equiv": re.compile(r"^\s*content-type\s*$", re.I), "content": re.compile(r"charset=", re.I)}))
     return {
@@ -495,6 +549,8 @@ def yapisal_veri(html, sayfa_url=None, link_basligi=None):
         "js_yonlendirme": js_yonlendirme,
         "js_iskelet": js_iskelet,
         "engelleyen_betikler": engelleyen[:20],
+        "isaretsiz_kullanici_baglantilari": isaretsiz_ugc[:20],
+        "basliksiz_videolar": basliksiz_video[:10],
         "charset_meta": charset_meta,
         "canonicallar": canonicallar,
         "baglantilar": baglantilari_cikar(soup, taban) if taban else [],

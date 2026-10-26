@@ -24,6 +24,10 @@ KURAL_GUVENI = {
     "yapisal_veri_gecersiz": 0.9,      # yalnizca JSON sozdizimi onarilir; degerler degismez
     "sitemap_yonlendirme": 0.92,
     "ic_nofollow": 0.88, "bos_baslik": 0.88, "gorsel_lazy_yok": 0.9,
+    # Google icin baslik sayisi belirleyici degil (SEO Baslangic Rehberi); yalnizca erisilebilirlik icin,
+    # bu yuzden esigin altinda: otomatik uygulanmaz, onay ister
+    "h1_birden_fazla": 0.6,
+    "kullanici_baglantisi_isaretsiz": 0.9,   # yalnizca rel niteligine ugc nofollow eklenir
     "render_engelleyen_kaynak": 0.6,   # defer betiklerin calisma anini degistirir
     "blank_noopener_yok": 0.95,        # yalnizca rel'e noopener eklenir; gezinme degismez
     "schema_kurum_logo_yok": 0.85,     # logo adresi sayfadaki "logo" adli gorselden alinir

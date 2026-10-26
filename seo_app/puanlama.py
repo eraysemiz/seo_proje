@@ -33,7 +33,7 @@ KOD_CIDDIYETI = {
 # Tarama geneli bulgularin (sayfalar arasi) ciddiyeti; bu bulgular ilgili her sayfanin puanina girer
 TARAMA_CIDDIYETI = {
     "title_tekrar": "orta", "meta_tekrar": "dusuk", "h1_tekrar": "dusuk",
-    "icerik_tekrar": "yuksek", "icerik_benzer": "orta",
+    "icerik_tekrar": "orta", "icerik_benzer": "orta",   # kopya icerik ceza degil (SEO Baslangic Rehberi)
     "yetim_sayfa": "orta", "derin_sayfa": "dusuk", "hreflang_donus_yok": "dusuk", "sitemap_yonlendirme": "dusuk",
     "sitemap_olu_adres": "orta",
 }
@@ -41,7 +41,7 @@ TARAMA_CIDDIYETI = {
 # Kritik sorunlarda puanin ust siniri: bu sorun varken sayfa diger acilardan kusursuz olsa da bu degeri gecemez
 TAVAN = {
     "erisilemedi": 0, "yonlendirme_dongusu": 0, "robots_tum_siteyi_engelliyor": 20, "hata_durum_kodu": 30,
-    "yumusak_404": 40, "robots_sayfayi_engelliyor": 50, "noindex": 60, "icerik_tekrar": 70, "title_yok": 75,
+    "yumusak_404": 40, "robots_sayfayi_engelliyor": 50, "noindex": 60, "title_yok": 75,
 }
 
 # Site katmaninda olculen ama tek bir sayfaya ait olan bulgular; o sayfanin puanina da girer

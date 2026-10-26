@@ -525,7 +525,8 @@ def canli_denetim(getirme, zaman_asimi=VARSAYILAN_ZAMAN_ASIMI):
     # --- sitemap
     sitemap = sitemap_bilgisi(site_koku, robots, zaman_asimi)
     if not sitemap["var"]:
-        add("sitemap_yok", "orta", sitemap.get("hata") or "")
+        # site haritasi zorunlu degil, kesfi kolaylastirir (SEO Baslangic Rehberi)
+        add("sitemap_yok", "dusuk", sitemap.get("hata") or "")
     elif not sitemap["gecerli"]:
         add("sitemap_gecersiz", "orta", sitemap.get("hata") or "")
     elif sitemap["url_sayisi"] == 0 and sitemap["alt_sitemap_sayisi"] == 0:

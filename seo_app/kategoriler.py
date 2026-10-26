@@ -35,6 +35,7 @@ KATEGORI = {
     "sitemap_yonlendirme": ("kural", "dusuk"), "render_engelleyen_kaynak": ("kural", "dusuk"),
     "blank_noopener_yok": ("kural", "dusuk"), "schema_kurum_logo_yok": ("kural", "dusuk"),
     "schema_sosyal_profil_yok": ("kural", "dusuk"), "breadcrumb_yok": ("kural", "dusuk"),
+    "kullanici_baglantisi_isaretsiz": ("kural", "dusuk"),
     # --- YZ önerir: icerik ---
     "title_yok": ("yz", "dusuk"), "title_kisa": ("yz", "dusuk"), "title_uzun": ("yz", "dusuk"),
     "title_genis": ("yz", "dusuk"), "title_tekrar": ("yz", "dusuk"), "title_h1_uyumsuz": ("yz", "dusuk"),
@@ -42,7 +43,7 @@ KATEGORI = {
     "meta_description_yok": ("yz", "dusuk"), "meta_description_kisa": ("yz", "dusuk"),
     "meta_description_uzun": ("yz", "dusuk"), "meta_tekrar": ("yz", "dusuk"),
     "h1_yok": ("yz", "dusuk"), "h1_bos": ("yz", "dusuk"), "h1_tekrar": ("yz", "dusuk"),
-    "img_alt_eksik": ("yz", "dusuk"), "icerik_az": ("yz", "dusuk"),
+    "img_alt_eksik": ("yz", "dusuk"), "alt_metni_anlamsiz": ("yz", "dusuk"), "icerik_az": ("yz", "dusuk"),
     "yapisal_veri_yok": ("yz", "dusuk"), "yapisal_veri_gecersiz": ("yz", "dusuk"),
     "yapisal_veri_eksik_alan": ("yz", "dusuk"), "schema_kurum_turu_yok": ("yz", "dusuk"),
     "yetim_sayfa": ("yz", "dusuk"), "derin_sayfa": ("yz", "dusuk"), "ic_baglanti_yok": ("yz", "dusuk"),

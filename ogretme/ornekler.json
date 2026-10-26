@@ -234,5 +234,224 @@
         }
       ]
     }
+  },
+  {
+    "girdi": {
+      "title": "Hizmetler",
+      "meta_description": "",
+      "h1": [
+        "Bakım ve Onarım"
+      ],
+      "h2": [
+        "Fren ayarı",
+        "Vites ayarı",
+        "Lastik değişimi"
+      ],
+      "alt_metni_eksik_gorseller": [],
+      "metin_ozeti": "Kuzeyrüzgarı Bisiklet Atölyesi Bornova'da şehir, yol ve dağ bisikletlerinin periyodik bakımını, fren ve vites ayarını ve lastik değişimini yapar. Randevusuz kabul hafta içi.",
+      "tespit_edilen_sorunlar": [
+        "title_kisa",
+        "meta_description_yok"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "title",
+          "hedef": "",
+          "yeni_deger": "Bisiklet Bakım ve Onarım Bornova | Kuzeyrüzgarı Atölye",
+          "gerekce": "Genel kelime yerine sayfaya özgü hizmet, konum ve işletme adı."
+        },
+        {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Bornova'daki Kuzeyrüzgarı Bisiklet Atölyesi'nde şehir, yol ve dağ bisikletleri için bakım, fren ve vites ayarı ile lastik değişimi; hafta içi randevusuz.",
+          "gerekce": "Sayfanın sunduğu hizmetleri kısa ve sayfaya özgü biçimde özetliyor."
+        }
+      ]
+    },
+    "kaynak": {
+      "etiket": "google-starter-guide",
+      "url": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=tr#titles",
+      "bolum": "Başlık bağlantılarınızı etkileyin; Snippet'lerinizi kontrol edin"
+    }
+  },
+  {
+    "girdi": {
+      "title": "Üyelik | Yeşilvadi İlçe Halk Kütüphanesi",
+      "meta_description": "kütüphane üyelik kütüphane kartı üye olma kitap ödünç kitap iade kütüphane saatleri ücretsiz üyelik kütüphane başvuru belgeler kimlik fotoğraf adres ödünç süresi gecikme",
+      "h1": [
+        "Kütüphane Üyeliği"
+      ],
+      "h2": [
+        "Gerekli belgeler",
+        "Ödünç alma kuralları"
+      ],
+      "alt_metni_eksik_gorseller": [],
+      "metin_ozeti": "Yeşilvadi İlçe Halk Kütüphanesi'ne üyelik ücretsizdir. Başvuru için kimlik belgesi yeterlidir; üyeler aynı anda beş kitabı üç haftalığına ödünç alabilir.",
+      "tespit_edilen_sorunlar": [
+        "meta_description_uzun"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Yeşilvadi İlçe Halk Kütüphanesi'ne kimlik belgesiyle ücretsiz üye olun; üyeler aynı anda beş kitabı üç haftalığına ödünç alabilir.",
+          "gerekce": "Kelime listesi yerine sayfanın en önemli iki bilgisini veren kısa bir özet."
+        }
+      ]
+    },
+    "kaynak": {
+      "etiket": "google-starter-guide",
+      "url": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=tr#snippets",
+      "bolum": "Snippet'lerinizi kontrol edin"
+    }
+  },
+  {
+    "girdi": {
+      "title": "Aşı Takvimi | Patiköşe Veteriner Kliniği",
+      "meta_description": "Patiköşe Veteriner Kliniği'nde yavru kedi ve köpekler için aşı takvimi ve randevu bilgileri.",
+      "h1": [
+        "Yavru Kedi ve Köpek Aşı Takvimi"
+      ],
+      "h2": [
+        "Kedi aşıları",
+        "Köpek aşıları"
+      ],
+      "alt_metni_eksik_gorseller": [
+        {
+          "id": "g1",
+          "dosya_adi": "IMG_2041.jpg",
+          "baglam": "aciklama: Karma aşı öncesi muayene edilen yavru kedi"
+        },
+        {
+          "id": "g2",
+          "dosya_adi": "DSC00317.png",
+          "baglam": ""
+        }
+      ],
+      "metin_ozeti": "Yavru kedilerde karma aşı sekizinci haftada, köpeklerde parvo ve karma aşılar altıncı haftada başlar. Aşıdan önce genel muayene yapılır.",
+      "tespit_edilen_sorunlar": [
+        "img_alt_eksik"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "img_alt",
+          "hedef": "g1",
+          "yeni_deger": "Karma aşı öncesi muayene edilen yavru kedi",
+          "gerekce": "Dosya adı bilgi vermiyor; görselin açıklama metni içeriği anlatıyor."
+        },
+        {
+          "alan": "img_alt",
+          "hedef": "g2",
+          "yeni_deger": "Veteriner kliniğinde aşı uygulaması",
+          "gerekce": "Görsel hakkında ipucu yok; sayfanın konusuna uygun, uydurma ayrıntı içermeyen genel ifade."
+        }
+      ]
+    },
+    "kaynak": {
+      "etiket": "google-starter-guide",
+      "url": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=tr#add-descriptive-alt-text-to-the-image",
+      "bolum": "Resme açıklayıcı alternatif metin ekleyin"
+    }
+  },
+  {
+    "girdi": {
+      "title": null,
+      "meta_description": "",
+      "h1": [],
+      "h2": [
+        "Ders programı",
+        "Kayıt"
+      ],
+      "alt_metni_eksik_gorseller": [],
+      "metin_ozeti": "Mutfakatölye Kadıköy'de dört haftalık temel ekmek yapımı kursu: ekşi maya, tam buğday ve kepekli ekmek. Dersler cumartesi sabahları, kontenjan on iki kişi.",
+      "tespit_edilen_sorunlar": [
+        "title_yok",
+        "h1_yok",
+        "meta_description_yok"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "title",
+          "hedef": "",
+          "yeni_deger": "Temel Ekmek Yapımı Kursu Kadıköy | Mutfakatölye",
+          "gerekce": "Sayfanın konusu, konum ve kurum adı; içerikte geçen bilgilerle sınırlı."
+        },
+        {
+          "alan": "h1",
+          "hedef": "",
+          "yeni_deger": "Dört Haftalık Temel Ekmek Yapımı Kursu",
+          "gerekce": "Sayfanın ana konusu; title ile aynı konuyu farklı sözcüklerle söylüyor."
+        },
+        {
+          "alan": "meta_description",
+          "hedef": "",
+          "yeni_deger": "Mutfakatölye Kadıköy'de cumartesi sabahları dört haftalık temel ekmek kursu: ekşi maya, tam buğday ve kepekli ekmek; kontenjan on iki kişi.",
+          "gerekce": "Kursun kapsamını, zamanını ve kontenjanını özetliyor."
+        }
+      ]
+    },
+    "kaynak": {
+      "etiket": "google-starter-guide",
+      "url": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=tr#titles",
+      "bolum": "Başlık bağlantılarınızı etkileyin"
+    }
+  },
+  {
+    "girdi": {
+      "title": "Kırtasiye Ürünleri | Defterevi",
+      "meta_description": "Defterevi'nde okul ve ofis için defter, kalem ve dosya çeşitleri.",
+      "h1": [
+        "Kırtasiye Ürünleri"
+      ],
+      "h2": [
+        "Defterler",
+        "Kalemler"
+      ],
+      "alt_metni_eksik_gorseller": [
+        {
+          "id": "g1",
+          "dosya_adi": "urun-17.webp",
+          "baglam": "baglanti metni: Spiralli kareli defter A4; baglanti: /defterler/spiralli-kareli-a4"
+        },
+        {
+          "id": "g2",
+          "dosya_adi": "banner.jpg",
+          "baglam": "aciklama: Okula dönüş indirimi tüm defterlerde"
+        }
+      ],
+      "metin_ozeti": "Defterevi okul ve ofis kırtasiyesi satar: spiralli ve dikişli defterler, tükenmez ve jel kalemler, plastik dosyalar.",
+      "tespit_edilen_sorunlar": [
+        "img_alt_eksik"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "img_alt",
+          "hedef": "g1",
+          "yeni_deger": "Spiralli kareli A4 defter",
+          "gerekce": "Görsel bağlantının tek içeriği; bağlantı metni ürünü anlatıyor."
+        },
+        {
+          "alan": "img_alt",
+          "hedef": "g2",
+          "yeni_deger": "Okula dönüş indirimi: tüm defterlerde",
+          "gerekce": "Görselin içindeki duyuru açıklama metninde yazıyor; alt metin bu yazıyı aktarıyor."
+        }
+      ]
+    },
+    "kaynak": {
+      "etiket": "google-starter-guide",
+      "url": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=tr#add-images-near-text",
+      "bolum": "Alakalı metnin yakınına yüksek kaliteli resimler ekleyin; Resme açıklayıcı alternatif metin ekleyin"
+    }
   }
 ]

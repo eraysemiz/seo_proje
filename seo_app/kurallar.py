@@ -9,7 +9,7 @@ kural tabanli duzeltme veya elle mudahale gerektirir.
 import re
 from collections import defaultdict
 from datetime import date
-from urllib.parse import parse_qsl, urljoin, urlparse
+from urllib.parse import parse_qsl, unquote, urljoin, urlparse
 
 from . import puanlama
 from .cikarma import (GENEL_BAGLANTI_METINLERI, GENEL_KOKLER, SERP_GENISLIK, baslik_piksel, imza_benzerligi,
@@ -22,7 +22,7 @@ KURAL_SORUNLARI = ("canonical_yok", "html_lang_yok", "h1_birden_fazla", "viewpor
 # her alan hangi kural sorunlariyla iliskili (gereksiz degisikligi yakalamak icin)
 ALAN_SORUN = {"title": ("title_yok", "title_kisa", "title_uzun", "title_genis"),
               "meta_description": ("meta_description_yok", "meta_description_kisa", "meta_description_uzun"),
-              "h1": ("h1_yok",), "img_alt": ("img_alt_eksik",)}
+              "h1": ("h1_yok",), "img_alt": ("img_alt_eksik", "alt_metni_anlamsiz")}
 
 CIDDIYET_AGIRLIK = {"yuksek": 15, "orta": 8, "dusuk": 3}
 
@@ -37,9 +37,10 @@ ACIKLAMA = {
     "h1_birden_fazla": "Sayfada birden fazla H1 var",
     "h1_bos": "Metni olmayan H1 var (boş ya da yalnızca görsel içeriyor)",
     "img_alt_eksik": "Bazı görsellerde alt metni yok",
+    "alt_metni_anlamsiz": "Bazı görsellerin alt metni görseli anlatmıyor (dosya adı ya da \"resim\" gibi genel bir sözcük)",
     "canonical_yok": "Canonical (asıl adres) etiketi yok",
     "html_lang_yok": "html etiketinde dil (lang) bilgisi yok",
-    "icerik_az": "Metin içeriği az (300 kelimeden az)",
+    "icerik_az": "Ana içerikte çok az metin var (300 kelimeden az; ince içerik şüphesi)",
     # --- site katmani ---
     "robots_yok": "robots.txt dosyası bulunamadı",
     "robots_okunamadi": "robots.txt okunamadı veya hatalı",
@@ -74,7 +75,7 @@ ACIKLAMA = {
     "favicon_yok": "Favicon (site simgesi) tanımlanmamış",
     "noindex": "Sayfa noindex ile aramaya kapatılmış",
     # --- baslik yapisi, uluslararasilastirma, yapisal veri turu, guvenlik ---
-    "baslik_atlamasi": "Başlık hiyerarşisinde seviye atlanıyor (örneğin H1'den H3'e)",
+    "baslik_atlamasi": "Başlık hiyerarşisinde seviye atlanıyor (örneğin H1'den H3'e; erişilebilirlik sorunu, Google sıralamasını etkilemez)",
     "hreflang_gecersiz": "hreflang değeri geçerli bir dil/bölge kodu değil",
     "hreflang_x_default_yok": "hreflang kullanılıyor ama x-default tanımlı değil",
     "schema_kurum_turu_yok": "Ana sayfanın yapısal verisinde kuruluş türü (Organization veya alt türü) yok",
@@ -157,6 +158,11 @@ ACIKLAMA = {
     "form_etiketi_yok": "Etiketi (label) olmayan form alanları var",
     "buton_adi_yok": "Metni ya da erişilebilir adı olmayan düğmeler var",
     "aria_gecersiz_referans": "aria-labelledby/aria-describedby sayfada olmayan bir id'yi gösteriyor",
+    # Google SEO Başlangıç Rehberi'ne göre eklenenler
+    "url_aciklayici_degil": "Adres sayfanın konusunu anlatmıyor; yalnızca kimlik ya da numaradan oluşuyor",
+    "kullanici_baglantisi_isaretsiz": "Yorum/forum gibi kullanıcı bölümlerindeki dış bağlantılarda rel=\"ugc\"/\"nofollow\" yok",
+    "uzun_metin_ara_baslik_yok": "Uzun metin (700+ kelime) hiç ara başlıkla (H2/H3) bölümlenmemiş",
+    "video_baslik_yok": "Gömülü videonun başlığı (title) yok",
 }
 
 # Sorun basina somut duzeltme onerisi (raporda "Nasil duzeltilir" olarak gosterilir).
@@ -169,12 +175,13 @@ DUZELTME = {
     "meta_description_kisa": "Meta açıklamayı sayfanın sunduğu bilgiyle 70-160 karaktere genişletin.",
     "meta_description_uzun": "Meta açıklamayı 160 karakterin altına kısaltın; kesilen kısım arama sonucunda görünmez.",
     "h1_yok": "Sayfanın ana konusunu anlatan bir <h1> başlığı ekleyin.",
-    "h1_birden_fazla": "Tek bir <h1> bırakın; diğer ana başlıkları <h2> yapın.",
+    "h1_birden_fazla": "Ekran okuyucular için tek bir <h1> bırakıp diğer ana başlıkları <h2> yapmak iyidir; Google için başlık sayısı belirleyici değildir.",
     "h1_bos": "Metinsiz <h1>'e metin ekleyin ya da logoysa <h1> yerine başka bir etiket kullanın.",
     "img_alt_eksik": "Her içerik görseline ne gösterdiğini anlatan alt metni ekleyin; süs görsellerine alt=\"\" yazın.",
+    "alt_metni_anlamsiz": "Dosya adı ya da \"resim\" gibi genel sözcükleri, görselin ne gösterdiğini anlatan kısa bir metinle değiştirin.",
     "canonical_yok": "<head> içine sayfanın asıl adresini gösteren <link rel=\"canonical\" href=\"...\"> ekleyin.",
     "html_lang_yok": "<html> etiketine sayfanın dilini ekleyin, örneğin <html lang=\"tr\">.",
-    "icerik_az": "Ana içerik bölümüne kullanıcının sorusunu yanıtlayan özgün metin ekleyin (300+ kelime iyi bir hedeftir).",
+    "icerik_az": "Sayfa konusunu yeterince anlatıyor mu gözden geçirin; gerekiyorsa kullanıcının sorusunu yanıtlayan özgün metin ekleyin. Kelime sayısı bir hedef değildir.",
     "robots_yok": "Site köküne en azından 'User-agent: *' ve 'Sitemap:' satırlarını içeren bir robots.txt koyun.",
     "robots_okunamadi": "robots.txt'nin 200 durum koduyla ve text/plain türüyle döndüğünü kontrol edin.",
     "robots_tum_siteyi_engelliyor": "robots.txt'deki 'Disallow: /' satırını kaldırın ya da yalnızca gizli dizinlerle sınırlayın.",
@@ -206,7 +213,7 @@ DUZELTME = {
     "twitter_card_yok": "<meta name=\"twitter:card\" content=\"summary_large_image\"> ekleyin.",
     "favicon_yok": "<link rel=\"icon\" href=\"/favicon.ico\"> ile bir site simgesi tanımlayın.",
     "noindex": "Sayfanın aranmasını istiyorsanız meta robots'tan veya X-Robots-Tag başlığından noindex'i kaldırın.",
-    "baslik_atlamasi": "Başlıkları sırayla kullanın: H1'in altında H2, H2'nin altında H3.",
+    "baslik_atlamasi": "Ekran okuyucular için başlıkları sırayla kullanın: H1'in altında H2, H2'nin altında H3.",
     "hreflang_gecersiz": "hreflang değerlerini ISO 639-1 dil ve ISO 3166-1 bölge koduyla yazın (ör. tr, en-GB).",
     "hreflang_x_default_yok": "Dil seçimi sayfanız için hreflang=\"x-default\" bağlantısı ekleyin.",
     "schema_kurum_turu_yok": "Ana sayfaya Organization (veya uygun alt türü) yapısal verisini ad, logo ve adresle ekleyin.",
@@ -283,6 +290,10 @@ DUZELTME = {
     "form_etiketi_yok": "Her form alanına görünür bir <label for=\"...\"> ya da aria-label ekleyin.",
     "buton_adi_yok": "Simge düğmelerine görünür metin ya da aria-label ekleyin.",
     "aria_gecersiz_referans": "aria-labelledby/aria-describedby değerlerini sayfadaki gerçek bir öğenin id'siyle eşleştirin.",
+    "url_aciklayici_degil": "Adreste konuyu anlatan okunur kelimeler kullanın (ör. /kategori/urun-adi); eski adresi 301 ile yeni adrese yönlendirin.",
+    "kullanici_baglantisi_isaretsiz": "Kullanıcıların eklediği bağlantılara rel=\"ugc nofollow\" ekleyin; içerik yönetim sisteminin bunu kendiliğinden yapmasını sağlayın.",
+    "uzun_metin_ara_baslik_yok": "Metni konularına göre bölümlere ayırıp her bölüme açıklayıcı bir ara başlık (H2/H3) verin.",
+    "video_baslik_yok": "Videoya içeriğini anlatan bir title verin ve videoyu konusunu anlatan metnin yanına yerleştirin.",
 }
 
 KURUM_SCHEMA_TURLERI = {"Organization", "EducationalOrganization", "CollegeOrUniversity",
@@ -335,15 +346,45 @@ def rule_checks(d: dict) -> list:
     elif len(m) < 70: add("meta_description_kisa", "orta", f"{len(m)} karakter")
     elif len(m) > 160: add("meta_description_uzun", "orta", f"{len(m)} karakter")
     if len(d["h1"]) == 0: add("h1_yok", "yuksek")
-    elif len(d["h1"]) > 1: add("h1_birden_fazla", "orta", f"{len(d['h1'])} adet")
+    # Google icin baslik sayisi belirleyici degil (SEO Baslangic Rehberi); erisilebilirlik icin dusuk onemde
+    elif len(d["h1"]) > 1: add("h1_birden_fazla", "dusuk", f"{len(d['h1'])} adet")
     if d.get("h1_bos_sayisi"): add("h1_bos", "dusuk", f"{d['h1_bos_sayisi']} adet metinsiz H1")
     if d["img_no_alt"]: add("img_alt_eksik", "orta", f"{len(d['img_no_alt'])}/{d['img_total']} görsel")
+    if d.get("img_anlamsiz_alt"):
+        ilk = d["img_anlamsiz_alt"][0]["alt"]
+        add("alt_metni_anlamsiz", "dusuk", f"{len(d['img_anlamsiz_alt'])} görsel, ör. alt=\"{ilk[:40]}\"")
     if not d["canonical"]: add("canonical_yok", "dusuk")
     if not d["lang"]: add("html_lang_yok", "dusuk")
     # ince icerik: menu ve alt bilgi disindaki ana icerik bolgesinin kelime sayisi
     kelime = d.get("icerik_kelime_sayisi", d["word_count"])
     if kelime < 300: add("icerik_az", "dusuk", f"ana içerikte {kelime} kelime")
+    # uzun metin paragraflara ve ara basliklara bolunmeli (SEO Baslangic Rehberi: okunur ve duzenli icerik)
+    if kelime >= UZUN_METIN_KELIME and d.get("icerik_ara_baslik_sayisi") == 0:
+        add("uzun_metin_ara_baslik_yok", "dusuk", f"ana içerikte {kelime} kelime, ara başlık yok")
     return issues
+
+
+UZUN_METIN_KELIME = 700
+
+
+def aciklayici_olmayan_adres(url):
+    """Adresin sayfayi tanimlayan son bolumu yalnizca kimlik/numaraysa o bolum, degilse None.
+    Anahtar kelime aranmaz; tarih (2024) gibi kisa sayilar ve kok adres sayilmaz.
+    Ornek: /u/8f3a2c91e7d0, /urun/993817, /?id=42, /index.php?p=17."""
+    p = urlparse(url or "")
+    bolumler = [unquote(b) for b in p.path.split("/") if b]
+    son = re.sub(r"\.(html?|php|aspx?|jsp)$", "", bolumler[-1], flags=re.I) if bolumler else ""
+    if son.lower() == "index":
+        son = ""
+    kimlik = re.compile(r"[0-9a-f]{8,}|\d{5,}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", re.I)
+    if son and kimlik.fullmatch(son) and re.search(r"\d", son):
+        return "/".join(bolumler)[-80:]
+    if not son and p.query:
+        # sayfa yalnizca sorgu parametresindeki kimlikle belirleniyor (?id=42, ?p=17)
+        m = re.search(r"(?:^|&)(id|p|page_id|pid|sayfa|item)=(\d+|[0-9a-f]{8,})(?:&|$)", p.query, re.I)
+        if m:
+            return "?" + p.query[:80]
+    return None
 
 
 def _viewport_sorunu(icerik):
@@ -500,6 +541,14 @@ def ek_html_denetimi(yv: dict, sayfa_url=None) -> list:
         add("charset_yok", "dusuk")
     if sayfa_url and re.search(r"[A-Z]", urlparse(sayfa_url).path):
         add("url_buyuk_harf", "dusuk", urlparse(sayfa_url).path[:120])
+    if sayfa_url and aciklayici_olmayan_adres(sayfa_url):
+        add("url_aciklayici_degil", "dusuk", aciklayici_olmayan_adres(sayfa_url))
+    if yv.get("isaretsiz_kullanici_baglantilari"):
+        b = yv["isaretsiz_kullanici_baglantilari"]
+        add("kullanici_baglantisi_isaretsiz", "dusuk", f"{len(b)} bağlantı, ör. {b[0][:80]}")
+    if yv.get("basliksiz_videolar"):
+        v = yv["basliksiz_videolar"]
+        add("video_baslik_yok", "dusuk", f"{len(v)} video, ör. {v[0][:80]}")
     seviyeler = yv.get("baslik_seviyeleri") or []
     atlamalar = [f"H{a}->H{b}" for a, b in zip(seviyeler, seviyeler[1:]) if b > a + 1]
     if atlamalar:
@@ -754,7 +803,7 @@ SORUN_TANIMI = {
     "meta_description_yok": ("icerik", "meta", "yuksek", "sayfa"),
     "meta_description_kisa": ("icerik", "meta", "orta", "sayfa"),
     "meta_description_uzun": ("icerik", "meta", "orta", "sayfa"),
-    "h1_yok": ("icerik", "h1", "yuksek", "sayfa"), "h1_birden_fazla": ("icerik", "h1", "orta", "sayfa"),
+    "h1_yok": ("icerik", "h1", "yuksek", "sayfa"), "h1_birden_fazla": ("icerik", "h1", "dusuk", "sayfa"),
     "h1_bos": ("icerik", "h1_bos", "dusuk", "sayfa"),
     "img_alt_eksik": ("icerik", "img_alt", "orta", "sayfa"),
     "icerik_az": ("icerik", "icerik_az", "dusuk", "sayfa"),
@@ -782,7 +831,7 @@ SORUN_TANIMI = {
     "robots_tum_siteyi_engelliyor": ("teknik", "robots", "yuksek", "site"),
     "robots_sayfayi_engelliyor": ("teknik", "robots", "yuksek", "site"),
     "robots_sitemap_bildirilmemis": ("teknik", "robots_sitemap", "dusuk", "site"),
-    "sitemap_yok": ("teknik", "sitemap", "orta", "site"), "sitemap_gecersiz": ("teknik", "sitemap", "orta", "site"),
+    "sitemap_yok": ("teknik", "sitemap", "dusuk", "site"), "sitemap_gecersiz": ("teknik", "sitemap", "orta", "site"),
     "sitemap_bos": ("teknik", "sitemap", "orta", "site"),
     "sayfa_sitemapte_yok": ("teknik", "sitemap", "dusuk", "site"),
     "https_yok": ("guvenlik", "https", "yuksek", "site"),
@@ -847,7 +896,7 @@ SORUN_TANIMI = {
     "title_tekrar": ("icerik", "title_tekrar", "orta", "tarama"),
     "meta_tekrar": ("icerik", "meta_tekrar", "dusuk", "tarama"),
     "h1_tekrar": ("icerik", "h1_tekrar", "dusuk", "tarama"),
-    "icerik_tekrar": ("icerik", "icerik_tekrar", "yuksek", "tarama"),
+    "icerik_tekrar": ("icerik", "icerik_tekrar", "orta", "tarama"),
     "icerik_benzer": ("icerik", "icerik_tekrar", "orta", "tarama"),
     "yetim_sayfa": ("teknik", "yetim", "orta", "tarama"),
     "derin_sayfa": ("teknik", "derin", "dusuk", "tarama"),
@@ -871,6 +920,11 @@ SORUN_TANIMI = {
     "form_etiketi_yok": ("teknik", "erisilebilirlik_form", "orta", "sayfa"),
     "buton_adi_yok": ("teknik", "erisilebilirlik_dugme", "dusuk", "sayfa"),
     "aria_gecersiz_referans": ("teknik", "erisilebilirlik_aria", "dusuk", "sayfa"),
+    "url_aciklayici_degil": ("teknik", "url_kimlik", "dusuk", "sayfa"),
+    "alt_metni_anlamsiz": ("icerik", "img_alt", "dusuk", "sayfa"),
+    "kullanici_baglantisi_isaretsiz": ("teknik", "ugc_baglanti", "dusuk", "sayfa"),
+    "uzun_metin_ara_baslik_yok": ("icerik", "ara_baslik", "dusuk", "sayfa"),
+    "video_baslik_yok": ("icerik", "video", "dusuk", "sayfa"),
 }
 KATEGORILER = ("icerik", "teknik", "guvenlik", "performans")
 # tarama geneline ait bulgular (site_geneli, tarama.baglanti_bulgulari); sayfa kaydinin sorunlarina

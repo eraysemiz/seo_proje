@@ -313,6 +313,25 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
     (31 bağlı); otomatik: 50 aktif (46 sayfa + 4 ayar) + 52 çözülen; 2 onay + 1 ret: 49 + 52 + 1;
     geri alma: 102 + 0. Testler 294 geçti.
 
+- **26 Ekim (commit'lenmedi): Google SEO Başlangıç Rehberi.**
+  - Çekme modülü/güncelleme komutu yoktu (görev bunu varsayıyordu); kullanıcı kararıyla mevcut yöntem:
+    rehberin 18 bölümü kendi cümlelerimizle 23 Türkçe parça olarak `bilgi_tabani.json`'a eklendi
+    (28 → 51; `kaynak` = TR bölüm çapası, ek alanlar `kaynak_en`, `lisans` CC BY 4.0). Mevcut kayıtlar
+    bayt düzeyinde aynı (yalnızca sona ekleme).
+  - `ornekler.json` +5 rehber örneği (`kaynak.etiket = "google-starter-guide"`, isteme girmez);
+    `ogretme/rehber_ornekleri.json` (19 sorunlu → tavsiye → düzeltilmiş HTML örneği, isteme girmez).
+  - Getirme: `ogretme.BILGI_ALANI_SORUN` model dışı bulguları (canonical, kopya, adres, bağlantı…) bilgi
+    alanına bağlar; önceden bu bulgularda yalnızca 'genel' parçalar geliyordu. Mod 2 istemi değişmez.
+  - Yeni kontroller: `url_aciklayici_degil`, `alt_metni_anlamsiz` (YZ, model alanı img_alt),
+    `kullanici_baglantisi_isaretsiz` (kural, rel="ugc nofollow"), `uzun_metin_ara_baslik_yok`,
+    `video_baslik_yok`. Rehberle çelişenler (onaylı): `h1_birden_fazla` düşük + güven 0.6 (otomatik
+    değil), `icerik_az` metninde kelime hedefi yok, `baslik_atlamasi` erişilebilirlik olarak etiketli,
+    `sitemap_yok` düşük, `icerik_tekrar` orta ve puan tavanı yok. **İki modun puanını etkiler.**
+  - Ölçüm (qwen3.5-9b, otomatik aşama): düzeldi 36/47 → 35/47 (fark K08: fazla H1 artık onay bekliyor);
+    sayfa puanı 72 → 73 (başlangıç); yeni kontroller test sitesinde bulgu üretmedi; kurgusal 5 sayfada
+    5/5 doğru, 0 yanlış alarm. RAG (133 sayfa): kapsama 1.0, MRR 0.969 → 0.972, altın listeye göre sorun
+    isabeti 0.935 → 0.833 (rehber parçaları altın listede değil; konuya göre ~0.92).
+
 ## 8. Mevcut durum
 
 - **Testler:** `py -m pytest -q` → 290 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).

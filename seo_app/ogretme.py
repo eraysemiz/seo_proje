@@ -44,6 +44,28 @@ RRF_AGIRLIK = {"bm25": 0.1, "vektor": 1.0}
 ORNEK_METIN_SINIRI = 120  # few-shot orneklerindeki metin_ozeti kisaltmasi
 # ornek girdisinde her zaman kalan alanlar; digerleri yalnizca ilgili alan sorunluysa kalir
 ORNEK_ALAN_GIRDISI = {"meta_description": "meta_description", "h1": "h1", "img_alt": "alt_metni_eksik_gorseller"}
+# Yalnizca getirme icin: modelin metin yazmadigi bulgulari (canonical, kopya icerik, adres, baglanti metni...)
+# bilgi tabaninin ilgili alanina baglar. Modele giden alanlar ve dogrulama (kurallar.ALAN_SORUN) degismez;
+# Mod 2'de modele yalnizca ALAN_SORUN bulgulari gittigi icin bu eslemeler orada istemi degistirmez.
+BILGI_ALANI_SORUN = {
+    "title": ("title_tekrar", "title_h1_uyumsuz", "title_icerikle_uyumsuz"),
+    "meta_description": ("meta_tekrar",),
+    "h1": ("h1_tekrar", "h1_bos", "h1_birden_fazla", "baslik_atlamasi", "bos_baslik"),
+    "img_alt": ("alt_metni_anlamsiz",),
+    "canonical": ("canonical_yok", "canonical_capraz", "canonical_coklu", "canonical_bos", "canonical_kirik",
+                  "canonical_goreli", "icerik_tekrar", "icerik_benzer"),
+    "url": ("url_buyuk_harf", "url_aciklayici_degil"),
+    "icerik": ("icerik_az", "anahtar_kelime_doldurma", "icerik_eski", "tarih_bilgisi_yok",
+               "uzun_metin_ara_baslik_yok", "js_bagimli_icerik"),
+    "baglanti": ("genel_baglanti_metni", "bos_baglanti_metni", "ic_baglanti_yok", "kullanici_baglantisi_isaretsiz",
+                 "kirik_ic_link", "ic_link_yonlendirme"),
+    "robots_sitemap": ("robots_yok", "robots_tum_siteyi_engelliyor", "robots_sayfayi_engelliyor",
+                       "robots_sitemap_bildirilmemis", "robots_kaynak_engelliyor", "robots_bilinmeyen_yonerge",
+                       "sitemap_yok", "sayfa_sitemapte_yok", "yetim_sayfa", "derin_sayfa", "noindex"),
+    "yapisal_veri": ("yapisal_veri_yok", "yapisal_veri_gecersiz", "yapisal_veri_eksik_alan", "schema_kurum_turu_yok",
+                     "breadcrumb_yok"),
+    "video": ("video_baslik_yok",),
+}
 
 _KB_BELLEK = {}          # bilgi tabani dosyasi -> (degisiklik zamani, parcalar, surum, bm25 dizini)
 _VEKTOR_BELLEK = {}      # (surum, gomme modeli) -> {parca id: birim vektor}
@@ -162,8 +184,12 @@ def parca_vektorleri(klasor, parcalar, surum, embed_url, embed_model):
 
 # ------------------------------------------------------------------ getirme
 def beklenen_alanlar(issues):
+    """Getirmede aday parcalarin alanlari: modelin duzenledigi alanlar (ALAN_SORUN) ve modelin metin
+    yazmadigi bulgular icin yalnizca getirmede kullanilan bilgi alanlari (BILGI_ALANI_SORUN)."""
     kodlar = [i["sorun"] for i in issues]
-    return [a for a in IZINLI_ALANLAR if any(x in kodlar for x in ALAN_SORUN[a])]
+    alanlar = [a for a in IZINLI_ALANLAR if any(x in kodlar for x in ALAN_SORUN[a])]
+    return alanlar + [a for a, sorunlar in BILGI_ALANI_SORUN.items()
+                      if a not in alanlar and any(x in kodlar for x in sorunlar)]
 
 
 def sorgu_olustur(d, issues):

@@ -35,7 +35,8 @@ SYSTEM = (
     "- h1: sayfada h1 yoksa, sayfaya uygun kisa duz metin (5-70 karakter), <h1> etiketi YAZMA.\n"
     "- img_alt: 'hedef' alanina alt_metni_eksik_gorseller listesindeki 'id' degerini (ornek g1) AYNEN yaz. "
     "yeni_deger o gorsel icin kisa duz metin olsun; yalnizca dosya_adi ve baglam bilgisinden anlasilanlari yaz, "
-    "bilgi yoksa genel ve dogru bir ifade kullan (ornek: 'Duyuru gorseli'). Her gorsel icin ayri oneri ver.\n"
+    "bilgi yoksa genel ve dogru bir ifade kullan (ornek: 'Duyuru gorseli'). Her gorsel icin ayri oneri ver. "
+    "Gorselde mevcut_alt varsa o deger dosya adi ya da genel bir sozcuktur; onu tekrar etme.\n"
     "tespit_edilen_sorunlar listesindeki HER sorun icin, sinirda olsa bile "
     "(ornegin 29 karakterlik title), bir oneri uret. Listede olmayan sorunlar icin oneri URETME. "
     "Ayni alan icin birden fazla oneri verme (img_alt haric). Sayfa verisinde gecmeyen hicbir bilgi veya "
@@ -231,8 +232,12 @@ def llm_fixes(d, issues, model, filename, url, max_tokens, timeout, use_schema,
     # model uzun src yollarini bozabildigi icin gorselleri kisa kimliklerle (g1, g2...) adlandiriyoruz
     # gorsel kimligi belge icindeki sira numarasina baglidir; ayni src'yi paylasan
     # (ornegin tembel yukleme yer tutucusu) gorsellere tek oneri topluca yazilmaz
-    gorsel_id = {"g" + str(i + 1): g for i, g in enumerate(d["img_no_alt"][:ALT_LIMIT])}
-    gorseller = [{"id": k, "dosya_adi": dosya_adi(g["src"]), "baglam": d["img_baglam"].get(g["sira"], "")}
+    # alt metni dosya adi ya da genel sozcuk olan gorseller de ayni listede, mevcut degerleriyle verilir
+    hedefler = list(d["img_no_alt"]) + (list(d.get("img_anlamsiz_alt") or [])
+                                        if "alt_metni_anlamsiz" in kodlar else [])
+    gorsel_id = {"g" + str(i + 1): g for i, g in enumerate(hedefler[:ALT_LIMIT])}
+    gorseller = [{"id": k, "dosya_adi": dosya_adi(g["src"]), "baglam": d["img_baglam"].get(g["sira"], ""),
+                  **({"mevcut_alt": g["alt"]} if g.get("alt") else {})}
                  for k, g in gorsel_id.items()]
     # metin_ozeti: menu ve baglanti listeleri ayiklanmis icerik bolgesi (cikarma.extract)
     veri = {"dosya": filename, "site_adi": d.get("site_adi"), "title": d["title"],

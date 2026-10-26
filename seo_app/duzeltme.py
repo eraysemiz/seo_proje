@@ -23,7 +23,7 @@ import requests
 from . import guven as gv
 from . import html_konum as hk
 from . import kategoriler as kat
-from .cikarma import extract, imza_benzerligi, url_anahtari
+from .cikarma import KULLANICI_ALANI, anlamsiz_alt_mi, extract, imza_benzerligi, url_anahtari
 from .kurallar import TARAMA_GENELI_KODLARI as TARAMA_GENELI
 from .kurallar import hreflang_gecerli_mi
 from .yazma import YolGuvenligiHatasi, ozet_hash
@@ -900,27 +900,48 @@ def yz_h1(p, s, kodlar, digerleri=()):
 
 
 def yz_alt(p, s, b):
+    """Eksik alt metnini ekler (img_alt_eksik) ya da dosya adi/genel sozcuk olan alt metnini
+    degistirir (alt_metni_anlamsiz)."""
     _model_yok(p)
-    eksikler = [o for o in _gorseller(s) if o.nitelik("alt") is None]
+    kod = b["sorun"]
+    if kod == "alt_metni_anlamsiz":
+        eksikler = [o for o in _gorseller(s) if anlamsiz_alt_mi(o.nitelik("alt"), o.nitelik("src"))]
+    else:
+        eksikler = [o for o in _gorseller(s) if o.nitelik("alt") is None]
     if not eksikler:
-        raise Atla("alt metni eksik görsel bulunamadı")
+        raise Atla("alt metni eksik görsel bulunamadı" if kod == "img_alt_eksik" else "anlamsız alt metinli görsel bulunamadı")
     for o in eksikler:
         oncesi = re.sub(r"<[^>]+>", " ", s.metin[max(0, o.bas - 600):o.bas])
         sonrasi = re.sub(r"<[^>]+>", " ", s.metin[o.bas_son:o.bas_son + 400])
         baglam = " ".join((oncesi.split()[-40:] + ["[GÖRSEL]"] + sonrasi.split()[:30]))
         ek = {"gorsel_dosya_adi": Path(urlsplit(o.nitelik("src")).path).name, "gorsel_cevresindeki_metin": baglam}
+        if kod == "alt_metni_anlamsiz":
+            ek["mevcut_alt"] = o.nitelik("alt")
         try:
             deger, cevap, kaynak, dog, yer, deneme = _model_metni(
-                p, s, "img_alt", ["img_alt_eksik"],
-                metin_gorevi("img_alt", "Yalnızca dosya adından ve görselin çevresindeki metinden anlaşılanı yaz."),
+                p, s, "img_alt", [kod],
+                metin_gorevi("img_alt", "Yalnızca dosya adından ve görselin çevresindeki metinden anlaşılanı yaz."
+                             + (" Mevcut alt metni (dosya adı ya da genel sözcük) tekrar etme." if "mevcut_alt" in ek else "")),
                 ek_veri=ek, kaynak_ek=baglam + " " + ek["gorsel_dosya_adi"].replace("-", " "))
         except Atla as e:
-            p.atla("img_alt_eksik", s.url, str(e))
+            p.atla(kod, s.url, str(e))
             continue
-        konum = hk.nitelik_ekleme_konumu(o)
-        duz = {"parca": 0, "onek": ' alt="', "sonek": '"', "kacis": "nitelik", "alan": "img_alt",
-               "dogrulama": {"tur": "metin", "kaynak": kaynak, "dil": s.dil or p.dil}, "deger": deger}
-        p.ekle("img_alt_eksik", s.dosya, [(konum, konum, f' alt="{_kacis(deger, True)}"')], o.ham, deger,
+        n = hk.nitelik_konumlari(o).get("alt") if kod == "alt_metni_anlamsiz" else None
+        if n:
+            # mevcut alt degeri tirnak icinde degistirilir; nitelik ve diger nitelikler yerinde kalir.
+            # tirnaksiz yazilmis deger (alt=resim) tirnaga alinir
+            tirnak = "" if s.metin[n[2] - 1:n[2]] in ('"', "'") else '"'
+            parca = (n[2], n[3], tirnak + _kacis(deger, True) + tirnak)
+            duz = {"parca": 0, "onek": tirnak, "sonek": tirnak, "kacis": "nitelik", "alan": "img_alt",
+                   "dogrulama": {"tur": "metin", "kaynak": kaynak, "dil": s.dil or p.dil}, "deger": deger}
+            eski = n[4]
+        else:
+            konum = hk.nitelik_ekleme_konumu(o)
+            parca = (konum, konum, f' alt="{_kacis(deger, True)}"')
+            duz = {"parca": 0, "onek": ' alt="', "sonek": '"', "kacis": "nitelik", "alan": "img_alt",
+                   "dogrulama": {"tur": "metin", "kaynak": kaynak, "dil": s.dil or p.dil}, "deger": deger}
+            eski = o.ham
+        p.ekle(kod, s.dosya, [parca], eski, deger,
                cevap["gerekce"], "model", url=s.url, duzenleme=duz, kaynaklar=cevap["kaynaklar"], yer_tutucu=yer,
                dogrulama=dog, deneme=deneme)
 
@@ -1061,15 +1082,58 @@ def kural_noopener(p, s, b):
         if not hedef.startswith(("http://", "https://")) or _goreli(hedef, p.temel_url) is not None or \
                 {"noopener", "noreferrer"} & set(rel):
             continue
-        n = hk.nitelik_konumlari(o).get("rel")
-        if n:
-            yeni_rel = (n[4] + " noopener").strip()
-            parca, yeni = (n[2], n[3], yeni_rel), o.ham.replace(n[4], yeni_rel, 1) if n[4] else o.ham
-        else:
-            konum = hk.nitelik_ekleme_konumu(o)
-            parca, yeni = (konum, konum, ' rel="noopener"'), o.ham[:konum - o.bas] + ' rel="noopener"' + o.ham[konum - o.bas:]
-        p.ekle("blank_noopener_yok", s.dosya, [parca], o.ham, yeni,
-               "Yeni sekmede açılan sayfa window.opener ile bu sayfaya erişemez (tabnabbing önlemi).", "kural", url=s.url)
+        if _isaretsiz_kullanici_baglantisi(p, s, o):
+            continue                      # kural_kullanici_baglantisi ayni rel'e noopener'i da ekler
+        _rel_ekle(p, s, o, ("noopener",), "blank_noopener_yok",
+                  "Yeni sekmede açılan sayfa window.opener ile bu sayfaya erişemez (tabnabbing önlemi).")
+
+
+def _rel_ekle(p, s, o, degerler, kod, gerekce):
+    """Baglantinin rel niteligine degerleri ekler (mevcut rel korunur; nitelik yoksa eklenir)."""
+    n = hk.nitelik_konumlari(o).get("rel")
+    ek = " ".join(degerler)
+    if n:
+        yeni_rel = (n[4] + " " + ek).strip()
+        parca, yeni = (n[2], n[3], yeni_rel), o.ham.replace(n[4], yeni_rel, 1) if n[4] else o.ham
+    else:
+        konum = hk.nitelik_ekleme_konumu(o)
+        parca, yeni = (konum, konum, f' rel="{ek}"'), o.ham[:konum - o.bas] + f' rel="{ek}"' + o.ham[konum - o.bas:]
+    p.ekle(kod, s.dosya, [parca], o.ham, yeni, gerekce, "kural", url=s.url)
+
+
+def _kullanici_alaninda(o):
+    """Oge (ya da bir atasi) sinif/kimligiyle yorum, forum gibi kullanici icerigi bolumunde mi."""
+    t = o
+    while t is not None:
+        ipucu = (t.nitelik("class") or "") + " " + (t.nitelik("id") or "")
+        if ipucu.strip() and KULLANICI_ALANI.search(ipucu):
+            return True
+        t = t.ust
+    return False
+
+
+def _isaretsiz_kullanici_baglantisi(p, s, o):
+    hedef = _bag_hedefi(s, o.nitelik("href"))
+    rel = set((o.nitelik("rel") or "").lower().split())
+    return (hedef.startswith(("http://", "https://")) and _goreli(hedef, p.temel_url) is None and
+            not {"nofollow", "ugc", "sponsored"} & rel and _kullanici_alaninda(o))
+
+
+def kural_kullanici_baglantisi(p, s, b):
+    """Yorum/forum gibi kullanici bolumlerindeki isaretsiz dis baglantilara rel="ugc nofollow" eklenir
+    (SEO Baslangic Rehberi: kullanicilarin ekledigi baglantilar). Yeni sekmede aciliyorsa noopener da."""
+    eklenen = 0
+    for o in hk.bul(s.ogeler, "a", lambda o: o.nitelik("href")):
+        if not _isaretsiz_kullanici_baglantisi(p, s, o):
+            continue
+        rel = set((o.nitelik("rel") or "").lower().split())
+        ek = ["ugc", "nofollow"] + (["noopener"] if (o.nitelik("target") or "").strip().lower() == "_blank"
+                                    and not {"noopener", "noreferrer"} & rel else [])
+        _rel_ekle(p, s, o, ek, "kullanici_baglantisi_isaretsiz",
+                  "Kullanıcıların eklediği bağlantı işaretlendi; site bu kaynaklarla ilişkilendirilmez.")
+        eklenen += 1
+    if not eklenen:
+        raise Atla("kullanıcı bölümünde işaretsiz dış bağlantı bulunamadı")
 
 
 SOSYAL_HOSTLAR = ("facebook.com", "instagram.com", "x.com", "twitter.com", "linkedin.com", "youtube.com",
@@ -1240,6 +1304,7 @@ SAYFA_URETICI = {
     "canonical_kirik": yz_canonical, "blank_noopener_yok": kural_noopener,
     "schema_kurum_logo_yok": kural_kurum_logo, "schema_sosyal_profil_yok": kural_sosyal_profil,
     "breadcrumb_yok": kural_breadcrumb, "robots_kaynak_engelliyor": yz_robots_kaynak,
+    "alt_metni_anlamsiz": yz_alt, "kullanici_baglantisi_isaretsiz": kural_kullanici_baglantisi,
 }
 TITLE_KODLARI = ("title_yok", "title_kisa", "title_uzun", "title_genis", "title_h1_uyumsuz", "title_icerikle_uyumsuz")
 META_KODLARI = ("meta_description_yok", "meta_description_kisa", "meta_description_uzun")

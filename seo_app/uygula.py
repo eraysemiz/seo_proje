@@ -4,7 +4,7 @@ from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
 
 from bs4 import BeautifulSoup
 
-from .cikarma import gercek_src, gorseller, meta_aciklama_etiketi, sayfa_basligi
+from .cikarma import anlamsiz_alt_mi, gercek_src, gorseller, meta_aciklama_etiketi, sayfa_basligi
 
 
 # kampanya/oturum izleme parametreleri sayfanin asil adresine ait degildir; self-canonical'a yazilmaz
@@ -48,7 +48,10 @@ def apply_fixes(html, fixes):
         elif f["alan"] == "img_alt":
             if "hedef_sira" in f:
                 imgs = gorseller(soup)
-                if f["hedef_sira"] < len(imgs) and imgs[f["hedef_sira"]].get("alt") is None:
+                # eksik ya da anlamsiz (dosya adi, "resim") alt metni yazilir; anlamli mevcut alt korunur
+                if f["hedef_sira"] < len(imgs) and (imgs[f["hedef_sira"]].get("alt") is None or
+                                                    anlamsiz_alt_mi(imgs[f["hedef_sira"]].get("alt"),
+                                                                    gercek_src(imgs[f["hedef_sira"]]))):
                     imgs[f["hedef_sira"]]["alt"] = v
             else:   # sira bilgisi olmayan eski kayitlar icin src eslesmesi
                 for img in soup.find_all("img"):
