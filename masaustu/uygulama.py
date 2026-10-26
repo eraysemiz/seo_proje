@@ -1088,7 +1088,7 @@ class OnayPenceresi:
             return "✖ Geri çek" if k == "ret" else "✔ Uygulandı"
         if k is None and pl.otomatik_mi(d, self.esik):
             return "✔ Otomatik"
-        if k is None and d["kategori"] == "kural" and self.kural_hepsi.get():
+        if k is None and pl.toplu_onayli(d, self.kural_hepsi.get()):
             return "✔ Onay (tümü)"
         return self.KARAR_METNI[k]
 

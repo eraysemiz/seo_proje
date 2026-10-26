@@ -118,6 +118,12 @@ def otomatik_mi(d, esik_degeri):
             and d["guven"] >= esik_degeri)
 
 
+def toplu_onayli(d, kural_hepsi):
+    """duzeltme.kararlari_coz ile ayni kosul: 'tumunu onayla' yalnizca zorunlu onayi olmayan kural
+    duzeltmelerini kapsar."""
+    return bool(kural_hepsi) and d["kategori"] == "kural" and not d.get("zorunlu_onay")
+
+
 def geri_cekilecek_sayisi(plan, kararlar):
     """Otomatik asamada yazilip onay ekraninda reddedilen (onayli asamada geri cekilecek) degisiklikler."""
     return sum(1 for d in plan["degisiklikler"] if d["durum"] == "uygulandi"
@@ -134,7 +140,7 @@ def onaylanan_sayisi(plan, kararlar):
         if d["durum"] in ("gecersiz", "uygulandi") or k.get("karar") == "ret":
             continue
         oto = otomatik_mi(d, e)
-        if not (k.get("karar") == "onay" or oto or (d["kategori"] == "kural" and kararlar["kural_hepsi"])):
+        if not (k.get("karar") == "onay" or oto or toplu_onayli(d, kararlar["kural_hepsi"])):
             continue
         if d["risk"] == "yuksek" and not k.get("risk_onay") and not oto:
             continue
@@ -171,7 +177,7 @@ def onay_argumanlari(plan, onceki, secimler, kural_hepsi):
             ret.append(i)
         elif k.get("karar") == "onay":
             ret.append(i)                    # ekranda onay geri cekildi
-        elif d["kategori"] == "kural" and onceki["kural_hepsi"] and not kural_hepsi:
+        elif toplu_onayli(d, onceki["kural_hepsi"]) and not kural_hepsi:
             ret.append(i)                    # 'tumunu onayla' kapatildi; yonet.py bu bayragi geri almaz
     argumanlar = ["--kural-hepsi"] if kural_hepsi else []
     for bayrak, liste in (("--onay", onay), ("--ret", ret), ("--riski-kabul", risk), ("--duzenle", duzenle)):

@@ -62,7 +62,7 @@ kapalıysa tarama sessizce modelsiz devam etmez, hata verir.
 - **yapısal veri (ek):** ana sayfadaki kuruluş verisinde `logo` ve `sameAs`; iki düzey derinlikteki
   sayfalarda BreadcrumbList; türe göre önerilen alanlar; yazılarda tarih bilgisi ve 2 yıldan eski
   `dateModified`/`datePublished`
-- **içerik:** anahtar kelime doldurma (title'daki bir terimin ana içerikte %2,5'ten sık geçmesi,
+- **içerik:** anahtar kelime doldurma (title'daki bir terimin ana içerikte %3'ten sık geçmesi,
   150+ kelimelik sayfalarda; %4 üstü "orta" önemde)
 - **erişilebilirlik (HTML'den görülebilen):** etiketsiz form alanı, erişilebilir adı olmayan düğme,
   olmayan id'yi gösteren `aria-labelledby`/`aria-describedby`. Kontrast ve klavye gezintisi gerçek
@@ -106,7 +106,8 @@ Rapordaki her bulgu üç kategoriden birine düşer. Kategoriler tek bir yapıla
 
 - **Kural çözer**: deterministik bir kuralla güvenle düzeltilir. Örnekler: eksik lang, charset ya
   da viewport; fazla H1; kırık iç bağlantı; görsellere width/height; robots.txt ve sitemap
-  düzeltmeleri. Yönetici modunda grup olarak toplu onaylanabilir.
+  düzeltmeleri. Yönetici modunda grup olarak toplu onaylanabilir; her zaman onay isteyen
+  değişiklikler (ör. `Disallow` ekleyen robots.txt düzeltmesi) toplu onaya girmez, tek tek onaylanır.
 - **YZ önerir**: yerel model ya da sezgisel bir yöntem öneri üretir ve insan onayı gerekir.
   Örnekler: title/meta/H1 yeniden yazımı, alt metni, ince içeriği genişletme, JSON-LD, yetim ya da
   derin sayfalara iç bağlantı. Canonical, noindex, yönlendirme, hreflang ve robots kararları

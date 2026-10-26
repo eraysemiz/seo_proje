@@ -80,6 +80,19 @@ def test_zorunlu_onay_ve_yer_tutucu_otomatik_yazilmaz(ortam):
     assert v["durum"] == "onay_bekliyor"
 
 
+def test_toplu_kural_onayi_zorunlu_onayli_degisikligi_kapsamaz():
+    zorunlu = {"id": "D001", "kategori": "kural", "risk": "dusuk", "durum": "oneriliyor", "guven": 0.95,
+               "dogrulama": {"gecti": True}, "zorunlu_onay": "indekslemeyi kapatan bir yönerge ekleniyor"}
+    serbest = dict(zorunlu, id="D002", zorunlu_onay=None, guven=0.5)
+    plan = {"degisiklikler": [zorunlu, serbest], "esik": ESIK}
+    onaylanan, _ = dz.kararlari_coz(plan, {"kural_hepsi": True, "kararlar": {}})
+    assert [d["id"] for d in onaylanan] == ["D002"] and serbest["onay_kaynagi"] == "toplu"
+    assert zorunlu["durum"] == "onay_bekliyor" and "indekslemeyi kapatan" in zorunlu["durum_nedeni"]
+    zorunlu["durum"] = "oneriliyor"
+    onaylanan, _ = dz.kararlari_coz(plan, {"kural_hepsi": True, "kararlar": {"D001": {"karar": "onay"}}})
+    assert {d["id"] for d in onaylanan} == {"D001", "D002"} and zorunlu["onay_kaynagi"] == "kullanıcı"
+
+
 def test_otomatik_asamada_belgeyi_bozan_degisiklik_basarisiz(ortam):
     d = _bul(ortam["plan"], "html_lang_yok")
     metin = ortam["a"].oku("index.html").decode("utf-8")

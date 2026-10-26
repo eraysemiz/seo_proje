@@ -1610,8 +1610,9 @@ def kararlari_coz(plan, kararlar, asama="onayli"):
             d["durum"], d["durum_nedeni"] = "reddedildi", "kullanıcı reddetti"
             continue
         oto = "guven" in d and gv.otomatik_mi(d, esik)
+        # toplu onay ("tumunu onayla") zorunlu onayli degisiklikleri kapsamaz; bunlar tek tek onaylanir
         d["onay_kaynagi"] = "kullanıcı" if k.get("karar") == "onay" else "otomatik" if oto else \
-            "toplu" if d["kategori"] == "kural" and kararlar.get("kural_hepsi") else None
+            "toplu" if d["kategori"] == "kural" and kararlar.get("kural_hepsi") and not d.get("zorunlu_onay") else None
         if not d["onay_kaynagi"]:
             d["durum"] = "onay_bekliyor"
             d["durum_nedeni"] = (d.get("zorunlu_onay") or

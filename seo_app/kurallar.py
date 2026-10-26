@@ -153,7 +153,7 @@ ACIKLAMA = {
     "robots_kaynak_engelliyor": "robots.txt sayfanın CSS/JS dosyalarını engelliyor (arama motoru sayfayı doğru görüntüleyemez)",
     "tarih_bilgisi_yok": "Yazı/haber yapısal verisinde yayın ya da güncelleme tarihi yok",
     "icerik_eski": "Yazının son güncelleme tarihi 2 yıldan eski",
-    "anahtar_kelime_doldurma": "Bir anahtar terim ana içerikte aşırı sık geçiyor (%2,5'ten fazla)",
+    "anahtar_kelime_doldurma": "Bir anahtar terim ana içerikte aşırı sık geçiyor (%3'ten fazla)",
     "form_etiketi_yok": "Etiketi (label) olmayan form alanları var",
     "buton_adi_yok": "Metni ya da erişilebilir adı olmayan düğmeler var",
     "aria_gecersiz_referans": "aria-labelledby/aria-describedby sayfada olmayan bir id'yi gösteriyor",
@@ -607,7 +607,7 @@ def odak_terim_denetimi(d: dict) -> list:
     doldurma = anahtar_yogunlugu(d)
     if doldurma:
         kok, oran, adet, toplam = doldurma
-        # %2,5-4 arasi dogal yazimda da gorulebilir (dusuk); %4 ustu belirgin doldurmadir (orta)
+        # %3-4 arasi dogal yazimda da gorulebilir (dusuk); %4 ustu belirgin doldurmadir (orta)
         issues.append({"sorun": "anahtar_kelime_doldurma", "ciddiyet": "orta" if oran >= DOLDURMA_BELIRGIN else "dusuk",
                        "katman": "sayfa",
                        "cozum_yolu": cozum_yolu("anahtar_kelime_doldurma"),
@@ -615,7 +615,7 @@ def odak_terim_denetimi(d: dict) -> list:
     return issues
 
 
-DOLDURMA_ESIGI = 0.025
+DOLDURMA_ESIGI = 0.03
 DOLDURMA_BELIRGIN = 0.04
 DOLDURMA_EN_AZ_KELIME = 150
 

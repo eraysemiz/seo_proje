@@ -65,6 +65,9 @@ def test_onaylanan_sayisi_kararlari_coz_kosullarini_izler():
     kararlar = {"kural_hepsi": True, "kararlar": {"D002": {"karar": "ret"}, "D003": {"karar": "onay"},
                                                   "D004": {"karar": "onay"}, "D006": {"karar": "onay"}}}
     assert pl.onaylanan_sayisi(PLAN, kararlar) == 2      # D001 (tumu) + D003; D004 risk onaysiz, D006 gecersiz
+    zorunlu = {"degisiklikler": [dict(degisiklik("D001", "kural"), zorunlu_onay="Disallow ekleniyor")]}
+    assert pl.onaylanan_sayisi(zorunlu, {"kural_hepsi": True, "kararlar": {}}) == 0   # toplu onaya girmez
+    assert pl.onaylanan_sayisi(zorunlu, {"kural_hepsi": True, "kararlar": {"D001": {"karar": "onay"}}}) == 1
 
 
 def test_diff_bloklari(tmp_path):

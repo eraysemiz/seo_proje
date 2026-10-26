@@ -501,8 +501,11 @@ function degisiklikHtml(x, duzenlenebilir, kilitli) {
   let kontrol = "";
   if (!kilitli && !gecersiz) {
     if (x.kategori === "kural") {
-      kontrol = '<label class="kutu"><input type="checkbox" class="kural-onay" data-id="' + x.id + '" checked><span>' +
-        (uygulandi ? "Uygulandı · işareti kaldırırsanız geri çekilir" : "Onayla") + "</span></label>";
+      // her zaman onay isteyen kural duzeltmesi toplu onaya girmez; isaretsiz gelir, tek tek onaylanir
+      const zorunlu = x.zorunlu_onay && !uygulandi;
+      kontrol = '<label class="kutu"><input type="checkbox" class="kural-onay' + (zorunlu ? " zorunlu" : "") + '" data-id="' + x.id + '"' +
+        (zorunlu ? "" : " checked") + "><span>" +
+        (uygulandi ? "Uygulandı · işareti kaldırırsanız geri çekilir" : zorunlu ? "Onayla (tek tek)" : "Onayla") + "</span></label>";
     } else {
       // guven esigini gecen oneri onayli gelir; kullanici reddedebilir
       kontrol = '<span class="karar"><label class="kutu"><input type="radio" name="k-' + x.id + '" value="onay" data-id="' + x.id +
@@ -565,7 +568,7 @@ function yoneticiPaneliniCiz(p, y) {
   $("#yonetici-geri-al").classList.toggle("gizli", !(y.asama === "tamam" || (y.asama === "plan_hazir" && s.uygulandi)));
   $("#yonetici-rapor").classList.toggle("gizli", !["plan_hazir", "tamam", "geri_alindi"].includes(y.asama));
   const hepsi = $("#kural-hepsi");
-  if (hepsi) hepsi.addEventListener("change", () => document.querySelectorAll(".kural-onay").forEach((k) => { k.checked = hepsi.checked; }));
+  if (hepsi) hepsi.addEventListener("change", () => document.querySelectorAll(".kural-onay:not(.zorunlu)").forEach((k) => { k.checked = hepsi.checked; }));
 }
 
 function asamaTablosuHtml(oz) {
@@ -587,8 +590,12 @@ function asamaTablosuHtml(oz) {
 function yoneticiKararlari() {
   const kararlar = {};
   const kuralKutulari = [...document.querySelectorAll(".kural-onay")];
-  const hepsi = kuralKutulari.length > 0 && kuralKutulari.every((k) => k.checked) && $("#kural-hepsi") && $("#kural-hepsi").checked;
-  kuralKutulari.forEach((k) => { kararlar[k.dataset.id] = { karar: k.checked ? "onay" : "ret" }; });
+  const toplu = kuralKutulari.filter((k) => !k.classList.contains("zorunlu"));
+  const hepsi = toplu.length > 0 && toplu.every((k) => k.checked) && $("#kural-hepsi") && $("#kural-hepsi").checked;
+  kuralKutulari.forEach((k) => {
+    // isaretsiz zorunlu onayli oneri reddedilmis sayilmaz, onay bekler
+    if (k.checked || !k.classList.contains("zorunlu")) kararlar[k.dataset.id] = { karar: k.checked ? "onay" : "ret" };
+  });
   document.querySelectorAll('.karar input[type="radio"]:checked').forEach((r) => { kararlar[r.dataset.id] = { karar: r.value }; });
   document.querySelectorAll(".risk-onay-kutu:checked").forEach((k) => { if (kararlar[k.dataset.id]) kararlar[k.dataset.id].risk_onay = true; });
   document.querySelectorAll("textarea.duzen").forEach((t) => {

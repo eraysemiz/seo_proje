@@ -87,6 +87,8 @@ def test_anahtar_kelime_doldurma_esigi():
     assert anahtar_yogunlugu(dolu)[0] == "demli"
     dogal = extract(_sayfa("<p>" + " ".join(["demlik"] * 2 + ["kelime"] * 150) + "</p>").replace("<title>Çay", "<title>Demlik seti"))
     assert anahtar_yogunlugu(dogal) is None
+    sinirda = extract(_sayfa("<p>" + " ".join(["demlik"] * 4 + ["kelime"] * 150) + "</p>").replace("<title>Çay", "<title>Demlik seti"))
+    assert anahtar_yogunlugu(sinirda) is None                   # %2,6: esigin (%3) altinda
     kisa = extract(_sayfa("<p>" + " ".join(["demlik"] * 20 + ["kelime"] * 40) + "</p>").replace("<title>Çay", "<title>Demlik seti"))
     assert anahtar_yogunlugu(kisa) is None                      # 150 kelimenin altinda olculmez
 

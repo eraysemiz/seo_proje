@@ -15,7 +15,7 @@ Onay kurallari: her degisikligin bir guven puani vardir (seo_app/guven.py). Esig
 --ret ile reddedilirlerse onayli asamada geri cekilirler. Esigin altindakiler ve her zaman onay isteyenler
 ([doğrulanmalı] yer tutucusu, canonical ile birlestirme, indekslemeyi kapatan yonergeler) kimlikleriyle
 --onay ister; yuksek riskli olanlar ayrica --riski-kabul ister. "Kural çözer" grubu --kural-hepsi ile
-toplu onaylanabilir. Onay verilmeyen (otomatik ya da elle) hicbir degisiklik siteye yazilmaz.
+toplu onaylanabilir; her zaman onay isteyenler bu toplu onaya girmez. Onay verilmeyen (otomatik ya da elle) hicbir degisiklik siteye yazilmaz.
 """
 import argparse
 import json

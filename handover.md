@@ -1,8 +1,32 @@
 # HANDOVER: Yerel Dil Modeli ile SEO Denetimi ve İyileştirme
 
-Son güncelleme: **23 Ekim 2026** · Aktif dal: `masaustu-uygulama` (`main`'den, birleştirilmedi).
+Son güncelleme: **26 Ekim 2026** · Aktif dal: `seo-kurallari` (`main`'den bir commit ileride,
+yalnızca yerelde; push edilmedi, birleştirilmedi).
 Ayrıntılı kullanım: [README.md](README.md). Bu belgenin önceki sürümü (ödev bağlamı, Düzce birim
 siteleri bulguları, 20–23 Ekim notları) git geçmişinde: `git show 14d2142:handover.md`.
+
+## 0. Yeni sohbete başlarken (çalışma kuralları)
+
+Kullanıcının bu projede koyduğu ve her oturumda geçerli kurallar:
+
+- **Commit mesajlarına `Co-Authored-By` satırı (ya da başka bir yapay zekâ/ortak yazar ibaresi)
+  eklenmez.** Araç bu satırı varsayılan olarak öneriyor olsa bile yazılmaz. Geçmişteki bu satırlar
+  kullanıcının isteğiyle silindi (bkz. §8 "Dallar").
+- **Commit ve push yalnızca kullanıcı isteyince** yapılır. `main` üzerindeyken önce dal açılır.
+- Yeni bağımlılık eklemeden önce sorulur.
+- Analiz aracı `sorunlar.json`'u okumaz; bu dosya yalnızca değerlendirme betiklerinindir.
+- Araç iyi görünsün diye test sitesi değiştirilmez.
+- Yedek, diff günlüğü ve geri alma her değişiklikte çalışır kalmalı.
+- Salt okunur mod (Mod 2) bozulmaz; iki modu birden etkileyen değişiklikler ayrıca belirtilir.
+- Çok adımlı işlerde her adım sonunda: `✅ [Adım] — değişen dosyalar — doğrulama sonucu`.
+  Bir adım iki denemede çalışmazsa durulur ve raporlanır.
+- Kullanıcının açık `SEO_Denetim.exe`'si kapatılmaz/öldürülmez. Exe açıkken `dist/` kilitli olduğu
+  için derleme beklenir.
+- Kullanıcıyla Türkçe yazışılır.
+- **graphify:** proje kökündeki `CLAUDE.md` (git'te izlenmiyor) kod soruları için önce
+  `graphify query/explain/path` kullanılmasını ister. Grafik 26 Ekim'de `seo-kurallari` dalında
+  baştan kuruldu (`graphify-out/`, git dışında; 1820 düğüm, 63 topluluk). Kod değişince
+  `graphify update .` ile güncellenir.
 
 ## 1. Proje amacı
 
@@ -242,7 +266,7 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - `degerlendir.py`: `sonra_otomatik/` desteği ve araç "Çözüldü" ↔ canlı kontrol tutarlılığı.
   - Yeni testler `tests/test_asamalar.py` (13).
 
-- **25 Ekim (`seo-kurallari`): SEO kural listesinden 12 kural eklendi.**
+- **25 Ekim (`seo-kurallari`, `819510f`): SEO kural listesinden 12 kural eklendi.**
   - Yeni kodlar: `canonical_kirik`, `sitemap_olu_adres` (artık iki modda, tarama geneli),
     `blank_noopener_yok`, `guvenlik_basligi_eksik`, `onbellek_basligi_yok`, `schema_kurum_logo_yok`,
     `schema_sosyal_profil_yok`, `breadcrumb_yok`, `yapisal_veri_onerilen_alan`,
@@ -255,11 +279,35 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - Puanı etkiler (iki mod): test sitesinde başlangıç ortalama sayfa puanı 79 → 72, bulgu 187 → 287.
     `sorunlar.json`'a dokunulmadı; yeni bulgular değerlendirmede "plansız" (92) görünür.
   - Testler `tests/test_yeni_kurallar.py` (15).
+- **26 Ekim:** graphify bilgi grafiği baştan kuruldu (kod değişmedi). Devir belgesi yeni sohbet
+  için güncellendi (§0 çalışma kuralları, §8 dal ve çalışma ağacı durumu).
+- **26 Ekim (`seo-kurallari`, commit'lenmedi): iki açık soru kullanıcının onayıyla kapatıldı.**
+  - `anahtar_kelime_doldurma` eşiği %2,5 → %3 (`kurallar.DOLDURMA_ESIGI`; %4 üstü "orta" aynı).
+    Test sitesinde 14 → 8 bulgu (son taramanın oranlarıyla hesaplandı). **İki modun puanını etkiler.**
+  - Toplu onay (`--kural-hepsi`, masaüstü "tümünü onayla", web "Kural çözer grubunun tamamını
+    onayla") artık `zorunlu_onay`'lı kural değişikliklerini kapsamaz; bunlar tek tek onaylanır.
+    Değişen yerler: `duzeltme.kararlari_coz`, `masaustu/plan.py` (`toplu_onayli`, `onaylanan_sayisi`,
+    `onay_argumanlari`), `masaustu/uygulama.py` gösterimi, `statik/uygulama.js` (zorunlu kutular
+    işaretsiz gelir, toplu işarete girmez, işaretsiz kalırsa ret değil "onay bekliyor").
+    Robots düzelticileri hâlâ "YZ önerir · yüksek risk"; artık kural kategorisine alınabilirler (karar bekliyor).
+  - README, `yonet.py` yardım metni ve testler güncellendi (`test_toplu_kural_onayi_zorunlu_onayli_degisikligi_kapsamaz`).
+- **26 Ekim:** .exe `seo-kurallari` ile yeniden derlendi (11:33); oto-test 13/13, temiz kapanış.
 
 ## 8. Mevcut durum
 
-- **Testler:** `py -m pytest -q` → 289 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
-  Python 3.13 derleme ortamında da aynı sonuç.
+- **Testler:** `py -m pytest -q` → 290 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
+  Python 3.13 derleme ortamında 289'luk sürümde denendi; 290'lık sürüm 3.13'te koşulmadı `[doğrulanmalı]`.
+- **.exe oto-testi (26 Ekim, `seo-kurallari` = `819510f`, eşik/toplu onay değişikliklerinden önce):**
+  13/13 adım, temiz kapanış (süreç kalmadı, 8080/5000 kapalı). Tespit 47/47, düzeldi 37/47
+  (kural 13/13, YZ 23/27, elle 1/7); sayfa puanı 72 → 88 (otomatik) → 88 (onaylı), bulgu 287 → 163 → 156.
+  Rapor: oturumun geçici klasöründe (`oto_rapor.json`), çıktılar `sonuclar/127.0.0.1/sonuc_2026-10-26_11-34-22/`.
+- **Düzelticinin yarattığı yeni bulgular (incelendi, 25 Ekim 23:37 taraması):** otomatik aşamadan sonra
+  9 yeni bulgu. 6'sı `urunler/beyaz-cay.html`'de (düzeltmeyle taramaya giren sayfa; site geneli başlık/
+  HTTPS bulguları). `yapisal_veri_onerilen_alan` (rize-filiz): D025 bozuk JSON-LD'yi onarınca görünür oldu.
+  `anahtar_kelime_doldurma` (hakkımızda, %2,6): yeni eşikle kalktı. **Açık:** `schema_sosyal_profil_yok`
+  (ana sayfa): `yz_jsonld` (`schema_kurum_turu_yok`) Organization bloğuna logoyu sayfadan veriyor ama
+  sosyal profilleri vermiyor; çözüm `kural_sosyal_profil`'deki bağlantı toplama yardımcıya alınıp
+  profiller modele + kaynak metne verilmeli, model yazmazsa `sameAs` eklenmeli (henüz yapılmadı).
 - **.exe tam döngüsü (23 Ekim, `--oto-test`, qwen3.5-9b):**
   - .exe proje dışında, Türkçe karakterli bir klasörden çalıştırıldı; 13/13 adım başarılı.
   - Döngü: test sitesi → doğrula → modelli tarama (399 sn) → onay → uygula → değerlendir → geri al
@@ -302,9 +350,22 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - FTP/SFTP/CMS adaptörleri.
   - Rerank sunucusuyla gerçek deneme.
   - 58 Düzce sitesinde modelli tam tarama (önceki notlara göre) `[doğrulanmalı]`.
-- **Dallar:** tüm dallar `main`'e birleştirildi ve GitHub'a gönderildi. `main`, `yonetici-modu` ve
-  `dogruluk-iyilestirme` aynı commit'te. Son 5 commit'in mesajından `Co-Authored-By` satırı
-  silindi (geçmiş yeniden yazıldı; eski hâli yerel `yedek/coauthor-oncesi-*` etiketlerinde).
+- **Dallar (26 Ekim):**
+  - `main` = `asamali-uygulama` = `aa2cc57`, ikisi de GitHub'da (`origin`). Önceki dallar
+    (`yonetici-modu`, `dogruluk-iyilestirme` = `489189d` vb.) `main`'e birleştirilmiş durumda.
+  - `seo-kurallari` = `819510f` (12 yeni kural), `main`'in bir commit önünde. **Yalnızca yerelde**;
+    push ve birleştirme kullanıcının kararını bekliyor (`git push -u origin seo-kurallari`).
+  - Commit mesajlarından `Co-Authored-By` satırları silindi (geçmiş yeniden yazıldı, GitHub'a
+    zorla gönderildi). Eski hâli yerel `yedek/coauthor-oncesi-main` ve `yedek/coauthor-oncesi-masaustu`
+    etiketlerinde; kullanıcı isterse silinebilir. Yeni commit'lerde de bu satır yazılmaz (§0).
+- **Çalışma ağacı (26 Ekim):** test sitesi geri alındı ve oto-test sonunda sıfırlandı; 48 dosyanın
+  hash'i orijinalle eşleşiyor, `test_sitesi/` git'te temiz. Commit'lenmemiş değişiklikler: `handover.md`,
+  `README.md`, `yonet.py`, `seo_app/kurallar.py`, `seo_app/duzeltme.py`, `seo_app/statik/uygulama.js`,
+  `masaustu/plan.py`, `masaustu/uygulama.py`, üç test dosyası. İzlenmeyen `CLAUDE.md` ve `.claude/`
+  graphify/Claude Code ayarlarıdır.
+- **.exe:** son derleme 26 Ekim 11:33 (`seo-kurallari` = `819510f`). `seo_app` ve `masaustu/*.py`
+  .exe'ye gömülmez, proje klasöründen okunur; eşik/toplu onay değişiklikleri için yeniden derleme
+  gerekmez. Değişikliklerden sonra oto-test tekrarlanmadı `[doğrulanmalı]`.
 - **Tarama çıktıları git dışında:** `sonuclar/` tamamen `.gitignore`'da (`3bad90d`). Önceden
   izlenen 114 dosya (örn. `adim9_lighthouse/`) depodan çıkarıldı, diskte duruyor; eski sürümleri
   git geçmişinde (`git show 0261537:sonuclar/...`).
@@ -322,7 +383,8 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
 - **Sessiz geri dönüş yok:** LM Studio ya da model yoksa tarama hata verir. Modelsiz çalışmak için
   "yalnızca denetle" açıkça seçilmelidir.
 - **Kategori ayrı katman:** `cozum_yolu` değiştirilmedi ki Mod 2 analizi ve puanları değişmesin.
-  Yönetici moduna özgü denetimler (`charset_yok`, `sitemap_olu_adres`) Mod 2'ye eklenmedi.
+  Başta yönetici moduna özgü olan `charset_yok` (23 Ekim) ve `sitemap_olu_adres` (25 Ekim) artık
+  iki modda da çalışıyor.
 - **Parça değişimi:** dosyalar BeautifulSoup ile yeniden yazılmaz; diff okunur kalır ve dosyanın
   plan sonrası değiştiği algılanabilir.
 - **Uydurmaya karşı yer tutucu:** model sitede olmayan bilgiyi `[doğrulanmalı: …]` ile yazar;
@@ -393,9 +455,14 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
 5. Açık sorular (yönetici modu):
    - `canonical_yok` Kural çözer mi kalmalı, YZ önerir · yüksek risk mi?
    - Kopya içerik için özgünleştirme görevi eklensin mi?
-6. `asamali-uygulama` dalını `main`'e birleştirip push etmek. .exe bu dalla derlendi ve modelli
-   oto-test 13/13 geçti (açık bir `SEO_Denetim.exe` `dist/` klasörünü kilitler; derlemeden önce kapatın). `dogruluk-iyilestirme` değişikliklerini gözden geçirmek. Puanlama ve yeni denetimler Mod 2
-   puanlarını da değiştirir; Düzce sitelerindeki eski sonuçlarla karşılaştırma yeniden yapılmalı.
+6. `seo-kurallari` dalı: 26 Ekim değişikliklerini commit'lemek (kullanıcı isteyince), push edip
+   `main`'e birleştirmek. Değişikliklerden sonra oto-testi bir kez daha koşmak. Puanlama ve yeni
+   denetimler Mod 2 puanlarını da değiştirir; Düzce sitelerindeki eski sonuçlarla karşılaştırma
+   yeniden yapılmalı.
+   - Yapılacak: `yz_jsonld` Organization önerisine sayfadaki sosyal profillerden `sameAs` (§8).
+   - Kapandı (26 Ekim): doldurma eşiği %3; toplu onay `zorunlu_onay`'a uyuyor.
+   - Yeni soru: robots düzelticileri (`robots_bilinmeyen_yonerge`, `robots_kaynak_engelliyor`)
+     artık "Kural çözer"e alınsın mı? Toplu onay açığı kapandığı için engel kalmadı.
 7. Açık sorular (güven): K05 için kelime sınırında kırpma eklensin mi? `defer` güveni satır içi
    betik bağımlılığı denetlenerek yükseltilsin mi? Eşik 0.8 başka sitelerde ölçülmeli.
 8. Diğer kararlar:
