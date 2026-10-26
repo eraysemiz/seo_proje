@@ -729,12 +729,22 @@ function bulguyuYaz(d, sonuclar) {
       : "Henüz tarama yapılmadı. Yukarıdaki formu doldurup taramayı başlatın.";
     return;
   }
-  const o = ortalama(puanlari(gecerli, "once", "sayfa")), s = ortalama(puanlari(gecerli, "sonra", "sayfa"));
+  const o = ortalama(puanlari(gecerli, "once", "sayfa"));
+  const ek = hatali ? ' <span class="ikincil-bilgi">' + hatali + " adres taranamadı.</span>" : "";
+  if (yoneticiOzeti && yoneticiOzeti.sayaclar && var_mi(yoneticiOzeti.sayaclar.toplam)) {
+    // yonetici modu: sayaclar bulgu durumlarindan (HTML/JSON raporla ayni kaynak)
+    const c = yoneticiOzeti.sayaclar, son = [...yoneticiOzeti.asamalar].reverse().find((a) => a.olculdu) || {};
+    p.innerHTML = gecerli.length + " sayfa analiz edildi. Ortalama sayfa puanı " + sayi(o) + " → " +
+      sayi((son.puanlar || {}).sayfa) + ". " + sayi(c.toplam) + " sorundan " + sayi(c.aktif) + " aktif" +
+      (c.sayfa ? " (" + sayi(c.sayfa.aktif) + " sayfa sorunu, " + sayi(c.site_ayari.aktif) + " site geneli ayar)" : "") + ", " +
+      sayi(c.cozulen) + " çözüldü (" + sayi(c.cozuldu_otomatik) + " otomatik, " + sayi(c.cozuldu_onayli) + " onaylı)." + ek;
+    return;
+  }
+  const s = ortalama(puanlari(gecerli, "sonra", "sayfa"));
   const so = gecerli.reduce((t, k) => t + (k.once_sorun_sayisi || 0), 0);
   const ss = gecerli.reduce((t, k) => t + (k.sonra_sorun_sayisi || 0), 0);
   p.innerHTML = gecerli.length + " sayfa analiz edildi. Ortalama sayfa puanı " + sayi(o) + " → " + sayi(s) +
-    ", toplam sorun " + sayi(so) + " → " + sayi(ss) + "." +
-    (hatali ? ' <span class="ikincil-bilgi">' + hatali + " adres taranamadı.</span>" : "");
+    ", toplam sorun " + sayi(so) + " → " + sayi(ss) + "." + ek;
 }
 
 function asamaHucresi(asamalar, alan, bicim) {
@@ -751,7 +761,8 @@ function yoneticiOzetiniCiz(kutu, oz) {
   const durumlar = Object.entries(oz.sayilar).filter(([, n]) => n).map(([d, n]) => kacis(BULGU_DURUM_ADI[d] || d) + " " + n).join(" · ");
   kutu.innerHTML =
     hucre("Ortalama sayfa puanı", asamaHucresi(as, "puanlar", (p) => sayi(p.sayfa)), adlar, true) +
-    hucre("Sorun", asamaHucresi(as, "bulgu_sayisi", sayi), (son.cozulen ?? 0) + " çözüldü · " + (son.yeni_bulgu ?? 0) + " yeni çıktı") +
+    hucre("Aktif sorun", asamaHucresi(as, "aktif", sayi), (son.cozuldu_otomatik ?? 0) + " otomatik + " +
+      (son.cozuldu_onayli ?? 0) + " onaylı çözüldü · " + (son.yeni_bulgu ?? 0) + " yeni çıktı") +
     hucre("Çözüm oranı ⓘ", son.cozum_orani === null || son.cozum_orani === undefined ? "—" : yuzde(son.cozum_orani),
       (son.cozulen ?? 0) + " / " + (son.cozulebilir ?? 0) + " çözülebilir · elle " + (son.elle ?? 0), false, oz.tanim) +
     hucre("Sorun durumları", sayi(oz.toplam), durumlar);
@@ -787,7 +798,8 @@ function ozetiCiz(sonuclar) {
 function tabloyuCiz(sonuclar, toplam, suruyor) {
   // veri degismediyse tabloyu yeniden kurma: acik satirlar ve odak korunur
   const imza = sonuclar.length + "|" + toplam + "|" + suruyor + "|" + Object.keys(aciklamalar).length + "|" +
-    (yoneticiOzeti ? JSON.stringify(yoneticiOzeti.sayilar) + yoneticiOzeti.asamalar.length : "");
+    (yoneticiOzeti ? JSON.stringify(yoneticiOzeti.sayilar) + JSON.stringify(yoneticiOzeti.sayaclar) +
+      yoneticiOzeti.asamalar.length + String(yoneticiOzeti.geri_alindi) : "");
   if (imza === tabloImzasi) return;
   tabloImzasi = imza;
 
@@ -812,23 +824,26 @@ function tabloyuCiz(sonuclar, toplam, suruyor) {
       govde.appendChild(satir);
       return;
     }
-    const po = k.once_puanlar || {};
-    let ps = k.sonra_puanlar || {}, sonraSorun = k.sonra_sorun_sayisi, oran = k.cozum_orani;
+    let po = k.once_puanlar || {};
+    let ps = k.sonra_puanlar || {}, onceSorun = k.once_sorun_sayisi, sonraSorun = k.sonra_sorun_sayisi, oran = k.cozum_orani;
     if (yoneticiOzeti) {
-      const g = yoneticiOzeti.guncel[k.ad] || {};
-      ps = { sayfa: g.puan };
-      sonraSorun = g.sorun;
-      oran = sayfaCozumOrani(k.ad);
+      // yonetici modu: baslangictaki sorun → aktif sorun, puan ve oran sayfa sayaclarindan
+      const g = (yoneticiOzeti.sayfalar || {})[k.ad] || {};
+      po = Object.assign({}, po, { sayfa: g.puan_once ?? po.sayfa });
+      ps = { sayfa: g.puan_guncel };
+      onceSorun = g.toplam;
+      sonraSorun = g.aktif;
+      oran = g.cozum_orani;
     }
     const satir = yarat("tr", "ana");
     satir.innerHTML = adHucre +
       '<td class="puan-hucre"><div class="puan">' + olcekHtml(po.sayfa, ps.sayfa) +
         '<span class="puan-metin">' + onceSonra(po.sayfa, ps.sayfa, 1) + "</span></div></td>" +
-      '<td class="sayi">' + onceSonra(k.once_sorun_sayisi, sonraSorun, -1) + "</td>" +
+      '<td class="sayi" data-sayac="sorun">' + onceSonra(onceSorun, sonraSorun, -1) + "</td>" +
       '<td class="sayi gizle-dar">' + (var_mi(po.site) ? sayi(po.site) : "—") + "</td>" +
       '<td class="sayi">' + yuzde(oran) + "</td>" +
       '<td class="sayi">' + sureYaz(k.sure_toplam_sn) + "</td>" +
-      '<td class="mobil-ozet">Sorun ' + (var_mi(k.once_sorun_sayisi) ? k.once_sorun_sayisi + " → " + (sonraSorun ?? "—") : "—") +
+      '<td class="mobil-ozet">Sorun ' + (var_mi(onceSorun) ? onceSorun + " → " + (sonraSorun ?? "—") : "—") +
         " · Çözüm " + yuzde(oran) + " · " + sureYaz(k.sure_toplam_sn) + "</td>" +
       '<td class="ac-kapa"><button type="button" aria-expanded="false" aria-label="' +
         kacis(ad.ana) + ' ayrıntısını aç">' + IMGE.ok + "</button></td>";
@@ -875,17 +890,34 @@ const BULGU_DURUM_ADI = { cozuldu_otomatik: "Çözüldü (otomatik)", cozuldu_on
 const BULGU_DURUM_SINIF = { cozuldu_otomatik: "iyi", cozuldu_onayli: "iyi", basarisiz: "kotu", onay_bekliyor: "dikkat",
   dogrulanmadi: "dikkat" };
 
-// yonetici modu: bir sayfanin cozulen / cozulebilir bulgu orani (Elle duzeltilir haric; yonetici.COZUM_ORANI_TANIMI)
-function sayfaCozumOrani(url) {
-  const ds = Object.entries(yoneticiOzeti.durumlar).filter(([a]) => a.slice(a.indexOf("|") + 1) === url).map(([, b]) => b.durum);
-  const cozulebilir = ds.filter((d) => d !== "elle");
-  return cozulebilir.length ? cozulebilir.filter((d) => d.startsWith("cozuldu")).length / cozulebilir.length : null;
+// yonetici modu: sayfanin bulgulari (sorun kodu → durum), bulgu durumlarindan
+function sayfaBulgulari(url) {
+  const sonuc = {};
+  Object.entries(yoneticiOzeti.durumlar).forEach(([a, b]) => {
+    const i = a.indexOf("|");
+    if (a.slice(i + 1) === url) sonuc[a.slice(0, i)] = b;
+  });
+  return sonuc;
+}
+
+function takmaNotu(t, n) {
+  return t.tur === "gecersiz"
+    ? "Bu adres geçersiz bir sayfa (" + (aciklamalar[t.asil_sorun] || t.asil_sorun) + "); içerikle ilgili " + n + " bulgusu bu tek sorunun altında sayılır."
+    : "Bu adres " + t.asil_url + " sayfasının " + (t.tur === "yonlendirme" ? "yönlendirmesi" : "parametreli adresi") +
+      "; aynı dosyaya ait " + n + " bulgusu asıl sayfada bir kez sayılır ve onunla birlikte çözülür.";
 }
 
 function durumCipi(kod, url) {
   const b = yoneticiOzeti && url ? yoneticiOzeti.durumlar[kod + "|" + url] : null;
-  return b ? ' <span class="cip ' + (BULGU_DURUM_SINIF[b.durum] || "") + '" title="' + kacis(b.neden) + '">' +
-    kacis(b.durum_adi) + "</span>" : "";
+  if (!b) return "";
+  // cozulen bulgu: nasil cozuldugu (uygulanan degisiklik ozeti, guven, onay kaynagi)
+  const cozum = (b.cozum || []).map((c) => '<span class="ayr">' + kacis(c.id + ": " + c.ozet) +
+    (var_mi(c.guven) ? " · güven " + Number(c.guven).toFixed(2) : "") +
+    (c.onay_kaynagi ? " · onay: " + kacis(c.onay_kaynagi) : "") + "</span>").join("");
+  const takma = (b.takma_adresler || []).length ? '<span class="ayr">Ayrıca görüldüğü adresler (bir kez sayılır): ' +
+    b.takma_adresler.map((t) => kacis(t.url)).join(", ") + "</span>" : "";
+  return ' <span class="cip ' + (BULGU_DURUM_SINIF[b.durum] || "") + '" title="' + kacis(b.neden) + '">' +
+    kacis(b.durum_adi) + "</span>" + cozum + takma;
 }
 
 function sorunMaddesi(kod, sorunlar, url) {
@@ -925,10 +957,22 @@ function ayrintiHtml(k) {
 
   // sorun defteri: neyin cozuldugu, neyin kaldigi, neyin yeni ciktigi yan yana
   if (yoneticiOzeti) {
-    // yonetici modu: her sorunun yaninda yeniden kontrolle dogrulanmis guncel durumu
-    h += '<div class="bolum"><h4>Sorunlar ve güncel durumları <span class="sayac">' + (k.once_sorun_sayisi || 0) +
-      '</span></h4><div class="defter">' + defterSutunu("kaldi", "sorun", Object.keys(sorunlar), sorunlar, "Sorun bulunamadı.", k.ad) +
-      "</div>";
+    // yonetici modu: aktif ve cozulen sorunlar ayri; cozuldu yalnizca yeniden kontrolle dogrulanmissa
+    // site geneli ayarlar (HTTPS, guvenlik basliklari…) sayfada sayilmaz; bir kez, site ozetinde gosterilir
+    const bs = sayfaBulgulari(k.ad);
+    // takma adres (yonlendirme, parametre) ya da gecersiz sayfa bulgusu asil bulguda bir kez sayilir
+    const sayfaKodlari = Object.keys(bs).filter((kod) => !bs[kod].site_ayari && !bs[kod].takma);
+    const takma = Object.keys(bs).filter((kod) => bs[kod].takma);
+    const aktif = sayfaKodlari.filter((kod) => bs[kod].aktif !== false);
+    const cozulen = sayfaKodlari.filter((kod) => bs[kod].aktif === false);
+    const siteAcik = Object.keys(bs).filter((kod) => bs[kod].site_ayari && bs[kod].aktif !== false);
+    h += '<div class="bolum"><h4>Sorunlar ve güncel durumları <span class="sayac">' + aktif.length + " aktif · " +
+      cozulen.length + ' çözüldü</span></h4><div class="defter">' +
+      defterSutunu("kaldi", "aktif sorun", aktif, sorunlar, "Aktif sorun yok.", k.ad) +
+      defterSutunu("cozuldu", "çözülen sorun", cozulen, sorunlar, "Bu sayfada henüz çözülen sorun yok.", k.ad) +
+      "</div>" + (takma.length ? '<p class="not">' + kacis(takmaNotu(bs[takma[0]].takma, takma.length)) + "</p>" : "") +
+      (siteAcik.length ? '<p class="not">Ayrıca ' + siteAcik.length + " site geneli ayar bu sayfayı da etkiliyor: " +
+        siteAcik.map((x) => kacis(aciklamalar[x] || x)).join(", ") + ". Bir kez sayılır; ayrıntı site özetinde.</p>" : "");
   } else if (Array.isArray(k.cozulen_sorunlar) || Array.isArray(k.kalan_sorunlar)) {
     h += '<div class="bolum"><h4>Sorunlar <span class="sayac">önce ' + (k.once_sorun_sayisi ?? 0) +
       ", sonra " + (k.sonra_sorun_sayisi ?? 0) + '</span></h4><div class="defter">' +

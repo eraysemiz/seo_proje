@@ -170,6 +170,63 @@ def test_bulgu_durumlari_yeniden_taramaya_dayanir(ortam):
     assert "Otomatik düzeltmeler sonrası" in html and "Onaylı düzeltmeler sonrası" in html and "Çözüm oranı" in html
 
 
+def test_sayaclar_bulgu_durumlarindan_hesaplanir(ortam):
+    _otomatik(ortam)
+    k, plan = ortam["klasor"], ortam["plan"]
+    for ad in ("site_ozeti.json", "site_geneli.json"):          # durumlu rapor.html icin baslangic ciktilari
+        (k / ad).write_text("[]", encoding="utf-8")
+    # ikinci sayfa: ayni site geneli ayar (https_yok) iki sayfada; sayacta bir kez sayilir
+    ikinci = dict(_kayit(("https_yok",)), ad=TEMEL + "iletisim.html", site_url=TEMEL + "iletisim.html")
+    (k / "rapor.json").write_text(json.dumps([_kayit(KODLAR + ("charset_yok",)), ikinci]), encoding="utf-8")
+    _tarama_yaz(k, "sonra_otomatik", ("viewport_yok", "h1_birden_fazla", "noindex", "https_yok"), 75)
+    plan["asamalar"][-1]["tarama"] = "sonra_otomatik"
+    r = yonetici.rapor_uret(k, plan)
+    # otomatik asama: lang + charset cozuldu; aktif + cozulen = baslangictaki birim sayisi (5 sayfa bulgusu + 1 ayar)
+    s = r["sayaclar"]
+    assert {x: s[x] for x in ("toplam", "aktif", "cozulen", "cozuldu_otomatik", "cozuldu_onayli")} == \
+        {"toplam": 6, "aktif": 4, "cozulen": 2, "cozuldu_otomatik": 2, "cozuldu_onayli": 0}
+    assert s["ham_toplam"] == 7 and (s["sayfa"]["aktif"], s["site_ayari"]["aktif"], s["site_ayari_sayfa"]) == (3, 1, 2)
+    assert r["bulgu_toplam"] == 6 and sum(r["bulgu_sayilari"].values()) == 6
+    ayar = r["site_ayarlari"][0]
+    assert (ayar["sorun"], ayar["sayfa_sayisi"], ayar["aktif"], ayar["durum"]) == ("https_yok", 2, True, "elle")
+    a0, a1 = r["asamalar"]
+    assert (a0["aktif"], a1["aktif"], a1["cozuldu_otomatik"]) == (6, 4, 2)
+    noindex, h1 = _bul(plan, "noindex")["id"], _bul(plan, "h1_birden_fazla")["id"]
+    yonetici.asama_uygula(k, plan, {"kararlar": {noindex: {"karar": "onay", "risk_onay": True}, h1: {"karar": "ret"}}},
+                          "onayli", ortam["sonuc"], tekrar_tara=False)
+    r = yonetici.rapor_uret(k, plan)
+    s = r["sayaclar"]                                           # onayli asama yeniden taranmadi: noindex aktif kalir
+    assert (s["aktif"], s["cozuldu_onayli"]) == (4, 0) and r["bulgu_sayilari"]["dogrulanmadi"] == 1
+    _tarama_yaz(k, "sonra", ("viewport_yok", "h1_birden_fazla", "https_yok"), 85)
+    plan["asamalar"][-1]["tarama"] = "sonra"
+    r = yonetici.rapor_uret(k, plan)
+    s, sayfa = r["sayaclar"], r["sayfa_sayaclari"][TEMEL]
+    assert (s["aktif"], s["cozuldu_otomatik"], s["cozuldu_onayli"]) == (3, 2, 1)
+    assert [(a["aktif"], a["cozuldu_otomatik"], a["cozuldu_onayli"]) for a in r["asamalar"]] == [(6, 0, 0), (4, 2, 0), (3, 2, 1)]
+    # sayfa sayaci site geneli ayari icermez (ayri: site_ayari = bu sayfayi etkileyen acik ayar)
+    assert {x: sayfa[x] for x in ("toplam", "aktif", "cozulen", "site_ayari", "puan_once", "puan_guncel")} == \
+        {"toplam": 5, "aktif": 2, "cozulen": 3, "site_ayari": 1, "puan_once": 60, "puan_guncel": 85}
+    assert sayfa["cozum_orani"] == 0.6                          # 3 / 5 cozulebilir
+    assert sum(p["aktif"] for p in r["sayfa_sayaclari"].values()) + s["site_ayari"]["aktif"] == s["aktif"]
+    cozulen = next(b for b in r["bulgu_durumlari"] if b["sorun"] == "html_lang_yok")
+    assert not cozulen["aktif"] and cozulen["cozum"][0]["onay_kaynagi"] == "otomatik" and cozulen["cozum"][0]["guven"]
+    # tarayicida acilan rapor: sayaclar ve listeler ayni kaynaktan; cozulen aktif listesinde yok
+    html = (k / "rapor.html").read_text(encoding="utf-8")
+    assert 'id="sayac-aktif"><span class="soluk">Aktif sorunlar</span><b class="yuksek">3</b>' in html
+    assert "2 otomatik · 1 onaylı · toplam 6" in html and 'data-sayac="aktif">2<' in html
+    assert "2 sayfa sorunu · 1 site ayarı (2 sayfa × ayar)" in html and '<table id="site-ayarlari">' in html
+    aktif_liste = html.split("<h4>Aktif sorunlar (2)</h4>")[1].split("<h4>Çözülen sorunlar (3)</h4>")
+    assert "Çözüldü" not in aktif_liste[0] and "Çözüldü (otomatik)" in aktif_liste[1] and "güven" in aktif_liste[1]
+    assert "HTTPS" not in aktif_liste[0] and "1 site geneli ayar bu sayfayı da etkiliyor" in aktif_liste[1]
+    assert 'http-equiv="Cache-Control" content="no-store"' in html
+
+
+def test_standart_mod_raporunda_durum_sayaci_yok():
+    from seo_app.rapor import html_rapor
+    html = html_rapor([_kayit(KODLAR)], [])
+    assert "Sorun görülme sayısı" in html and "Aktif sorunlar" not in html and "no-store" not in html
+
+
 def test_yeniden_tarama_yoksa_cozuldu_denmez(ortam):
     _otomatik(ortam)                                            # tekrar_tara=False: olcum yok
     r = yonetici.rapor_uret(ortam["klasor"], ortam["plan"])
@@ -197,6 +254,10 @@ def test_geri_alma_tum_asamalari_ve_durumlari_geri_dondurur(ortam):
     assert durumlar <= {"onay_bekliyor", "elle"}                 # baslangictaki gibi
     geri = r["asamalar"][-1]
     assert geri["ad"] == "geri_alma" and geri["cozulen"] == 0 and geri["puanlar"] == r["asamalar"][0]["puanlar"]
+    # sayaclar baslangica doner: hepsi aktif
+    assert r["sayaclar"]["aktif"] == r["sayaclar"]["toplam"] == r["asamalar"][0]["aktif"] == geri["aktif"]
+    assert r["sayaclar"]["cozulen"] == 0 and r["asamalar"][1]["cozuldu_otomatik"] > 0   # gecmis olcum korunur
+    assert all(s["cozulen"] == 0 for s in r["sayfa_sayaclari"].values())
     assert r["asamalar"][1]["cozulen"] > 0                       # gecmis asamanin olcumu korunur
     with pytest.raises(yonetici.YoneticiHatasi):
         yonetici.uygula_ve_dogrula(k, {}, ortam["sonuc"], tekrar_tara=False)
@@ -229,7 +290,8 @@ def test_masaustu_plan_yardimcilari_uygulanmislari_ayri_sayar(ortam):
     assert not pl.kilitli_mi(plan) and pl.durum_metni(_bul(plan, "html_lang_yok")) == "Uygulandı (otomatik)"
     assert sn.klasor_bilgisi(ortam["klasor"])["durum"] == "otomatik uygulandı"
     satirlar = pl.ozet_satirlari(pl.rapor_ozeti(ortam["klasor"]))
-    assert satirlar[0].startswith("Başlangıç") and satirlar[-1].startswith("Sorun durumları")
+    assert satirlar[0].startswith("Başlangıç") and satirlar[-2].startswith("Sorun durumları")
+    assert satirlar[-1].startswith("Aktif ")          # tekrar taranmadi: uygulanan da aktif kalir
     yonetici.uygula_ve_dogrula(ortam["klasor"], kararlar, ortam["sonuc"], tekrar_tara=False)
     plan = json.loads((ortam["klasor"] / "degisiklikler.json").read_text(encoding="utf-8"))
     assert pl.kilitli_mi(plan) and sn.klasor_bilgisi(ortam["klasor"])["durum"] == "uygulandı"
@@ -247,3 +309,54 @@ def test_web_plan_ucu_asama_ozetini_ve_durumlari_dondurur(ortam):
     assert d["sayilar"]["uygulandi"] == 4 and d["sayilar"]["otomatik_uygulandi"] == 4 and d["asamalar"] == ["otomatik"]
     assert [a["ad"] for a in d["ozet"]["asamalar"]] == ["baslangic", "otomatik"]
     assert d["ozet"]["durumlar"]["html_lang_yok|" + TEMEL]["durum"] == "dogrulanmadi"
+
+
+def test_web_ozeti_ve_html_raporu_ayni_sayaclari_verir(ortam):
+    from seo_app import web
+    _otomatik(ortam)
+    k, plan = ortam["klasor"], ortam["plan"]
+    for ad in ("site_ozeti.json", "site_geneli.json"):
+        (k / ad).write_text("[]", encoding="utf-8")
+    _tarama_yaz(k, "sonra_otomatik", ("viewport_yok", "h1_birden_fazla", "noindex", "https_yok"), 75)
+    plan["asamalar"][-1]["tarama"] = "sonra_otomatik"
+    r = yonetici.rapor_uret(k, plan)
+    web.DURUM.update({"calisiyor": False, "mod": "yonetici", "sonuclar": [],
+                      "yonetici": {"asama": "plan_hazir", "klasor": str(k)}})
+    try:
+        istemci = web.uygulama.test_client()
+        oz = istemci.get("/api/yonetici/plan").get_json()["ozet"]
+        yanit = istemci.get("/api/html")
+    finally:
+        web.DURUM.update({"mod": "standart", "yonetici": None})
+    assert oz["sayaclar"] == r["sayaclar"] and oz["sayfalar"][TEMEL]["aktif"] == r["sayfa_sayaclari"][TEMEL]["aktif"] == 3
+    assert oz["durumlar"]["html_lang_yok|" + TEMEL]["aktif"] is False
+    assert oz["durumlar"]["https_yok|" + TEMEL]["site_ayari"] is True and oz["site_ayarlari"][0]["sorun"] == "https_yok"
+    # yonetici modunda indirilen rapor klasordeki durumlu rapor.html'dir ve onbelleklenmez
+    assert yanit.headers["Cache-Control"] == "no-store"
+    assert yanit.data == (k / "rapor.html").read_bytes()
+
+
+def test_takma_adres_bulgulari_asil_bulguya_baglanir():
+    u = TEMEL + "urunler/"
+    kayitlar = [{"ad": u, "site_url": u}, {"ad": TEMEL + "eski", "site_url": u},
+                {"ad": u + "?siralama=fiyat", "site_url": u + "?siralama=fiyat"},
+                {"ad": TEMEL + "yok.html", "site_url": TEMEL + "yok.html"}]
+    assert yonetici.asil_adresler(kayitlar) == {TEMEL + "eski": (u, "yonlendirme"), u + "?siralama=fiyat": (u, "parametre")}
+
+    def b(sorun, url, durum="elle", elle_turu=True):
+        return {"sorun": sorun, "url": url, "aciklama": sorun, "durum": durum, "durum_adi": durum, "neden": "",
+                "aktif": not durum.startswith("cozuldu"), "cozum": [], "site_ayari": False, "elle_turu": elle_turu,
+                "degisiklikler": []}
+    asil = b("h1_yok", u, "cozuldu_otomatik", elle_turu=False)
+    bulgular = [asil, b("h1_yok", TEMEL + "eski"), b("h1_yok", u + "?siralama=fiyat"),
+                b("uzun_yonlendirme_zinciri", TEMEL + "eski"),                    # asil sayfada yok: kendi basina
+                b("yumusak_404", TEMEL + "yok.html"), b("title_kisa", TEMEL + "yok.html"),
+                b("sitemap_olu_adres", TEMEL + "yok.html")]                         # sitemap isi ayri kalir
+    yonetici.takma_adresleri_bagla(bulgular, kayitlar)
+    bagli = {(x["sorun"], x["url"]): x for x in bulgular if x.get("takma")}
+    assert set(bagli) == {("h1_yok", TEMEL + "eski"), ("h1_yok", u + "?siralama=fiyat"), ("title_kisa", TEMEL + "yok.html")}
+    # durum asil bulgudan (yeniden kontrole dayanan) gelir; asil bulgu takma adreslerini bilir
+    assert bagli[("h1_yok", TEMEL + "eski")]["durum"] == "cozuldu_otomatik" and not bagli[("h1_yok", TEMEL + "eski")]["aktif"]
+    assert [t["url"] for t in asil["takma_adresler"]] == [TEMEL + "eski", u + "?siralama=fiyat"]
+    assert bagli[("title_kisa", TEMEL + "yok.html")]["takma"] == {"asil_url": TEMEL + "yok.html", "asil_sorun": "yumusak_404",
+                                                                  "tur": "gecersiz"}

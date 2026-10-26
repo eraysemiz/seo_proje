@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SEO raporu: {{ baslik }}</title>
+{% if yonetici %}<meta http-equiv="Cache-Control" content="no-store">{% endif %}
 <style>
 :root { color-scheme: light dark; --zemin:#f7f7f5; --kart:#fff; --metin:#1c1c1c; --soluk:#5f5f5f; --cizgi:#e2e2de;
   --mavi:#1d5fbf; --kotu:#b3261e; --dikkat:#8a5a00; --iyi:#1e7a3c; }
@@ -32,6 +33,7 @@ ul { margin:8px 0 0; padding-left:18px; } li { margin:4px 0; }
 .durum { font-size:12px; padding:1px 7px; border-radius:10px; border:1px solid currentColor; white-space:nowrap; }
 .durum.cozuldu_otomatik, .durum.cozuldu_onayli { color:var(--iyi); } .durum.basarisiz { color:var(--kotu); }
 .durum.onay_bekliyor, .durum.dogrulanmadi { color:var(--dikkat); } .durum.reddedildi, .durum.elle { color:var(--soluk); }
+.iyi { color:var(--iyi); } h4 { font-size:14px; margin:12px 0 0; }
 @media print { details { break-inside:avoid; } details:not([open]) > *:not(summary) { display:block; } }
 </style>
 </head>
@@ -42,8 +44,9 @@ ul { margin:8px 0 0; padding-left:18px; } li { margin:4px 0; }
 
 {% if yonetici %}
 <h2>Yönetici modu: aşamalara göre metrikler</h2>
-<p class="soluk">Bu rapor başlangıç taramasıdır; her sorunun yanında düzeltmelerden sonraki yeniden kontrolün sonucu
-(güncel durum{% if yonetici.son_asama %}: {{ yonetici.son_asama }}{% endif %}) gösterilir.</p>
+<p class="soluk">Sorunlar başlangıç taramasındakilerdir; sayaçlar ve listeler her sorunun güncel durumundan
+(düzeltmelerden sonraki yeniden kontrol{% if yonetici.son_asama %}: {{ yonetici.son_asama }}{% endif %}) hesaplanır.
+Bir sorun yalnızca yeniden kontrolde artık tespit edilmiyorsa çözülmüş sayılır.</p>
 {% with asamalar=yonetici.asamalar, tanim=yonetici.tanim %}{% include "_asama_tablosu.html" %}{% endwith %}
 <p>Sorun durumları ({{ yonetici.toplam }}):
 {% for d, n in yonetici.sayilar.items() if n %}<span class="durum {{ d }}">{{ yonetici.DURUM_ADI[d] }} {{ n }}</span> {% endfor %}</p>
@@ -52,18 +55,40 @@ ul { margin:8px 0 0; padding-left:18px; } li { margin:4px 0; }
   <div><span class="soluk">Ortalama sayfa puanı</span><b>{{ ort_once if ort_once is not none else "—" }} → {{ ort_sonra if ort_sonra is not none else "—" }}</b><span class="soluk">düzeltmeden önce → sonra</span></div>
   <div><span class="soluk">Ortalama site puanı</span><b>{{ ort_site if ort_site is not none else "—" }}</b><span class="soluk">canlı ölçümler</span></div>
   <div><span class="soluk">Analiz edilen sayfa</span><b>{{ gecerli|length }}</b><span class="soluk">{{ kayitlar|length - gecerli|length }} adres taranamadı/atlandı</span></div>
+{% if yonetici %}{% set s = yonetici.sayaclar %}
+  <div id="sayac-aktif"><span class="soluk">Aktif sorunlar</span><b class="yuksek">{{ s.aktif }}</b><span class="soluk">{% if s.sayfa is defined %}{{ s.sayfa.aktif }} sayfa sorunu · {{ s.site_ayari.aktif }} site ayarı{% if s.site_ayari.aktif %} ({{ s.site_ayari_sayfa }} sayfa × ayar){% endif %}{% else %}onay bekliyor, reddedildi, başarısız, elle düzeltilir{% endif %}</span></div>
+  <div id="sayac-cozulen"><span class="soluk">Çözülen sorunlar</span><b class="iyi">{{ s.cozulen }}</b><span class="soluk">{{ s.cozuldu_otomatik }} otomatik · {{ s.cozuldu_onayli }} onaylı · toplam {{ s.toplam }}</span></div>
+{% else %}
   <div><span class="soluk">Sorun görülme sayısı</span><b class="yuksek">{{ sayac.yuksek }}</b><span class="soluk">yüksek · {{ sayac.orta }} orta · {{ sayac.dusuk }} düşük</span></div>
+{% endif %}
 </div>
+
+{% if yonetici and yonetici.site_ayarlari %}
+<h2>Site geneli ayarlar ({{ yonetici.site_ayarlari|length }})</h2>
+<p class="soluk">Sunucu ya da site yapılandırmasıyla tek seferde düzelen bulgular; her biri bir kez sayılır. Tüm sayfalarda
+giderildiyse çözülmüş, bir sayfada bile sürüyorsa aktif sayılır.</p>
+<div class="tablo-kap"><table id="site-ayarlari">
+<thead><tr><th>Önem</th><th>Ayar ve nasıl düzeltilir</th><th>Durum</th><th class="sayi">Etkilenen sayfa</th></tr></thead>
+<tbody>
+{% for a in yonetici.site_ayarlari %}
+<tr><td><span class="cip {{ a.ciddiyet }}">{{ CIDDIYET_ADI.get(a.ciddiyet, a.ciddiyet) }}</span></td>
+<td>{{ a.aciklama }}<span class="duzelt">{{ DUZELTME.get(a.sorun, "") }}</span></td>
+<td><span class="durum {{ a.durum }}" title="{{ a.neden }}">{{ a.durum_adi }}</span>
+{% for c in a.cozum %}<span class="duzelt">{{ c.id }}: {{ c.ozet }}{% if c.guven is not none %} · güven {{ "%.2f"|format(c.guven) }}{% endif %}{% if c.onay_kaynagi %} · onay: {{ c.onay_kaynagi }}{% endif %}</span>{% endfor %}</td>
+<td class="sayi">{% if a.aktif %}{{ a.aktif_sayfa }} / {{ a.sayfa_sayisi }}{% else %}0 / {{ a.sayfa_sayisi }}{% endif %}</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% endif %}
 
 <h2>Site özeti: sorunlar ve düzeltmeler</h2>
 <div class="tablo-kap"><table>
-<thead><tr><th>Önem</th><th>Sorun ve nasıl düzeltilir</th><th class="sayi">Sayfa</th><th>Çözüm</th></tr></thead>
+<thead><tr><th>Önem</th><th>Sorun ve nasıl düzeltilir</th><th class="sayi">{% if yonetici %}Aktif sayfa{% else %}Sayfa{% endif %}</th>{% if yonetici %}<th class="sayi">Çözülen sayfa</th>{% endif %}<th>Çözüm</th></tr></thead>
 <tbody>
 {% for s in ozet %}
 <tr><td><span class="cip {{ s.ciddiyet }}">{{ CIDDIYET_ADI.get(s.ciddiyet, s.ciddiyet) }}</span></td>
 <td>{{ s.aciklama }}<span class="duzelt">{{ s.duzeltme }}</span></td>
-<td class="sayi">{{ s.sayfa_sayisi }}</td><td>{% set ke = kategori_etiketi(s.sorun) %}<span title="{{ ke.ipucu }}">{{ ke.ad }}</span></td></tr>
-{% else %}<tr><td colspan="4">Sorun bulunamadı.</td></tr>{% endfor %}
+{% if yonetici %}<td class="sayi">{{ s.aktif }}</td><td class="sayi">{{ s.cozulen }}</td>{% else %}<td class="sayi">{{ s.sayfa_sayisi }}</td>{% endif %}<td>{% set ke = kategori_etiketi(s.sorun) %}<span title="{{ ke.ipucu }}">{{ ke.ad }}</span></td></tr>
+{% else %}<tr><td colspan="{{ 5 if yonetici else 4 }}">Sorun bulunamadı.</td></tr>{% endfor %}
 </tbody></table></div>
 
 {% if bulgular %}
@@ -78,14 +103,22 @@ ul { margin:8px 0 0; padding-left:18px; } li { margin:4px 0; }
 
 <h2>Sayfalar</h2>
 <div class="tablo-kap"><table>
-<thead><tr><th>Adres</th><th class="sayi">Durum</th><th class="sayi">Sayfa puanı</th><th class="sayi">Site</th><th class="sayi">Sorun</th><th class="sayi">Derinlik</th><th class="sayi">Gelen bağlantı</th></tr></thead>
+<thead><tr><th>Adres</th><th class="sayi">Durum</th><th class="sayi">Sayfa puanı</th><th class="sayi">Site</th>{% if yonetici %}<th class="sayi">Aktif sorun</th><th class="sayi">Çözülen</th><th class="sayi">Çözüm oranı</th>{% else %}<th class="sayi">Sorun</th>{% endif %}<th class="sayi">Derinlik</th><th class="sayi">Gelen bağlantı</th></tr></thead>
 <tbody>
 {% for p in sayfalar %}{% set k = p.k %}
 <tr><td class="url">{{ k.ad }}{% if k.title %}<span class="duzelt">{{ k.title }}</span>{% endif %}</td>
 <td class="sayi">{% if k.hata %}<span class="yuksek">hata</span>{% elif k.atlandi %}atlandı{% else %}{{ k.durum_kodu }}{% endif %}</td>
-<td class="sayi">{% if k.once_puanlar and k.once_puanlar.sayfa is not none %}{{ k.once_puanlar.sayfa }} → {% if yonetici %}{{ yonetici.guncel_puan.get(k.ad, "—") if yonetici.guncel_puan.get(k.ad) is not none else "—" }}{% else %}{{ k.sonra_puanlar.sayfa }}{% endif %}{% else %}—{% endif %}</td>
+{% if yonetici %}{% set c = p.sayac or {} %}
+<td class="sayi">{% if c.puan_once is not none and c.puan_once is defined %}{{ c.puan_once }} → {{ c.puan_guncel if c.puan_guncel is not none else "—" }}{% else %}—{% endif %}</td>
+<td class="sayi">{{ k.once_puanlar.site if k.once_puanlar else "—" }}</td>
+<td class="sayi" data-sayac="aktif">{{ c.aktif if c.aktif is defined else "—" }}</td>
+<td class="sayi" data-sayac="cozulen">{% if c.cozulen is defined %}{{ c.cozulen }}{% if c.cozulen %} <span class="soluk">({{ c.cozuldu_otomatik }} oto · {{ c.cozuldu_onayli }} onaylı)</span>{% endif %}{% else %}—{% endif %}</td>
+<td class="sayi">{{ "%%%d"|format((c.cozum_orani * 100)|round|int) if c.cozum_orani is not none and c.cozum_orani is defined else "—" }}</td>
+{% else %}
+<td class="sayi">{% if k.once_puanlar and k.once_puanlar.sayfa is not none %}{{ k.once_puanlar.sayfa }} → {{ k.sonra_puanlar.sayfa }}{% else %}—{% endif %}</td>
 <td class="sayi">{{ k.once_puanlar.site if k.once_puanlar else "—" }}</td>
 <td class="sayi">{{ k.once_sorun_sayisi if k.once_sorun_sayisi is not none else "—" }}</td>
+{% endif %}
 <td class="sayi">{{ k.derinlik if k.derinlik is not none else "—" }}</td>
 <td class="sayi">{{ k.gelen_baglanti if k.gelen_baglanti is not none else "—" }}</td></tr>
 {% endfor %}
@@ -93,16 +126,38 @@ ul { margin:8px 0 0; padding-left:18px; } li { margin:4px 0; }
 
 <h2>Sayfa ayrıntıları</h2>
 {% for p in sayfalar %}{% set k = p.k %}
+{% if yonetici %}
+<details><summary>{{ k.ad }} <span class="soluk">· {{ p.aktif|length }} aktif · {{ p.cozulen|length }} çözüldü</span></summary>
+{% if k.hata %}<p class="yuksek">{{ k.hata }}</p>{% endif %}
+{% if k.atlandi %}<p>{{ k.atlandi }}</p>{% endif %}
+<h4>Aktif sorunlar ({{ p.aktif|length }})</h4>
+{% if p.aktif %}<ul>
+{% for b in p.aktif %}<li><span class="cip {{ b.ciddiyet }}">{{ CIDDIYET_ADI.get(b.ciddiyet, b.ciddiyet) }}</span>
+{{ ACIKLAMA.get(b.sorun, b.sorun) }}{% if b.ayrinti %} <span class="soluk">· {{ b.ayrinti }}</span>{% endif %}
+<span class="durum {{ b.durum }}" title="{{ b.neden }}">{{ b.durum_adi }}</span>
+<span class="duzelt">{{ b.neden }}{% if b.degisiklikler %} · değişiklik: {{ b.degisiklikler|join(", ") }}{% endif %}</span>
+{% if b.takma_adresler %}<span class="duzelt">Ayrıca görüldüğü adresler (bir kez sayılır): {% for t in b.takma_adresler %}{{ t.url }}{% if t.sorun != b.sorun %} ({{ ACIKLAMA.get(t.sorun, t.sorun) }}){% endif %}{% if not loop.last %}, {% endif %}{% endfor %}</span>{% endif %}
+<span class="duzelt">{{ DUZELTME.get(b.sorun, "") }}</span></li>{% endfor %}
+</ul>{% else %}<p class="soluk">Aktif sorun yok.</p>{% endif %}
+<h4>Çözülen sorunlar ({{ p.cozulen|length }})</h4>
+{% if p.cozulen %}<ul>
+{% for b in p.cozulen %}<li><span class="cip {{ b.ciddiyet }}">{{ CIDDIYET_ADI.get(b.ciddiyet, b.ciddiyet) }}</span>
+{{ ACIKLAMA.get(b.sorun, b.sorun) }} <span class="durum {{ b.durum }}">{{ b.durum_adi }}</span>
+{% for c in b.cozum %}<span class="duzelt">{{ c.id }}: {{ c.ozet }}{% if c.guven is not none %} · güven {{ "%.2f"|format(c.guven) }}{% endif %}{% if c.onay_kaynagi %} · onay: {{ c.onay_kaynagi }}{% endif %}</span>{% else %}<span class="duzelt">{{ b.neden }}</span>{% endfor %}
+{% if b.takma_adresler %}<span class="duzelt">Ayrıca görüldüğü adresler (bir kez sayılır): {% for t in b.takma_adresler %}{{ t.url }}{% if not loop.last %}, {% endif %}{% endfor %}</span>{% endif %}</li>{% endfor %}
+</ul>{% else %}<p class="soluk">Bu sayfada henüz çözülen sorun yok.</p>{% endif %}
+{% if p.takma %}{% set t0 = p.takma[0].takma %}<p class="soluk" data-takma="{{ p.takma|length }}">{% if t0.tur == "gecersiz" %}Bu adres geçersiz bir sayfa ({{ ACIKLAMA.get(t0.asil_sorun, t0.asil_sorun) }}); içerikle ilgili {{ p.takma|length }} bulgusu bu tek sorunun altında sayılır.{% else %}Bu adres {{ t0.asil_url }} sayfasının {{ "yönlendirmesi" if t0.tur == "yonlendirme" else "parametreli adresi" }}; aynı dosyaya ait {{ p.takma|length }} bulgusu asıl sayfada bir kez sayılır ve onunla birlikte çözülür: {% for b in p.takma %}{{ ACIKLAMA.get(b.sorun, b.sorun) }} ({{ b.durum_adi }}){% if not loop.last %}, {% endif %}{% endfor %}.{% endif %}</p>{% endif %}
+{% if p.sayac and p.sayac.site_ayari %}<p class="soluk">Ayrıca {{ p.sayac.site_ayari }} site geneli ayar bu sayfayı da etkiliyor (bkz. "Site geneli ayarlar").</p>{% endif %}
+{% else %}
 <details><summary>{{ k.ad }}{% if k.once_sorun_sayisi %} <span class="soluk">· {{ k.once_sorun_sayisi }} sorun</span>{% endif %}</summary>
 {% if k.hata %}<p class="yuksek">{{ k.hata }}</p>{% endif %}
 {% if k.atlandi %}<p>{{ k.atlandi }}</p>{% endif %}
 {% if p.sorunlar %}<ul>
 {% for s in p.sorunlar %}<li><span class="cip {{ s.ciddiyet }}">{{ CIDDIYET_ADI.get(s.ciddiyet, s.ciddiyet) }}</span>
 {{ ACIKLAMA.get(s.sorun, s.sorun) }}{% if s.ayrinti %} <span class="soluk">· {{ s.ayrinti }}</span>{% endif %}
-{% if yonetici %}{% set b = yonetici.durumlar.get(s.sorun ~ "|" ~ k.ad) %}{% if b %} <span class="durum {{ b.durum }}" title="{{ b.neden }}">{{ b.durum_adi }}</span>
-<span class="duzelt">{{ b.neden }}{% if b.degisiklikler %} · değişiklik: {{ b.degisiklikler|join(", ") }}{% endif %}</span>{% endif %}{% endif %}
 <span class="duzelt">{{ DUZELTME.get(s.sorun, "") }}</span></li>{% endfor %}
 </ul>{% endif %}
+{% endif %}
 {% if k.fixes %}<p><strong>Dil modelinin kabul edilen önerileri</strong></p><ul>
 {% for f in k.fixes %}<li>{{ f.alan }}{% if f.hedef %} / {{ f.hedef }}{% endif %}: {{ f.yeni_deger }}</li>{% endfor %}</ul>{% endif %}
 {% if k.kural_duzeltmeleri %}<p><strong>Kural tabanlı düzeltmeler</strong></p><ul>

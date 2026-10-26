@@ -4,12 +4,13 @@
 <tbody>
 <tr><td>Ortalama sayfa puanı</td>{% for a in asamalar %}<td class="sayi">{{ a.puanlar.sayfa if a.olculdu and a.puanlar.sayfa is not none else "—" }}</td>{% endfor %}</tr>
 <tr><td>Ortalama site puanı</td>{% for a in asamalar %}<td class="sayi">{{ a.puanlar.site if a.olculdu and a.puanlar.site is not none else "—" }}</td>{% endfor %}</tr>
-<tr><td>Sorun sayısı (sayfa × sorun)</td>{% for a in asamalar %}<td class="sayi">{{ a.bulgu_sayisi if a.olculdu else "—" }}</td>{% endfor %}</tr>
-<tr><td>Çözülen</td>{% for a in asamalar %}<td class="sayi">{{ a.cozulen if a.olculdu else "—" }}</td>{% endfor %}</tr>
+<tr><td>Aktif sorun</td>{% for a in asamalar %}<td class="sayi">{{ a.aktif if a.olculdu and a.aktif is defined else "—" }}</td>{% endfor %}</tr>
+<tr><td>Çözülen (otomatik)</td>{% for a in asamalar %}<td class="sayi">{{ a.cozuldu_otomatik if a.olculdu and a.cozuldu_otomatik is defined else "—" }}</td>{% endfor %}</tr>
+<tr><td>Çözülen (onaylı)</td>{% for a in asamalar %}<td class="sayi">{{ a.cozuldu_onayli if a.olculdu and a.cozuldu_onayli is defined else "—" }}</td>{% endfor %}</tr>
 <tr><td><span title="{{ tanim }}">Çözüm oranı ⓘ</span></td>{% for a in asamalar %}<td class="sayi" title="{{ tanim }}">{% if a.olculdu and a.cozum_orani is not none %}%{{ (a.cozum_orani * 100)|round|int }} <span class="soluk">({{ a.cozulen }}/{{ a.cozulebilir }})</span>{% else %}—{% endif %}</td>{% endfor %}</tr>
 <tr><td>Elle düzeltilir (hâlâ açık)</td>{% for a in asamalar %}<td class="sayi">{{ a.elle if a.olculdu else "—" }}</td>{% endfor %}</tr>
 <tr><td>Elle düzeltilir, başka düzeltmeyle giderilen</td>{% for a in asamalar %}<td class="sayi">{{ a.elle_dolayli_cozulen if a.olculdu else "—" }}</td>{% endfor %}</tr>
 <tr><td>Düzeltmeyle ortaya çıkan yeni sorun</td>{% for a in asamalar %}<td class="sayi">{{ a.yeni_bulgu if a.olculdu else "—" }}</td>{% endfor %}</tr>
 <tr><td>Taranan sayfa</td>{% for a in asamalar %}<td class="sayi">{{ a.puanlar.sayfa_sayisi if a.olculdu else "—" }}</td>{% endfor %}</tr>
 </tbody></table></div>
-<p class="soluk">{{ tanim }} Her aşamanın değerleri o aşamadan sonraki yeniden taramadan ölçülür; "—" o aşamadan sonra tarama yapılmadığını gösterir.</p>
+<p class="soluk">{{ tanim }} Sayaç birimi sayfa bulgusu ya da bir kez sayılan site geneli ayardır; aktif + çözülen her aşamada başlangıçtaki birim sayısına eşittir; düzeltmeyle yeni çıkan sorunlar ayrı satırdadır. Her aşamanın değerleri o aşamadan sonraki yeniden taramadan ölçülür; "—" o aşamadan sonra tarama yapılmadığını gösterir.</p>

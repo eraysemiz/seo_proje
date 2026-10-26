@@ -187,6 +187,22 @@ Rapor üç aşamayı yan yana gösterir. Geri alma tüm aşamaları birlikte ger
   Sayfa yeniden taramada yoksa (ör. sitemap'ten çıkarıldı) durum "Uygulandı, yeniden kontrol yapılmadı"
   olarak kalır. Durumlar `bulgu_durumlari.json`'a, yönetici raporuna, analiz raporuna (`rapor.html`,
   her sorunun yanında), web arayüzüne ve masaüstü özetine yazılır.
+- **Sayaçlar tek kaynaktan:** genel, aşama başına ve sayfa başına bütün sayaçlar bulgu durumlarından
+  hesaplanır (`yonetici.durum_sayaclari`, `sayfa_sayaclari`). **Aktif** = Onay bekliyor + Reddedildi +
+  Başarısız + Elle düzeltilir (+ uygulanmış ama yeniden kontrolle doğrulanmamış); **Çözülen** = Çözüldü
+  (otomatik) + Çözüldü (onaylı). Sayaç birimi sayfa bulgusu ya da **site geneli ayardır**: HTTPS,
+  HTTPS yönlendirmesi, güvenlik/önbellek başlıkları, robots.txt'deki sitemap adresi gibi tek seferde
+  düzelen bulgular her sayfada değil bir kez sayılır (tüm sayfalarda giderildiyse çözülmüş, bir sayfada
+  bile sürüyorsa aktif) ve raporda "Site geneli ayarlar" bölümünde gösterilir. Tespit ve puanlama sayfa
+  × sorun olarak kalır; ham sayı `sayaclar.ham_toplam`'dadır. **Takma adres bulguları** da ayrıca
+  sayılmaz: aynı dosyayı açan yönlendirme ya da parametreli adresteki bulgu, asıl sayfada aynı kod varsa
+  ona bağlanır ve durumunu ondan alır (asıl bulgu yeniden kontrole dayanır); yumuşak 404 / hata kodlu
+  sayfanın içerik bulguları o tek sorunun altında sayılır (sitemap bulguları ve kendi düzeltmesi olanlar
+  ayrı kalır). Asıl bulgunun yanında "ayrıca görüldüğü adresler" listelenir. Aktif + çözülen her zaman başlangıçtaki
+  birim sayısına eşittir; düzeltmeyle yeni çıkan bulgular ayrı sayılır. Yönetici modunun `rapor.html`'inde her sayfa "Aktif
+  sorunlar" ve "Çözülen sorunlar" (nasıl çözüldüğü, değişiklik özeti, güven puanı) olarak ayrılır; rapor
+  her aşamadan ve geri almadan sonra yeniden üretilir ve önbelleğe alınmaz. Web arayüzü aynı sayıları
+  sayfa yenilenmeden gösterir. Salt okunur modun raporu değişmez.
 - **Çözüm oranı** = çözülen çözülebilir bulgu / çözülebilir bulgu. Çözülebilir: araçta bir düzeltme
   önerisi olan bulgu (onaylanmış, bekleyen, reddedilen ya da doğrulamadan geçemeyen). Önerisi olmayan
   "Elle düzeltilir" bulgular orana girmez, ayrı sayılır (başka bir düzeltmeyle dolaylı giderilenler de

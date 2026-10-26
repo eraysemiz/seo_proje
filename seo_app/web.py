@@ -119,15 +119,13 @@ def _yonetici_ozeti(klasor):
     if not yol.exists():
         return None
     r = json.loads(yol.read_text(encoding="utf-8"))
-    guncel = {}
-    son = next((a for a in reversed(r.get("asamalar") or []) if a["olculdu"] and a["ad"] != "baslangic"), None)
-    if son and (Path(klasor) / son["tarama"] / "rapor.json").exists():
-        for k in json.loads((Path(klasor) / son["tarama"] / "rapor.json").read_text(encoding="utf-8")):
-            guncel[k.get("ad")] = {"puan": (k.get("once_puanlar") or {}).get("sayfa"), "sorun": k.get("once_sorun_sayisi")}
+    # sayaclar (genel, sayfa basina) ve listeler bulgu durumlarindan: HTML/JSON raporla ayni kaynak
     return {"asamalar": r.get("asamalar") or [], "sayilar": r.get("bulgu_sayilari") or {},
             "toplam": r.get("bulgu_toplam", 0), "tanim": r.get("cozum_orani_tanimi"),
-            "geri_alindi": r.get("geri_alindi"), "guncel": guncel,
-            "durumlar": {b["sorun"] + "|" + b["url"]: {k: b[k] for k in ("durum", "durum_adi", "neden")}
+            "geri_alindi": r.get("geri_alindi"), "sayaclar": r.get("sayaclar") or {},
+            "sayfalar": r.get("sayfa_sayaclari") or {}, "site_ayarlari": r.get("site_ayarlari") or [],
+            "durumlar": {b["sorun"] + "|" + b["url"]: {k: b.get(k) for k in ("durum", "durum_adi", "neden", "aktif", "cozum",
+                                                                              "site_ayari", "takma", "takma_adresler")}
                          for b in r.get("bulgu_durumlari") or []}}
 
 
@@ -410,7 +408,13 @@ def api_yonetici_rapor():
     yol = klasor / "yonetici_raporu.html"
     if not yol.exists():
         abort(404)
-    return send_file(yol, mimetype="text/html")
+    return _onbelleksiz(send_file(yol, mimetype="text/html", max_age=0))
+
+
+def _onbelleksiz(yanit):
+    # rapor her asamadan sonra yeniden uretilir; tarayici eski kopyayi gostermesin
+    yanit.headers["Cache-Control"] = "no-store"
+    return yanit
 
 
 def _tarama_bulgulari(sonuclar, hazir=None):
@@ -432,14 +436,19 @@ def api_ozet():
 
 @uygulama.route("/api/html")
 def api_html():
-    """Tum taramanin tek dosyalik HTML raporu."""
+    """Tum taramanin tek dosyalik HTML raporu. Yonetici modunda klasordeki durumlu rapor.html verilir
+    (her asamadan sonra bulgu durumlarindan yeniden uretilir)."""
     with _kilit:
         sonuclar, hazir = list(DURUM["sonuclar"]), DURUM["bulgular"]
+        y = dict(DURUM.get("yonetici") or {})
+    if y.get("klasor") and (Path(y["klasor"]) / "rapor.html").exists() and (Path(y["klasor"]) / "yonetici_raporu.json").exists():
+        return _onbelleksiz(send_file(Path(y["klasor"]) / "rapor.html", mimetype="text/html", as_attachment=True,
+                                      download_name="rapor.html", max_age=0))
     ozet, bulgular = _tarama_bulgulari(sonuclar, hazir)
     baslik = ", ".join(sorted({site_adi(k["ad"]) for k in sonuclar if k.get("ad")})[:3]) or "SEO denetimi"
     metin = html_rapor(sonuclar, ozet, bulgular, baslik=baslik)
-    return send_file(io.BytesIO(metin.encode("utf-8")), mimetype="text/html",
-                     as_attachment=True, download_name="rapor.html")
+    return _onbelleksiz(send_file(io.BytesIO(metin.encode("utf-8")), mimetype="text/html",
+                                  as_attachment=True, download_name="rapor.html"))
 
 
 @uygulama.route("/api/csv")

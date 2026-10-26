@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Yönetici raporu: {{ r.hedef.temel_url }}</title>
+<meta http-equiv="Cache-Control" content="no-store">
 <style>
 :root { color-scheme: light dark; --zemin:#f7f7f5; --kart:#fff; --metin:#1c1c1c; --soluk:#5f5f5f; --cizgi:#e2e2de;
   --mavi:#1d5fbf; --kotu:#b3261e; --dikkat:#8a5a00; --iyi:#1e7a3c; }
@@ -52,6 +53,10 @@ pre { white-space:pre-wrap; margin:4px 0; }
 <p class="soluk">Puanlar sayfa ortalamasıdır (araçtaki puan hesabıyla aynı). Düzeltmelerle yeni sayfalar taranabilir hale gelirse sayfa sayısı değişebilir.</p>
 
 <h2>Sorun durumları ({{ r.bulgu_toplam }})</h2>
+{% if r.sayaclar %}<p id="sayaclar"><b>Aktif: {{ r.sayaclar.aktif }}</b> · <b>Çözülen: {{ r.sayaclar.cozulen }}</b>
+({{ r.sayaclar.cozuldu_otomatik }} otomatik, {{ r.sayaclar.cozuldu_onayli }} onaylı) · toplam {{ r.sayaclar.toplam }}
+{% if r.sayaclar.sayfa %}<span class="soluk">· aktif: {{ r.sayaclar.sayfa.aktif }} sayfa sorunu + {{ r.sayaclar.site_ayari.aktif }} site geneli ayar
+(ayarlar bir kez sayılır; sayfa × sorun olarak toplam {{ r.sayaclar.ham_toplam }} bulgu)</span>{% endif %}</p>{% endif %}
 <div class="sayilar">{% for d, n in r.bulgu_sayilari.items() %}<span class="durum {{ d }}">{{ BULGU_DURUM_ADI[d] }}: {{ n }}</span>{% endfor %}</div>
 <p class="soluk">"Çözüldü" yalnızca düzeltme uygulandıktan sonraki yeniden kontrolde sorun artık tespit edilmiyorsa verilir; uygulandığı halde hâlâ tespit edilen sorun "Başarısız" (düzeltme etkisiz) sayılır.</p>
 {% for d in BULGU_DURUM_ADI if r.bulgu_sayilari.get(d) %}
@@ -60,8 +65,13 @@ pre { white-space:pre-wrap; margin:4px 0; }
 <div class="tablo-kap"><table>
 <thead><tr><th>Sorun</th><th>Sayfa</th><th>Neden</th><th>Değişiklik</th></tr></thead>
 <tbody>
-{% for b in r.bulgu_durumlari if b.durum == d %}
-<tr><td>{{ b.aciklama }}<br><span class="soluk">{{ KATEGORI_ADI[b.kategori] }}</span></td><td>{{ b.url }}</td>
+{% for a in (r.site_ayarlari or []) if a.durum == d %}
+<tr><td>{{ a.aciklama }}<br><span class="soluk">{{ KATEGORI_ADI[a.kategori] }} · site geneli ayar</span></td>
+<td>tüm site ({% if a.aktif %}{{ a.aktif_sayfa }} / {% endif %}{{ a.sayfa_sayisi }} sayfa)</td>
+<td>{{ a.neden }}</td><td>{{ a.degisiklikler|join(", ") or "—" }}</td></tr>
+{% endfor %}
+{% for b in r.bulgu_durumlari if b.durum == d and not b.site_ayari and not b.takma %}
+<tr><td>{{ b.aciklama }}<br><span class="soluk">{{ KATEGORI_ADI[b.kategori] }}</span></td><td>{{ b.url }}{% if b.takma_adresler %}<br><span class="soluk">ayrıca {{ b.takma_adresler|length }} takma adreste (bir kez sayılır)</span>{% endif %}</td>
 <td>{{ b.neden }}</td><td>{{ b.degisiklikler|join(", ") or "—" }}</td></tr>
 {% endfor %}
 </tbody></table></div>

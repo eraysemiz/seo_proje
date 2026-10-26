@@ -30,6 +30,7 @@ from . import canli, duzeltme, puanlama
 from . import kategoriler as kat
 from . import rapor as rapor_modulu
 from .boru import site_adi, topluca_analiz, zaman_damgasi
+from .cikarma import url_anahtari
 from .kurallar import ACIKLAMA, CIDDIYET_AGIRLIK
 from .yazma import YerelDosyaAdaptoru, YolGuvenligiHatasi
 from .yz_oneri import YZIstemcisi
@@ -340,6 +341,10 @@ BULGU_DURUM_ADI = {"cozuldu_otomatik": "Çözüldü (otomatik)", "cozuldu_onayli
                    "onay_bekliyor": "Onay bekliyor", "reddedildi": "Reddedildi", "basarisiz": "Başarısız",
                    "dogrulanmadi": "Uygulandı, yeniden kontrol yapılmadı", "elle": "Elle düzeltilir"}
 TEKRAR_KODLARI = ("title_tekrar", "meta_tekrar", "h1_tekrar", "icerik_tekrar", "icerik_benzer")
+# puanlamada sayfaya ozgu sayilan ama sunucu yapilandirmasiyla tek seferde duzelen bulgular (sayac birimi)
+SUNUCU_AYARI_KODLARI = ("onbellek_basligi_yok",)
+# bir site ayari bazi sayfalarda acik kaldiysa gosterilen durum (en bilgilendirici once)
+SITE_DURUM_ONCELIGI = ("basarisiz", "onay_bekliyor", "reddedildi", "dogrulanmadi", "elle")
 COZUM_ORANI_TANIMI = (
     "Bulgu: başlangıç taramasındaki her (sorun, sayfa) çifti. Çözülen: düzeltmeler uygulandıktan sonra "
     "yeniden taramada artık tespit edilmeyen bulgu (yalnızca yeniden tarama sonucuna dayanır). "
@@ -370,8 +375,8 @@ def bulgu_durumlari(klasor, plan):
     klasor = Path(klasor)
     once = _tarama_bulgulari(klasor)
     if once is None:
-        return {"asamalar": [], "bulgular": [], "sayilar": {}, "toplam": 0, "tanim": COZUM_ORANI_TANIMI,
-                "geri_alindi": bool(plan.get("geri_alindi"))}
+        return {"asamalar": [], "bulgular": [], "site_ayarlari": [], "sayilar": {}, "toplam": 0, "ozet": durum_sayaclari([]),
+                "sayfalar": {}, "tanim": COZUM_ORANI_TANIMI, "geri_alindi": bool(plan.get("geri_alindi"))}
     b0 = once["kume"]
     geri = bool(plan.get("geri_alindi"))
     olcumler = [("baslangic", "", once)]
@@ -391,6 +396,10 @@ def bulgu_durumlari(klasor, plan):
         # tum siteyi ilgilendiren bulgu (robots.txt, sitemap adresi): tek bir duzeltmeyle her sayfada giderilir
         return kod in site_kodlari and kod not in puanlama.SAYFAYA_OZGU
 
+    def site_ayari_mi(kod):
+        # sayacta bir kez sayilan ayar: site geneli bulgular + sunucunun verdigi yanit basliklari
+        return site_geneli_mi(kod) or kod in SUNUCU_AYARI_KODLARI
+
     def ilgili_degisiklikler(f):
         if f in tam:
             return tam[f], True
@@ -401,6 +410,14 @@ def bulgu_durumlari(klasor, plan):
         if site_geneli_mi(f[0]) or f[0] in TEKRAR_KODLARI:
             return kod_ile.get(f[0], []), False
         return [], False
+
+    def cozum_asamasi(v, son):
+        # son olcume (son dahil) kadar: bulgu hangi uygulama asamasinda cozuldu (sonra yeniden cikarsa cozulmemis)
+        c = None
+        for (ad, _, _), var in zip(olcumler[:son + 1], v[:son + 1]):
+            if ad in duzeltme.ASAMALAR and var is not None:
+                c = None if var else (c or ad)
+        return c
 
     bulgular, varlik = [], {}
     for f in sorted(b0):
@@ -421,11 +438,7 @@ def bulgu_durumlari(klasor, plan):
             else:
                 v.append(None)
         varlik[f] = v
-        cozuldu = None
-        if not geri:
-            for (ad, _, _), var in zip(olcumler, v):
-                if ad in duzeltme.ASAMALAR and var is not None:
-                    cozuldu = None if var else (cozuldu or ad)
+        cozuldu = None if geri else cozum_asamasi(v, len(olcumler) - 1)
         if geri:
             # site uygulama oncesi haline dondu: durumlar baslangictaki gibi (oneri bekliyor / gecersiz / elle)
             gecerli = [d for d in ilgili if d["durum"] != "gecersiz"]
@@ -467,27 +480,186 @@ def bulgu_durumlari(klasor, plan):
                 durum, neden = "basarisiz", d.get("durum_nedeni") or "doğrulamadan geçmedi: " + d["dogrulama"]["neden"]
             else:
                 durum, neden = "elle", elle.get(f) or atlanan.get(f) or "otomatik düzeltme önerisi yok"
+        # cozulen bulgu raporda nasil cozuldugunu (uygulanan degisiklik, guven, onay kaynagi) gosterir
+        cozum = [{"id": d["id"], "ozet": _degisiklik_ozeti(d), "guven": d.get("guven"),
+                  "onay_kaynagi": d.get("onay_kaynagi"), "asama": d.get("asama")}
+                 for d in uygulanan] if durum.startswith("cozuldu") else []
         bulgular.append({"sorun": f[0], "url": f[1], "aciklama": ACIKLAMA.get(f[0], f[0]),
                          "kategori": kat.kategori(f[0]), "durum": durum, "durum_adi": BULGU_DURUM_ADI[durum],
                          "neden": neden, "degisiklikler": [d["id"] for d in ilgili], "dogrudan": dogrudan,
-                         "elle_turu": not ilgili})
-    elle_turu = {(b["sorun"], b["url"]) for b in bulgular if b["elle_turu"]}
-    cozulebilir = [f for f in sorted(b0) if f not in elle_turu]
+                         "elle_turu": not ilgili, "aktif": not durum.startswith("cozuldu"), "cozum": cozum,
+                         "site_ayari": site_ayari_mi(f[0])})
+    takma_adresleri_bagla(bulgular, once["kayitlar"])
+
+    # sayac birimi: sayfa bulgusu ya da site geneli ayar (tum sayfalari etkileyen tek ayar bir kez sayilir;
+    # yalnizca gosterim/sayac; tespit ve puanlama sayfa x sorun olarak kalir)
+    birimler = []
+    for f, b in zip(sorted(b0), bulgular):
+        if not b["site_ayari"] and not b.get("takma"):
+            birimler.append({"durum": b["durum"], "elle_turu": b["elle_turu"], "v": varlik[f],
+                             "cozum_asamalari": [cozum_asamasi(varlik[f], i) for i in range(len(olcumler))]})
+    site_gruplari = {}
+    for f, b in zip(sorted(b0), bulgular):
+        if b["site_ayari"]:
+            site_gruplari.setdefault(f[0], []).append((f, b))
+    site_ayarlari = []
+    for kod, uyeler in sorted(site_gruplari.items()):
+        v = [False if all(varlik[f][i] is False for f, _ in uyeler) else
+             True if any(varlik[f][i] for f, _ in uyeler) else None for i in range(len(olcumler))]
+        cs = []
+        for i in range(len(olcumler)):
+            c = [cozum_asamasi(varlik[f], i) for f, _ in uyeler]
+            cs.append(None if None in c else "onayli" if "onayli" in c else "otomatik")
+        bs = [b for _, b in uyeler]
+        acik = [b for b in bs if b["aktif"]]
+        # tum sayfalarda cozulduyse cozuldu; degilse en bilgilendirici acik durum
+        temsil = min(acik, key=lambda b: SITE_DURUM_ONCELIGI.index(b["durum"])) if acik else \
+            next((b for b in bs if b["durum"] == "cozuldu_onayli"), bs[0])
+        birimler.append({"durum": temsil["durum"], "elle_turu": all(b["elle_turu"] for b in bs), "v": v,
+                         "cozum_asamalari": cs})
+        site_ayarlari.append({"sorun": kod, "aciklama": ACIKLAMA.get(kod, kod), "kategori": kat.kategori(kod),
+                              "durum": temsil["durum"], "durum_adi": BULGU_DURUM_ADI[temsil["durum"]],
+                              "neden": temsil["neden"], "aktif": bool(acik), "sayfa_sayisi": len(bs),
+                              "aktif_sayfa": len(acik), "cozum": temsil["cozum"],
+                              "degisiklikler": sorted({x for b in bs for x in b["degisiklikler"]})})
+
+    cozulebilir = [u for u in birimler if not u["elle_turu"]]
+    elle_birimleri = [u for u in birimler if u["elle_turu"]]
     asamalar = []
     for i, (ad, tarama, o) in enumerate(olcumler):
         m = {"ad": ad, "adi": ASAMA_ADI[ad], "tarama": tarama, "olculdu": o is not None}
         if o is not None:
             # geri alindiysa uygulama asamalarinin olcumleri gecmisi gosterir; durumlar baslangica doner
-            cozulen = sum(1 for f in cozulebilir if varlik[f][i] is False)
-            elle_cozulen = sum(1 for f in elle_turu if varlik[f][i] is False)
+            cozulen = sum(1 for u in cozulebilir if u["v"][i] is False)
+            elle_cozulen = sum(1 for u in elle_birimleri if u["v"][i] is False)
+            # durum sayaclari: bu asamaya kadarki olcumlerle durum kurali (geri alma sonrasi hepsi aktif)
+            cozum_asamalari = [None if ad == "geri_alma" else u["cozum_asamalari"][i] for u in birimler]
+            oto = sum(1 for c in cozum_asamalari if c == "otomatik")
+            onayli = sum(1 for c in cozum_asamalari if c == "onayli")
             m.update({"puanlar": _ortalama_puanlar(o["kayitlar"]), "bulgu_sayisi": len(o["kume"]),
                       "yeni_bulgu": len(o["kume"] - b0), "cozulen": cozulen, "cozulebilir": len(cozulebilir),
-                      "elle": len(elle_turu) - elle_cozulen, "elle_dolayli_cozulen": elle_cozulen,
-                      "cozum_orani": round(cozulen / len(cozulebilir), 3) if cozulebilir else None})
+                      "elle": len(elle_birimleri) - elle_cozulen, "elle_dolayli_cozulen": elle_cozulen,
+                      "cozum_orani": round(cozulen / len(cozulebilir), 3) if cozulebilir else None,
+                      "aktif": len(birimler) - oto - onayli, "cozuldu_otomatik": oto, "cozuldu_onayli": onayli})
         asamalar.append(m)
-    sayilar = {d: sum(1 for b in bulgular if b["durum"] == d) for d in BULGU_DURUM_ADI}
-    return {"asamalar": asamalar, "bulgular": bulgular, "sayilar": sayilar, "toplam": len(b0),
+    sayilar = {d: sum(1 for u in birimler if u["durum"] == d) for d in BULGU_DURUM_ADI}
+    sayfa_bulgulari = [b for b in bulgular if not b["site_ayari"] and not b.get("takma")]
+    ozet = durum_sayaclari(birimler)
+    ozet.update({"sayfa": durum_sayaclari(sayfa_bulgulari), "site_ayari": durum_sayaclari(site_ayarlari),
+                 "site_ayari_sayfa": sum(s["aktif_sayfa"] for s in site_ayarlari), "ham_toplam": len(b0),
+                 "takma": sum(1 for b in bulgular if b.get("takma"))})
+    son = next((o for (ad, _, o) in reversed(olcumler) if o is not None and ad != "baslangic"), None)
+    return {"asamalar": asamalar, "bulgular": bulgular, "site_ayarlari": site_ayarlari, "sayilar": sayilar,
+            "toplam": len(birimler), "ozet": ozet,
+            "sayfalar": sayfa_sayaclari(bulgular, once["kayitlar"], (son or once)["kayitlar"]),
             "tanim": COZUM_ORANI_TANIMI, "geri_alindi": geri}
+
+
+GECERSIZ_SAYFA_KODLARI = ("yumusak_404", "hata_durum_kodu")
+TAKMA_TURU = {"yonlendirme": "yönlendirme", "parametre": "parametreli adres", "gecersiz": "geçersiz sayfa"}
+
+
+def asil_adresler(kayitlar):
+    """Takma adres → (asil adres, tur). Yonlendirme: son adresi baska bir kaydin adresi; parametre: sorgusuz
+    yolu baska bir kaydin adresi (ayni dosyayi acar). Zincir izlenir; asil adresin kendisi takma degildir."""
+    adlar = {url_anahtari(k.get("ad")): k.get("ad") for k in kayitlar if k.get("ad")}
+    asil = {}
+    for k in kayitlar:
+        ad = k.get("ad")
+        if not ad:
+            continue
+        son = k.get("site_url") or ad
+        if url_anahtari(son) != url_anahtari(ad) and url_anahtari(son) in adlar:
+            asil[ad] = (adlar[url_anahtari(son)], "yonlendirme")
+        elif urlsplit(ad).query:
+            yol = urlsplit(ad)._replace(query="").geturl()
+            if url_anahtari(yol) in adlar and adlar[url_anahtari(yol)] != ad:
+                asil[ad] = (adlar[url_anahtari(yol)], "parametre")
+    for ad in list(asil):
+        hedef, tur, gorulen = asil[ad][0], asil[ad][1], {ad}
+        while hedef in asil and hedef not in gorulen:
+            gorulen.add(hedef)
+            hedef = asil[hedef][0]
+        asil[ad] = (hedef, tur)
+    return asil
+
+
+def takma_adresleri_bagla(bulgular, kayitlar):
+    """Ayni dosyanin baska adresindeki (yonlendirme, parametre) ya da gecersiz sayfadaki (yumusak 404, hata
+    kodu) bulgular asil bulguya baglanir: durumunu asil bulgudan alir (o yeniden kontrole dayanir), sayaca
+    ayrica girmez. Asil sayfada ayni kod yoksa bulgu kendi basina kalir. Yalnizca gosterim/sayac."""
+    anahtar = {(b["sorun"], b["url"]): b for b in bulgular}
+    asil = asil_adresler(kayitlar)
+    gecersiz = {}
+    for b in bulgular:
+        if b["sorun"] in GECERSIZ_SAYFA_KODLARI:
+            gecersiz.setdefault(b["url"], b)
+    for b in bulgular:
+        if b["site_ayari"] or b["sorun"] in GECERSIZ_SAYFA_KODLARI:
+            continue
+        hedef, tur = None, None
+        if b["url"] in asil and (b["sorun"], asil[b["url"]][0]) in anahtar:
+            hedef, tur = anahtar[(b["sorun"], asil[b["url"]][0])], asil[b["url"]][1]
+        elif b["url"] in gecersiz and b["elle_turu"] and not b["sorun"].startswith("sitemap_"):
+            # gecersiz sayfanin icerik bulgulari anlamsizdir; kendi duzeltmesi olan ya da sitemap dosyasina ait
+            # bulgu (olu adresi sitemap'ten cikarmak) ayri is olarak kalir
+            hedef, tur = gecersiz[b["url"]], "gecersiz"
+        if hedef is None or hedef is b:
+            continue
+        b["takma"] = {"asil_url": hedef["url"], "asil_sorun": hedef["sorun"], "tur": tur}
+        hedef.setdefault("takma_adresler", []).append({"url": b["url"], "sorun": b["sorun"], "tur": tur})
+    for b in bulgular:
+        t = b.get("takma")
+        if t:
+            h = anahtar[(t["asil_sorun"], t["asil_url"])]
+            b.update(durum=h["durum"], durum_adi=h["durum_adi"], aktif=h["aktif"], cozum=h["cozum"],
+                     neden=f"{TAKMA_TURU[t['tur']]}: {t['asil_url']} adresindeki "
+                           f"'{h['aciklama']}' bulgusuna bağlı ({h['durum_adi']})")
+
+
+def _kisalt(metin, n=70):
+    metin = " ".join(str(metin or "").split())
+    return metin if len(metin) <= n else metin[:n - 1] + "…"
+
+
+def _degisiklik_ozeti(d):
+    eski = d.get("eski")
+    return (_kisalt(eski, 40) + " → " if eski and eski != "(yok)" else "eklendi: ") + _kisalt(d.get("yeni"))
+
+
+def durum_sayaclari(bulgular):
+    """Tek dogruluk kaynagi: aktif = Onay bekliyor + Reddedildi + Başarısız + Elle düzeltilir (+ uygulanmis
+    ama yeniden kontrolle dogrulanmamis); cozulen = Çözüldü (otomatik) + Çözüldü (onaylı). Toplam her zaman
+    baslangictaki birim sayisidir (aktif + cozulen). Birim: sayfa bulgusu ya da bir kez sayilan site ayari."""
+    oto = sum(1 for b in bulgular if b["durum"] == "cozuldu_otomatik")
+    onayli = sum(1 for b in bulgular if b["durum"] == "cozuldu_onayli")
+    return {"toplam": len(bulgular), "aktif": len(bulgular) - oto - onayli, "cozulen": oto + onayli,
+            "cozuldu_otomatik": oto, "cozuldu_onayli": onayli}
+
+
+def sayfa_sayaclari(bulgular, once_kayitlar, guncel_kayitlar):
+    """Sayfa basina durum sayaclari (site geneli ayarlar ve asil bulguya baglanan takma adres bulgulari haric;
+    site_ayari sayfayi etkileyen acik ayar, takma baglanan bulgu sayisidir), baslangic ve guncel (son yeniden tarama) sayfa puani ve cozum
+    orani (cozulen / cozulebilir; 'Elle düzeltilir' haric, COZUM_ORANI_TANIMI)."""
+    def puan(kayitlar):
+        return {k.get("ad"): (k.get("once_puanlar") or {}).get("sayfa") for k in kayitlar}
+    once_p, guncel_p = puan(once_kayitlar), puan(guncel_kayitlar)
+    gruplar = {}
+    for b in bulgular:
+        gruplar.setdefault(b["url"], []).append(b)
+    sonuc = {}
+    for url in [k.get("ad") for k in once_kayitlar] + sorted(set(gruplar) - {k.get("ad") for k in once_kayitlar}):
+        hepsi = gruplar.get(url, [])
+        bs = [b for b in hepsi if not b.get("site_ayari") and not b.get("takma")]
+        cozulebilir = [b for b in bs if not b["elle_turu"]]
+        s = durum_sayaclari(bs)
+        s.update({"site_ayari": sum(1 for b in hepsi if b.get("site_ayari") and b["aktif"]),
+                  "takma": sum(1 for b in hepsi if b.get("takma")),
+                  "puan_once": once_p.get(url), "puan_guncel": guncel_p.get(url),
+                  "cozum_orani": round(sum(1 for b in cozulebilir if not b["aktif"]) / len(cozulebilir), 3)
+                  if cozulebilir else None})
+        sonuc[url] = s
+    return sonuc
 
 
 # ------------------------------------------------------------------ rapor
@@ -530,11 +702,19 @@ def _analiz_raporunu_guncelle(klasor, durumlar):
         return
     kayitlar, ozet, bulgular = (_json_oku(p) for p in gerekli)
     son = _son_olcum(durumlar)
-    son_klasor = klasor / son["tarama"] if son else klasor
-    guncel = {k.get("ad"): (k.get("once_puanlar") or {}).get("sayfa") for k in _json_oku(son_klasor / "rapor.json")}
+    sayfa_bulgulari = {}
+    for b in durumlar["bulgular"]:
+        sayfa_bulgulari.setdefault(b["url"], []).append(b)
+    # tum sayaclar (genel, sayfa, sorun turu) bulgu durumlarindan: rapor.json/site_ozeti yalnizca aciklama icin
+    tur = {}
+    for b in durumlar["bulgular"]:
+        t = tur.setdefault(b["sorun"], {"aktif": 0, "cozulen": 0})
+        t["aktif" if b["aktif"] else "cozulen"] += 1
     bilgi = {"durumlar": {b["sorun"] + "|" + b["url"]: b for b in durumlar["bulgular"]},
              "asamalar": durumlar["asamalar"], "sayilar": durumlar["sayilar"], "toplam": durumlar["toplam"],
-             "guncel_puan": guncel, "DURUM_ADI": BULGU_DURUM_ADI, "tanim": durumlar["tanim"],
+             "sayaclar": durumlar["ozet"], "sayfalar": durumlar["sayfalar"], "sayfa_bulgulari": sayfa_bulgulari,
+             "site_ayarlari": durumlar["site_ayarlari"],
+             "tur_sayaclari": tur, "DURUM_ADI": BULGU_DURUM_ADI, "tanim": durumlar["tanim"],
              "son_asama": son["adi"] if son else None}
     (klasor / "rapor.html").write_text(rapor_modulu.html_rapor(kayitlar, ozet, bulgular, baslik=klasor.parent.name,
                                                                yonetici=bilgi), encoding="utf-8")
@@ -564,6 +744,8 @@ def yonetici_raporu(klasor, plan=None, durumlar=None):
              "giderilen_bulgu_sayisi": len(giderilen), "uygulama": uygulama,
              "asamalar": durumlar["asamalar"], "bulgu_durumlari": durumlar["bulgular"],
              "bulgu_sayilari": durumlar["sayilar"], "bulgu_toplam": durumlar["toplam"],
+             "sayaclar": durumlar["ozet"], "sayfa_sayaclari": durumlar["sayfalar"],
+             "site_ayarlari": durumlar["site_ayarlari"],
              "cozum_orani_tanimi": durumlar["tanim"], "geri_alindi": plan.get("geri_alindi")}
     _json_yaz(klasor / "yonetici_raporu.json", rapor)
     (klasor / "yonetici_raporu.html").write_text(_ortam.get_template("yonetici_rapor.html").render(

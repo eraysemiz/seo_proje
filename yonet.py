@@ -207,8 +207,9 @@ def _asama_ozeti_yaz(rapor):
     def satir(ad, deger):
         print("  " + ad.ljust(26) + "".join((deger(a) if a["olculdu"] else "—").rjust(29) for a in asamalar))
     satir("Ortalama sayfa puanı", lambda a: str(a["puanlar"]["sayfa"]))
-    satir("Sorun sayısı", lambda a: str(a["bulgu_sayisi"]))
-    satir("Çözülen", lambda a: str(a["cozulen"]))
+    satir("Aktif sorun", lambda a: str(a.get("aktif", "—")))
+    satir("Çözülen (otomatik)", lambda a: str(a.get("cozuldu_otomatik", "—")))
+    satir("Çözülen (onaylı)", lambda a: str(a.get("cozuldu_onayli", "—")))
     satir("Çözüm oranı", lambda a: ("%" + str(round(100 * a["cozum_orani"])) + f" ({a['cozulen']}/{a['cozulebilir']})")
           if a["cozum_orani"] is not None else "—")
     satir("Elle düzeltilir (açık)", lambda a: str(a["elle"]))
@@ -218,6 +219,11 @@ def _asama_ozeti_yaz(rapor):
           "sayılır. Çözülen yalnızca yeniden taramaya dayanır.")
     print("Sorun durumları (" + str(rapor.get("bulgu_toplam", 0)) + "): " +
           ", ".join(f"{yonetici.BULGU_DURUM_ADI[d]} {n}" for d, n in (rapor.get("bulgu_sayilari") or {}).items() if n))
+    s = rapor.get("sayaclar")
+    if s:
+        ayrim = f" ({s['sayfa']['aktif']} sayfa sorunu + {s['site_ayari']['aktif']} site geneli ayar)" if "sayfa" in s else ""
+        print(f"Aktif {s['aktif']}{ayrim} · Çözülen {s['cozulen']} (otomatik {s['cozuldu_otomatik']}, onaylı "
+              f"{s['cozuldu_onayli']}) · toplam {s['toplam']}")
 
 
 def komut_geri_al(a):

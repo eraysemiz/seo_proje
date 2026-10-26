@@ -292,6 +292,26 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
     Robots düzelticileri hâlâ "YZ önerir · yüksek risk"; artık kural kategorisine alınabilirler (karar bekliyor).
   - README, `yonet.py` yardım metni ve testler güncellendi (`test_toplu_kural_onayi_zorunlu_onayli_degisikligi_kapsamaz`).
 - **26 Ekim:** .exe `seo-kurallari` ile yeniden derlendi (11:33); oto-test 13/13, temiz kapanış.
+- **26 Ekim (commit'lenmedi): sayaçlar bulgu durumlarından (tek doğruluk kaynağı).**
+  - Kök neden: durumlar doğruydu ama rapor sayaçları üç ayrı kaynaktan geliyordu (başlangıç
+    `once_sorun_sayisi`/`site_ozeti`, yeniden taramanın ham `bulgu_sayisi`, durum çipi); çözülenler
+    "aktif" listede kalıyordu; web `/api/html` yönetici modunda durumsuz rapor üretiyordu.
+  - `yonetici.bulgu_durumlari` artık `ozet` (aktif/çözülen otomatik/onaylı), aşama başına aynı sayaçlar,
+    `sayfalar` (sayfa sayaçları + başlangıç/güncel puan + çözüm oranı) ve çözülen bulgu için `cozum`
+    (değişiklik özeti, güven, onay kaynağı) üretir; `rapor.html`, `yonetici_raporu`, web, CLI ve .exe özeti
+    bunu okur. Tespit/puanlama/düzeltme ve Mod 2 raporu değişmedi.
+  - Test sitesinde (modelsiz): otomatik 187 aktif + 94 çözülen = 281; D003/D004 onay + D049 ret →
+    186 + 94 + 1; geri alma → 281 + 0. Dört yüzey aynı sayıyı verdi. Testler 293 geçti.
+  - Ardından sayaç birimi: site geneli ayarlar (HTTPS, HTTPS yönlendirmesi, güvenlik başlıkları,
+    `sitemap_hatali_adres`, ayrıca puanlamada sayfaya özgü olan `onbellek_basligi_yok` —
+    `yonetici.SUNUCU_AYARI_KODLARI`) bir kez sayılır; sayfa sayaçlarına girmez, "Site geneli ayarlar"
+    bölümünde gösterilir. Test sitesinde 281 bulgu → 133 birim; otomatik: 69 aktif (65 sayfa + 4 ayar) +
+    64 çözülen; 2 onay + 1 ret: 68 + 64 + 1; geri alma: 133 + 0.
+  - Takma adres bulguları (`yonetici.asil_adresler`, `takma_adresleri_bagla`): yönlendirme/parametreli
+    adresteki bulgu asıl sayfadaki aynı koda, geçersiz sayfanın (yumuşak 404, hata kodu) içerik bulguları o
+    sorunun kendisine bağlanır; durum asıldan gelir, sayaca bir kez girer. Test sitesinde 133 → 102 birim
+    (31 bağlı); otomatik: 50 aktif (46 sayfa + 4 ayar) + 52 çözülen; 2 onay + 1 ret: 49 + 52 + 1;
+    geri alma: 102 + 0. Testler 294 geçti.
 
 ## 8. Mevcut durum
 

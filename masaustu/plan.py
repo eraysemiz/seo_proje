@@ -48,7 +48,7 @@ def rapor_ozeti(klasor):
         return None
     return {"asamalar": r.get("asamalar") or [], "sayilar": r.get("bulgu_sayilari") or {},
             "toplam": r.get("bulgu_toplam", 0), "tanim": r.get("cozum_orani_tanimi", ""),
-            "geri_alindi": r.get("geri_alindi")}
+            "geri_alindi": r.get("geri_alindi"), "sayaclar": r.get("sayaclar") or {}}
 
 
 def ozet_satirlari(oz):
@@ -61,10 +61,16 @@ def ozet_satirlari(oz):
             satirlar.append(f"{a['adi']}: ölçülmedi")
             continue
         oran = "—" if a.get("cozum_orani") is None else f"%{round(100 * a['cozum_orani'])}"
-        satirlar.append(f"{a['adi']}: sayfa puanı {a['puanlar']['sayfa']} · sorun {a['bulgu_sayisi']} · "
+        satirlar.append(f"{a['adi']}: sayfa puanı {a['puanlar']['sayfa']} · aktif {a.get('aktif', '—')} · "
+                        f"çözülen {a.get('cozuldu_otomatik', '—')} otomatik + {a.get('cozuldu_onayli', '—')} onaylı · "
                         f"çözüm oranı {oran} ({a['cozulen']}/{a['cozulebilir']}) · elle {a['elle']}")
     durumlar = ", ".join(f"{BULGU_DURUM_ADI.get(d, d)} {n}" for d, n in oz["sayilar"].items() if n)
     satirlar.append(f"Sorun durumları ({oz['toplam']}): {durumlar}")
+    s = oz.get("sayaclar")
+    if s:
+        ayrim = f" ({s['sayfa']['aktif']} sayfa sorunu + {s['site_ayari']['aktif']} site geneli ayar)" if "sayfa" in s else ""
+        satirlar.append(f"Aktif {s['aktif']}{ayrim} · Çözülen {s['cozulen']} (otomatik {s['cozuldu_otomatik']}, "
+                        f"onaylı {s['cozuldu_onayli']}) · toplam {s['toplam']}")
     return satirlar
 
 
