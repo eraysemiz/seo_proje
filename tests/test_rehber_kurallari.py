@@ -176,3 +176,56 @@ def test_ornek_bankasi_rehber_etiketli_ve_test_sitesinden_bagimsiz():
     metin = (json.dumps(rehber, ensure_ascii=False) + json.dumps(ayri, ensure_ascii=False)).lower()
     for iz in ("çaylıbahçe", "caylibahce", "127.0.0.1", "rize-filiz", "ihlamur", "semaver"):
         assert iz not in metin, iz
+
+
+# ------------------------------------------------------------------ kopya icerik: once yonlendirme
+def _kopya_site(tmp_path, ek=None):
+    kok = tmp_path / "site"
+    kok.mkdir(parents=True)
+    metin = _sayfa("<p>" + " ".join(["Bahar kampanyasında defterlerde indirim var."] * 30) + "</p>")
+    (kok / "kampanyalar.html").write_text(metin, encoding="utf-8")
+    (kok / "duyuru.html").write_text(metin, encoding="utf-8")
+    for ad, icerik in (ek or {}).items():
+        (kok / ad).write_bytes(icerik.encode("utf-8"))          # satir sonlari oldugu gibi
+    kayitlar = [{"ad": TEMEL + a, "site_url": TEMEL + a, "durum_kodu": 200, "sorunlar": []}
+                for a in ("kampanyalar.html", "duyuru.html")]
+    bulgular = [{"sorun": "icerik_tekrar", "sayfalar": [TEMEL + "kampanyalar.html", TEMEL + "duyuru.html"]}]
+    return YerelDosyaAdaptoru(kok), kayitlar, bulgular
+
+
+def test_kopya_icerik_yonlendirme_dosyasi_varsa_301_onerir(tmp_path):
+    a, kayitlar, bulgular = _kopya_site(tmp_path, {".htaccess": "Options -Indexes\n"})
+    plan = dz.plan_uret(kayitlar, bulgular, a, TEMEL, esik=0.5)
+    d = next(x for x in plan["degisiklikler"] if x["bulgu"] == "icerik_tekrar")
+    assert d["dosya"] == ".htaccess" and d["yeni"] == "Redirect 301 /duyuru.html /kampanyalar.html"
+    assert "301" in d["zorunlu_onay"] and d["onay_turu"] != "otomatik"      # dusuk esikte bile onay ister
+    assert "Başlangıç Rehberi" in d["gerekce"] and d["risk"] == "yuksek"
+    dz.uygula(plan, {"kararlar": {d["id"]: {"karar": "onay", "risk_onay": True}}}, a, tmp_path / "yedek", tmp_path / "g.jsonl")
+    assert d["durum"] == "uygulandi"
+    assert a.oku(".htaccess").decode("utf-8") == "Options -Indexes\nRedirect 301 /duyuru.html /kampanyalar.html\n"
+    assert "canonical" not in a.oku("duyuru.html").decode("utf-8")
+
+
+def test_kopya_icerik_netlify_bicimi_ve_yonlendirme_yoksa_canonical(tmp_path):
+    a, kayitlar, bulgular = _kopya_site(tmp_path / "n", {"_redirects": ""})
+    d = next(x for x in dz.plan_uret(kayitlar, bulgular, a, TEMEL)["degisiklikler"] if x["bulgu"] == "icerik_tekrar")
+    assert d["dosya"] == "_redirects" and d["yeni"] == "/duyuru.html /kampanyalar.html 301"
+    # CRLF'li dosyada eklenen satir da CRLF; son satiri satir sonu olmayan dosyada once satir kapatilir
+    a, kayitlar, bulgular = _kopya_site(tmp_path / "w", {".htaccess": "Options -Indexes\r\nErrorDocument 404 /404.html"})
+    plan = dz.plan_uret(kayitlar, bulgular, a, TEMEL)
+    d = next(x for x in plan["degisiklikler"] if x["bulgu"] == "icerik_tekrar")
+    dz.uygula(plan, {"kararlar": {d["id"]: {"karar": "onay", "risk_onay": True}}}, a, tmp_path / "y", tmp_path / "g")
+    assert a.oku(".htaccess").decode("utf-8") == \
+        "Options -Indexes\r\nErrorDocument 404 /404.html\r\nRedirect 301 /duyuru.html /kampanyalar.html\r\n"
+    a, kayitlar, bulgular = _kopya_site(tmp_path / "c")
+    d = next(x for x in dz.plan_uret(kayitlar, bulgular, a, TEMEL)["degisiklikler"] if x["bulgu"] == "icerik_tekrar")
+    assert d["dosya"] == "duyuru.html" and "canonical" in d["parcalar"][0]["yeni"]
+    assert "301 yönlendirme" in d["gerekce"] and "canonical" in d["zorunlu_onay"]
+
+
+def test_rag_altin_listesi_rehber_parcalarini_konusuna_sayar():
+    from seo_app.rag_olcum import ALTIN_PARCALAR, ALTIN_SURUM, sorun_isabeti
+    assert {"t06"} <= ALTIN_PARCALAR["title_kisa"] and {"m06"} <= ALTIN_PARCALAR["meta_description_yok"]
+    assert {"g06", "g07"} <= ALTIN_PARCALAR["img_alt_eksik"] and "h04" not in ALTIN_PARCALAR["h1_yok"]
+    assert sorun_isabeti([{"id": "g07"}, {"id": "m06"}], ["img_alt_eksik", "meta_description_yok"]) == 1.0
+    assert ALTIN_SURUM.startswith("2026-10-26")

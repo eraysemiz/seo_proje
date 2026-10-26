@@ -1,5 +1,5 @@
 {
-  "aciklama": "Çaylıbahçe test sitesine kasıtlı yerleştirilen SEO sorunları (gerçek durum kaydı). Analiz aracı bu dosyaya erişemez; site yalnızca test_sitesi/site/ klasöründen sunulur. 'tespit': aracın bu sorunu bulduğunu gösteren [kod, adres] çiftleri ('*' her adres). 'yan': sorunun doğal yan bulguları (gürültü sayılmaz). 'kontrol': sorunun sitede hâlâ var olup olmadığını denetleyen kontroller.",
+  "aciklama": "Çaylıbahçe test sitesine kasıtlı yerleştirilen SEO sorunları (gerçek durum kaydı). Analiz aracı bu dosyaya erişemez; site yalnızca test_sitesi/site/ klasöründen sunulur. 'tespit': aracın bu sorunu bulduğunu gösteren [kod, adres] çiftleri ('*' her adres). 'yan': sorunun doğal yan bulguları (gürültü sayılmaz). 'kontrol': sorunun sitede hâlâ var olup olmadığını denetleyen kontroller. 'onay_gerekir': düzeltme güven eşiğinin altında, onayla uygulanır; otomatik aşamada düzelmemesi beklenir.",
   "ortam_bulgulari": ["https_yok", "https_yonlendirme_yok", "hsts_yok"],
   "karakter_kodlamasi_notu": "Sunucu tüm metin yanıtlarını 'charset=utf-8' başlığıyla gönderir; bu yüzden meta charset eksikliği (K15, K16) tarayıcıda karakter bozulmasına yol açmaz, yalnızca en iyi uygulama ihlalidir. Sitede bilerek bozulmuş Türkçe karakter yoktur.",
   "sorunlar": [
@@ -57,8 +57,8 @@
     {"id": "K08", "baslik": "Birden fazla H1", "kategori": "icerik", "zorluk": "kolay",
      "url": "/", "dosya": "index.html",
      "aciklama": "Ana sayfada iki ayrı H1 var.",
-     "dogru_duzeltme": "Tek H1 bırakıp ikinci başlığı H2 yapmak.",
-     "otomatik_duzeltilebilir": true, "beklenen_cozum": "kural",
+     "dogru_duzeltme": "Tek H1 bırakıp ikinci başlığı H2 yapmak (erişilebilirlik için; Google SEO Başlangıç Rehberi'ne göre başlık sayısı belirleyici değil, bu yüzden düzeltme onayla uygulanır).",
+     "otomatik_duzeltilebilir": true, "beklenen_cozum": "kural", "onay_gerekir": true,
      "tespit": [["h1_birden_fazla", "/"]], "yan": [],
      "kontrol": [{"tur": "desen_sayisi", "url": "/", "desen": "<h1[\\s>]", "en_az": 2}]},
     {"id": "K09", "baslik": "Alt metni olmayan görseller (blog)", "kategori": "icerik", "zorluk": "kolay",

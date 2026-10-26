@@ -78,7 +78,7 @@ ETKI = {
     "hreflang_x_default_yok": "x-default, dili eşleşmeyen kullanıcılara gösterilecek sürümü belirler.",
     "hreflang_kendine_referans_yok": "hreflang kümesine sayfanın kendisi eklenir; küme tutarlı değilse arama motoru tüm hreflang bilgisini yok sayabilir.",
     "hreflang_donus_yok": "Karşı sayfaya geri dönüş bağlantısı eklenir; iki sayfa birbirinin dil sürümü olarak eşleşir.",
-    "icerik_tekrar": "Kopya sayfa canonical ile asıl sayfaya bağlanır; kopya sayfa dizinden düşer.",
+    "icerik_tekrar": "Kopya sayfa 301 ile asıl sayfaya yönlendirilir (sitede .htaccess/_redirects varsa) ya da canonical ile bağlanır; kopya sayfa dizinden düşer.",
     "icerik_benzer": "Benzer sayfa canonical ile asıl sayfaya bağlanır; benzer sayfa dizinden düşer. Sayfa özgünleştirilecekse uygulamayın.",
     "robots_sayfayi_engelliyor": "robots.txt kuralı değişirse sayfa taranmaya başlar.",
     "robots_tum_siteyi_engelliyor": "robots.txt değişirse tüm site taranmaya açılır.",

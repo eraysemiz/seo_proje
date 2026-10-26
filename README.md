@@ -72,6 +72,8 @@ kapalıysa tarama sessizce modelsiz devam etmez, hata verir.
   Rehberin "odaklanmayın" dediği konulara göre: fazla H1 düşük önemde ve onay ister (yalnızca
   erişilebilirlik), başlık sırası erişilebilirlik bulgusudur, kelime sayısı hedef verilmez, kopya
   içerik puana tavan koymaz (ceza değil), sitemap yokluğu düşük önemdedir; meta keywords denetlenmez.
+  Birebir kopya sayfada, sitenin kökünde `.htaccess` ya da `_redirects` varsa kopya adres için 301
+  yönlendirme satırı önerilir (her zaman onay ister); yoksa canonical önerilir.
 - **erişilebilirlik (HTML'den görülebilen):** etiketsiz form alanı, erişilebilir adı olmayan düğme,
   olmayan id'yi gösteren `aria-labelledby`/`aria-describedby`. Kontrast ve klavye gezintisi gerçek
   tarayıcı ister, denetlenmez.
@@ -482,8 +484,8 @@ güvenlik ve performans kategori puanları vardır. Hesap ve ağırlıklar tek y
 
 - Her sorun puanı kendi ağırlığı oranında düşürür: yüksek %20, orta %9, düşük %3,5. Aynı gruptaki
   sorunlar bir kez sayılır. Puan = 100 × Π(1 − ağırlık).
-- Kritik sorunlarda üst sınır vardır: noindex 60, robots engeli 50, yumuşak 404 40, kopya içerik 70,
-  title yok 75.
+- Kritik sorunlarda üst sınır vardır: noindex 60, robots engeli 50, yumuşak 404 40, title yok 75.
+  Kopya içerik ceza olmadığı için (Google SEO Başlangıç Rehberi) tavan koymaz; orta önemde puana girer.
 - Sayfa puanına o sayfaya ait site bulguları (kırık bağlantı, yönlendirme, sitemap…) ve sayfayı
   içeren tarama geneli bulgular (tekrar eden title/meta/H1, kopya içerik, yetim sayfa) da girer.
   HTTPS gibi site geneli sorunlar site puanında görünür. Yönlendirme ile aynı sayfaya düşen adresler

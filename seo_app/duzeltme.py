@@ -1436,6 +1436,34 @@ def plan_uret(kayitlar, tarama_bulgulari, adaptor, temel_url, dil="tr", yz=None,
     }
 
 
+# sitenin kokunde yazilabilir yonlendirme dosyasi: (dosya, satir bicimi). Sunucu tarafi yapilandirma
+# (nginx, IIS, barindirma paneli) arac tarafindan yazilamaz; o durumda canonical onerilir.
+YONLENDIRME_DOSYALARI = ((".htaccess", "Redirect 301 {kaynak} {hedef}"), ("_redirects", "{kaynak} {hedef} 301"))
+
+
+def _yonlendirme_dosyasi(p):
+    return next(((d, b) for d, b in YONLENDIRME_DOSYALARI if d in p.dosyalar), None)
+
+
+def yz_yonlendirme(p, kod, kopya_url, asil_url, ilk_url):
+    """Kopya adresi asil adrese 301 ile yonlendiren satiri sitenin yonlendirme dosyasina ekler."""
+    dosya, bicim = _yonlendirme_dosyasi(p)
+    kaynak, hedef = urlsplit(kopya_url).path or "/", urlsplit(asil_url).path or "/"
+    if kaynak == hedef:
+        raise Atla("kopya ve asıl adres aynı yolu gösteriyor")
+    metin = p.metin(dosya)
+    if re.search(r"(^|\s)" + re.escape(kaynak) + r"(\s|$)", metin):
+        raise Atla(f"{dosya} içinde {kaynak} için zaten bir kural var")
+    satir = bicim.format(kaynak=kaynak, hedef=hedef)
+    sl = "\r\n" if "\r\n" in metin else "\n"                 # dosyanin kendi satir sonu korunur
+    once = sl if metin and not metin.endswith(("\n", "\r")) else ""
+    p.ekle(kod, dosya, [(len(metin), len(metin), once + satir + sl)], "(yok)", satir,
+           f"Sayfa metni {ilk_url} ile aynı; kopya adres asıl adrese 301 ile yönlendirilir (Google SEO Başlangıç "
+           "Rehberi: önce yönlendirme, yapılamıyorsa canonical). Kopya sayfa dizinden düşer; sayfayı "
+           "özgünleştirmeyi planlıyorsanız reddedin.", "sezgisel", url=kopya_url,
+           etki="Kopya adres 301 ile asıl adrese yönlendirilir; kopya sayfa dizinden düşer, ziyaretçiler asıl sayfaya gider.")
+
+
 def _elle_ekle(p, kod, url, katman=None):
     for e in p.elle:
         if e["bulgu"] == kod:
@@ -1477,11 +1505,16 @@ def _tarama_geneli(p, kayitlar, kayitlar_url, bulgular):
                         yz_meta(p, s, ["meta_tekrar"], [ilk_sayfa.d.get("meta_description") or ""])
                     elif kod == "h1_tekrar":
                         yz_h1(p, s, ["h1_tekrar"], [" / ".join(ilk_sayfa.d.get("h1") or [])])
+                    elif kod == "icerik_tekrar" and _yonlendirme_dosyasi(p):
+                        # SEO Baslangic Rehberi: once tercih edilmeyen adresi asil adrese yonlendirmek;
+                        # sitede yonlendirme dosyasi varsa 301 onerilir
+                        yz_yonlendirme(p, kod, url, dosyadan_url(ilk_dosya, p.temel_url), ilk_url)
                     else:
                         yz_canonical(p, s, {"sorun": kod}, hedef=dosyadan_url(ilk_dosya, p.temel_url),
                                      gerekce=f"Sayfa metni {ilk_url} ile {'aynı' if kod == 'icerik_tekrar' else 'büyük ölçüde aynı'}; "
-                                             "kopya sayfa canonical ile asıl sayfaya bağlandı. Sayfayı özgünleştirmeyi "
-                                             "planlıyorsanız reddedin.")
+                                             "kopya sayfa canonical ile asıl sayfaya bağlandı. Sunucuda 301 yönlendirme "
+                                             "kurabiliyorsanız onu tercih edin (Google SEO Başlangıç Rehberi); sayfayı "
+                                             "özgünleştirmeyi planlıyorsanız reddedin.")
                 except Atla as e:
                     p.atla(kod, url, str(e))
         elif kod in ("yetim_sayfa", "derin_sayfa"):

@@ -16,15 +16,18 @@ GENEL_KONULAR = {"genel", "anahtar_kelime_yigma", "yapay_zeka_icerik_riski", "ic
 
 # Sorun bazinda altin parcalar (bilgi_tabani.json kimlikleri). Bir sorun icin bu parcalardan
 # en az biri secildiyse o sorun "isabetli" sayilir. Eski (b01..b20) bilgi tabaninda tanimsizdir.
+# 26 Ekim: Google SEO Baslangic Rehberi parcalari (t06, m06, g06, g07) konularinin altin kumesine eklendi;
+# bu tarihten onceki olcumlerle sorun isabeti dogrudan karsilastirilamaz (ALTIN_SURUM rapora yazilir).
+ALTIN_SURUM = "2026-10-26-rehber"
 ALTIN_PARCALAR = {
-    "title_yok": {"t01", "t03"},
-    "title_kisa": {"t02", "t03"},
-    "title_uzun": {"t02", "t04", "t05"},
-    "meta_description_yok": {"m01", "m03"},
-    "meta_description_kisa": {"m02", "m03", "m05"},
-    "meta_description_uzun": {"m02", "m04"},
+    "title_yok": {"t01", "t03", "t06"},
+    "title_kisa": {"t02", "t03", "t06"},
+    "title_uzun": {"t02", "t04", "t05", "t06"},
+    "meta_description_yok": {"m01", "m03", "m06"},
+    "meta_description_kisa": {"m02", "m03", "m05", "m06"},
+    "meta_description_uzun": {"m02", "m04", "m06"},
     "h1_yok": {"h01", "h03"},
-    "img_alt_eksik": {"g01", "g02", "g03"},
+    "img_alt_eksik": {"g01", "g02", "g03", "g06", "g07"},
 }
 
 

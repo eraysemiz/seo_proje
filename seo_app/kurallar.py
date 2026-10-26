@@ -223,7 +223,7 @@ DUZELTME = {
     "title_tekrar": "Her sayfaya kendi konusunu anlatan benzersiz bir başlık verin.",
     "meta_tekrar": "Her sayfaya kendi içeriğini özetleyen benzersiz bir meta açıklama yazın.",
     "h1_tekrar": "Her sayfanın H1'ini o sayfanın konusuna özgü yazın.",
-    "icerik_tekrar": "Kopya sayfalardan birini asıl sayfa seçip diğerlerine canonical verin ya da 301 ile yönlendirin.",
+    "icerik_tekrar": "Kopya sayfalardan birini asıl sayfa seçin; diğerlerini mümkünse 301 ile ona yönlendirin, yönlendirme kurulamıyorsa canonical verin.",
     "icerik_benzer": "Benzer sayfaları birleştirin ya da her birine özgün içerik ekleyin; gerekirse canonical kullanın.",
     "yetim_sayfa": "Sayfaya ilgili kategori veya içerik sayfalarından site içi bağlantı verin; gereksizse sitemap'ten çıkarın.",
     "derin_sayfa": "Önemli sayfalara ana sayfa, menü veya kategori sayfalarından daha kısa bir yol açın.",

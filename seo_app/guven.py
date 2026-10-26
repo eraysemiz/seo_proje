@@ -74,6 +74,9 @@ def zorunlu_onay_nedeni(d, kendi_url=None):
     if d.get("yer_tutucu"):
         return "[doğrulanmalı] yer tutucusu var; değer elle doldurulmalı"
     if d["bulgu"] in ("icerik_tekrar", "icerik_benzer"):
+        if any(p.get("dosya") in (".htaccess", "_redirects") for p in d.get("parcalar") or []) or \
+                d.get("dosya") in (".htaccess", "_redirects"):
+            return "sayfa 301 ile başka sayfaya yönlendiriliyor; bu sayfa dizinden düşer"
         return "sayfa canonical ile başka sayfaya bağlanıyor; bu sayfa dizinden düşer"
     for p in d.get("parcalar") or []:
         eklenen = KAPATAN.findall(p.get("yeni") or "")

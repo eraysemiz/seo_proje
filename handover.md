@@ -331,6 +331,11 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
     sayfa puanı 72 → 73 (başlangıç); yeni kontroller test sitesinde bulgu üretmedi; kurgusal 5 sayfada
     5/5 doğru, 0 yanlış alarm. RAG (133 sayfa): kapsama 1.0, MRR 0.969 → 0.972, altın listeye göre sorun
     isabeti 0.935 → 0.833 (rehber parçaları altın listede değil; konuya göre ~0.92).
+  - Ardından (kullanıcı kararıyla): RAG altın listesine t06/m06/g06/g07 eklendi (`rag_olcum.ALTIN_SURUM`,
+    `ozet.json`'a yazılır); aynı listeyle 0.935 (eski taban) → 0.929 (yeni). Kopya içerik (`icerik_tekrar`):
+    sitede `.htaccess`/`_redirects` varsa kopya adres için 301 satırı (`duzeltme.yz_yonlendirme`, zorunlu onay),
+    yoksa canonical + "301 tercih edin" gerekçesi. `sorunlar.json` K08: `"onay_gerekir": true` (yalnızca
+    değerlendirme); `degerlendir.py` onay bekleyen beklenen düzeltmeleri ayrıca gösterir.
 
 ## 8. Mevcut durum
 

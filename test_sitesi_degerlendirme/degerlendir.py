@@ -106,7 +106,8 @@ def main():
         arac = [b["durum"] for b in (arac_durumlari or {}).get("bulgular") or []
                 if eslesir((b["sorun"], yol(b["url"])), s["tespit"])] if s["tespit"] else []
         satirlar.append({"id": s["id"], "baslik": s["baslik"], "zorluk": s["zorluk"], "kategori": s["kategori"],
-                         "beklenen_cozum": s["beklenen_cozum"], "tespit_edildi": tespit,
+                         "beklenen_cozum": s["beklenen_cozum"], "onay_gerekir": bool(s.get("onay_gerekir")),
+                         "tespit_edildi": tespit,
                          "tespit_edilebilir": bool(s["tespit"]), "duzeltildi": not hala_var,
                          "arac_sonra_buluyor": arac_sonra, "degisiklikler": ilgili, "arac_durumlari": arac,
                          "arac_cozuldu": bool(arac) and all(d.startswith("cozuldu") for d in arac)})
@@ -139,7 +140,12 @@ def main():
         tutarlilik = {"arac_cozuldu": sum(r["arac_cozuldu"] for r in satirlar),
                       "arac_cozuldu_ve_duzeldi": sum(r["arac_cozuldu"] and r["duzeltildi"] for r in satirlar),
                       "yanlis_cozuldu": yanlis, "eksik_cozuldu": eksik, "geri_alindi": arac_durumlari.get("geri_alindi")}
+    # onay gerektiren beklenen duzeltmeler (guven esiginin altinda): onay verilmeden duzelmemeleri beklenir
+    onayli_beklenen = [r for r in satirlar if r["onay_gerekir"]]
+    onay_bekleyen = [r["id"] for r in onayli_beklenen if not r["duzeltildi"] and
+                     any(d["durum"] == "onay_bekliyor" for d in r["degisiklikler"])]
     sonuc = {"once": str(once_k), "sonra": str(sonra_k) if sonra_k else None, "sorunlar": satirlar,
+             "onay_gerektiren": [r["id"] for r in onayli_beklenen], "onay_bekleyen": onay_bekleyen,
              "tablolar": tablolar, "plansiz_bulgular": plansiz, "yeni_bulgular": yeni, "tutarlilik": tutarlilik,
              "toplam": {"sorun": len(satirlar), "tespit": sum(r["tespit_edildi"] for r in satirlar),
                         "duzeltildi": sum(r["duzeltildi"] for r in satirlar)}}
@@ -149,7 +155,12 @@ def main():
     md = ["# Test sitesi değerlendirmesi", "",
           f"- Önce taraması: `{once_k}`", f"- Sonra taraması: `{sonra_k or '—'}`", "",
           f"**Toplam:** {len(satirlar)} sorun · tespit {oran(sonuc['toplam']['tespit'], len(satirlar))} · "
-          f"düzeltildi {oran(sonuc['toplam']['duzeltildi'], len(satirlar))}", ""]
+          f"düzeltildi {oran(sonuc['toplam']['duzeltildi'], len(satirlar))}"
+          + (f" · onay bekleyen beklenen düzeltme {len(onay_bekleyen)} ({', '.join(onay_bekleyen)})" if onay_bekleyen else ""),
+          ""]
+    if onayli_beklenen:
+        md += [f"Onay gerektiren beklenen düzeltmeler ({', '.join(r['id'] for r in onayli_beklenen)}) güven eşiğinin "
+               "altındadır; otomatik aşamada düzelmemeleri beklenir, onay verilince uygulanır.", ""]
     for baslik, anahtar in (("Zorluğa göre", "zorluk"), ("Beklenen çözüm kategorisine göre", "beklenen_cozum"),
                             ("SEO alanına göre", "kategori")):
         md += [f"## {baslik}", "", "| Grup | Sorun | Tespit | Düzeltildi |", "|---|---|---|---|"]
@@ -162,7 +173,8 @@ def main():
         tespit = "✓" if r["tespit_edildi"] else ("✗" if r["tespit_edilebilir"] else "— (araçta denetim yok)")
         sonra_m = {True: "hâlâ buluyor", False: "bulmuyor", None: "—"}[r["arac_sonra_buluyor"]]
         degs = ", ".join(f"{d['id']}:{d['durum']}" for d in r["degisiklikler"]) or "—"
-        md.append(f"| {r['id']} | {r['zorluk']} | {r['beklenen_cozum']} | {r['baslik']} | {tespit} | "
+        md.append(f"| {r['id']} | {r['zorluk']} | {r['beklenen_cozum']}{' (onaylı)' if r['onay_gerekir'] else ''} | "
+                  f"{r['baslik']} | {tespit} | "
                   f"{'✓' if r['duzeltildi'] else '✗'} | {sonra_m} | {degs} |")
     md += ["", f"## Düzeltme sonrası yeni çıkan bulgular ({len(yeni)})", ""]
     md += [f"- `{k}` — {y}" for k, y in yeni] or ["- yok"]

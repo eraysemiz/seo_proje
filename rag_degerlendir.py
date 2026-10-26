@@ -30,7 +30,7 @@ from seo_app import canli, ogretme
 from seo_app.boru import VARSAYILAN_AYARLAR, zaman_damgasi
 from seo_app.cikarma import extract
 from seo_app.kurallar import rule_checks
-from seo_app.rag_olcum import beklenen_alanlar, olc, ortalama, sorun_isabeti
+from seo_app.rag_olcum import ALTIN_SURUM, beklenen_alanlar, olc, ortalama, sorun_isabeti
 
 KOK = Path(__file__).resolve().parent
 VERI = KOK / "tests" / "veri" / "rag_degerlendirme.json"
@@ -214,7 +214,7 @@ def main():
             gsi = o.get("sorun_isabeti")
             print(f"    {g:14s} sayfa={o['sayfa']:3d} sorun_isabeti={'-' if gsi is None else format(gsi, '.3f')} "
                   f"kapsama={o['kapsama']:.3f}")
-    (hedef / "ozet.json").write_text(json.dumps({"k": args.k, "siralama": args.siralama, "modeller": ozet},
+    (hedef / "ozet.json").write_text(json.dumps({"k": args.k, "siralama": args.siralama, "altin_surum": ALTIN_SURUM, "modeller": ozet},
                                                 ensure_ascii=False, indent=1),
                                      encoding="utf-8")
     print("Sonuç:", hedef.relative_to(KOK))
