@@ -520,3 +520,5 @@ textarea.duzen { min-height: 40px; width: 100%; }
 .asama-tablosu th, .asama-tablosu td { padding: 3px 8px; text-align: right; white-space: nowrap; border-bottom: 1px solid currentColor; border-bottom-color: color-mix(in srgb, currentColor 18%, transparent); }
 .asama-tablosu tbody th { text-align: left; font-weight: 500; }
 #yonetici-uyari { margin-top: 10px; }
+
+.karar select.ret-nedeni { margin-left: .5rem; font-size: .85em; }

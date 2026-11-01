@@ -160,6 +160,10 @@ def dogrula(f, d, sorun_kodlari, kabul_edilen, gorsel_id):
         return False, "meta_uzunluk_" + str(len(v))
     if alan == "h1" and not 5 <= len(v) <= 70:
         return False, "h1_uzunluk_" + str(len(v))
+    from .yz_oneri import kalip_denetimi           # dongusel ice aktarma: yz_oneri llm'i kullanir
+    neden = kalip_denetimi(alan, v, d.get("site_adi"))
+    if neden:
+        return False, neden
     if alan in ("title", "meta_description", "h1"):
         yasakli = _yasakli_ifadeler(v, d)
         if yasakli:

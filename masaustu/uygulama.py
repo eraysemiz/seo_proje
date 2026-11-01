@@ -1041,6 +1041,12 @@ class OnayPenceresi:
         self.risk_kutusu = ttk.Checkbutton(karar, text="Yüksek riski kabul ediyorum", variable=self.risk,
                                            command=self._karar_degisti)
         self.risk_kutusu.pack(side="left", padx=12)
+        # model onerisi reddedilirse nedeni (istege bagli) ogrenme dongusune yazilir
+        self.ret_nedeni = tk.StringVar()
+        self.ret_kutusu = ttk.Combobox(karar, textvariable=self.ret_nedeni, values=pl.RET_NEDENLERI, width=20,
+                                       state="disabled")
+        self.ret_kutusu.pack(side="left", padx=6)
+        self.ret_kutusu.bind("<<ComboboxSelected>>", lambda e: self._karar_degisti())
         self.deger_cercevesi = ttk.Frame(sag)
         self.deger_cercevesi.pack(fill="x")
         ttk.Label(self.deger_cercevesi, text="Yeni değer (düzenlenebilir):").pack(anchor="w")
@@ -1137,6 +1143,9 @@ class OnayPenceresi:
             s = self.secimler[iid]
             self.karar.set(s["karar"] or "")
             self.risk.set(s["risk"])
+            self.ret_nedeni.set(s.get("neden") or "")
+            self.ret_kutusu.configure(state="readonly" if s["karar"] == "ret" and d.get("uretici") == "model"
+                                      and not (self.uygulanmis or d["durum"] == "gecersiz") else "disabled")
             duzenlenebilir = bool(d.get("duzenleme"))
             self.deger.set(s["deger"] if s["deger"] is not None else (str(d.get("yeni", "")) if duzenlenebilir else ""))
             kilitli = self.uygulanmis or d["durum"] == "gecersiz"
@@ -1149,6 +1158,7 @@ class OnayPenceresi:
             for b in self.karar_dugmeleri:
                 b.configure(state="disabled")
             self.risk_kutusu.configure(state="disabled")
+            self.ret_kutusu.configure(state="disabled")
             self.deger_girisi.configure(state="disabled")
             self.etki.configure(text="")
             if iid.startswith("elle"):
@@ -1168,6 +1178,9 @@ class OnayPenceresi:
         s = self.secimler[self._secili]
         s["karar"] = self.karar.get() or None
         s["risk"] = self.risk.get()
+        s["neden"] = (self.ret_nedeni.get() or None) if s["karar"] == "ret" else None
+        d = self.degisiklik[self._secili]
+        self.ret_kutusu.configure(state="readonly" if s["karar"] == "ret" and d.get("uretici") == "model" else "disabled")
         self._agaci_yenile()
 
     def _deger_degisti(self):

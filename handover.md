@@ -1,7 +1,8 @@
 # HANDOVER: Yerel Dil Modeli ile SEO Denetimi ve İyileştirme
 
-Son güncelleme: **26 Ekim 2026** · Aktif dal: `seo-kurallari` (`main`'den bir commit ileride,
-yalnızca yerelde; push edilmedi, birleştirilmedi).
+Son güncelleme: **27 Ekim 2026** · Aktif dal: `yz-ogretme-iyilestirme` (`seo-baslangic-rehberi` =
+`05660b8` üzerinden açıldı; değişiklikler commit'lenmedi). `seo-baslangic-rehberi` push edildi, `main`'e
+birleştirilmedi.
 Ayrıntılı kullanım: [README.md](README.md). Bu belgenin önceki sürümü (ödev bağlamı, Düzce birim
 siteleri bulguları, 20–23 Ekim notları) git geçmişinde: `git show 14d2142:handover.md`.
 
@@ -196,12 +197,18 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
 ## 6. RAG ve bilgi tabanı
 
 - **Kaynaklar** (`ogretme/`):
-  - `bilgi_tabani.json`: 28 Türkçe parça. 23'ü Google Arama Merkezi (developers.google.com/search),
-    4'ü W3C WAI, 1'i Google blog kaynaklı. Her parçada `kaynak`, `kaynak_basligi`, `erisim_tarihi` var.
-  - `ornekler.json`: few-shot örnekler.
+  - `bilgi_tabani.json`: 65 Türkçe parça (28 eski + 23 SEO Başlangıç Rehberi + 14 eksik konu, 27 Ekim).
+    Google Arama Merkezi, W3C WAI ve Google blog kaynaklı. Her parçada `kaynak`, `kaynak_basligi`,
+    `erisim_tarihi`; 27 Ekim parçalarında kaynağın "Son güncelleme" tarihi `kaynak_guncelleme`.
+  - `ornekler.json`: 11 few-shot örnek (6'sı rehber etiketli). Seçim `ogretme.ornek_sec`: sorun kodu
+    örtüşmesi, aynı kurumdan ikinci örnek yok, sayfaya bağlı eşitlik bozma, ~600 token bütçe.
+  - `geri_bildirim.jsonl` (yerel, git'e girmez): yönetici modunda model önerisi kararları; onaylananlar
+    başka sitelere few-shot örneği olur, hepsi kalibrasyona girer (otomatik uygulananlar hariç).
+  - `kalibrasyon.json` (henüz yok): `etiketle.py kalibre` üretir; model önerisinin güven tabanı.
   - `seo_kurallari.json`: gömme modeli yokken kullanılır ve atıfsızdır.
 - **Getirme** (`seo_app/ogretme.py`): sırasıyla alan filtresi, BM25 + kosinüs (ağırlıklı RRF),
-  her sorunlu alanı kapsayan seçim (`bilgi_sayisi` = 5), bağlam bütçesi. İsteğe bağlı `/rerank`
+  genel yönerge kotası (`GENEL_KOTA` = 1), her sorunlu alanı kapsayan seçim (`bilgi_sayisi` = 5),
+  bağlam bütçesi. Benzerlik eşiği (`BENZERLIK_ESIGI`) var ama kapalı: 0,50+ sorun isabetini düşürdü. İsteğe bağlı `/rerank`
   istemcisi var; gerçek bir rerank sunucusuyla denenmedi.
 - **Embedding önbelleği:** `ogretme/bilgi_tabani_gomme_cache.json`. Ayrı bir indeks dosyası yok.
 - **Güncelleme komutu yok:** `bilgi_tabani.json` düzenlenince bir sonraki kullanımda yalnızca
@@ -337,9 +344,43 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
     yoksa canonical + "301 tercih edin" gerekçesi. `sorunlar.json` K08: `"onay_gerekir": true` (yalnızca
     değerlendirme); `degerlendir.py` onay bekleyen beklenen düzeltmeleri ayrıca gösterir.
 
+- **27 Ekim (commit'lenmedi, `yz-ogretme-iyilestirme`): değerlendirme planının Aşama 1–3'ü.**
+  - Güven kalibrasyonu (`seo_app/kalibrasyon.py`): model önerisinin tabanı artık sabit 0,92 değil;
+    insan etiketi + kullanıcı kararlarından doğruluk oranının Wilson alt sınırı. Alan başına < 30 karar
+    → kalibre değil, taban eşiğin altında (0,70–0,75): **model metinleri ölçüm yapılana kadar onaya düşer.**
+    Kullanıcı kararı: "ölçülmüş doğruluk eşiğinin üstünde otomatik kalsın". Paragraf en fazla 0,70.
+  - Kalıp denetimi (`yz_oneri.kalip_denetimi`, iki modda): marka/bölüm tekrarı (D022 tipi
+    `X: … | X`) ve boş kalıp (`Anasayfa | Kurum`, `Hoş Geldiniz`, `resim`) reddedilir.
+  - Bilgi tabanı okunamazsa YZ önerisi kaynaksız üretilir ama artık sessiz değil: neden öneriye
+    (`kaynak_hatasi`) ve güven nedenine yazılır, güven −0,10.
+  - Few-shot seçimi (`ogretme.ornek_sec`): simülasyonda rehber örneği seçimlerin %57'sinde (önce %0),
+    en sık çift %17 (önce neredeyse hep 1+2). `alt_metni_anlamsiz` için `mevcut_alt` içeren rehber örneği eklendi.
+  - Getirme: genel kota 1 (MRR 0,972 → 0,977); eşik taraması 0,30–0,60 (yukarıda). Ölçüm klasörleri
+    `sonuclar/rag_degerlendirme/*_ogretme_*`.
+  - Bilgi tabanı +14 parça (s24–s37): yapısal veri ×4, hreflang ×3, yönlendirme/404 ×3, JavaScript ×2,
+    görsel ×2; kaynaklar 27 Ekim'de açılıp doğrulandı. Yeni bilgi alanları `hreflang`, `yonlendirme`,
+    `javascript`, `gorsel`. YZ önerisi üreten her kodun ≥ 2 parçası var (test).
+  - Öğrenme döngüsü (`seo_app/geri_bildirim.py`): onaylı aşamadan sonra kararlar yazılır; ret nedeni
+    web/masaüstü onay ekranında ve `yonet.py onayla --ret D004="uydurma bilgi"`.
+  - Ölçüm: `etiketle.py` (kör şablon, Cohen kappa, koşul özeti, kalibre, retler); `deney.py` kaynak
+    isabeti, uydurma/kalıp reddi ve `kosul_farklari.csv` (eşleştirilmiş bootstrap); `seo_app/istatistik.py`.
+  - Bağımsız setler: `test_setleri/dogrulama_seti.txt` (36 site), `tutulan_set.txt` (10 site); 27 Ekim'de
+    erişim denetlendi, 403/406/erişilemeyen 10 aday çıkarıldı. Toplam 46 (hedef 50'ydi).
+  - Trend/zamanlama/GSC: `trend.py`, `zamanla.py` (schtasks; görev oluşturulmadı, yalnızca `--kuru`
+    denendi), `seo_app/gsc.py` (Search Console CSV, API yok).
+  - İlk dört koşullu deney (test sitesi, 32 sayfa, 13'ünde model sorunu, qwen3.5-9b, retry 1;
+    `sonuclar/127.0.0.1/sonuc_2026-10-27_15-45-10/`): model çözüm oranı sifir/ornek/bilgi 0,808,
+    ornek+bilgi 0,885; uydurma reddi 0,167 / 0,12 / 0,125 / 0,083; kaynak isabeti bilgi 0,917,
+    ornek+bilgi 0,929. Eşleştirilmiş fark −0,077 [−0,231, 0,000], n=13: **anlamlı değil** (sayfa az).
+    Etiket şablonu (53 öneri) aynı klasörde `etiketleme/`. Doğrulama seti (36 site) deneyi
+    `sonuc_2026-10-27_16-17-14` adıyla her sitenin klasöründe.
+  - Kapsam dışı (kullanıcı kararı): İngilizce sayfalar (Mod 2 dil parametresi değişmedi); görev başına
+    model seçimi (RTX 4050 6 GB'a 14B sığmaz).
+  - Testler 328 geçti, 1 atlandı.
+
 ## 8. Mevcut durum
 
-- **Testler:** `py -m pytest -q` → 290 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok).
+- **Testler:** `py -m pytest -q` → 328 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok; 27 Ekim).
   Python 3.13 derleme ortamında 289'luk sürümde denendi; 290'lık sürüm 3.13'te koşulmadı `[doğrulanmalı]`.
 - **.exe oto-testi (26 Ekim, `seo-kurallari` = `819510f`, eşik/toplu onay değişikliklerinden önce):**
   13/13 adım, temiz kapanış (süreç kalmadı, 8080/5000 kapalı). Tespit 47/47, düzeldi 37/47
@@ -491,9 +532,11 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
 ## 11. Sonraki adımlar (öncelik sırasıyla)
 
 1. Hocadan konu ve kapsam onayı. Önceki notlarda "alınmadı" olarak duruyordu `[doğrulanmalı]`.
-2. 58 Düzce sitesinde (`test_setleri/duzce_birimleri.txt`) modelli tarama ve `deney.py` ile deney
-   matrisi (model × `sifir`/`ornek`/`bilgi`/`ornek+bilgi` × retry).
-3. Elle değerlendirme tablosu: sadakat ve Türkçe kalitesi, en az 2 kişi, model adı gizli.
+2. Dört koşullu deneyin sonuçlarını etiketlemek: `py etiketle.py hazirla <deney klasörü>`, iki kişi
+   (etiket_A/B.csv), `uyum` (κ ≥ 0,6), `ozet`. Ardından yönetici modu planlarından etiket + kullanıcı
+   kararlarıyla `py etiketle.py kalibre ... --geri-bildirim`; alan başına ≥ 30 karar olmadan model
+   önerileri otomatik uygulanmaz.
+3. Tutulan seti (`test_setleri/tutulan_set.txt`) yalnızca son raporlanacak ölçümde bir kez çalıştırmak.
 4. Literatür taraması ve ödev metni. Metin öğrencilerce yazılmalı; kodda YZ yardımı yöntem
    bölümünde belirtilmeli.
 5. Açık sorular (yönetici modu):

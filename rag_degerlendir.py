@@ -140,22 +140,23 @@ def veri_ekle(liste_yolu, bekleme=1.0):
           len(kayitlar))
 
 
-def getir(kayit, embed_url, embed_model, k, siralama=("bm25", "vektor")):
-    """Yeni hattin getirme fonksiyonu varsa onu, yoksa eski anlamsal_getir'i kullanir."""
+def getir(kayit, embed_url, embed_model, k, siralama=("bm25", "vektor"), secenek=None):
+    """Yeni hattin getirme fonksiyonu varsa onu, yoksa eski anlamsal_getir'i kullanir.
+    secenek: bilgi_getir'e gecen genel_kota / esik (verilmezse ogretme'deki varsayilanlar)."""
     if hasattr(ogretme, "bilgi_getir"):
         secili, bilgi = ogretme.bilgi_getir(kayit, kayit["sorunlar"], KOK / "ogretme", embed_url, embed_model, k,
-                                            siralama=siralama)
+                                            siralama=siralama, **(secenek or {}))
         return secili
     return ogretme.anlamsal_getir(kayit, kayit["sorunlar"], KOK / "ogretme", embed_url, embed_model, k)
 
 
-def degerlendir(embed_url, embed_model, k, siralama=("bm25", "vektor")):
+def degerlendir(embed_url, embed_model, k, siralama=("bm25", "vektor"), secenek=None):
     kayitlar = json.loads(VERI.read_text(encoding="utf-8"))
-    getir(kayitlar[0], embed_url, embed_model, k, siralama)   # ilk cagri: indeks/onbellek isinmasi olcume girmez
+    getir(kayitlar[0], embed_url, embed_model, k, siralama, secenek)   # ilk cagri: indeks/onbellek isinmasi olcume girmez
     olcumler, satirlar = [], []
     for kayit in kayitlar:
         t0 = time.perf_counter()
-        secili = getir(kayit, embed_url, embed_model, k, siralama)
+        secili = getir(kayit, embed_url, embed_model, k, siralama, secenek)
         sure_ms = (time.perf_counter() - t0) * 1000
         kodlar = [s["sorun"] for s in kayit["sorunlar"]]
         beklenen = beklenen_alanlar(kodlar)
@@ -187,7 +188,16 @@ def main():
     ap.add_argument("--etiket", default="", help="sonuc dosyasinin adina eklenecek kisa ad (ornek: onceki)")
     ap.add_argument("--siralama", default="bm25,vektor",
                     help="birlestirilecek siralamalar: bm25, vektor ya da ikisi (hibrit)")
+    ap.add_argument("--genel-kota", default=None,
+                    help="genel yonerge parcasi kotasi (sayi ya da 'yok'; verilmezse ogretme.GENEL_KOTA)")
+    ap.add_argument("--esik", default=None,
+                    help="dolgu parcalari icin en dusuk kosinus (sayi ya da 'yok'; verilmezse ogretme.BENZERLIK_ESIGI)")
     args = ap.parse_args()
+    secenek = {}
+    if args.genel_kota is not None:
+        secenek["genel_kota"] = None if args.genel_kota == "yok" else int(args.genel_kota)
+    if args.esik is not None:
+        secenek["esik"] = None if args.esik == "yok" else float(args.esik)
     if args.veri_olustur:
         veri_olustur()
         return
@@ -200,7 +210,8 @@ def main():
     hedef.mkdir(parents=True, exist_ok=True)
     ozet = {}
     for model in [m.strip() for m in args.embed_model.split(",") if m.strip()]:
-        ort, satirlar = degerlendir(args.url, model, args.k, tuple(_s.strip() for _s in args.siralama.split(",")))
+        ort, satirlar = degerlendir(args.url, model, args.k, tuple(_s.strip() for _s in args.siralama.split(",")),
+                                    secenek)
         gruplar = grup_ortalamalari(satirlar)
         ozet[model] = {**ort, "gruplar": gruplar}
         (hedef / (model.replace("/", "_") + ".json")).write_text(
@@ -209,12 +220,14 @@ def main():
         si = ort.get("sorun_isabeti")
         print(f"{model:40s} [{args.siralama}] kapsama={ort['kapsama']:.3f} isabet={ort['isabet']:.3f} "
               f"mrr={ort['mrr']:.3f} sorun_isabeti={'-' if si is None else format(si, '.3f')} "
-              f"parca={ort['parca_sayisi']:.2f} sure={ort['sure_ms']:.0f} ms")
+              f"parca={ort['parca_sayisi']:.2f} genel_ilk={ort.get('genel_ilk', 0):.3f} sure={ort['sure_ms']:.0f} ms")
         for g, o in gruplar.items():
             gsi = o.get("sorun_isabeti")
             print(f"    {g:14s} sayfa={o['sayfa']:3d} sorun_isabeti={'-' if gsi is None else format(gsi, '.3f')} "
                   f"kapsama={o['kapsama']:.3f}")
-    (hedef / "ozet.json").write_text(json.dumps({"k": args.k, "siralama": args.siralama, "altin_surum": ALTIN_SURUM, "modeller": ozet},
+    (hedef / "ozet.json").write_text(json.dumps({"k": args.k, "siralama": args.siralama, "altin_surum": ALTIN_SURUM,
+                                                 "genel_kota": secenek.get("genel_kota", ogretme.GENEL_KOTA),
+                                                 "esik": secenek.get("esik", ogretme.BENZERLIK_ESIGI), "modeller": ozet},
                                                 ensure_ascii=False, indent=1),
                                      encoding="utf-8")
     print("Sonuç:", hedef.relative_to(KOK))

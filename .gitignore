@@ -20,3 +20,6 @@ sonuclar/
 # Masaüstü uygulaması derleme ortamı ve çıktısı (build_exe.py yeniden üretir)
 build/
 dist/
+
+# Öğrenme döngüsü: kullanıcının sitelerine ait onay/ret kararları (yerelde kalır)
+ogretme/geri_bildirim.jsonl

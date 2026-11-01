@@ -453,5 +453,57 @@
       "url": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=tr#add-images-near-text",
       "bolum": "Alakalı metnin yakınına yüksek kaliteli resimler ekleyin; Resme açıklayıcı alternatif metin ekleyin"
     }
+  },
+  {
+    "girdi": {
+      "title": "Kış Tırmanışı Eğitimi | Kartaltepe Dağcılık Kulübü",
+      "meta_description": "Kartaltepe Dağcılık Kulübü'nün kış tırmanışı eğitimi: kazma ve krampon kullanımı, çığ güvenliği ve kayıt koşulları.",
+      "h1": [
+        "Kış Tırmanışı Eğitimi"
+      ],
+      "h2": [
+        "Eğitim içeriği",
+        "Kayıt"
+      ],
+      "alt_metni_eksik_gorseller": [
+        {
+          "id": "g1",
+          "dosya_adi": "egitim-03.jpg",
+          "baglam": "oncesi: Katılımcılar ilk gün kazma ile kendini durdurma tekniğini çalışır",
+          "mevcut_alt": "egitim-03.jpg"
+        },
+        {
+          "id": "g2",
+          "dosya_adi": "foto1.png",
+          "baglam": "",
+          "mevcut_alt": "resim"
+        }
+      ],
+      "metin_ozeti": "Kış tırmanışı eğitimi iki hafta sonu sürer. Kazma ve krampon kullanımı, kendini durdurma ve çığ güvenliği konuları işlenir.",
+      "tespit_edilen_sorunlar": [
+        "alt_metni_anlamsiz"
+      ]
+    },
+    "cikti": {
+      "fixes": [
+        {
+          "alan": "img_alt",
+          "hedef": "g1",
+          "yeni_deger": "Kazma ile kendini durdurma tekniğini çalışan katılımcılar",
+          "gerekce": "Mevcut alt metni dosya adı; görselin önündeki metin ne gösterdiğini anlatıyor."
+        },
+        {
+          "alan": "img_alt",
+          "hedef": "g2",
+          "yeni_deger": "Kış tırmanışı eğitiminden bir an",
+          "gerekce": "Mevcut alt 'resim' genel bir sözcük ve görsel hakkında ipucu yok; uydurma ayrıntı içermeyen, sayfanın konusuna uygun ifade."
+        }
+      ]
+    },
+    "kaynak": {
+      "etiket": "google-starter-guide",
+      "url": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=tr#add-descriptive-alt-text-to-the-image",
+      "bolum": "Resme açıklayıcı alternatif metin ekleyin"
+    }
   }
 ]

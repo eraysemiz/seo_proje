@@ -1,0 +1,53 @@
+# Bagimsiz dogrulama seti (27 Ekim 2026): test sitesinden ve RAG olcum setinden (rag_ek_siteler.txt,
+# duzce_birimleri.txt) farkli, gercek Turkce siteler. Ayar yapilirken (istem, ornek, bilgi tabani) bu sete bakilabilir.
+# Ezber farki = test sitesindeki sonuc - bu setteki sonuc; fark buyukse ayarlar test sitesine uymustur.
+# Kullanim: py deney.py --adresler test_setleri/dogrulama_seti.txt --modeller qwen/qwen3.5-9b --retry 1 ^
+#           --kosullar sifir,ornek,bilgi,ornek+bilgi --embed-model text-embedding-qwen3-embedding-0.6b
+#           py etiketle.py hazirla sonuclar/<site>/<deney klasoru>
+# Erisim 27 Ekim'de denetlendi (200); erisilemeyen ya da 403/406 donen adaylar cikarildi.
+# belediye
+https://www.konya.bel.tr
+https://www.antalya.bel.tr
+https://www.eskisehir.bel.tr
+https://www.kocaeli.bel.tr
+https://www.samsun.bel.tr
+https://www.trabzon.bel.tr
+https://www.bolu.bel.tr
+https://www.sakarya.bel.tr
+https://www.kadikoy.bel.tr
+# egitim
+https://www.yok.gov.tr
+# eticaret
+https://www.kitapyurdu.com
+https://www.idefix.com
+https://www.mavi.com
+https://www.karaca.com
+https://www.pasabahce.com
+https://www.englishhome.com
+# haber
+https://www.haberturk.com
+# kobi
+https://www.kahvedunyasi.com
+https://www.simitsarayi.com
+https://www.hafizmustafa.com
+# kultur
+https://www.peramuzesi.org.tr
+https://www.istanbulmodern.org
+# saglik
+https://www.amerikanhastanesi.org
+# stk
+https://www.tegv.org
+https://www.losev.org.tr
+https://www.tmmob.org.tr
+https://www.ttb.org.tr
+# turizm
+https://www.tatilsepeti.com
+# universite
+https://www.ktu.edu.tr
+https://www.omu.edu.tr
+https://www.atauni.edu.tr
+https://www.erciyes.edu.tr
+https://www.deu.edu.tr
+https://www.cu.edu.tr
+https://www.selcuk.edu.tr
+https://www.kocaeli.edu.tr

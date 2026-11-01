@@ -3,9 +3,11 @@
 Her degisiklige plan uretilirken bir guven puani ve (varsa) dusuk guven nedenleri yazilir:
   - kural (deterministik): kural basina sabit deger (KURAL_GUVENI); yan etkisi olabilecek kurallar dusuk
   - sezgisel (yapisal kararlar): kanita gore (SEZGISEL_GUVENI; ureticiler gerekirse kendi degerini verir)
-  - model (dil modeli): alan basina taban (MODEL_TABANI), dogrulamadan ilk denemede gecemeyip yeniden
-    denenmesi, onerideki kelimelerin kaynakta (sayfa metni + bilgi tabani) gecme orani ve uzun serbest
-    metin olmasi puani dusurur. Dogrulamadan gecmeyen oneri hic uygulanamaz (guven 0).
+  - model (dil modeli): alan basina taban olculmus dogruluktan gelir (kalibrasyon.py: insan etiketi ve
+    kullanici kararlarindan dogruluk oraninin Wilson alt siniri); olculmemis alanin tabani esigin altindadir,
+    yani model metni olcum yapilana kadar onay ister. Dogrulamadan ilk denemede gecemeyip yeniden
+    denenmesi, onerideki kelimelerin kaynakta (sayfa metni + bilgi tabani) gecme orani, bilgi tabaninin
+    okunamamasi ve uzun serbest metin olmasi puani dusurur. Dogrulamadan gecmeyen oneri hic uygulanamaz (guven 0).
 Esigi (ESIK, ayarlar: oto_esik) gecen degisiklikler otomatik onayli gelir; altindakiler onaya duser.
 Su degisiklikler guvenden bagimsiz HER ZAMAN onaya duser (zorunlu_onay): [doğrulanmalı] yer tutucusu
 iceren (uydurma riski), sayfayi baska bir sayfaya baglayip dizinden dusuren (canonical birlestirme),
@@ -13,6 +15,7 @@ indekslemeyi/taramayi kapatan (noindex, nofollow, Disallow ekleyen) ve dosya ice
 """
 import re
 
+from . import kalibrasyon
 from .cikarma import GENEL_KOKLER, kokler
 
 ESIK = 0.8
@@ -52,12 +55,11 @@ SEZGISEL_GUVENI = {
     "meta_refresh": 0.7,
     "robots_bilinmeyen_yonerge": 0.6, "robots_kaynak_engelliyor": 0.85,
 }
-MODEL_TABANI = {"title": 0.92, "meta_description": 0.92, "h1": 0.92, "img_alt": 0.88, "baglanti_metni": 0.9,
-                "jsonld": 0.85, "paragraf": 0.7}
 MODEL_NEDENI = {"paragraf": "uzun, modelin ürettiği serbest metin; yayımlamadan önce okunmalı",
                 "jsonld": "yapısal veri modelce yeniden yazıldı"}
 YENIDEN_DENEME_CEZASI = 0.12          # kirpilan oneride de uygulanir (kirpma yalnizca marka eki/cumle atar)
 DAYANAK_ESIGI = 0.75                  # onerideki icerik kelimelerinin kaynakta gecme orani
+KAYNAK_HATASI_CEZASI = 0.1            # bilgi tabani okunamadi; oneri yonergesiz uretildi
 KAPATAN = re.compile(r"\b(noindex|nofollow|none)\b|^\s*disallow\s*:", re.I | re.M)
 
 
@@ -105,7 +107,12 @@ def degerlendir(d, kaynak_metin=None, guven=None, nedenler=None):
             nedenler.append(SEZGISEL_NEDENI[d["bulgu"]])
     else:
         alan = (d.get("duzenleme") or {}).get("alan", "")
-        g = MODEL_TABANI.get(alan, 0.85)
+        g, kalibre, kal_neden = kalibrasyon.model_tabani(alan)
+        if not kalibre:
+            nedenler.append(kal_neden)
+        if d.get("kaynak_hatasi"):
+            g -= KAYNAK_HATASI_CEZASI
+            nedenler.append("bilgi tabanı okunamadı, öneri yönergesiz üretildi: " + d["kaynak_hatasi"])
         if alan in MODEL_NEDENI:
             nedenler.append(MODEL_NEDENI[alan])
         if d["dogrulama"].get("kirpildi"):

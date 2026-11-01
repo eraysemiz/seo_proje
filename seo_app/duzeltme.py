@@ -135,6 +135,7 @@ class Plan:
         self.metinler, self.sayfalar = {}, {}
         self.degisiklikler, self.elle, self.atlanan, self.ek_bulgular = [], [], [], []
         self.kaynak_metinleri = {}
+        self.kaynak_hatalari = {}       # kaynak anahtari -> bilgi tabani okunamadiysa nedeni
         self.oturum = oturum or requests.Session()
         self.oturum.headers["User-Agent"] = KULLANICI_AJANI
         self._durum_onbellek = {}
@@ -183,6 +184,8 @@ class Plan:
              "dogrulama": dogrulama or {"gecti": True, "neden": ""}, "deneme": deneme}
         d["durum"] = "oneriliyor" if d["dogrulama"]["gecti"] else "gecersiz"
         kaynak = ((duzenleme or {}).get("dogrulama") or {}).get("kaynak")
+        if self.kaynak_hatalari.get(kaynak):
+            d["kaynak_hatasi"] = self.kaynak_hatalari[kaynak]
         gv.degerlendir(d, self.kaynak_metinleri.get(kaynak), guven, guven_nedenleri)
         if gv.otomatik_mi(d, self.esik):
             d["onay_turu"] = "otomatik"
@@ -813,6 +816,7 @@ def _model_metni(p, s, alan, kodlar, gorev, ek_veri=None, kaynak_ek=""):
         deger = cevap["deger"] if isinstance(cevap["deger"], str) else json.dumps(cevap["deger"], ensure_ascii=False)
         deger = deger.strip().strip('"').strip()
         kaynak = _kaynak_kaydet(p, f"{s.dosya}#{alan}", _sayfa_metni(s, 4000), kaynak_ek, cevap["kaynak_metni"])
+        p.kaynak_hatalari[kaynak] = cevap.get("kaynak_hatasi", "")
         gecti, neden, yer = dogrula_metin(alan, deger, p.kaynak_metinleri[kaynak], s.dil or p.dil, s.d)
         if gecti or deneme == 2:
             break
@@ -1047,6 +1051,7 @@ def yz_jsonld(p, s, b):
             raise Atla("model önerisi alınamadı: " + str(e))
         kaynak = _kaynak_kaydet(p, f"{s.dosya}#jsonld", _sayfa_metni(s, 4000), mevcut or "", logo or "",
                                 cevap["kaynak_metni"])
+        p.kaynak_hatalari[kaynak] = cevap.get("kaynak_hatasi", "")
         ham, notlar = _jsonld_hazirla(cevap["deger"], tur)
         gecti, neden, yer, nesne = dogrula_jsonld(ham, turler, p.kaynak_metinleri[kaynak],
                                                  p.temel_url.rstrip("/"), s.dil or p.dil)

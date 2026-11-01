@@ -511,7 +511,10 @@ function degisiklikHtml(x, duzenlenebilir, kilitli) {
       kontrol = '<span class="karar"><label class="kutu"><input type="radio" name="k-' + x.id + '" value="onay" data-id="' + x.id +
         '"' + (oto || uygulandi ? " checked" : "") + '><span>' + (uygulandi ? "Yerinde kalsın" : "Onayla") +
         '</span></label><label class="kutu"><input type="radio" name="k-' + x.id +
-        '" value="ret" data-id="' + x.id + '"><span>' + (uygulandi ? "Reddet (geri çek)" : "Reddet") + "</span></label></span>" +
+        '" value="ret" data-id="' + x.id + '"><span>' + (uygulandi ? "Reddet (geri çek)" : "Reddet") + "</span></label>" +
+        // model onerisinin ret nedeni ogrenme dongusune (geri_bildirim.jsonl) yazilir
+        (x.uretici === "model" ? '<select class="ret-nedeni" data-id="' + x.id + '" title="Ret nedeni (isteğe bağlı)"><option value="">Ret nedeni…</option>' +
+          RET_NEDENLERI.map((n) => "<option>" + kacis(n) + "</option>").join("") + "</select>" : "") + "</span>" +
         (yuksek ? '<label class="kutu risk-onay"><input type="checkbox" class="risk-onay-kutu" data-id="' + x.id + '"' +
           (oto ? " checked" : "") + '><span>Olası etkiyi okudum, bu yüksek riskli değişikliği onaylıyorum</span></label>' : "");
     }
@@ -587,6 +590,9 @@ function asamaTablosuHtml(oz) {
     "</tbody></table></div><p>Sorun durumları (" + oz.toplam + "): " + durumlar + '</p><p class="not">' + kacis(oz.tanim) + "</p></div>";
 }
 
+// seo_app/geri_bildirim.py RET_NEDENLERI ile ayni liste
+const RET_NEDENLERI = ["uydurma bilgi", "yanlış konu", "dil/üslup", "uzunluk", "marka/biçim", "gereksiz değişiklik", "diğer"];
+
 function yoneticiKararlari() {
   const kararlar = {};
   const kuralKutulari = [...document.querySelectorAll(".kural-onay")];
@@ -597,6 +603,10 @@ function yoneticiKararlari() {
     if (k.checked || !k.classList.contains("zorunlu")) kararlar[k.dataset.id] = { karar: k.checked ? "onay" : "ret" };
   });
   document.querySelectorAll('.karar input[type="radio"]:checked').forEach((r) => { kararlar[r.dataset.id] = { karar: r.value }; });
+  document.querySelectorAll("select.ret-nedeni").forEach((s) => {
+    const k = kararlar[s.dataset.id];
+    if (k && k.karar === "ret" && s.value) k.neden = s.value;
+  });
   document.querySelectorAll(".risk-onay-kutu:checked").forEach((k) => { if (kararlar[k.dataset.id]) kararlar[k.dataset.id].risk_onay = true; });
   document.querySelectorAll("textarea.duzen").forEach((t) => {
     const oneri = (yoneticiPlan.gruplar.yz.find((x) => x.id === t.dataset.id) || {}).yeni;

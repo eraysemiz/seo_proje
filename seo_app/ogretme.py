@@ -17,8 +17,12 @@ Hibrit getirme hatti (bilgi_getir):
      gomme modeli ailesine uygun sorgu/belge onekleri eklenir
   3. siralama: BM25 (sozcuksel) ve kosinus (anlamsal) siralamalari RRF ile birlestirilir;
      yeniden siralama (rerank) modeli verilirse son sirayi o belirler
-  4. secim: her sorunlu alandan en az bir parca, kalan yer en yuksek puanlilarla; toplam metin
+  4. secim: genel yonerge en fazla GENEL_KOTA parca; her sorunlu alandan en az bir parca, kalan yer en
+     yuksek puanlilarla; BENZERLIK_ESIGI verilirse esigin altindaki dolgu atilir; toplam metin
      BAGLAM_SINIRI karakteri asarsa once dolgu parcalari cikarilir
+
+Few-shot ornekleri (ornek_sec): sorun kodu ortusmesi + cesitlilik. ornekler.json'a ek olarak kullanicinin
+yonetici modunda onayladigi/duzenledigi model onerileri (geri_bildirim.jsonl, baska sitelerden) aday olur.
 """
 import hashlib
 import json
@@ -42,6 +46,13 @@ RRF_K = 60               # Reciprocal Rank Fusion sabiti (Cormack ve ark. 2009)
 # Kucuk bilgi tabaninda BM25 gurultulu oldugundan yalnizca esitlik bozucu olarak katilir.
 RRF_AGIRLIK = {"bm25": 0.1, "vektor": 1.0}
 ORNEK_METIN_SINIRI = 120  # few-shot orneklerindeki metin_ozeti kisaltmasi
+ORNEK_BUTCESI = 2400      # few-shot orneklerinin toplam karakter ust siniri (~600 token); bilgi parcalarindan ayri
+# Genel yonerge kotasi ve benzerlik esigi, 27 Ekim olcumu (133 sayfa, qwen3-embedding-0.6b, k=5, 65 parca):
+# kotasiz MRR 0,972 -> kota 1 ile 0,977 (sorun isabeti 0,934 ayni). Esik 0,30-0,40 hicbir parcayi atmadi;
+# 0,50 / 0,55 / 0,60 sorun isabetini 0,919 / 0,852 / 0,707'ye dusurdu. Bu yuzden esik kapali.
+GENEL_KOTA = 1            # getirmede genel yonerge parcasi en fazla bu kadar (kalan yer sorunlu alanlarin)
+BENZERLIK_ESIGI = None    # kosinus bu degerin altindaki dolgu parcasi atilir (None: esik yok)
+GERI_BILDIRIM = "geri_bildirim.jsonl"   # yonetici modunda kullanicinin onayladigi/duzenledigi model onerileri
 # ornek girdisinde her zaman kalan alanlar; digerleri yalnizca ilgili alan sorunluysa kalir
 ORNEK_ALAN_GIRDISI = {"meta_description": "meta_description", "h1": "h1", "img_alt": "alt_metni_eksik_gorseller"}
 # Yalnizca getirme icin: modelin metin yazmadigi bulgulari (canonical, kopya icerik, adres, baglanti metni...)
@@ -61,10 +72,17 @@ BILGI_ALANI_SORUN = {
                  "kirik_ic_link", "ic_link_yonlendirme"),
     "robots_sitemap": ("robots_yok", "robots_tum_siteyi_engelliyor", "robots_sayfayi_engelliyor",
                        "robots_sitemap_bildirilmemis", "robots_kaynak_engelliyor", "robots_bilinmeyen_yonerge",
-                       "sitemap_yok", "sayfa_sitemapte_yok", "yetim_sayfa", "derin_sayfa", "noindex"),
+                       "sitemap_yok", "sayfa_sitemapte_yok", "yetim_sayfa", "derin_sayfa", "noindex", "sayfa_nofollow"),
     "yapisal_veri": ("yapisal_veri_yok", "yapisal_veri_gecersiz", "yapisal_veri_eksik_alan", "schema_kurum_turu_yok",
-                     "breadcrumb_yok"),
+                     "breadcrumb_yok", "schema_kurum_logo_yok", "schema_sosyal_profil_yok", "yapisal_veri_onerilen_alan"),
     "video": ("video_baslik_yok",),
+    "hreflang": ("hreflang_gecersiz", "hreflang_x_default_yok", "hreflang_kendine_referans_yok", "hreflang_donus_yok"),
+    "yonlendirme": ("meta_refresh", "js_yonlendirme", "uzun_yonlendirme_zinciri", "yonlendirme_dongusu",
+                    "cok_fazla_yonlendirme", "gecersiz_yonlendirme", "gecici_yonlendirme", "yumusak_404",
+                    "sitemap_yonlendirme", "ic_link_yonlendirme"),
+    "javascript": ("js_bagimli_icerik", "js_yonlendirme", "render_engelleyen_kaynak"),
+    "gorsel": ("gorsel_boyut_yok", "gorsel_eski_format", "gorsel_lazy_yok", "ilk_gorsel_lazy", "gorsel_buyuk",
+               "kirik_gorsel"),
 }
 
 _KB_BELLEK = {}          # bilgi tabani dosyasi -> (degisiklik zamani, parcalar, surum, bm25 dizini)
@@ -242,10 +260,16 @@ def _kapsayarak_sec(sirali, beklenen, k):
     return sorted(secili, key=lambda p: sira[p["id"]]), zorunlu
 
 
+_VARSAYILAN = object()
+
+
 def bilgi_getir(d, issues, klasor, embed_url, embed_model, k, rerank_url=None, rerank_model=None,
-                siralama=("bm25", "vektor")):
+                siralama=("bm25", "vektor"), genel_kota=_VARSAYILAN, esik=_VARSAYILAN):
     """Hibrit getirme. (secili parcalar, kayit bilgisi) dondurur; ayrintilar modul aciklamasinda.
-    siralama: birlestirilecek siralamalar; olcumde tek basina bm25 ya da vektor denemek icin."""
+    siralama: birlestirilecek siralamalar; olcumde tek basina bm25 ya da vektor denemek icin.
+    genel_kota / esik: GENEL_KOTA ve BENZERLIK_ESIGI yerine olcumde baska deger denemek icin (None: sinirsiz)."""
+    genel_kota = GENEL_KOTA if genel_kota is _VARSAYILAN else genel_kota
+    esik = BENZERLIK_ESIGI if esik is _VARSAYILAN else esik
     t0 = time.perf_counter()
     parcalar, surum, bm25 = bilgi_tabani(klasor)
     beklenen = beklenen_alanlar(issues)
@@ -272,6 +296,16 @@ def bilgi_getir(d, issues, klasor, embed_url, embed_model, k, rerank_url=None, r
         yontem += "+rerank"
     sirali = sorted((parcalar[i] for i in aday_idx), key=lambda p: -puan[p["id"]])
 
+    if genel_kota is not None:
+        genel = [p for p in sirali if p.get("alan") == GENEL_ALAN]
+        fazla = {p["id"] for p in genel[genel_kota:]} if len(sirali) > len(genel) else set()
+        sirali = [p for p in sirali if p["id"] not in fazla]
+    if esik is not None and kosinus:
+        # kapsama icin her alanin en iyi parcasi esikten bagimsiz kalir; esik yalnizca dolguyu ayiklar
+        ilk_alan = {}
+        for p in sirali:
+            ilk_alan.setdefault(p.get("alan"), p["id"])
+        sirali = [p for p in sirali if kosinus.get(p["id"], 1) >= esik or ilk_alan.get(p.get("alan")) == p["id"]]
     secili, zorunlu = _kapsayarak_sec(sirali, beklenen, k)
     # baglam butcesi: once kapsama icin zorunlu olmayan (dolgu) parcalar, en dusuk puanlidan baslayarak cikar
     while sum(len(belge_metni(p)) for p in secili) > BAGLAM_SINIRI:
@@ -281,7 +315,7 @@ def bilgi_getir(d, issues, klasor, embed_url, embed_model, k, rerank_url=None, r
         secili.remove(dolgu[-1])
 
     bilgi = {
-        "yontem": yontem, "kb_surum": surum, "aday_sayisi": len(aday_idx),
+        "yontem": yontem, "kb_surum": surum, "aday_sayisi": len(aday_idx), "genel_kota": genel_kota, "esik": esik,
         "getirme_ms": round((time.perf_counter() - t0) * 1000, 1),
         "parcalar": [{"id": p["id"], "alan": p.get("alan"), "baslik": p.get("baslik"),
                       "kaynak": p.get("kaynak"), "kaynak_basligi": p.get("kaynak_basligi"),
@@ -314,14 +348,81 @@ def _ornek_metni(o, alanlar):
             "\nCikti: " + json.dumps({"fixes": fixes}, ensure_ascii=False))
 
 
+def _site_kimligi(x):
+    from urllib.parse import urlparse
+    h = (urlparse(x if "//" in (x or "") else "//" + (x or "")).hostname or "").lower()
+    return h[4:] if h.startswith("www.") else h
+
+
+def geri_bildirim_ornekleri(klasor, haric_site=None):
+    """Kullanicinin oldugu gibi onayladigi ya da duzenleyerek onayladigi model onerileri, few-shot ornegi
+    biciminde. Ayni sitenin kayitlari haric tutulur: model bir sitenin kendi onaylanmis metnini ezberlemez."""
+    yol = Path(klasor) / GERI_BILDIRIM
+    if not yol.exists():
+        return []
+    haric = _site_kimligi(haric_site) if haric_site else ""
+    sonuc = []
+    for satir in yol.read_text(encoding="utf-8").splitlines():
+        try:
+            g = json.loads(satir)
+        except ValueError:
+            continue
+        if g.get("karar") not in ("onay", "duzenle") or g.get("alan") not in IZINLI_ALANLAR or not g.get("son_deger"):
+            continue
+        if haric and _site_kimligi(g.get("site")) == haric:
+            continue
+        sayfa = g.get("sayfa") or {}
+        gorseller = [sayfa["gorsel"]] if g["alan"] == "img_alt" and sayfa.get("gorsel") else []
+        sonuc.append({"girdi": {"title": sayfa.get("title"), "meta_description": sayfa.get("meta_description"),
+                                "h1": sayfa.get("h1") or [], "h2": [], "alt_metni_eksik_gorseller": gorseller,
+                                "metin_ozeti": sayfa.get("metin_ozeti") or "",
+                                "tespit_edilen_sorunlar": [g["bulgu"]]},
+                      "cikti": {"fixes": [{"alan": g["alan"], "hedef": gorseller[0]["id"] if gorseller else "",
+                                           "yeni_deger": g["son_deger"], "gerekce": "kullanıcı onayladı"}]},
+                      "kaynak": {"etiket": "geri-bildirim", "site": _site_kimligi(g.get("site"))}})
+    return sonuc
+
+
+def _marka(o):
+    """Ornegin geldigi kurum: kaynak sitesi ya da basliktaki son bolum (cesitlilik icin)."""
+    k = o.get("kaynak") or {}
+    if k.get("site"):
+        return k["site"]
+    t = (o["girdi"].get("title") or "").split("|")
+    return t[-1].strip().lower() if len(t) > 1 else ""
+
+
+def ornek_sec(ornekler, kodlar, alanlar, k, tohum=""):
+    """Few-shot secimi: once sayfadaki sorun kodlarini en cok YENI kapsayan ornek, sonra sorunlu alan
+    eslesmesi; ayni kurumdan ikinci ornek alinmaz. Esitlik dosya sirasiyla degil sayfaya bagli bir ozetle
+    bozulur; boylece her sayfaya ayni iki ornek gitmez. Sorunlu alanlarla hic eslesmeyen ornek secilmez."""
+    kodlar = set(kodlar)
+    ortusme = [set(o["girdi"].get("tespit_edilen_sorunlar") or ()) & kodlar for o in ornekler]
+    alan_puani = [sum(1 for f in o["cikti"]["fixes"] if f["alan"] in alanlar) for o in ornekler]
+    karisim = [hashlib.sha256((tohum + "|" + str(i)).encode()).hexdigest() for i in range(len(ornekler))]
+    secili, kapsanan, markalar = [], set(), set()
+    while len(secili) < k:
+        adaylar = [i for i in range(len(ornekler)) if i not in secili and alan_puani[i] > 0]
+        if not adaylar:
+            break
+        i = min(adaylar, key=lambda i: (-len(ortusme[i] - kapsanan),
+                                        bool(_marka(ornekler[i]) and _marka(ornekler[i]) in markalar),
+                                        -len(ortusme[i]), karisim[i]))
+        secili.append(i)
+        kapsanan |= ortusme[i]
+        markalar.add(_marka(ornekler[i]))
+    return [ornekler[i] for i in secili]
+
+
 def ogretme_metni(kosul, d, issues, klasor, k, embed_url, embed_model,
-                  bilgi_k=None, rerank_url=None, rerank_model=None):
+                  bilgi_k=None, rerank_url=None, rerank_model=None, site=None):
     """Sistem istemine eklenecek ek baglami uretir. (metin, bilgi) dondurur.
     k: few-shot ornek sayisi; bilgi_k: getirilecek bilgi parcasi sayisi (verilmezse k).
     Siralama sabitten degiskene dogrudur (ornekler, sonra bilgi parcalari); boylece LM Studio'nun
     istem onbellegi ayni onekli istemlerde yeniden kullanilabilir.
     Gomme modeli secildiyse ve ulasilamazsa hata firlatilir; anahtar kelime yontemine
-    yalnizca gomme modeli hic secilmediginde gecilir (sessiz geri donus yok)."""
+    yalnizca gomme modeli hic secilmediginde gecilir (sessiz geri donus yok).
+    site: sayfanin adresi; geri bildirim orneklerinden ayni sitenin kayitlarini disarida birakmak icin."""
     kodlar = [i["sorun"] for i in issues]
     bilgi = {"ornek": 0, "kural": 0, "yontem": None, "parcalar": [], "kimlikler": []}
     if kosul == "sifir":
@@ -331,12 +432,21 @@ def ogretme_metni(kosul, d, issues, klasor, k, embed_url, embed_model,
     parcalar = []
     if "ornek" in kosul:
         ornekler = json.loads((klasor / "ornekler.json").read_text(encoding="utf-8"))
-        puan = lambda o: sum(1 for f in o["cikti"]["fixes"] if f["alan"] in alanlar)
-        secili_o = sorted(ornekler, key=lambda o: -puan(o))[:k]
+        sabit = len(ornekler)
+        ornekler += geri_bildirim_ornekleri(klasor, site)
+        secili_o = ornek_sec(ornekler, kodlar, alanlar, k, tohum=(d.get("title") or "") + "|" + (site or ""))
+        metinler = [_ornek_metni(o, alanlar) for o in secili_o]
+        # ornek butcesi bilgi parcalarindan ayridir; asilirsa sondaki (en az kapsayan) ornek dusurulur
+        while len(metinler) > 1 and sum(map(len, metinler)) > ORNEK_BUTCESI:
+            metinler.pop()
+        secili_o = secili_o[:len(metinler)]
         parcalar.append(
             "\n\nORNEKLER (yalnizca bicim ve ton icin; icerigini KOPYALAMA, kendi sayfanin verisini kullan):\n" +
-            "\n\n".join("Ornek " + str(i + 1) + "\n" + _ornek_metni(o, alanlar) for i, o in enumerate(secili_o)))
+            "\n\n".join("Ornek " + str(i + 1) + "\n" + m for i, m in enumerate(metinler)))
         bilgi["ornek"] = len(secili_o)
+        sira = {id(o): i for i, o in enumerate(ornekler)}
+        bilgi["ornek_kimlikleri"] = [sira[id(o)] + 1 if sira[id(o)] < sabit else "gb:" + o["kaynak"]["site"]
+                                     for o in secili_o]
     if "bilgi" in kosul:
         if embed_model:
             try:

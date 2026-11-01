@@ -4,6 +4,7 @@ import json
 
 from seo_app import duzeltme as dz
 from seo_app import guven as gv
+from seo_app import kalibrasyon
 from seo_app import kurallar as kr
 from seo_app import tarama
 from seo_app.cikarma import extract, yapisal_veri
@@ -113,7 +114,7 @@ def test_dogrulamadan_gecmeyen_oneri_nedeniyle_yeniden_sorulur_ve_guveni_duser(t
     d = _bul(plan, "title_yok")
     assert len(yz.gorevler) == 2 and "REDDEDİLDİ" in yz.gorevler[1] and "title_uzunluk" in yz.gorevler[1]
     assert d["deneme"] == 2 and d["durum"] == "oneriliyor"
-    assert d["guven"] < gv.MODEL_TABANI["title"] and any("ikinci denemede" in n for n in d["guven_nedenleri"])
+    assert d["guven"] < kalibrasyon.model_tabani("title")[0] and any("ikinci denemede" in n for n in d["guven_nedenleri"])
 
 
 def test_uzunluk_sinirini_asan_oneri_anlami_bozmadan_kirpilir(tmp_path):

@@ -26,7 +26,7 @@ from urllib.parse import urlsplit
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from . import canli, duzeltme, puanlama
+from . import canli, duzeltme, geri_bildirim, puanlama
 from . import kategoriler as kat
 from . import rapor as rapor_modulu
 from .boru import site_adi, topluca_analiz, zaman_damgasi
@@ -281,6 +281,14 @@ def uygula_ve_dogrula(klasor, kararlar, sonuc_kok, gunluk=None, tekrar_tara=True
         raise YoneticiHatasi("Bu plan zaten uygulandı. Yeni değişiklikler için siteyi yeniden tarayın.")
     kararlari_kaydet(klasor, kararlar)
     _, rapor = asama_uygula(klasor, plan, kararlar, "onayli", sonuc_kok, yaz, tekrar_tara, tarama_kancalari)
+    # ogrenme dongusu: model onerileri hakkindaki kararlar ornek bankasina ve kalibrasyona gider
+    try:
+        tarama_raporu = _json_oku(klasor / "rapor.json") if (klasor / "rapor.json").exists() else []
+        n = geri_bildirim.kaydet(plan, kararlar, (plan.get("tarama") or {}).get("ogretme_klasoru"), tarama_raporu)
+        if n:
+            yaz(f"Öğrenme döngüsü: {n} model önerisi kararı geri bildirim dosyasına yazıldı")
+    except OSError as e:
+        yaz("UYARI: geri bildirim yazılamadı: " + str(e))
     yaz("Yönetici raporu: " + str(klasor / "yonetici_raporu.html"))
     return rapor
 

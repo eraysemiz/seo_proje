@@ -161,7 +161,8 @@ Rapor üç aşamayı yan yana gösterir. Geri alma tüm aşamaları birlikte ger
   yararlanır. Sitede olmayan bir olgu gerekiyorsa `[doğrulanmalı: …]` yer tutucusu yazar; böyle bir
   öneri, değer elle doldurulmadan uygulanamaz. Her öneri şunlardan geçer: uzunluk, dil, bozuk
   karakter ve harfleri düşürülmüş Türkçe (cay/çay) denetimi; sayfada olmayan sayı, özel ad ve
-  doğrulanamayan övgü denetimi; JSON-LD şeması. Geçemeyen öneri, ret nedeniyle birlikte modele bir
+  doğrulanamayan övgü denetimi; marka/bölüm tekrarı (`X: … | X`) ve boş kalıp (`Anasayfa | Kurum`,
+  `Hoş Geldiniz`, `resim`) denetimi; JSON-LD şeması. Geçemeyen öneri, ret nedeniyle birlikte modele bir
   kez daha sorulur; yine geçemezse uygulanmaz ve nedeniyle raporlanır. Bozuk JSON-LD sözdizimi ve
   fiyat/para birimi yazımı (`1.250` → `1250`, `TL` → `TRY`) modele gitmeden deterministik düzeltilir.
 - **Güvenli uygulama:**
@@ -179,8 +180,14 @@ Rapor üç aşamayı yan yana gösterir. Geri alma tüm aşamaları birlikte ger
   - Sezgisel yapısal kararlar: kanıta göre. Örneğin canonical'ın gösterdiği sayfa 404 dönüyor ya da
     içerik ondan açıkça farklıysa güven yüksek; içerikler benzerse sayfa gerçekten kopya olabilir,
     güven düşük.
-  - Dil modeli önerileri: alan tabanı (title/meta/H1 0,92, paragraf 0,70). Yeniden deneme ve önerideki
-    kelimelerin kaynakta geçmeme oranı puanı düşürür.
+  - Dil modeli önerileri: alan tabanı **ölçülmüş doğruluktan** gelir (`seo_app/kalibrasyon.py`,
+    `ogretme/kalibrasyon.json`). Taban, insan etiketleri (`etiketle.py`) ve yönetici modundaki kullanıcı
+    kararlarından (`ogretme/geri_bildirim.jsonl`) hesaplanan doğruluk oranının %95 Wilson alt sınırıdır.
+    Bir alan için 30'dan az karar varsa alan "kalibre edilmemiş" sayılır ve taban eşiğin altındadır
+    (title/meta/H1 0,75, alt metni 0,72, JSON-LD 0,70): model metni ölçüm yapılana kadar onay ister.
+    Örnek: 50 öneride %90 doğruluk alt sınırı 0,79 verir, eşiği geçmez. Paragraf ölçümden bağımsız
+    en fazla 0,70'tir. Yeniden deneme, önerideki kelimelerin kaynakta geçmeme oranı ve bilgi tabanının
+    okunamaması (öneri yönergesiz üretildi; neden öneriye yazılır) puanı düşürür.
 
   **Eşiği** (`oto_esik`, varsayılan 0,8; `--esik`, web formu, masaüstü) geçen değişiklikler otomatik
   aşamada onaysız yazılır ve onay ekranında reddedilebilir (geri çekilir); altındakiler onay ister. Şunlar güven ne olursa olsun her zaman
@@ -317,7 +324,11 @@ Deney koşulu sabittir: **`ornek+bilgi`**. Modele her taramada few-shot örnekle
 verilir; arayüzde koşul seçeneği yoktur.
 
 Bilgi tabanı (`ogretme/bilgi_tabani.json`) Google Arama Merkezi ve W3C WAI belgelerine dayanan,
-Türkçe yazılmış 51 parçadır. Her parçada `alan` (title, meta_description, h1, img_alt, genel…),
+Türkçe yazılmış 65 parçadır. 27 Ekim'de eklenen 14 parça eksik konuları kapatır: yapısal veri
+(genel yönergeler, zorunlu/önerilen alan, Organization, Product), hreflang, yönlendirme/404/yumuşak 404,
+JavaScript SEO ve görsel biçimi. Bu parçalarda kaynak sayfanın "Son güncelleme" tarihi
+`kaynak_guncelleme` alanındadır; kaynak güncellenince parça gözden geçirilir. YZ önerisi üreten her
+bulgu kodunun en az iki parçası vardır (testle denetlenir). Her parçada `alan` (title, meta_description, h1, img_alt, genel…),
 `baslik`, `etiketler`, `kaynak` (bağlantı), `kaynak_basligi` ve `erisim_tarihi` bulunur.
 23 parça Google'ın [SEO Başlangıç Rehberi](https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=tr)'nin
 bölümlerinin kendi cümlelerimizle özetidir (alıntı değil; içerik CC BY 4.0, atıf: Google Arama Merkezi).
@@ -325,8 +336,13 @@ Bunlarda `kaynak` bölüm çapalı Türkçe sayfayı, `kaynak_en` aynı bölüm�
 `lisans` alanı bulunur. Bilgi tabanı elle güncellenir; bir çekme/güncelleme komutu yoktur.
 Değişen parçaların gömmesi bir sonraki kullanımda içerik hash'iyle yeniden hesaplanır.
 
-Few-shot örneklerin 5'i rehbere dayanır (`kaynak.etiket = "google-starter-guide"`; `kaynak` alanı
-isteme girmez). Model alanları dışındaki tavsiyeler için sorunlu → tavsiye → düzeltilmiş HTML
+Few-shot örneklerin 6'sı rehbere dayanır (`kaynak.etiket = "google-starter-guide"`; `kaynak` alanı
+isteme girmez). Örnekler `ornek_sec` ile seçilir: önce sayfadaki sorun kodlarını en çok yeni kapsayan
+örnek, aynı kurumdan ikinci örnek alınmaz, eşitlik dosya sırasıyla değil sayfaya bağlı bir özetle
+bozulur (böylece her sayfaya aynı iki örnek gitmez). Örneklerin toplamı ~600 token'ı
+(`ORNEK_BUTCESI`, 2 400 karakter) aşmaz. Yönetici modunda kullanıcının olduğu gibi ya da düzenleyerek
+onayladığı model önerileri de (`ogretme/geri_bildirim.jsonl`) **başka sitelerin** sayfalarına örnek
+olur; aynı sitenin kendi onaylı metni o siteye örnek gösterilmez. Model alanları dışındaki tavsiyeler için sorunlu → tavsiye → düzeltilmiş HTML
 örnekleri `ogretme/rehber_ornekleri.json`'dadır; bu dosya isteme girmez, belge ve test içindir.
 
 Bir **gömme (embedding) modeli** seçilirse parçalar hibrit getirmeyle (RAG) seçilir
@@ -340,8 +356,10 @@ Bir **gömme (embedding) modeli** seçilirse parçalar hibrit getirmeyle (RAG) s
    içerik özeti; gömme modeline uygun sorgu öneki (Qwen3 `Instruct:`, e5 `query:`, nomic `search_query:`).
 3. **Sıralama:** kosinüs (anlamsal) ve BM25 (sözcüksel) sıralamaları ağırlıklı RRF ile birleştirilir
    (vektör 1,0, BM25 0,1). İsteğe bağlı bir yeniden sıralama (rerank) modeli son sırayı belirler.
-4. **Seçim:** her sorunlu alandan en az bir parça, kalan yer en yüksek puanlılarla (`bilgi_sayisi`, varsayılan 5);
-   toplam 1 600 karakteri aşarsa önce dolgu parçaları çıkarılır.
+4. **Seçim:** genel yönerge en fazla 1 parça (`GENEL_KOTA`); her sorunlu alandan en az bir parça,
+   kalan yer en yüksek puanlılarla (`bilgi_sayisi`, varsayılan 5); toplam 1 600 karakteri aşarsa önce
+   dolgu parçaları çıkarılır. İsteğe bağlı benzerlik eşiği (`BENZERLIK_ESIGI`) ölçümde zarar verdiği
+   için kapalıdır (aşağıdaki tablo).
 
 Parçalar isteme kimlikleriyle (`[t02] …`) eklenir; model her önerinin dayandığı parçaları `kaynaklar`
 alanına yazar, verilmemiş kimlikler ayıklanır (`gecersiz_kaynak`). Raporda `ogretme_parcalar`
@@ -372,6 +390,8 @@ gerekçesiyle rapora yazılır:
   iki içerik kelimesi varsa reddedilir (modelin bilgi uydurmasına karşı)
 - **doğrulanamayan nitelemeler:** "uzmanlaşmış", "başarılı", "lider", "öncü" gibi ifadeler, sayfanın
   kendi title/meta/H1 metninde geçmiyorsa reddedilir
+- **kalıp denetimi:** aynı marka ya da bölüm iki kez geçiyorsa (`Kurum: … | Kurum`) ya da metin
+  `Anasayfa`, `Hoş Geldiniz`, `resim` gibi sayfayı anlatmayan bir kalıptan ibaretse reddedilir
 - yeniden denemede modelin zaten kabul edilmiş alanları tekrar göndermesi ret sayılmaz;
   raporda ayrı bir `yok_sayilan` listesine yazılır
 - görsel hedefi gerçekten listede var mı, aynı alan için tekrar öneri verilmiş mi
@@ -403,6 +423,17 @@ katkısı ölçülebilir (varsayılan `ornek+bilgi`). Her
 kombinasyon `sonuclar/<site>/sonuc_<tarih_saat>/<model>__<kosul>__r<retry>/` klasörüne,
 her sitenin karşılaştırması `sonuclar/<site>/sonuc_<tarih_saat>/karsilastirma.csv` dosyasına yazılır.
 Başlamadan önce tüm modeller denetlenir; biri eksikse deney hiç başlamaz.
+
+`karsilastirma.csv` kural metriklerine ek olarak şunları içerir: kaynak gösterme oranı, **kaynak
+isabeti** (gösterilen parçalardan en az biri o sorunun altın parçalarından mı), uydurma reddi oranı
+(sayfada olmayan ifade/sayı/ad, doğrulanamayan niteleme) ve kalıp reddi oranı. Birden fazla koşul
+çalıştırılırsa `kosul_farklari.csv` her koşulun `ornek+bilgi`'ye göre sayfa başına eşleştirilmiş
+farkını ve %95 bootstrap aralığını verir; aralık 0'ı içermiyorsa fark anlamlıdır. Çok siteli
+listelerde (site başına bir sayfa) bu dosyalar site başına anlamsızdır; deney sonunda bütün siteler
+`sonuclar/_deneyler/<zaman>/` altında birleştirilir (sonradan: `py deney.py --birlestir sonuc_<tarih_saat>`).
+Yarıda kalan bir deney aynı komuta `--devam sonuc_<tarih_saat>` eklenerek sürdürülür; sonucu diske
+yazılmış sayfalar yeniden çalıştırılmaz. Önerinin
+**doğruluğu** kural metrikleriyle ölçülemez; bunun için insan etiketi gerekir (aşağıda).
 
 ```
 py deney.py --adresler test_setleri/duzce_birimleri.txt --modeller qwen/qwen3.5-9b ^
@@ -453,6 +484,73 @@ blog/medya 0,11). Kapsama ve isabet yeni hatta tasarım gereği tavandadır; sı
 isabeti ayırt eder. En zayıf sorun `title_kisa`'dır (29/45). Her sorun için ayrı alt sorgu denendi
 ancak sorun isabetini 0,815'e düşürdüğü için alınmadı. t02 düzeltmesi aynı setteki sonuçlar görülerek
 yapıldı; kazanç biraz iyimser olabilir, yeni sitelerle doğrulanması önerilir.
+
+27 Ekim ölçümü (65 parça, k=5): kotasız 0,972 MRR / 0,934 sorun isabeti; genel kota 1 ile MRR 0,977
+(sorun isabeti aynı). Benzerlik eşiği 0,30–0,40 hiçbir parçayı atmadı; 0,50 / 0,55 / 0,60 sorun
+isabetini 0,919 / 0,852 / 0,707'ye düşürdü. `--genel-kota` ve `--esik` ile yeniden ölçülebilir:
+
+```
+py rag_degerlendir.py --embed-model text-embedding-qwen3-embedding-0.6b --genel-kota 1 --esik yok
+```
+
+## Öneri kalitesinin ölçümü: etiketleme ve kalibrasyon
+
+Etiketçi, modelin ürettiği her öneriyi okuyup **doğru** (olduğu gibi yayımlanabilir), **kısmen**
+(küçük düzeltmeyle) ya da **yanlış** diye işaretleyen kişidir; ayrıca uydurma var mı (evet/hayır) ve
+Türkçe kalitesi (1–3) yazılır. Şablon kördür: hangi koşulun ya da modelin ürettiği yazmaz, öneriler
+karışık sıradadır. İki kişi aynı dosyayı birbirinden habersiz etiketlerse uyumları Cohen kappa ile
+ölçülür; 0,6 ve üstü yeterli, 0,4'ün altı etiket kuralının belirsiz olduğunu gösterir. İki etiket
+varsa öneri ancak ikisi de "doğru" dediyse doğru sayılır.
+
+```
+py etiketle.py hazirla sonuclar/<site>/<deney klasörü>          # deney.py çıktısı (koşul karşılaştırması)
+py etiketle.py hazirla sonuc_<tarih_saat>                       # çok siteli deney: tüm siteler tek şablonda
+py etiketle.py hazirla sonuclar/<site>/<sonuç>/degisiklikler.json   # yönetici modu planı (JSON-LD dahil)
+py etiketle.py uyum etiket_A.csv etiket_B.csv
+py etiketle.py ozet etiket_A.csv etiket_B.csv     # koşul başına doğruluk, uydurma, Türkçe; ornek+bilgi'ye fark
+py etiketle.py kalibre etiket_A.csv etiket_B.csv --geri-bildirim   # -> ogretme/kalibrasyon.json
+py etiketle.py retler                              # yönetici modunda en sık ret nedenleri
+```
+
+**Test setleri:** test sitesi (uçtan uca regresyon), `test_setleri/dogrulama_seti.txt` (36 gerçek
+Türkçe site, test sitesinden ve RAG setinden ayrı; ayar yaparken bakılabilir) ve
+`test_setleri/tutulan_set.txt` (10 site; ayar yapılırken hiç kullanılmaz, yalnızca son ölçümde bir kez
+çalıştırılır). **Ezber farkı** = test sitesindeki sonuç − doğrulama setindeki sonuç; büyükse ayarlar
+test sitesine uymuştur.
+
+## Öğrenme döngüsü
+
+Yönetici modunda onaylı aşamadan sonra her model önerisi için kullanıcının kararı
+`ogretme/geri_bildirim.jsonl`'a yazılır: olduğu gibi onay, düzenleyerek onay (yeni değerle), ret
+(isteğe bağlı nedeniyle: uydurma bilgi, yanlış konu, dil/üslup, uzunluk, marka/biçim, gereksiz
+değişiklik, diğer) ya da kullanıcı görmeden otomatik uygulanıp reddedilmeyen. Ret nedeni web onay
+ekranında, masaüstü onay penceresinde ve `yonet.py onayla --ret D004="uydurma bilgi"` ile verilir.
+Kayıtlar iki yerde kullanılır: onaylanan/düzenlenen öneriler başka sitelere few-shot örneği olur;
+kararlar kalibrasyona girer (otomatik uygulananlar hariç, aracın kendi kararını kendine
+doğrulatmamak için). İnce ayar (fine-tuning) yapılmaz. Dosya kullanıcının sitelerine ait metin
+içerdiği için depoya girmez (`.gitignore`).
+
+## Trend, zamanlanmış tarama ve Search Console
+
+`trend.py` bir sitenin taramalarını (`sonuclar/<site>/sonuc_*/rapor.json`) zamana göre sıralar;
+son iki taramada ortalama sayfa puanı 3 puan düşerse, yüksek ciddiyetli sorun artarsa ya da önceki
+taramada olmayan bir sorun birden fazla sayfada çıkarsa gerileme uyarısı verir (çıkış kodu 2).
+`sonuclar/<site>/trend.html` ve `trend.csv` yazılır.
+
+Search Console bağlantısı ya da API anahtarı gerekmez: Performans > Sayfalar > Dışa aktar > CSV ile
+alınan dosya `--gsc` ile verilir (Türkçe ve İngilizce sütun adları tanınır). Son taramanın sayfaları
+gösterim × sorun ağırlığına göre sıralanıp `oncelik.csv`'ye ve trend raporuna yazılır.
+
+`zamanla.py` Windows Görev Zamanlayıcısı'na salt okunur bir tarama ekler; görev tarar, sonra trendi
+günceller ve gerilemeyi `sonuclar/<site>/zamanli_gunluk.txt`'ye yazar. Siteye hiçbir şey yazılmaz;
+`--model` verilmezse dil modeli kullanılmaz.
+
+```
+py trend.py ornek.edu.tr [--gsc Sayfalar.csv]
+py zamanla.py olustur --adres https://ornek.edu.tr --site-modu --gun MON --saat 09:00 [--kuru]
+py zamanla.py listele
+py zamanla.py sil --adres https://ornek.edu.tr
+```
 
 ## Bağımsız ölçüm (isteğe bağlı)
 
@@ -521,6 +619,9 @@ calistir.py              uygulamayı başlatır
 yonet.py                 yönetici modu komut satırı (tara, onizle, onayla, uygula, geri-al)
 deney.py                 deney matrisi koşucusu (komut satırı)
 rag_degerlendir.py       bilgi getirme (RAG) ölçümü
+etiketle.py              öneri kalitesinin insan etiketlemesi, etiketçi uyumu, kalibrasyon
+trend.py                 taramalar arası eğilim, gerileme uyarısı, Search Console önceliği
+zamanla.py               zamanlanmış salt okunur tarama (Windows Görev Zamanlayıcısı)
 build_exe.py / .bat      masaüstü uygulamasını derler (dist/SEO_Denetim/)
 masaustu/                masaüstü başlatıcı (Tkinter): baslat.py, uygulama.py, onay ekranı, salt_okunur.py, oto_test.py
 tests/                   pytest testleri (tests/veri/: RAG ölçüm seti)
@@ -530,6 +631,10 @@ seo_app/
   kurallar.py            kural denetimi, çözüm yolu sınıflandırması, puanlar, tekrar/takma ad denetimi
   puanlama.py            puan ağırlıkları, kritik sorun tavanları, bulguların sayfaya atanması (tek yapılandırma)
   guven.py               düzeltme güven puanı, otomatik onay eşiği, her zaman onay isteyen durumlar
+  kalibrasyon.py         model önerisi güven tabanı: ölçülmüş doğruluğun Wilson alt sınırı
+  geri_bildirim.py       öğrenme döngüsü: onay/düzenleme/ret kararları (ogretme/geri_bildirim.jsonl)
+  istatistik.py          Wilson aralığı, Cohen kappa, eşleştirilmiş bootstrap
+  trend.py / gsc.py      tarama eğilimi; Search Console CSV'si ile önceliklendirme
   canli.py               canlı erişim denetimleri (robots, sitemap, HTTPS, hız)
   ogretme.py             few-shot ve bilgi tabanı (hibrit RAG)
   rag_olcum.py           getirme ölçütleri (kapsama, isabet, MRR, sorun isabeti)
@@ -547,8 +652,8 @@ seo_app/
   yonetici.py            yönetici modu akışı, geri alma, önce/sonra raporu (sablonlar/yonetici_rapor.html)
   web.py                 Flask arayüzü
   sablonlar/ statik/     arayüz dosyaları
-ogretme/                 örnekler, bilgi tabanı, gömme önbelleği
-test_setleri/            tarama adres listeleri
+ogretme/                 örnekler, bilgi tabanı, gömme önbelleği, kalibrasyon.json, geri_bildirim.jsonl (yerel)
+test_setleri/            tarama adres listeleri; dogrulama_seti.txt ve tutulan_set.txt (bağımsız ölçüm)
 test_sitesi/             yerel test sitesi (sunucu.py, sunucu_ayarlari.json, site/)
 test_sitesi_degerlendirme/  sorunlar.json, dogrula.py, degerlendir.py, sifirla.py, orijinal_site/
 sonuclar/                tüm tarama çıktıları

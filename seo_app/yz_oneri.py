@@ -8,6 +8,7 @@ Her oneri uygulanmadan once dogrulanir (dogrula_metin / dogrula_jsonld):
   - bicim: HTML etiketi yok, uzunluk alana uygun, JSON-LD gecerli JSON ve zorunlu alanlari tam
   - dil: sayfanin dilinde (Turkce sayfa icin Turkce), bozuk kodlanmis karakter (Ã, Ä±, �) yok,
     sayfada Turkce harfle gecen kelimeler harfleri dusurulerek (cay/çay) yazilmamis
+  - kalip: ayni marka/bolum iki kez gecmiyor ('X: ... | X'), metin 'Anasayfa' gibi bos bir kaliptan ibaret degil
   - uydurma: sayfa ve kaynak metninde gecmeyen sayi/fiyat ve ozel ad yok; dogrulanamayan nitelemeler
     (lider, en iyi...) yok; kisa alanlarda sayfada gecmeyen icerik kelimesi sinirli
 Dogrulamadan gecemeyen oneri, ret nedeniyle birlikte modele bir kez daha sorulur (yeniden_deneme_gorevi);
@@ -17,7 +18,7 @@ hatalari modele gitmeden deterministik olarak duzeltilir (teklif_normallestir, j
 import json
 import re
 
-from .cikarma import GENEL_KOKLER, SCHEMA_ZORUNLU, URUN_EN_AZ_BIRI, kokler, tr_lower  # noqa: F401
+from .cikarma import GENEL_KOKLER, SCHEMA_ZORUNLU, URUN_EN_AZ_BIRI, anlamsiz_alt_mi, kokler, tr_lower  # noqa: F401
 from .kurallar import ACIKLAMA
 from .llm import _cagri, _yasakli_ifadeler, json_ayikla
 
@@ -94,6 +95,39 @@ def dil_denetimi(metin, dil, kaynak_metin):
     return ""
 
 
+# sayfanin kendisini anlatmayan kalip metinler (title/H1/meta tek basina bunlardan ibaretse)
+BOS_KALIPLAR = {"anasayfa", "ana sayfa", "home", "home page", "homepage", "başlıksız", "başlıksız belge", "untitled",
+                "untitled document", "yeni sayfa", "new page", "sayfa", "index", "hoş geldiniz", "hoşgeldiniz",
+                "welcome", "default", "test", "deneme"}
+BOLUM_AYRACI = re.compile(r"\s+[|\-–—·»]\s+|:\s+")
+
+
+def _bolumler(metin):
+    return [" ".join(tr_lower(b).split()).strip(" .,;") for b in BOLUM_AYRACI.split(metin or "") if b.strip()]
+
+
+def kalip_denetimi(alan, metin, site_adi=None):
+    """Marka/bolum tekrari ve bos kalip metin. Hata nedeni ya da '' dondurur.
+    ornek: 'Çaylıbahçe: Çay Bahçesi | Çaylıbahçe' (marka iki kez), 'Anasayfa | Kurum' (sayfayi anlatmiyor)."""
+    if alan == "img_alt":
+        return "bos_kalip: alt metni görseli anlatmıyor" if anlamsiz_alt_mi(metin) else ""
+    if alan not in ("title", "h1", "meta_description"):
+        return ""
+    bolumler = [b for b in _bolumler(metin) if len(b) >= 3]
+    tekrar = sorted({b for b in bolumler if bolumler.count(b) > 1})
+    if tekrar:
+        return "marka_tekrari: '" + tekrar[0] + "' iki kez geçiyor"
+    ad = " ".join(tr_lower(site_adi or "").split())
+    if ad and len(ad) >= 3 and tr_lower(metin).count(ad) > 1:
+        return "marka_tekrari: site adı '" + ad + "' iki kez geçiyor"
+    anlamli = [b for b in bolumler if b != ad]
+    if alan != "meta_description" and (not anlamli or all(b in BOS_KALIPLAR for b in anlamli)):
+        return "bos_kalip: metin sayfanın konusunu anlatmıyor (" + metin.strip()[:40] + ")"
+    if alan == "meta_description" and " ".join(tr_lower(metin).split()).strip(" .") in BOS_KALIPLAR:
+        return "bos_kalip: açıklama sayfanın konusunu anlatmıyor"
+    return ""
+
+
 OZEL_AD = re.compile(r"(?<![.!?:]\s)(?<!^)\b([A-ZÇĞİÖŞÜ][a-zçğıöşü]{2,})")
 
 
@@ -143,7 +177,7 @@ def dogrula_metin(alan, deger, kaynak_metin, dil="tr", d=None):
         n = len(v.split())
         if not 60 <= n <= 260:
             return False, f"paragraf_kelime_sayisi_{n} (beklenen 60-260)", False
-    neden = dil_denetimi(v, dil, kaynak_metin)
+    neden = dil_denetimi(v, dil, kaynak_metin) or kalip_denetimi(alan, v, (d or {}).get("site_adi"))
     if neden:
         return False, neden, False
     neden = uydurma_denetimi(v, kaynak_metin, d, kisa_alan=alan in ("title", "h1"), ozet_alani=alan == "meta_description")
@@ -340,19 +374,24 @@ class YZIstemcisi:
         self.embed_model, self.embed_url = embed_model, embed_url or url
         self.max_tokens, self.timeout, self.bilgi_k = max_tokens, timeout, bilgi_k
         self.cagri_sayisi = 0
+        self.kaynak_hatalari = []
 
     def _kaynaklar(self, d, kodlar):
+        """(parcalar, hata). Bilgi tabani okunamazsa oneri kaynaksiz uretilir; bu sessiz gecmez: neden
+        oneriye yazilir, guven puanini dusurur (guven.KAYNAK_HATASI_CEZASI) ve rapor/gunlukte gorunur."""
         from .ogretme import bilgi_getir
         try:
             parcalar, _ = bilgi_getir(d, [{"sorun": k} for k in kodlar], self.klasor, self.embed_url,
                                       self.embed_model, self.bilgi_k)
-        except Exception:                           # bilgi tabani okunamazsa oneri kaynaksiz uretilir
-            return []
-        return parcalar
+        except Exception as e:
+            hata = type(e).__name__ + ": " + str(e)[:160]
+            self.kaynak_hatalari.append(hata)
+            return [], hata
+        return parcalar, ""
 
     def iste(self, gorev, d, kodlar, sayfa_verisi, dil="tr"):
         """{"deger", "gerekce", "kaynaklar", "kaynak_metni"} dondurur; model cevabi okunamazsa YZHatasi."""
-        parcalar = self._kaynaklar(d, kodlar)
+        parcalar, kaynak_hatasi = self._kaynaklar(d, kodlar)
         kaynak_satirlari = ["[" + p["id"] + "] " + p.get("baslik", "") + ": " + p["icerik"] for p in parcalar]
         istem = {"gorev": gorev, "sayfa_dili": dil, "duzeltilecek_sorunlar": [ACIKLAMA.get(k, k) for k in kodlar],
                  "SAYFA_VERISI": sayfa_verisi, "KAYNAKLAR": kaynak_satirlari}
@@ -372,7 +411,7 @@ class YZIstemcisi:
         bilgi = [{"id": p["id"], "baslik": p.get("baslik"), "kaynak": p.get("kaynak")} for p in parcalar
                  if p["id"] in kaynaklar]
         return {"deger": obj["deger"], "gerekce": str(obj.get("gerekce") or "")[:400], "kaynaklar": bilgi,
-                "kaynak_metni": " ".join(p["icerik"] for p in parcalar)}
+                "kaynak_metni": " ".join(p["icerik"] for p in parcalar), "kaynak_hatasi": kaynak_hatasi}
 
 
 def metin_gorevi(alan, ek=""):

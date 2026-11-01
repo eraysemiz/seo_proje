@@ -102,13 +102,17 @@ def diff_bloklari(klasor):
     return bloklar
 
 
+# seo_app/geri_bildirim.py RET_NEDENLERI ile ayni liste (.exe seo_app'i gommez, bu yuzden kopyadir)
+RET_NEDENLERI = ("uydurma bilgi", "yanlış konu", "dil/üslup", "uzunluk", "marka/biçim", "gereksiz değişiklik", "diğer")
+
+
 def baslangic_secimleri(plan, onceki):
     """Onay ekraninin ilk durumu: daha once kaydedilmis kararlar."""
     secimler = {}
     for d in plan["degisiklikler"]:
         k = onceki["kararlar"].get(d["id"]) or {}
         secimler[d["id"]] = {"karar": k.get("karar"), "risk": bool(k.get("risk_onay")),
-                             "deger": k.get("deger")}
+                             "deger": k.get("deger"), "neden": k.get("neden")}
     return secimler
 
 
@@ -180,7 +184,8 @@ def onay_argumanlari(plan, onceki, secimler, kural_hepsi):
             if d.get("duzenleme") and deger is not None and deger != d.get("yeni"):
                 duzenle.append(i + "=" + deger)
         elif karar == "ret":
-            ret.append(i)
+            # model onerisinin ret nedeni ogrenme dongusune gider (yonet.py --ret KIMLIK=neden)
+            ret.append(i + "=" + s["neden"] if s.get("neden") else i)
         elif k.get("karar") == "onay":
             ret.append(i)                    # ekranda onay geri cekildi
         elif toplu_onayli(d, onceki["kural_hepsi"]) and not kural_hepsi:

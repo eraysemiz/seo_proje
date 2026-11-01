@@ -327,7 +327,8 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
     elif model_sorunlari:
         ogr, ogr_bilgi = ogretme_metni(a["kosul"], d, model_sorunlari, ogretme_klasoru, a["ornek_sayisi"],
                                        a["embed_url"] or a["url"], a["embed_model"], bilgi_k=a["bilgi_sayisi"],
-                                       rerank_url=a["rerank_url"] or a["url"], rerank_model=a["rerank_model"])
+                                       rerank_url=a["rerank_url"] or a["url"], rerank_model=a["rerank_model"],
+                                       site=kayit["ad"])
         ilerleme = lambda sn, dus, cev: yaz("   model çalışıyor: " + str(sn) + " sn, " +
                                             str(cev) + " karakter cevap")
         res = llm_fixes(d, model_sorunlari, a["model"], kayit["ad"], a["url"], a["max_tokens"],
@@ -339,6 +340,7 @@ def analiz_et(kaynak, ayarlar, ogretme_klasoru, cikti_klasoru=None, gunluk=None)
         kayit["ogretme_ornek_sayisi"] = ogr_bilgi["ornek"]
         kayit["ogretme_kural_sayisi"] = ogr_bilgi["kural"]
         kayit["ogretme_yontemi"] = ogr_bilgi["yontem"]
+        kayit["ogretme_ornekleri"] = ogr_bilgi.get("ornek_kimlikleri", [])
         # hangi bilgi parcalarinin getirildigi ve hangi bilgi tabani surumuyle calisildigi (degerlendirme icin)
         kayit["ogretme_parcalar"] = ogr_bilgi.get("parcalar", [])
         kayit["getirme_ms"] = ogr_bilgi.get("getirme_ms")

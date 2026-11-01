@@ -146,10 +146,12 @@ def komut_onayla(a):
         if i not in ids:
             raise yonetici.YoneticiHatasi("Bilinmeyen değişiklik kimliği: " + i)
         tek.setdefault(i, {})["karar"] = "onay"
-    for i in a.ret or []:
+    for ifade in a.ret or []:
+        # KIMLIK ya da KIMLIK=ret nedeni; neden ogrenme dongusune (geri_bildirim.jsonl) yazilir
+        i, _, neden = ifade.partition("=")
         if i not in ids:
             raise yonetici.YoneticiHatasi("Bilinmeyen değişiklik kimliği: " + i)
-        tek[i] = {"karar": "ret"}
+        tek[i] = {"karar": "ret", **({"neden": neden.strip()} if neden.strip() else {})}
     for i in a.riski_kabul or []:
         if i not in ids:
             raise yonetici.YoneticiHatasi("Bilinmeyen değişiklik kimliği: " + i)
@@ -263,7 +265,7 @@ def main():
     k.add_argument("klasor")
     k.add_argument("--kural-hepsi", action="store_true", help="'Kural çözer' grubunun tamamını onayla")
     k.add_argument("--onay", nargs="*", help="onaylanan öneri kimlikleri (YZ önerileri yalnızca böyle onaylanır)")
-    k.add_argument("--ret", nargs="*", help="reddedilen öneri kimlikleri")
+    k.add_argument("--ret", nargs="*", help="reddedilen öneri kimlikleri; nedeniyle: KIMLIK=neden (ör. D004='uydurma bilgi')")
     k.add_argument("--riski-kabul", nargs="*", help="yüksek riskli önerilerin risk onayı")
     k.add_argument("--duzenle", nargs="*", help="KIMLIK=yeni değer (düzenlenebilir YZ önerileri)")
     k.add_argument("--esik", type=float, help="bu plan için otomatik onay güven eşiğini değiştir (0-1)")

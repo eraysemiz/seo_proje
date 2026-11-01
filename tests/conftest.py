@@ -21,6 +21,23 @@ def html_yap(title="Duzce Universitesi Bilgisayar Muhendisligi Bolumu Sayfasi",
             f"<body>{h1}<p>{metin}</p>{govde}</body></html>")
 
 
+@pytest.fixture(autouse=True)
+def _kalibrasyonsuz(monkeypatch, tmp_path_factory):
+    """Gercek ogretme/kalibrasyon.json testleri etkilemesin: varsayilan olarak hicbir alan kalibre degil."""
+    from seo_app import kalibrasyon
+    monkeypatch.setattr(kalibrasyon, "YOL", tmp_path_factory.mktemp("kal") / "kalibrasyon.json")
+
+
+def kalibre_et(monkeypatch, tmp_path, alanlar=("title", "meta_description", "h1", "img_alt", "jsonld",
+                                                "baglanti_metni", "paragraf"), dogru=100, n=100):
+    """Testte model alanlarini olculmus (yuksek dogruluklu) say: otomatik onay davranisi icin."""
+    from seo_app import kalibrasyon
+    yol = tmp_path / "kalibrasyon_test.json"
+    kalibrasyon.yaz({a: kalibrasyon._alan_ozeti(dogru, n, {"etiket": n, "geri_bildirim": 0}) for a in alanlar}, yol)
+    monkeypatch.setattr(kalibrasyon, "YOL", yol)
+    return yol
+
+
 @pytest.fixture
 def ornek_sayfa():
     return extract(html_yap())

@@ -1,0 +1,22 @@
+# Tutulan set (27 Ekim 2026): ayar yapilirken HIC kullanilmaz; yalnizca raporlanacak son olcumde bir kez calistirilir.
+# dogrulama_seti.txt ile ayni gruplardan, ondan ve test sitesinden ayri siteler.
+# belediye
+https://www.cankaya.bel.tr
+# egitim
+https://www.osym.gov.tr
+# eticaret
+https://www.madamecoco.com
+# haber
+https://www.cumhuriyet.com.tr
+# kobi
+https://www.mado.com.tr
+# kultur
+https://www.rmk-museum.org.tr
+# saglik
+https://www.florence.com.tr
+# stk
+https://www.tocev.org.tr
+# turizm
+https://www.etstur.com
+# universite
+https://www.ibu.edu.tr

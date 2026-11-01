@@ -53,7 +53,8 @@ def olc(secilenler, beklenen):
     """Tek bir sayfanin getirme olcumu.
     kapsama : beklenen alanlardan en az bir parcayla kapsananlarin orani
     isabet  : getirilen parcalardan ilgili olanlarin orani (beklenen alan ya da genel yonerge)
-    mrr     : beklenen alana ait ilk parcanin sirasinin tersi (1 = ilk sirada)"""
+    mrr     : beklenen alana ait ilk parcanin sirasinin tersi (1 = ilk sirada)
+    genel_ilk: ilk sirada genel yonerge parcasi mi (1/0); genel parcanin ilgili parcalarin onune gecme orani"""
     alanlar = [parca_alani(p) for p in secilenler]
     ilgili = [a in beklenen or a in GENEL_KONULAR for a in alanlar]
     ilk = next((i for i, a in enumerate(alanlar) if a in beklenen), None)
@@ -62,6 +63,7 @@ def olc(secilenler, beklenen):
         "isabet": (sum(ilgili) / len(alanlar)) if alanlar else 0.0,
         "mrr": 1.0 / (ilk + 1) if ilk is not None else 0.0,
         "parca_sayisi": len(alanlar),
+        "genel_ilk": 1.0 if alanlar and alanlar[0] in GENEL_KONULAR else 0.0,
     }
 
 

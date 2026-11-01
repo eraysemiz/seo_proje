@@ -554,5 +554,252 @@
     "kaynak_basligi": "Google Arama Merkezi: SEO Başlangıç Rehberi — Arama sonuçlarında ne kadar sürede etki görürüm? (How long until I see impact in search results?)",
     "erisim_tarihi": "2026-10-26",
     "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s24",
+    "alan": "yapisal_veri",
+    "baslik": "Yapısal veri görünür içeriği anlatmalı",
+    "icerik": "Yapısal veri, kullanıcının sayfada gördüğü içeriği doğru biçimde anlatmalıdır; sayfada görünmeyen bilgi işaretlenmez ve işaretleme yanıltıcı olmamalıdır. Google JSON-LD biçimini önerir. Bir değer sayfada yoksa uydurulmaz; alan ya boş bırakılır ya da doğrulanması istenir.",
+    "etiketler": [
+      "schema",
+      "jsonld",
+      "gorunur_icerik",
+      "uydurma"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/appearance/structured-data/sd-policies?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/appearance/structured-data/sd-policies",
+    "kaynak_basligi": "Google Arama Merkezi: Yapısal veri genel yönergeleri (General structured data guidelines)",
+    "kaynak_guncelleme": "2026-07-10",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s25",
+    "alan": "yapisal_veri",
+    "baslik": "Zorunlu ve önerilen yapısal veri alanları",
+    "icerik": "Bir zengin sonuç türünün zorunlu alanlarından biri eksikse öğe o sonuç için uygun sayılmaz. Önerilen alanlar zorunlu değildir ama eklendikçe sonuç kalitesi artar. Eksik alan tamamlanırken değerler yalnızca sayfadaki bilgiden alınır.",
+    "etiketler": [
+      "schema",
+      "zorunlu_alan",
+      "onerilen_alan"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/appearance/structured-data/sd-policies?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/appearance/structured-data/sd-policies",
+    "kaynak_basligi": "Google Arama Merkezi: Yapısal veri genel yönergeleri (General structured data guidelines)",
+    "kaynak_guncelleme": "2026-07-10",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s26",
+    "alan": "yapisal_veri",
+    "baslik": "Kuruluş (Organization) yapısal verisi",
+    "icerik": "Kuruluş yapısal verisinin zorunlu alanı yoktur; name, url, logo, sameAs, adres ve iletişim bilgisi gibi kuruluşa uyan alanlar eklenir. name sitenin adıyla aynı olmalıdır; sameAs kuruluşun başka sitelerdeki profillerinin adresleridir. İşaretleme ana sayfaya ya da Hakkımızda gibi tek bir sayfaya konur. Logo en az 112x112 piksel, taranabilir bir adreste olmalıdır.",
+    "etiketler": [
+      "schema",
+      "organization",
+      "logo",
+      "sameAs"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/appearance/structured-data/organization?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/appearance/structured-data/organization",
+    "kaynak_basligi": "Google Arama Merkezi: Kuruluş (Organization) yapısal verisi",
+    "kaynak_guncelleme": "2026-09-08",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s27",
+    "alan": "yapisal_veri",
+    "baslik": "Ürün (Product) yapısal verisi",
+    "icerik": "Ürün snippet'i için name ve review, aggregateRating ya da offers alanlarından en az biri gerekir. offers içinde price sayı olarak (ondalık ayracı nokta) ve priceCurrency üç harfli ISO 4217 koduyla (ör. TRY) yazılır. Fiyat ve puan sayfada yazmıyorsa eklenmez.",
+    "etiketler": [
+      "schema",
+      "product",
+      "offers",
+      "fiyat"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/appearance/structured-data/product-snippet?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/appearance/structured-data/product-snippet",
+    "kaynak_basligi": "Google Arama Merkezi: Ürün snippet'i (Product snippet) yapısal verisi",
+    "kaynak_guncelleme": "2026-09-08",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s28",
+    "alan": "hreflang",
+    "baslik": "hreflang: her sürüm kendini ve diğerlerini listeler",
+    "icerik": "Bir sayfanın her dil sürümü hem kendisini hem de diğer tüm dil sürümlerini hreflang ile göstermelidir. İki sayfa birbirini göstermiyorsa (dönüş bağlantısı yoksa) etiketler yok sayılır.",
+    "etiketler": [
+      "hreflang",
+      "donus_baglantisi",
+      "kendine_referans"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/specialty/international/localized-versions?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/specialty/international/localized-versions",
+    "kaynak_basligi": "Google Arama Merkezi: Sayfanızın yerelleştirilmiş sürümleri (Localized versions)",
+    "kaynak_guncelleme": "2026-09-21",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s29",
+    "alan": "hreflang",
+    "baslik": "hreflang dil ve bölge kodları",
+    "icerik": "hreflang değerinde dil ISO 639-1 kodudur (tr, en); isteğe bağlı bölge ISO 3166-1 Alpha 2 kodudur (tr-TR, en-GB). Yalnızca bölge kodu geçerli değildir; kodlar büyük/küçük harfe duyarsızdır.",
+    "etiketler": [
+      "hreflang",
+      "dil_kodu",
+      "iso"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/specialty/international/localized-versions?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/specialty/international/localized-versions",
+    "kaynak_basligi": "Google Arama Merkezi: Sayfanızın yerelleştirilmiş sürümleri (Localized versions)",
+    "kaynak_guncelleme": "2026-09-21",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s30",
+    "alan": "hreflang",
+    "baslik": "x-default",
+    "icerik": "Ayrılmış x-default değeri, kullanıcının tarayıcı diline uyan bir sürüm olmadığında gösterilecek sayfayı belirtir; en iyi dil seçim sayfalarında kullanılır.",
+    "etiketler": [
+      "hreflang",
+      "x_default"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/specialty/international/localized-versions?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/specialty/international/localized-versions",
+    "kaynak_basligi": "Google Arama Merkezi: Sayfanızın yerelleştirilmiş sürümleri (Localized versions)",
+    "kaynak_guncelleme": "2026-09-21",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s31",
+    "alan": "yonlendirme",
+    "baslik": "Kalıcı ve geçici yönlendirme",
+    "icerik": "Kalıcı yönlendirmeler (301, 308, anında meta refresh) hedef adresin standart (canonical) adres olması gerektiğini bildirir. Geçici yönlendirmeler (302, 303, 307, gecikmeli meta refresh) bu sinyali vermez; kaynak sayfa arama sonuçlarında kalabilir. Taşınan bir sayfa için kalıcı yönlendirme kullanılır.",
+    "etiketler": [
+      "301",
+      "302",
+      "kalici",
+      "gecici",
+      "canonical"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/crawling-indexing/301-redirects?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/crawling-indexing/301-redirects",
+    "kaynak_basligi": "Google Arama Merkezi: Yönlendirmeler ve Google Arama (Redirects and Google Search)",
+    "kaynak_guncelleme": "2026-04-14",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s32",
+    "alan": "yonlendirme",
+    "baslik": "Meta refresh ve JavaScript yönlendirmesi",
+    "icerik": "Anında (0 saniye) meta refresh kalıcı, gecikmeli meta refresh geçici yönlendirme sayılır. JavaScript yönlendirmesi yalnızca sunucu tarafında ya da meta refresh ile yönlendirme yapılamıyorsa kullanılmalıdır; sayfanın işlenmesi başarısız olursa Google yönlendirmeyi hiç görmeyebilir.",
+    "etiketler": [
+      "meta_refresh",
+      "javascript",
+      "yonlendirme"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/crawling-indexing/301-redirects?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/crawling-indexing/301-redirects",
+    "kaynak_basligi": "Google Arama Merkezi: Yönlendirmeler ve Google Arama (Redirects and Google Search)",
+    "kaynak_guncelleme": "2026-04-14",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s33",
+    "alan": "yonlendirme",
+    "baslik": "Yönlendirme zinciri, 404 ve yumuşak 404",
+    "icerik": "Googlebot genellikle en fazla 10 yönlendirme adımını izler; zincirler kısa tutulmalıdır. Var olmayan sayfa 404 ya da 410 döndürmelidir; bu adresler dizinden çıkarılır. Başarılı (2xx) kod döndürüp hata ya da boş sayfa gösteren sayfa yumuşak 404 sayılır.",
+    "etiketler": [
+      "zincir",
+      "404",
+      "410",
+      "yumusak_404"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/crawling-indexing/http-network-errors?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/crawling-indexing/http-network-errors",
+    "kaynak_basligi": "Google Arama Merkezi: HTTP durum kodları, ağ ve DNS hataları",
+    "kaynak_guncelleme": "2026-02-04",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s34",
+    "alan": "javascript",
+    "baslik": "JavaScript ile oluşan içerik",
+    "icerik": "Google JavaScript kullanan sayfaları tarama, işleme (render) ve dizine ekleme aşamalarında ele alır; dizine işlenmiş HTML eklenir. Yine de sunucu tarafında ya da önceden işleme (pre-rendering) önerilir: sayfa kullanıcılar ve tarayıcılar için hızlanır, JavaScript çalıştıramayan botlar da içeriği görür.",
+    "etiketler": [
+      "javascript",
+      "render",
+      "ssr"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics",
+    "kaynak_basligi": "Google Arama Merkezi: JavaScript SEO temel bilgileri",
+    "kaynak_guncelleme": "2026-03-04",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s35",
+    "alan": "javascript",
+    "baslik": "JavaScript sayfalarında bağlantı ve durum kodu",
+    "icerik": "Google yalnızca href niteliği olan <a> öğelerini bağlantı olarak izler; # ile yapılan gezinme güvenilir değildir. Hata durumları anlamlı HTTP kodu (ör. 404) döndürmeli; tek sayfalık uygulamada hata görünümü sunucudaki 404 adresine yönlendirilmeli ya da noindex ile işaretlenmelidir.",
+    "etiketler": [
+      "javascript",
+      "href",
+      "404",
+      "spa"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics",
+    "kaynak_basligi": "Google Arama Merkezi: JavaScript SEO temel bilgileri",
+    "kaynak_guncelleme": "2026-03-04",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s36",
+    "alan": "gorsel",
+    "baslik": "Görsel biçimi ve dosya adı",
+    "icerik": "Google Arama img src ile verilen BMP, GIF, JPEG, PNG, WebP, SVG ve AVIF görselleri destekler; dosya uzantısı gerçek türle uyuşmalıdır. Kısa ve açıklayıcı dosya adı (ör. siyah-yavru-kedi.jpg) IMG00023.JPG ya da image1.jpg gibi genel adlardan iyidir.",
+    "etiketler": [
+      "gorsel",
+      "bicim",
+      "webp",
+      "avif",
+      "dosya_adi"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/appearance/google-images?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/appearance/google-images",
+    "kaynak_basligi": "Google Arama Merkezi: Google Görseller SEO en iyi uygulamaları",
+    "kaynak_guncelleme": "2026-03-02",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
+  },
+  {
+    "id": "s37",
+    "alan": "gorsel",
+    "baslik": "Duyarlı görseller ve görselin yeri",
+    "icerik": "Farklı ekranlar için picture öğesi ya da srcset kullanılır, ancak her zaman src içeren bir img yedeği bırakılır. Görsel konusuyla ilgili sayfada ve ilgili metnin yakınına konur; Google çevresindeki metni, başlığı ve resim yazısını görselin konusunu anlamak için kullanır.",
+    "etiketler": [
+      "gorsel",
+      "srcset",
+      "picture",
+      "baglam"
+    ],
+    "kaynak": "https://developers.google.com/search/docs/appearance/google-images?hl=tr",
+    "kaynak_en": "https://developers.google.com/search/docs/appearance/google-images",
+    "kaynak_basligi": "Google Arama Merkezi: Google Görseller SEO en iyi uygulamaları",
+    "kaynak_guncelleme": "2026-03-02",
+    "erisim_tarihi": "2026-10-27",
+    "lisans": "CC BY 4.0"
   }
 ]
