@@ -52,7 +52,7 @@ def main():
     if a.oto_test:
         from masaustu.oto_test import calistir
         return calistir(a.oto_test, a.ayar)
-    from masaustu.uygulama import calistir_arayuz
+    from masaustu.api import calistir_arayuz
     calistir_arayuz(a.ayar)
     return 0
 

@@ -1,8 +1,7 @@
 # HANDOVER: Yerel Dil Modeli ile SEO Denetimi ve İyileştirme
 
-Son güncelleme: **27 Ekim 2026** · Aktif dal: `yz-ogretme-iyilestirme` (`seo-baslangic-rehberi` =
-`05660b8` üzerinden açıldı; değişiklikler commit'lenmedi). `seo-baslangic-rehberi` push edildi, `main`'e
-birleştirilmedi.
+Son güncelleme: **1 Kasım 2026** · Aktif dal: `arayuz-yenileme` (`yz-ogretme-iyilestirme` = `9ad1db1` üzerinden;
+arayüz değişiklikleri commit'lenmedi, hiçbir dal `main`'e birleştirilmedi).
 Ayrıntılı kullanım: [README.md](README.md). Bu belgenin önceki sürümü (ödev bağlamı, Düzce birim
 siteleri bulguları, 20–23 Ekim notları) git geçmişinde: `git show 14d2142:handover.md`.
 
@@ -96,7 +95,7 @@ dist/SEO_Denetim/SEO_Denetim.exe --oto-test rapor.json   # tam döngüyü arayü
 | `seo_app/kategoriler.py` | Kural çözer / YZ önerir / Elle düzeltilir + risk + olası etki |
 | `seo_app/yonetici.py`, `duzeltme.py`, `yz_oneri.py`, `yazma.py`, `html_konum.py` | Yönetici modu: akış, değişiklik planı, YZ önerisi doğrulama, yazma adaptörü, HTML konumları |
 | `seo_app/rapor.py`, `web.py`, `sablonlar/`, `statik/` | HTML raporlar ve arayüz |
-| `masaustu/` | Masaüstü başlatıcı (Tkinter): betikleri alt süreç olarak çalıştırır; onay ekranı, durum çubuğu, oto-test |
+| `masaustu/` | Masaüstü uygulaması (pywebview + yerel Flask, `127.0.0.1`): betikleri alt süreç olarak çalıştırır; arayüz `masaustu/arayuz/`. seo_app'i içe aktarmaz. |
 | `masaustu/salt_okunur.py` | Salt okunur taramanın komut satırı karşılığı (`web.ayarlari_dogrula` + `boru.topluca_analiz`) |
 | `build_exe.py`, `masaustu/seo_masaustu.spec` | uv + Python 3.13 ortamında PyInstaller derlemesi |
 
@@ -378,6 +377,19 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
     model seçimi (RTX 4050 6 GB'a 14B sığmaz).
   - Testler 328 geçti, 1 atlandı.
 
+- **1 Kasım (commit'lenmedi, `arayuz-yenileme`): masaüstü arayüzü yenilendi.** Tkinter (`masaustu/uygulama.py`)
+  kaldırıldı; yerine pywebview penceresinde yerel web arayüzü: `masaustu/arayuz/` (index.html, stil.css,
+  uygulama.js, yerel yazı tipi ve ikonlar), `masaustu/api.py` (Flask, yalnızca 127.0.0.1, oturum jetonu, Host
+  denetimi), `masaustu/cekirdek.py` (iş yuvası, iptal, sunucular, günlük; `uygulama.py`'den taşındı),
+  `masaustu/gomme_yenile.py`. Sol menü: Analiz, Onay, Sonuçlar, Test sitesi, Bilgi tabanı, Ayarlar. Yeni bağımlılık
+  (kullanıcı onaylı): pywebview (pythonnet ile). `seo_app/`, CLI, puanlama ve düzeltme değişmedi.
+  - Doğrulama (dil modeli kullanılmadı): kaynaktan ve Türkçe karakterli klasördeki `.exe`'den `--oto-test` 15/15,
+    ekran = `yonetici_raporu.json` = HTML rapor, en uzun takılma 17 ms, kapanışta süreç ve port kalmadı.
+    `.exe` 43 → 39 MB; pencere ~0,4 → ~0,85 sn (ilk açılış ~2 sn). Testler 336 geçti.
+  - Bilinen sınırlar: Sonuçlar'da salt okunur taramaların puanı yok (yönetici raporu yok, arayüz hesap yapmaz);
+    Bilgi tabanı salt okunur, Google'dan içerik çekme yok; WebView2 gerekir; raporlar koyu temada açık kalır.
+  - Duraklatılmış iş: doğrulama seti deneyi `--devam sonuc_2026-10-28_16-40-20` ile sürdürülür (7 site bitti).
+
 ## 8. Mevcut durum
 
 - **Testler:** `py -m pytest -q` → 328 geçti, 1 atlandı (Windows'ta sembolik bağlantı yetkisi yok; 27 Ekim).
@@ -489,7 +501,7 @@ py yonet.py geri-al sonuclar/127.0.0.1                      # 6. geri al (ya da 
   - `seo_app` .exe'ye gömülmez, proje klasöründen okunur.
 - **.exe kararları:**
   - Paketleme uv ile ayrı bir Python 3.13 ortamında, PyInstaller ile *onedir* olarak yapılır.
-  - Arayüzde "Bilgi tabanı" sekmesi şimdilik yok: Google'dan içerik çeken bir güncelleme betiği yok.
+  - "Bilgi tabanı" ekranı salt okunurdur: Google'dan içerik çeken bir güncelleme betiği yok (kullanıcı onaylı).
   - Uygula, geri al, sıfırla ve onay kaydı yarıda kesilemez (yazma işlemleri).
 
 ## 10. Bilinen tuzaklar

@@ -277,23 +277,39 @@ yeni çıkan bulgular ve kayıt dışında kalan bulgular da listelenir. Sıfır
 ## Masaüstü uygulaması (Windows)
 
 Yukarıdaki komutların hepsi tek bir pencereden de çalıştırılabilir. Uygulama yalnızca bir arayüz
-katmanıdır (`masaustu/`): her işlem mevcut betiği alt süreç olarak çalıştırır, çıktısı alttaki
-panelde canlı görünür. Komut satırı kullanımı aynen geçerlidir.
+katmanıdır (`masaustu/`): her işlem mevcut betiği alt süreç olarak çalıştırır, sayılar sonuç
+klasörlerindeki raporlardan okunur. Komut satırı kullanımı aynen geçerlidir.
 
 ```
-py masaustu/baslat.py            # kaynaktan çalıştır (Tkinter, ek bağımlılık yok)
+py -m pip install -r requirements.txt
+py masaustu/baslat.py            # kaynaktan çalıştır
 build_exe.bat                    # ya da: py build_exe.py  → dist/SEO_Denetim/SEO_Denetim.exe
 ```
 
-| Sekme | İşlemler |
+**Mimari.** Arayüz HTML/CSS/JS'tir (`masaustu/arayuz/`) ve pywebview ile kendi penceresinde, Windows'un
+WebView2 bileşeninde çalışır; tarayıcı açılmaz. Windows 11'de WebView2 hazır gelir. `masaustu/api.py`
+rastgele bir portta yalnızca `127.0.0.1`'e bağlanan bir Flask sunucusudur: her oturumda yeni bir jeton
+ister ve Host başlığını denetler; yalnızca `sonuclar/` altındaki bilinen rapor dosyalarını okur.
+`masaustu/cekirdek.py` tek iş yuvasını, iptali, sunucuları ve günlüğü yönetir. Yazı tipi (IBM Plex, OFL)
+ve ikonlar (Lucide, ISC) pakete dahildir; dış CDN kullanılmaz. Tarayıcı arayüzü (`calistir.py`) ayrıdır.
+
+**Tasarım dili.** Açık gri bir çerçeve içinde çalışma sayfası; gölge ve gradyan yok, renk yalnızca veride.
+IBM Plex Sans, hizalı rakamlar; vurgu teal (açık `#1B6C80`, koyu `#5BB2C8`). Açık/koyu tema Ayarlar'da
+saklanır, ilk açılışta sistem teması kullanılır. Pencere en az 1100×680 olur.
+
+| Ekran | İşlemler |
 |---|---|
-| Analiz | Mod (Yönetici / Salt okunur), site adresi, kök klasör, model seçimi, taramayı başlat; yönetici modunda tarama otomatik aşamayı da yürütür; ardından **önizle ve onayla** (kategoriye göre gruplu diff, YZ önerilerine tek tek onay/ret, otomatik yazılmış değişikliği geri çekme, yüksek risk onayı, değer düzenleme) ve **onaylı aşamayı uygula**; plan alanında üç aşamalı metrikler (sayfa puanı, sorun sayısı, çözüm oranı) ve sorun durumları görünür; tarayıcı arayüzünü (`calistir.py`) başlat/durdur |
-| Test sitesi | Başlat / durdur / tarayıcıda aç, doğrula, sıfırla, hash karşılaştır, değerlendir |
-| Sonuçlar | `sonuclar/` altındaki taramalar; rapor ve klasör açma, son uygulamayı geri alma |
-| Ayarlar | Proje klasörü, LM Studio adresi, varsayılan modeller, portlar, ses |
+| Analiz | Mod (Yönetici / Salt okunur), adres, kök klasör, model; aşama göstergesi (tarama → analiz → otomatik düzeltme → yeniden kontrol), daraltılabilir canlı günlük, iptal; özet: aktif, çözülen (otomatik, onaylı), çözüm oranı, bulgu şeridi, sayfa puanı (başlangıç → otomatik → onay sonrası) |
+| Onay | Bekleyen / uygulanan / geçersiz / elle sekmeleri; risk ve kategoriye göre gruplama, güven rozeti, arama ve filtreler; yan yana diff; tek tek ya da toplu onay/ret, değer düzenleme, ret nedeni, yüksek risk onayı; `[doğrulanmalı]` uyarısı; kararları kaydet, onaylı aşamayı uygula |
+| Sonuçlar | Geçmiş taramalar (site, tarih, tür, durum, puan, çözüm oranı, aktif), raporu uygulama içinde görüntüleme, iki taramayı karşılaştırma, planı açma, son uygulamayı geri alma |
+| Test sitesi | Başlat / durdur / tarayıcıda aç, doğrula, hash karşılaştır, sıfırla, değerlendir |
+| Bilgi tabanı | Parça sayısı, konu alanları, kaynaklar ve tarihler, gömme önbelleği durumu ve yenileme, güven kalibrasyonu (salt okunur; içerik elle güncellenir) |
+| Ayarlar | Proje klasörü, LM Studio adresi, varsayılan modeller, portlar, tarayıcı arayüzü, tema, ses |
+
+**Klavye:** Ctrl+1…6 ekranlar, Ctrl+D tema. Onay ekranında J/K gezinme, A onay, R ret, `/` arama, Ctrl+S kaydet.
 
 - Alttaki durum çubuğu LM Studio'ya ulaşılıp ulaşılamadığını, seçilen modellerin yüklü olup
-  olmadığını, test sitesi ve web arayüzünün çalışıp çalışmadığını gösterir.
+  olmadığını, test sitesi ve tarayıcı arayüzünün çalışıp çalışmadığını gösterir.
 - Aynı anda tek iş çalışır. Tarama ve doğrulama gibi işler **İptal** ile durdurulabilir.
   Uygulama, geri alma, sıfırlama ve onay kaydı siteye ya da sonuç klasörüne yazdığı için yarıda
   kesilmez. Siteye yazan işlemler önce onay penceresi gösterir.
@@ -301,11 +317,11 @@ build_exe.bat                    # ya da: py build_exe.py  → dist/SEO_Denetim/
   kapansa bile, başlattığı sunucular ve alt süreçler kapanır.
 - Ayarlar `%APPDATA%\SEO Denetim Aracı\ayarlar.json` dosyasında tutulur (`--ayar` ile başka dosya).
   Proje klasörü ayarda yoksa .exe'nin bulunduğu klasörden yukarı doğru `yonet.py` aranır.
-  .exe proje dışına taşındıysa klasör Ayarlar sekmesinden seçilir.
-- `--oto-test rapor.json` tam döngüyü arayüz üzerinden kendiliğinden çalıştırır: test sitesi →
-  doğrula → tarama → onay → uygula → değerlendir → geri al → iptal → sıfırla. Sonunda geride
-  süreç kalmadığını denetleyip raporu JSON olarak yazar. `SEO_OTO_MODELSIZ=1` ile tarama modelsiz
-  yapılır.
+  .exe proje dışına taşındıysa klasör Ayarlar ekranından seçilir.
+- `--oto-test rapor.json` gerçek pencerede düğmelere tıklayarak tam döngüyü çalıştırır: test sitesi →
+  doğrula → tarama → onay → uygula → değerlendir → rapor → geri al → iptal → sıfırla. Ekrandaki sayıları
+  `yonetici_raporu.json` ve HTML raporla karşılaştırır, geride süreç kalmadığını denetler, raporu JSON
+  olarak yazar. Varsayılan olarak dil modeli kullanmaz; `SEO_OTO_MODELLI=1` ile modelli çalışır.
 
 **Derleme.** `build_exe.py`, uv ile `build/venv313` altında ayrı bir Python 3.13 ortamı kurar.
 PyInstaller yalnızca bu ortama yüklenir, projenin bağımlılıklarına eklenmez. Varsayılan çıktı
@@ -623,7 +639,7 @@ etiketle.py              öneri kalitesinin insan etiketlemesi, etiketçi uyumu,
 trend.py                 taramalar arası eğilim, gerileme uyarısı, Search Console önceliği
 zamanla.py               zamanlanmış salt okunur tarama (Windows Görev Zamanlayıcısı)
 build_exe.py / .bat      masaüstü uygulamasını derler (dist/SEO_Denetim/)
-masaustu/                masaüstü başlatıcı (Tkinter): baslat.py, uygulama.py, onay ekranı, salt_okunur.py, oto_test.py
+masaustu/                masaüstü uygulaması: baslat.py, api.py (yerel sunucu), cekirdek.py, arayuz/ (HTML/CSS/JS), plan.py, sonuclar.py, salt_okunur.py, oto_test.py
 tests/                   pytest testleri (tests/veri/: RAG ölçüm seti)
 seo_app/
   bagimsiz.py            PageSpeed (Lighthouse) SEO puanı ve Core Web Vitals

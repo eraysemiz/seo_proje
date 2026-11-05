@@ -1,29 +1,27 @@
 """Arayuz uzerinden tam test dongusu (kendi kendini sinama).
 
-Gercek pencere acilir ve dugmelerin cagirdigi yontemler sirayla calistirilir; onay/hata
-diyaloglari otomatik yanitlanip rapora yazilir. Senaryo ayri bir is parcaciginda yurur, arayuz
-islemleri ana is parcacigina aktarilir; boylece olay dongusunun uzun islerde takilip takilmadigi
-(en uzun bekleme suresi) de olculur. Sonunda uygulama kapatilir ve baslatilan sureclerin
-kapandigi denetlenir.
+Gercek pencere acilir ve dugmelere gercekten tiklanir (DOM uzerinden); onay pencereleri otomatik yanitlanip
+rapora yazilir. Gosterilen sayilar yonetici_raporu.json ve HTML raporla karsilastirilir, arayuzun en uzun
+takilma suresi olculur. Sonunda uygulama kapatilir ve baslatilan sureclerin kapandigi denetlenir.
+Dil modeli kullanilmaz; SEO_OTO_MODELLI=1 ve hazir LM Studio ile modelli calisir.
 
     py masaustu/baslat.py --oto-test rapor.json
     "SEO_Denetim.exe" --oto-test rapor.json
 """
 import json
 import os
+import re
 import sys
 import threading
 import time
 import traceback
-import types
 import urllib.request
 from pathlib import Path
 
-import tkinter as tk
-
-from . import durum
+from . import api, durum
+from . import ayarlar as ay
 from . import plan as pl
-from . import uygulama as arayuz
+from .cekirdek import Cekirdek
 
 ADIM_SURESI = 900
 
@@ -56,304 +54,354 @@ def http_kodu(url):
 
 
 class Senaryo:
-    def __init__(self, uyg, rapor_yolu):
-        self.u = uyg
+    def __init__(self, cekirdek, pencere, sunucu, rapor_yolu):
+        self.c, self.p, self.s = cekirdek, pencere, sunucu
         self.rapor_yolu = Path(rapor_yolu)
         self.rapor = {"frozen": bool(getattr(sys, "frozen", False)), "python": sys.version.split()[0],
-                      "calistirilabilir": sys.executable, "proje_koku": uyg.ayar["proje_koku"],
-                      "adimlar": [], "diyaloglar": []}
-        self._en_uzun = 0.0
-        self._son_tik = time.perf_counter()
-        uyg.onay_sor = lambda b, i: self._diyalog("onay", b, i, True)
-        uyg.hata_goster = lambda b, i: self._diyalog("hata", b, i)
-        uyg.bilgi_goster = lambda b, i: self._diyalog("bilgi", b, i)
-        arayuz.webbrowser = types.SimpleNamespace(open=lambda *a, **k: True)   # testte tarayici acilmasin
-        uyg.k.after(50, self._tik)
+                      "calistirilabilir": sys.executable, "proje_koku": cekirdek.ayar["proje_koku"],
+                      "adimlar": [], "diyaloglar": [], "sayi_eslesmeleri": []}
 
-    # ---- yardimcilar
-    def _diyalog(self, tur, baslik, ileti, yanit=None):
-        self.rapor["diyaloglar"].append({"tur": tur, "baslik": baslik, "ileti": ileti})
-        return yanit
-
-    def _tik(self):
-        simdi = time.perf_counter()
-        self._en_uzun = max(self._en_uzun, simdi - self._son_tik)
-        self._son_tik = simdi
-        self.u.k.after(50, self._tik)
-
-    def ui(self, fn, *a):
-        bitti, kutu = threading.Event(), {}
-
-        def calis():
-            try:
-                kutu["r"] = fn(*a)
-            except Exception as e:           # noqa: BLE001 - senaryo is parcacigina aktarilir
-                kutu["e"] = e
-            finally:
-                bitti.set()
-        self.u.k.after(0, calis)
-        if not bitti.wait(60):
-            raise TimeoutError("arayüz 60 sn yanıt vermedi")
-        if "e" in kutu:
-            raise kutu["e"]
-        return kutu.get("r")
-
-    def is_calistir(self, fn, *a, sure=ADIM_SURESI):
-        """fn bir is baslatir (dugme); isin bitmesini bekler ve ozetini dondurur. Baslamadan once
-        yapilan denetimler arka planda calistigi icin bitis, biten is sayacindan anlasilir."""
-        once = self.ui(lambda: self.u.biten_is_sayisi)
-        self.ui(fn, *a)
-        bitis = time.time() + sure
-        while time.time() < bitis:
-            if self.ui(lambda: self.u.biten_is_sayisi) > once:
-                return self.u.son_is
-            time.sleep(0.2)
-        raise TimeoutError("iş zamanında bitmedi")
+    # ---- pencere yardimcilari
+    def js(self, kod):
+        return self.p.evaluate_js(kod)
 
     def bekle(self, kosul, sure=20):
         bitis = time.time() + sure
         while time.time() < bitis:
             if kosul():
                 return True
-            time.sleep(0.25)
+            time.sleep(0.2)
         return False
 
+    def var(self, secici, sure=20):
+        return self.bekle(lambda: self.js(f"!!document.querySelector({json.dumps(secici)})"), sure)
+
+    def tikla(self, secici, sure=20):
+        kosul = f"(()=>{{const b=document.querySelector({json.dumps(secici)});return !!b&&!b.disabled}})()"
+        if not self.bekle(lambda: self.js(kosul), sure):
+            raise TimeoutError("düğme yok ya da kapalı: " + secici)
+        self.js(f"document.querySelector({json.dumps(secici)}).click()")
+
+    def metin(self, secici):
+        return self.js(f"(document.querySelector({json.dumps(secici)})||{{}}).textContent||''")
+
+    def git(self, ekran):
+        self.js(f"location.hash='#/{ekran}'")
+        self.bekle(lambda: self.js(f"!!document.querySelector('#menu-{ekran}[aria-current=page]')"), 10)
+        time.sleep(0.5)
+
+    def modal(self, yanit="#modal-evet", sure=20):
+        """Acilan pencereyi kaydeder ve yanitlar; basligi ve iletiyi dondurur."""
+        if not self.var(".modal", sure):
+            raise TimeoutError("onay penceresi açılmadı")
+        d = {"baslik": self.metin(".modal h2"), "ileti": self.metin(".modal p")}
+        self.rapor["diyaloglar"].append(d)
+        self.tikla(yanit)
+        self.bekle(lambda: not self.js("!!document.querySelector('.modal')"), 5)
+        return d
+
+    def is_bekle(self, baslat, sure=ADIM_SURESI):
+        once = self.c.biten_is_sayisi
+        baslat()
+        if not self.bekle(lambda: self.c.biten_is_sayisi > once, sure):
+            raise TimeoutError("iş zamanında bitmedi")
+        time.sleep(1.2)                      # arayuz yoklamasi yeni durumu gorsun
+        return self.c.son_is
+
     def adim(self, ad, fn):
-        self._en_uzun = 0.0
-        self._son_tik = time.perf_counter()
+        self.js("window.__takilma=0")
         bas = time.time()
         kayit = {"ad": ad}
         try:
             kayit.update(fn() or {})
         except Exception as e:               # noqa: BLE001
-            kayit.update({"basarili": False, "hata": f"{type(e).__name__}: {e}",
-                          "iz": traceback.format_exc()})
+            kayit.update({"basarili": False, "hata": f"{type(e).__name__}: {e}", "iz": traceback.format_exc()})
         kayit["sure_sn"] = round(time.time() - bas, 1)
-        kayit["arayuz_en_uzun_takilma_ms"] = round(self._en_uzun * 1000)
+        kayit["arayuz_en_uzun_takilma_ms"] = self.js("Math.round(window.__takilma||0)")
         self.rapor["adimlar"].append(kayit)
         print(("✓ " if kayit.get("basarili") else "✗ ") + ad, flush=True)
         return kayit
 
-    def _is_sonucu(self, son, beklenen=None, cikti=True):
+    def _is_sonucu(self, son, beklenen=None):
         satirlar = son["satirlar"] if son else []
         tamam = bool(son) and son["kod"] == 0 and not son["iptal"]
         if beklenen:
             tamam = tamam and any(beklenen in s for s in satirlar)
-        return {"basarili": tamam, "kod": son and son["kod"], "pid": son and son["pid"],
-                **({"cikti": satirlar} if cikti else {"cikti_son": satirlar[-8:]})}
+        return {"basarili": tamam, "kod": son and son["kod"], "pid": son and son["pid"], "cikti_son": satirlar[-8:]}
+
+    def sayilari_karsilastir(self, klasor, an):
+        """Ekrandaki sayilar = yonetici_raporu.json = HTML rapor."""
+        oz = pl.rapor_ozeti(klasor)
+        s, son = oz["sayaclar"], [a for a in oz["asamalar"] if a.get("olculdu")][-1]
+        self.git("analiz")
+        self.var("#k-aktif")
+        ekran = {"aktif": self.metin("#k-aktif"), "cozulen": self.metin("#k-cozulen"), "oran": self.metin("#k-oran"),
+                 "serit": {k: self.metin(f'[data-sayi="{k}"]') for k, n in oz["sayilar"].items() if n},
+                 "puan": self.metin(f'[data-puan="{son["ad"]}"]')}
+        json_ = {"aktif": str(s["aktif"]), "cozulen": str(s["cozulen"]), "oran": f"%{round(100 * son['cozum_orani'])}",
+                 "serit": {k: str(n) for k, n in oz["sayilar"].items() if n}, "puan": str(son["puanlar"]["sayfa"])}
+        html = (Path(klasor) / "yonetici_raporu.html").read_text(encoding="utf-8")
+        html_var = {k: bool(re.search(rf"(?<![\d]){re.escape(json_[k])}(?![\d])", html))
+                    for k in ("aktif", "cozulen", "oran", "puan")}
+        tamam = ekran == json_ and all(html_var.values())
+        self.rapor["sayi_eslesmeleri"].append({"an": an, "ekran": ekran, "json": json_, "html_rapor_iceriyor": html_var,
+                                               "eslesti": tamam})
+        return tamam
 
     # ---- adimlar
     def calistir(self):
-        u = self.u
-        a = u.ayar
+        c = self.c
+        a = c.ayar
         site_url = f"http://127.0.0.1:{a['test_portu']}/"
+        self.js("(()=>{let s=performance.now();setInterval(()=>{const n=performance.now();"
+                "window.__takilma=Math.max(window.__takilma||0,n-s-100);s=n},100)})()")
         lm = durum.lm_durumu(a["lm_url"], [a["sohbet_modeli"], a["gomme_modeli"]])
-        self.rapor["lm"] = {"erisim": lm["erisim"], "eksik": lm["eksik"], "yuklu_degil": lm["yuklu_degil"]}
-        self.rapor["durum_cubugu_ilk"] = self.ui(lambda: u.lm_etiketi.cget("text"))
+        modelli = os.environ.get("SEO_OTO_MODELLI") == "1" and lm["erisim"] and not lm["eksik"] and not lm["yuklu_degil"]
+        self.rapor["modelli"] = modelli
 
-        def lm_kapali_analiz():
-            # LM Studio aciksa kapali durum, adres kullanilmayan bir porta cevrilerek benzetilir
+        def lm_kapali():
+            # kapali LM Studio, adres kullanilmayan bir porta cevrilerek benzetilir; LM Studio'ya istek gitmez
             gercek = a["lm_url"]
-            benzetim = lm["erisim"]
-            if benzetim:
-                a["lm_url"] = "http://127.0.0.1:9/v1"
+            a["lm_url"] = "http://127.0.0.1:9/v1"
             try:
-                self.ui(u._durum_istegi.set)
-                self.bekle(lambda: "erişilemiyor" in self.ui(lambda: u.lm_etiketi.cget("text")), 15)
-                cubuk = self.ui(lambda: u.lm_etiketi.cget("text"))
-                onceki = len(self.rapor["diyaloglar"])
-
-                def bas():
-                    u.mod.set("yonetici")
-                    u._mod_degisti()
-                    u.model_kullan.set(True)
-                    u.site_url.set(site_url)
-                    u.taramayi_baslat()
-                self.ui(bas)
-                self.bekle(lambda: len(self.rapor["diyaloglar"]) > onceki, 15)
-                yeni = self.rapor["diyaloglar"][onceki:]
-                baslamadi = self.ui(lambda: u.is_ is None)
+                c.durum_yenile()
+                self.bekle(lambda: "kapalı" in self.metin("#d-lm"), 15)
+                cubuk = self.metin("#d-lm")
+                self.git("analiz")
+                self.js("document.querySelector('#mod-yonetici').click()")
+                time.sleep(0.4)
+                if not self.js("document.querySelector('#f-model').checked"):
+                    self.tikla("#f-model")
+                    time.sleep(0.4)
+                self.tikla("#tara")
+                d = self.modal("#modal-tamam")
+                baslamadi = c.is_ is None
             finally:
                 a["lm_url"] = gercek
-                self.ui(u._durum_istegi.set)
-            return {"basarili": baslamadi and "erişilemiyor" in cubuk and any(d["tur"] == "hata" for d in yeni),
-                    "benzetim": benzetim, "ileti": yeni[-1]["ileti"] if yeni else None, "durum_cubugu": cubuk}
-        self.adim("LM Studio kapalıyken modelli analiz anlaşılır hata veriyor", lm_kapali_analiz)
+                c.durum_yenile()
+            return {"basarili": baslamadi and "kapalı" in cubuk and "ulaşılamadı" in d["ileti"], "ileti": d["ileti"],
+                    "durum_cubugu": cubuk}
+        self.adim("LM Studio kapalıyken modelli analiz anlaşılır hata veriyor", lm_kapali)
 
         def test_baslat():
-            self.ui(u.test_sitesini_baslat)
+            self.git("test")
+            self.tikla("#t-baslat")
             acik = self.bekle(lambda: durum.port_acik(a["test_portu"]), 20)
-            self.bekle(lambda: "çalışıyor" in self.ui(lambda: u.test_etiketi.cget("text")), 10)
-            return {"basarili": acik, "http": http_kodu(site_url), "pid": u.sunucular["test"].pid,
-                    "durum_cubugu": self.ui(lambda: u.test_etiketi.cget("text"))}
+            self.bekle(lambda: "açık" in self.metin("#d-test"), 10)
+            return {"basarili": acik, "http": http_kodu(site_url), "pid": c.sunucular["test"].pid,
+                    "durum_cubugu": self.metin("#d-test")}
         self.adim("Test sitesi başlat", test_baslat)
 
-        self.adim("Doğrula", lambda: self._is_sonucu(self.is_calistir(u.dogrula), "47/47"))
+        self.adim("Doğrula", lambda: self._is_sonucu(self.is_bekle(lambda: self.tikla("#t-dogrula")), "47/47"))
 
-        model_var = (lm["erisim"] and not lm["eksik"] and not lm["yuklu_degil"]
-                     and os.environ.get("SEO_OTO_MODELSIZ") != "1")
-
-        def yonetici_tara():
-            def bas():
-                u.mod.set("yonetici")
-                u._mod_degisti()
-                u.model_kullan.set(model_var)
-                u.site_url.set(site_url)
-                u.site_koku.set(a["site_koku"])
-                u.taramayi_baslat()
-            son = self.is_calistir(bas)
-            sonuc = self._is_sonucu(son, "Sonuç klasörü:", cikti=False)
-            sonuc["plan_klasoru"] = str(self.ui(lambda: u.plan_klasoru))
-            sonuc["model"] = self.ui(u.model_kullan.get)
-            # otomatik asama: guven esigini gecenler onaysiz yazildi ve site yeniden tarandi
-            k = Path(sonuc["plan_klasoru"])
-            plan = pl.plani_oku(k)
-            oz = pl.rapor_ozeti(k)
+        def tara():
+            self.git("analiz")
+            self.tikla("#mod-yonetici")
+            time.sleep(0.4)
+            secili = self.js("document.querySelector('#f-model').checked")
+            if secili != bool(modelli):
+                self.tikla("#f-model")
+                time.sleep(0.4)
+            son = self.is_bekle(lambda: self.tikla("#tara"))
+            sonuc = self._is_sonucu(son, "Sonuç klasörü:")
+            sonuc["plan_klasoru"] = str(c.plan_klasoru)
+            plan = pl.plani_oku(c.plan_klasoru)
             sonuc["otomatik_uygulanan"] = sum(1 for d in plan["degisiklikler"]
                                               if d["durum"] == "uygulandi" and d.get("asama") == "otomatik")
             sonuc["asamalar"] = pl.asamalar(plan)
-            sonuc["ozet"] = pl.ozet_satirlari(oz)
-            sonuc["arayuz_ozeti"] = self.ui(lambda: u.plan_ozeti.cget("text"))
+            sonuc["sayilar_eslesti"] = self.sayilari_karsilastir(c.plan_klasoru, "otomatik sonrası")
             sonuc["basarili"] = (sonuc["basarili"] and sonuc["otomatik_uygulanan"] > 0 and sonuc["asamalar"] == ["otomatik"]
-                                 and (k / "sonra_otomatik" / "rapor.json").exists() and "Otomatik" in sonuc["arayuz_ozeti"])
+                                 and sonuc["sayilar_eslesti"])
             return sonuc
-        tarama = self.adim("Yönetici taraması", yonetici_tara)
-        klasor = Path(tarama.get("plan_klasoru") or "")
+        tarama = self.adim("Yönetici taraması ve özet kartları", tara)
+        klasor = Path(tarama.get("plan_klasoru") or ".")
+        kutu = {}
 
         def onay():
-            def ac():
-                p = arayuz.OnayPenceresi(u, klasor)
-                p.kural_hepsi.set(True)
-                yz = next((d for d in p.plan["degisiklikler"] if d["kategori"] == "yz" and d["risk"] != "yuksek"
-                           and d["durum"] not in ("gecersiz", "uygulandi")), None)
-                if yz:
-                    p.secimler[yz["id"]]["karar"] = "onay"
-                # otomatik asamada yazilmis bir degisiklik reddedilir: onayli asamada geri cekilmeli
-                geri = next((d for d in p.plan["degisiklikler"] if d["durum"] == "uygulandi"
-                             and d.get("asama") == "otomatik"), None)
-                if geri:
-                    p.secimler[geri["id"]]["karar"] = "ret"
-                    kutu["geri_cekilecek"] = geri["id"]
-                kutu["gosterim"] = p._karar_gosterimi(geri) if geri else None
-                p._agaci_yenile()
-                arg, _ = pl.onay_argumanlari(p.plan, p.onceki, p.secimler, True)
-                p.kaydet()
-                kutu["argumanlar"] = arg
-            kutu = {}
-            sonuc = self._is_sonucu(self.is_calistir(ac), "Kararlar kaydedildi")
-            argumanlar = kutu.get("argumanlar")
+            self.git("onay")
+            self.var(".satir")
+            # bekleyen bir oneriyi onayla (yuksek riskli degil ve yer tutucusuz)
+            plan = pl.plani_oku(klasor)
+            yz = next((d for d in plan["degisiklikler"] if d["risk"] != "yuksek" and not d.get("yer_tutucu")
+                       and d["durum"] not in ("gecersiz", "uygulandi", "basarisiz", "reddedildi")), None)
+            if yz:
+                self.tikla(f'.satir[data-id="{yz["id"]}"]')
+                self.var("#k-onay")
+                self.tikla("#k-onay")
+            self.var("#diff")
+            kutu["yan_yana_diff"] = self.js("document.querySelectorAll('#diff .bas').length") == 2
+            # arama ve filtre gercekten suzer
+            once = self.js("document.querySelectorAll('.satir').length")
+            self.js("(()=>{const a=document.querySelector('#f-ara');a.value='zzzyok';a.dispatchEvent(new Event('input'))})()")
+            time.sleep(0.2)
+            suzuldu = self.js("document.querySelectorAll('.satir').length") == 0
+            self.js("(()=>{const a=document.querySelector('#f-ara');a.value='';a.dispatchEvent(new Event('input'))})()")
+            # otomatik asamada yazilmis bir degisiklik reddedilir: onayli asamada geri cekilmeli
+            self.tikla('[data-sekme="uygulanan"]')
+            time.sleep(0.5)
+            geri = next(d for d in plan["degisiklikler"] if d["durum"] == "uygulandi" and d.get("asama") == "otomatik")
+            self.tikla(f'.satir[data-id="{geri["id"]}"]')
+            self.var("#k-ret")
+            self.tikla("#k-ret")
+            kutu["geri"] = geri["id"]
+            self.tikla("#kural-hepsi")
+            time.sleep(0.2)
+            son = self.is_bekle(lambda: self.tikla("#kaydet"))
+            sonuc = self._is_sonucu(son, "Kararlar kaydedildi")
             kararlar = pl.kararlari_oku(klasor)
-            sonuc.update({"argumanlar": argumanlar, "kural_hepsi": kararlar["kural_hepsi"],
-                          "onaylanan": pl.onaylanan_sayisi(pl.plani_oku(klasor), kararlar),
-                          "geri_cekilecek": kutu.get("geri_cekilecek"), "gosterim": kutu.get("gosterim"),
-                          "geri_cekilecek_sayisi": pl.geri_cekilecek_sayisi(pl.plani_oku(klasor), kararlar)})
+            sonuc.update({"onayli": yz and yz["id"], "geri_cekilecek": geri["id"], "liste_uzunlugu": once,
+                          "arama_suzdu": suzuldu, "yan_yana_diff": kutu["yan_yana_diff"],
+                          "onaylanan": pl.onaylanan_sayisi(pl.plani_oku(klasor), kararlar)})
+            sonuc["basarili"] = sonuc["basarili"] and suzuldu and kutu["yan_yana_diff"]
             return sonuc
-        self.adim("Onay ekranı → kararları kaydet", onay)
+        self.adim("Onay ekranı: karar, arama, yan yana diff, kaydet", onay)
 
         def uygula():
-            sonuc = self._is_sonucu(self.is_calistir(u.uygula), "Aşamalara göre metrikler", cikti=False)
-            sonuc["uygulama_json"] = (klasor / "uygulama.json").exists()
+            self.git("onay")
+            self.var("#uygula")
+
+            def bas():
+                self.tikla("#uygula")
+                self.modal()
+            son = self.is_bekle(bas)
+            sonuc = self._is_sonucu(son, "Aşamalara göre metrikler")
             plan = pl.plani_oku(klasor)
-            oz = pl.rapor_ozeti(klasor)
-            sonuc["asamalar"] = pl.asamalar(plan)
-            sonuc["ozet"] = pl.ozet_satirlari(oz)
-            sonuc["arayuz_ozeti"] = self.ui(lambda: u.plan_ozeti.cget("text"))
-            i = self.rapor["adimlar"][-1].get("geri_cekilecek") if self.rapor["adimlar"] else None
-            d = next((x for x in plan["degisiklikler"] if x["id"] == i), None)
-            sonuc["geri_cekilen_durum"] = d and d["durum"]
+            d = next(x for x in plan["degisiklikler"] if x["id"] == kutu.get("geri"))
+            sonuc.update({"asamalar": pl.asamalar(plan), "geri_cekilen_durum": d["durum"],
+                          "sayilar_eslesti": self.sayilari_karsilastir(klasor, "onay sonrası")})
             sonuc["basarili"] = (sonuc["basarili"] and sonuc["asamalar"] == ["otomatik", "onayli"]
-                                 and (not i or sonuc["geri_cekilen_durum"] == "reddedildi")
-                                 and "Onaylı düzeltmeler sonrası" in sonuc["arayuz_ozeti"])
+                                 and d["durum"] == "reddedildi" and sonuc["sayilar_eslesti"])
             return sonuc
-        self.adim("Uygula", uygula)
+        self.adim("Onaylı aşamayı uygula", uygula)
 
         def degerlendir():
-            def bas():
-                u._deg_listesi()
-                etiket = next(k for k, v in u._deg_secenekleri.items() if Path(v) == klasor)
-                u.deg_klasoru.set(etiket)
-                u.degerlendir()
-            sonuc = self._is_sonucu(self.is_calistir(bas), "Rapor:")
-            sonuc["tablo"] = [s for s in sonuc["cikti"] if s.startswith("| ") and "|" in s[2:]]
-            return sonuc
+            self.git("test")
+            self.var("#t-deg-sec")
+            self.js("(()=>{const s=document.querySelector('#t-deg-sec');s.value=" + json.dumps(str(klasor)) +
+                    ";s.dispatchEvent(new Event('change'))})()")
+            time.sleep(0.5)
+            return self._is_sonucu(self.is_bekle(lambda: self.tikla("#t-deg")), "Rapor:")
         self.adim("Değerlendir", degerlendir)
 
+        def sonuclar():
+            self.git("sonuclar")
+            secici = f'tr[data-k={json.dumps(str(klasor), ensure_ascii=False)}]'
+            if not self.var(secici):
+                raise TimeoutError("sonuç listede yok")
+            self.tikla(secici)
+            self.var("#rapor-cerceve")
+            yuklendi = self.bekle(lambda: self.js("(()=>{const f=document.querySelector('#rapor-cerceve');return !!(f&&f.contentDocument&&f.contentDocument.body&&f.contentDocument.body.textContent.length>200)})()"), 20)
+            satir = self.js(f"document.querySelector({json.dumps(secici)}).innerText")
+            oz = pl.rapor_ozeti(klasor)
+            puanlar = " → ".join(str(a["puanlar"]["sayfa"]) for a in oz["asamalar"] if a.get("olculdu"))
+            return {"basarili": yuklendi and puanlar in satir, "satir": satir, "puan_yolu": puanlar}
+        self.adim("Sonuçlar: rapor uygulama içinde", sonuclar)
+
         def geri_al():
-            sonuc = self._is_sonucu(self.is_calistir(u.geri_al, klasor.parent), "eşleşiyor")
+            self.var("#s-geri")
+
+            def bas():
+                self.tikla("#s-geri")
+                self.modal()
+            sonuc = self._is_sonucu(self.is_bekle(bas), "eşleşiyor")
             oz = pl.rapor_ozeti(klasor)
             sonuc["durumlar"] = {d: n for d, n in (oz or {}).get("sayilar", {}).items() if n}
-            sonuc["ozet"] = pl.ozet_satirlari(oz)
             sonuc["basarili"] = (sonuc["basarili"] and bool(oz and oz["geri_alindi"])
                                  and set(sonuc["durumlar"]) <= {"onay_bekliyor", "elle", "basarisiz"})
             return sonuc
         self.adim("Geri al", geri_al)
 
         def iptal():
-            def bas():
-                u.mod.set("salt")
-                u._mod_degisti()
-                u.model_kullan.set(False)
-                u.site_url.set(site_url)
-                u.site_modu.set(True)
-                u.taramayi_baslat()
-            once = self.ui(lambda: u.biten_is_sayisi)
-            self.ui(bas)
-            self.bekle(lambda: self.ui(lambda: u.is_ is not None), 15)
-            time.sleep(3)
-            pid = self.ui(lambda: u.is_ and u.is_.pid)
+            self.git("analiz")
+            self.tikla("#mod-salt")
+            time.sleep(0.4)
+            if self.js("document.querySelector('#f-model').checked"):
+                self.tikla("#f-model")
+                time.sleep(0.4)
+            once = c.biten_is_sayisi
+            self.js("(()=>{const a=document.querySelector('#f-adres');a.value=" + json.dumps(site_url) +
+                    ";a.dispatchEvent(new Event('input',{bubbles:true}))})()")
+            self.tikla("#tara")
+            self.bekle(lambda: c.is_ is not None, 15)
+            # calisirken ikinci is engellenir (cakisma)
+            time.sleep(1)
+            dugme_kapali = self.js("document.querySelector('#tara').disabled")
+            time.sleep(2)
+            pid = c.is_ and c.is_.pid
             calisiyordu = bool(pid) and surec_yasiyor(pid)
-            self.ui(u.iptal)
-            self.bekle(lambda: self.ui(lambda: u.biten_is_sayisi) > once, 30)
-            son = self.u.son_is
+            self.tikla("#iptal")
+            self.bekle(lambda: c.biten_is_sayisi > once, 30)
             kapandi = self.bekle(lambda: not surec_yasiyor(pid), 10)
-            return {"basarili": calisiyordu and son["iptal"] and kapandi, "pid": pid,
-                    "iptal_edildi": son["iptal"], "surec_kapandi": kapandi}
+            self.tikla("#mod-yonetici")
+            return {"basarili": calisiyordu and c.son_is["iptal"] and kapandi and dugme_kapali, "pid": pid,
+                    "surec_kapandi": kapandi, "cakisma_dugmesi_kapali": dugme_kapali}
         self.adim("Uzun işlem sırasında iptal", iptal)
 
-        self.adim("Sıfırla", lambda: self._is_sonucu(self.is_calistir(u.sifirla), "eşleşiyor"))
-        self.adim("Hash karşılaştır", lambda: self._is_sonucu(self.is_calistir(u.sifirla_kontrol), "eşleşiyor"))
-        self.adim("Doğrula (sıfırlama sonrası)", lambda: self._is_sonucu(self.is_calistir(u.dogrula), "47/47"))
+        def sifirla():
+            self.git("test")
+
+            def bas():
+                self.tikla("#t-sifirla")
+                self.modal()
+            return self._is_sonucu(self.is_bekle(bas), "eşleşiyor")
+        self.adim("Sıfırla", sifirla)
+        self.adim("Hash karşılaştır", lambda: self._is_sonucu(self.is_bekle(lambda: self.tikla("#t-hash")), "eşleşiyor"))
+        self.adim("Doğrula (sıfırlama sonrası)", lambda: self._is_sonucu(self.is_bekle(lambda: self.tikla("#t-dogrula")), "47/47"))
+
+        def ekranlar():
+            sonuc = {}
+            for ekran, secici in (("bilgi", "#b-gomme"), ("ayarlar", "#a-kaydet"), ("onay", ".onay-ust"), ("sonuclar", "#s-ara")):
+                self.git(ekran)
+                sonuc[ekran] = self.var(secici, 10)
+            self.git("ayarlar")
+            self.tikla("#a-koyu")
+            koyu = self.bekle(lambda: self.js("document.documentElement.dataset.tema") == "koyu", 5)
+            self.tikla("#a-acik")
+            return {"basarili": all(sonuc.values()) and koyu, "ekranlar": sonuc, "koyu_tema": koyu}
+        self.adim("Bilgi tabanı, Ayarlar ve tema", ekranlar)
 
         def web():
             if durum.port_acik(a["web_portu"]):
                 return {"basarili": False, "hata": "web portu zaten kullanımda"}
-            self.ui(u.web_baslat_)
+            self.git("ayarlar")
+            self.tikla("#a-web-baslat")
             acik = self.bekle(lambda: durum.port_acik(a["web_portu"]), 30)
             return {"basarili": acik and http_kodu(f"http://127.0.0.1:{a['web_portu']}/") == 200,
-                    "pid": u.sunucular["web"] and u.sunucular["web"].pid}
-        self.adim("Web arayüzünü başlat", web)
+                    "pid": c.sunucular["web"] and c.sunucular["web"].pid}
+        self.adim("Tarayıcı arayüzünü başlat", web)
 
         # kapanis: test sitesi ve web arayuzu acikken uygulama kapatilir
-        self.rapor["kapanis_oncesi_sunucular"] = self.ui(lambda: {k: s.pid for k, s in u.sunucular.items() if s})
-        self.rapor["baslatilan_pidler"] = list(u.baslatilan_pidler)
-        self.ui(lambda: u.kapat(sor=False))
+        self.rapor["kapanis_oncesi_sunucular"] = {k: s.pid for k, s in c.sunucular.items() if s}
+        self.rapor["baslatilan_pidler"] = list(c.baslatilan_pidler)
 
 
 def calistir(rapor_yolu, ayar_dosyasi=None):
-    pencere = tk.Tk()
-    uyg = arayuz.Uygulama(pencere, ayar_dosyasi)
-    senaryo = Senaryo(uyg, rapor_yolu)
+    import webview
+    c = Cekirdek(ayar_dosyasi)
+    kutu = {}
+    s = api.Sunucu(c, kutu)
+    pencere = webview.create_window(ay.UYGULAMA_ADI, s.adres, width=1360, height=860)
+    kutu["pencere"] = pencere
+    senaryo = Senaryo(c, pencere, s, rapor_yolu)
 
     def yurut():
         try:
+            senaryo.bekle(lambda: pencere.evaluate_js("!!(window.SEO&&window.SEO.durum)"), 30)
             senaryo.calistir()
         except Exception:                    # noqa: BLE001
             senaryo.rapor["beklenmeyen"] = traceback.format_exc()
-            try:
-                senaryo.ui(lambda: uyg.kapat(sor=False))
-            except Exception:                # noqa: BLE001
-                pass
-    threading.Thread(target=yurut, daemon=True).start()
-    pencere.mainloop()
+        finally:
+            pencere.destroy()
+    webview.start(yurut, gui="edgechromium", private_mode=True)
+    c.kapat()
+    s.kapat()
 
     time.sleep(1)
-    pidler = senaryo.rapor.get("baslatilan_pidler", uyg.baslatilan_pidler)
-    a = uyg.ayar
-    senaryo.rapor["kapanis"] = {
-        "yasayan_surecler": [p for p in pidler if surec_yasiyor(p)],
-        "test_portu_acik": durum.port_acik(a["test_portu"]),
-        "web_portu_acik": durum.port_acik(a["web_portu"]),
-    }
+    pidler = senaryo.rapor.get("baslatilan_pidler", c.baslatilan_pidler)
+    a = c.ayar
+    senaryo.rapor["kapanis"] = {"yasayan_surecler": [p for p in pidler if surec_yasiyor(p)],
+                                "test_portu_acik": durum.port_acik(a["test_portu"]),
+                                "web_portu_acik": durum.port_acik(a["web_portu"])}
     adimlar = senaryo.rapor["adimlar"]
     senaryo.rapor["ozet"] = {"adim": len(adimlar), "basarili": sum(bool(x.get("basarili")) for x in adimlar),
                              "tamamlandi": "beklenmeyen" not in senaryo.rapor,

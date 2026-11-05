@@ -21,6 +21,7 @@ VARSAYILAN = {
     "test_portu": 8080,
     "web_portu": 5000,
     "ses": True,
+    "tema": "",                 # acik / koyu; bos: sistem temasi
 }
 IMZA = ("yonet.py", "seo_app")       # proje kokunu taniyan dosyalar
 

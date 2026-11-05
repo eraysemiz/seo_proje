@@ -1,7 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
 """PyInstaller tanimi; build_exe.py tarafindan calistirilir (SEO_ONEFILE=1 tek dosya uretir).
 
-.exe yalnizca Python calisma ortamini, arayuzu (masaustu/) ve ucuncu taraf kutuphaneleri icerir.
+.exe yalnizca Python calisma ortamini, arayuzu (masaustu/, yerel yazi tipi ve ikonlariyla) ve ucuncu taraf
+kutuphaneleri icerir.
 seo_app/, betikler, ogretme/, sonuclar/ ve test sitesi gomulmez; proje klasorunden okunur.
 Betiklerin ihtiyac duydugu moduller, proje dosyalarindaki import satirlari taranarak eklenir;
 seo_app'in kendisi pakete girmez (diskteki guncel kod kullanilsin diye).
@@ -17,7 +18,7 @@ AD = "SEO_Denetim"
 IKON = KOK / "masaustu" / "ikon.ico"
 YEREL = {"seo_app", "masaustu", "tests", "ortak", "kontroller", "site_uret", "yonet", "calistir", "deney",
          "rag_degerlendir", "sunucu", "dogrula", "sifirla", "degerlendir", "ikon_uret"}
-GEREKSIZ = ["pytest", "_pytest", "pluggy", "iniconfig"]
+GEREKSIZ = ["pytest", "_pytest", "pluggy", "iniconfig", "tkinter", "_tkinter", "PIL"]
 TARANAN = [KOK / "yonet.py", KOK / "calistir.py", KOK / "deney.py", KOK / "rag_degerlendir.py",
            KOK / "masaustu" / "salt_okunur.py", *(KOK / "seo_app").rglob("*.py"),
            *(KOK / "test_sitesi").glob("*.py"), *(KOK / "test_sitesi_degerlendirme").glob("*.py")]
@@ -33,8 +34,9 @@ def ice_aktarimlar(dosya):
 
 gizli = sorted({m for f in TARANAN for m in ice_aktarimlar(f)
                 if m.split(".")[0] not in YEREL and m.split(".")[0] not in GEREKSIZ})
-veriler, ikililer = [(str(IKON), "masaustu")], []
-for paket in ("brotlicffi",):
+veriler, ikililer = [(str(IKON), "masaustu"), (str(KOK / "masaustu" / "arayuz"), "masaustu/arayuz")], []
+gizli += ["masaustu.oto_test", "webview.platforms.edgechromium", "webview.platforms.winforms", "clr_loader", "pythonnet"]
+for paket in ("brotlicffi", "webview", "clr_loader", "pythonnet"):
     v, b, g = collect_all(paket)
     veriler += v
     ikililer += b

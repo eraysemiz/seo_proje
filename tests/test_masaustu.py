@@ -4,8 +4,6 @@ import json
 import sys
 import time
 
-import pytest
-
 from masaustu import ayarlar as ay
 from masaustu import durum
 from masaustu import plan as pl
@@ -123,8 +121,7 @@ def test_lm_kapaliyken_anlasilir_ileti():
 
 
 def test_hata_iletisi():
-    tk = pytest.importorskip("tkinter")       # noqa: F841 - uygulama modulu tkinter ice aktarir
-    from masaustu.uygulama import hata_iletisi
+    from masaustu.cekirdek import hata_iletisi
     assert hata_iletisi(["  · bir şey", "HATA: Plan bulunamadı: x"], 2) == "Plan bulunamadı: x"
     assert hata_iletisi(["Traceback (most recent call last):", "OSError: [WinError 10048] ..."], 1).startswith("Port kullanımda")
     assert hata_iletisi(["Traceback (most recent call last):", "KeyError: 'a'"], 1) == "Beklenmeyen hata: KeyError: 'a'"
