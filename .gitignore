@@ -23,3 +23,9 @@ dist/
 
 # Öğrenme döngüsü: kullanıcının sitelerine ait onay/ret kararları (yerelde kalır)
 ogretme/geri_bildirim.jsonl
+
+# Yapay zeka araç ayarları ve çıktıları (makineye özgü, yerelde kalır)
+.claude/
+.codex/
+CLAUDE.md
+AGENTS.md
